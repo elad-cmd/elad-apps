@@ -188,10 +188,8 @@ FILTERS.forEach(f=>{
 
 function render(){
   content.style.height=((DATA.length-1)*UNIT*zoom+PAD*2)+'px';
-  // צבע סינון חוצה-קטגוריות (ממציאים / תולדות עם ישראל) נצבע על האירועים עצמם
-  const override = FHEX[activeFilter.id] || null;
-  nodes.forEach(n=>{ n.y=PAD+n.idx*UNIT*zoom; n.el.style.top=n.y+'px'; n.el.classList.remove('hidden','mini');
-    if(override) n.el.style.setProperty('--c', override); else n.el.style.removeProperty('--c'); });
+  // כל אירוע שומר על צבע הקטגוריה הקבוע שלו בכל הסינונים — אין דריסה
+  nodes.forEach(n=>{ n.y=PAD+n.idx*UNIT*zoom; n.el.style.top=n.y+'px'; n.el.classList.remove('hidden','mini'); });
   const placed=[]; const placedSet=new Set(); let shownCount=0;
   const ends = activeFilter.id==='all' ? [nodes[0], nodes[nodes.length-1]] : [];
   ends.forEach(n=>{ placed.push({y:n.y,half:n.card.offsetHeight/2+GAP/2}); placedSet.add(n); shownCount++; });
