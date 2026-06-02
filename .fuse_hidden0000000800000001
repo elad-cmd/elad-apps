@@ -196,7 +196,7 @@ function render(){
   });
   // אירוע שתואם את הסינון אך אין לו מקום לכרטיס — נקודה קטנה על הקו
   nodes.forEach(n=>{ if(!n.el.classList.contains('hidden') && !placedSet.has(n)) n.el.classList.add('mini'); });
-  tierTxt.textContent = DATA.filter(e=>activeFilter.test(e)).length+' אירועים';
+  tierTxt.textContent = shownCount+' אירועים';
 }
 function setZoom(nz, focalClientY){
   nz=Math.max(MINZ,Math.min(MAXZ,nz));

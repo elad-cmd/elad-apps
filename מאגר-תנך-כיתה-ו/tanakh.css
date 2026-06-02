@@ -213,15 +213,36 @@ details.model p{margin:.6em 0 0;color:var(--color-ink-soft);}
 .deck__count{font-weight:800;color:var(--color-muted);font-size:.95rem;}
 .kbd-hint{text-align:center;color:var(--color-muted);font-size:.85rem;margin-top:10px;}
 
-/* מצגת — שקופיות מרווחות ונוחות לקריאה */
-.slide{padding:40px 50px;min-height:480px;}
-.slide p{margin:.55em 0;}
+/* מצגת — שקופיות נוחות לקריאה, מצומצמות אנכית (בלי לאבד טקסט) */
+.slide{padding:26px 46px;min-height:auto;}
+.slide--cover{min-height:300px;}
+.slide p{margin:.45em 0;}
 .deck__nav{display:flex;align-items:center;gap:10px;}
-.slide .grid{margin-top:18px;}
-.slide .feature-card__desc{font-size:1.02rem;line-height:1.55;}
-.slide__example p{font-size:1.08rem;}
+.slide .grid{margin-top:14px;}
+.slide .feature-card{padding:18px;}
+.slide .feature-card__desc{font-size:1.02rem;line-height:1.5;}
+.slide__example{margin-top:12px;}
+.slide__example p{font-size:1.06rem;}
 .slide .t{font-size:1.05rem;}
-.slide .t th,.slide .t td{padding:11px 14px;}
+.slide .t th,.slide .t td{padding:9px 13px;}
+.slide ul.links{margin:4px 0 0;}
+
+/* מובייל — להקטין טקסט וריפוד כדי שייכנס לרוחב */
+@media(max-width:600px){
+  .slide{padding:20px 18px;}
+  .slide--cover{min-height:240px;}
+  .slide h2{font-size:1.45rem;margin:.1em 0 .35em;}
+  .slide h3{font-size:1.15rem;}
+  .slide p,.slide li{font-size:1rem;line-height:1.55;}
+  .slide--cover h2{font-size:1.7rem;}
+  .slide--cover p{font-size:1.05rem !important;}
+  .slide__example p{font-size:.95rem;}
+  .slide .feature-card__desc{font-size:.95rem;}
+  .slide .t{font-size:.88rem;}
+  .slide .t th,.slide .t td{padding:6px 7px;}
+  .deck__bar{flex-wrap:wrap;gap:8px;}
+  .deck__count{font-size:.85rem;}
+}
 
 /* תיבת תשובה פתוחה + משוב מבוסס רעיונות */
 .quiz textarea{width:100%;min-height:86px;padding:11px 14px;border:2px solid var(--color-line);
