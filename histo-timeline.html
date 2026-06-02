@@ -339,5 +339,41 @@ setTimeout(()=>{
   stage.scrollTop = 0;
 },60);
 </script>
+<style>
+  #searchwrap{position:relative;background:#fff;padding:10px 14px;border-bottom:1px solid var(--border);flex-shrink:0;}
+  #search{width:100%;padding:9px 16px;border:1.5px solid var(--border);border-radius:var(--radius-pill);font-family:inherit;font-size:14px;color:var(--text);background:var(--bg-soft);outline:none;}
+  #search:focus{border-color:var(--teal);background:#fff;}
+  #results{position:absolute;left:14px;right:14px;top:54px;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);z-index:30;max-height:55vh;overflow-y:auto;display:none;}
+  #results.show{display:block;}
+  .res{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);text-align:right;}
+  .res:last-child{border-bottom:0;}
+  .res:hover{background:var(--teal-bg);}
+  .res b{font-weight:700;color:var(--text);}
+  .res span{font-size:12px;color:var(--text-light);display:block;margin-top:2px;}
+</style>
+<script>
+(function(){
+  const sw=document.createElement('div'); sw.id='searchwrap';
+  sw.innerHTML='<input id="search" placeholder="חיפוש אירוע…" autocomplete="off"><div id="results"></div>';
+  filtersEl.parentNode.insertBefore(sw, filtersEl);
+  const inp=sw.querySelector('#search'), res=sw.querySelector('#results');
+  inp.addEventListener('input',function(){
+    const q=inp.value.trim().toLowerCase();
+    if(q.length<2){ res.className=''; res.innerHTML=''; return; }
+    const m=nodes.filter(n=>(n.e.t+' '+(n.e.s||'')).toLowerCase().indexOf(q)>-1).slice(0,10);
+    if(!m.length){ res.innerHTML='<div class="res"><span>לא נמצאו תוצאות</span></div>'; res.className='show'; return; }
+    res.innerHTML=m.map(n=>'<div class="res" data-i="'+nodes.indexOf(n)+'"><b>'+n.e.t+'</b><span>'+fmtYear(n.e.y)+'</span></div>').join('');
+    res.className='show';
+  });
+  res.addEventListener('click',function(e){
+    const d=e.target.closest('.res'); if(!d||!d.dataset.i) return;
+    const n=nodes[+d.dataset.i];
+    res.className=''; inp.value=''; inp.blur();
+    stage.scrollTo({top:Math.max(0,n.y - stage.clientHeight/2), behavior:'smooth'});
+    setTimeout(function(){ openEvent(n.e); },350);
+  });
+  document.addEventListener('click',function(e){ if(!sw.contains(e.target)) res.className=''; });
+})();
+</script>
 </body>
 </html>
