@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>פסיכו · ציר הזמן של ההיסטוריה</title>
+<title>ציר הזמן של ההיסטוריה</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
     --bg:#ffffff; --bg-soft:#f6f7fb; --border:#e2e4e9;
     --shadow-sm:0 3px 10px rgba(0,0,0,.04); --shadow-md:0 6px 24px rgba(0,0,0,.06); --shadow-lg:0 20px 60px rgba(0,0,0,.10);
     --radius-sm:8px; --radius-md:18px; --radius-pill:999px;
-    --blob:60% 40% 55% 45% / 50% 60% 40% 50%; /* "המפרט של פסיכו" — הצורה החוזרת */
+    --blob:60% 40% 55% 45% / 50% 60% 40% 50%; /* הצורה החוזרת (בלוב מרובע-רך) */
     --font:'Assistant','Heebo',system-ui,-apple-system,'Segoe UI',sans-serif;
     --c-cosmos:var(--purple); --c-civ:var(--teal); --c-rel:var(--blue); --c-war:var(--pink); --c-sci:var(--mint);
   }
@@ -36,6 +36,7 @@
   .chip{white-space:nowrap;padding:7px 14px;border-radius:var(--radius-pill);border:1.5px solid var(--border);background:var(--bg-soft);color:var(--text-soft);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;flex-shrink:0;}
   .chip:hover{border-color:var(--teal);color:var(--teal-dark);}
   .chip.active{background:var(--text);border-color:var(--text);color:var(--yellow);}
+  .chip .cdot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-inline-start:7px;vertical-align:middle;}
   /* ציר */
   #stage{position:relative;flex:1;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;-webkit-overflow-scrolling:touch;}
   #content{position:relative;width:100%;}
@@ -64,7 +65,7 @@
   @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
   #hint{position:fixed;top:54%;left:50%;transform:translate(-50%,-50%);z-index:20;background:linear-gradient(135deg,var(--teal-bg),#fff);border:1.5px solid var(--teal);border-radius:var(--radius-md);padding:20px 24px;text-align:center;max-width:290px;box-shadow:var(--shadow-lg);transition:opacity .5s;pointer-events:none;}
   #hint .big{font-size:30px;margin-bottom:8px;} #hint b{color:var(--text);} #hint .sm{color:var(--text-soft);font-size:14px;line-height:1.55;}
-  /* מודאל (רכיב "עשיר" של פסיכו) */
+  /* מודאל */
   .modal-backdrop{position:fixed;inset:0;background:rgba(20,21,21,.55);z-index:100;display:none;align-items:center;justify-content:center;padding:18px;}
   .modal-backdrop.show{display:flex;}
   .modal{background:var(--bg);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);width:560px;max-width:100%;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;animation:pop .25s ease-out;}
@@ -173,9 +174,11 @@ const FILTERS=[
 ];
 let activeFilter=FILTERS[0];
 const filtersEl=document.getElementById('filters');
+const FCOL={inv:'var(--c-sci)',jew:'var(--yellow)',rel:'var(--c-rel)',cosmos:'var(--c-cosmos)',civ:'var(--c-civ)',war:'var(--c-war)',sci:'var(--c-sci)'};
 FILTERS.forEach(f=>{
   const b=document.createElement('button');
-  b.className='chip'+(f.id==='all'?' active':''); b.textContent=f.label;
+  b.className='chip'+(f.id==='all'?' active':'');
+  b.innerHTML=(FCOL[f.id]?'<span class="cdot" style="background:'+FCOL[f.id]+'"></span>':'')+f.label;
   b.onclick=()=>{ activeFilter=f; [...filtersEl.children].forEach(c=>c.classList.remove('active')); b.classList.add('active'); render(); };
   filtersEl.appendChild(b);
 });
