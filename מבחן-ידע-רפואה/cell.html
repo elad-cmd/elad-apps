@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ביולוגיה של התא — סיכום מעמיק לפי הסילבוס</title>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="psycho-components.css">
+<link rel="stylesheet" href="med.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="index.html">
+      <span class="brand__logo">יד</span>
+      <span class="brand__name">מבחן הידע לרפואה<small>תכנית 4 שנתית · מאגר הכנה</small></span>
+    </a>
+    <nav class="nav">
+      <a href="index.html">בית</a>
+      <a href="matzeget.html">על המבחן</a>
+      <a href="nosim.html" class="active">נושאים וסיכומים</a>
+      <a href="tirgul.html">תרגול</a>
+      <a href="diagrams.html">חזותיים</a>
+      <a href="mekorot.html">מקורות</a>
+    </nav>
+  </div>
+</header>
+
+<div class="pagehead">
+  <h1>ביולוגיה של התא — סיכום מעמיק</h1>
+  <p>לפי הסילבוס הרשמי, ספר הליבה אלברטס (Molecular Biology of the Cell) מהדורה 7, פרקים 10, 12–19.</p>
+</div>
+
+<div class="tabbar">
+  <div class="tabbar__inner">
+    <a class="tab" href="#membrane">קרום ומעבר</a>
+    <a class="tab" href="#sorting">מיון חלבונים</a>
+    <a class="tab" href="#traffic">תעבורה ממברנלית</a>
+    <a class="tab" href="#mito">מיטוכונדריה</a>
+    <a class="tab" href="#signaling">איתות תאי</a>
+    <a class="tab" href="#cytoskeleton">שלד התא</a>
+    <a class="tab" href="#cellcycle">מחזור התא</a>
+    <a class="tab" href="#death">מוות תאי</a>
+    <a class="tab" href="#junctions">צמתים ומטריקס</a>
+  </div>
+</div>
+
+<main>
+<section class="section" style="padding-top:20px">
+<div class="section__inner">
+
+  <div class="alert alert--info">
+    <span class="alert__icon"><i class="fa-solid fa-circle-info"></i></span>
+    <div class="alert__body"><span class="alert__title">איך ללמוד מכאן</span>השאלות הרשמיות בנושא התא הן ברמת מנגנון ותרחיש (SNARE, UPR, RTK, שלד התא). לכל נושא שימו לב ל: מי עושה מה, היכן בתא, ומה ההבדל בין מנגנונים דומים (שמבלבלים במסיחים). בסוף — <a href="tirgul.html#cell">לתרגול בביולוגיה של התא</a>.</div>
+  </div>
+
+  <!-- קרום -->
+  <div class="panel" id="membrane">
+    <h2>מבנה הקרום ומעבר חומרים</h2>
+    <p>הקרום הוא <b>דו-שכבת פוספוליפידים</b> במודל ה<b>פסיפס הנוזלי</b>. הוא <b>אסימטרי</b>: פוספוליפידים מסוימים (כמו פוספטידיל-סרין) מרוכזים בעלעל הפנימי בזכות <b>פליפאזה</b> תלוית-ATP; חשיפת פוספטידיל-סרין בחוץ (ע"י סקראמבלאזה) היא אות לאפופטוזיס. <b>כולסטרול</b> פועל כ"בולם נזילות" — מוריד נזילות בחום ומונע התגבשות בקור.</p>
+    <h3>מעבר חומרים</h3>
+    <table class="t">
+      <tr><th>סוג</th><th>אנרגיה</th><th>מנגנון</th></tr>
+      <tr><td><b>דיפוזיה פשוטה</b></td><td>סביל</td><td>מולקולות קטנות לא-קוטביות ישירות דרך הדו-שכבה</td></tr>
+      <tr><td><b>תעלה</b></td><td>סביל</td><td>נקב מימי, זרימה מהירה ורציפה, רק במורד המפל</td></tr>
+      <tr><td><b>נשא (transporter)</b></td><td>סביל או פעיל</td><td>שינוי קונפורמציה החושף את אתר הקישור לסירוגין; קצב נמוך</td></tr>
+      <tr><td><b>משאבה</b></td><td>פעיל (ATP)</td><td>נגד המפל (למשל Na/K-ATPase)</td></tr>
+    </table>
+    <div class="keybox"><b>בלבול נפוץ במבחן:</b> תעלה לעולם רק במורד המפל; משאבה יכולה נגד המפל. נשא ותעלה נבדלים במנגנון — נשא משנה קונפורמציה (איטי), תעלה היא נקב (מהיר).</div>
+    <div class="chips">
+      <span class="termcard"><b>פסיפס נוזלי</b><span>fluid mosaic</span></span>
+      <span class="termcard"><b>פליפאזה</b><span>flippase</span></span>
+      <span class="termcard"><b>חלבון אינטגרלי</b><span>integral protein</span></span>
+    </div>
+  </div>
+
+  <!-- מיון -->
+  <div class="panel" id="sorting">
+    <h2>מיון חלבונים ואיברונים</h2>
+    <p>חלבונים מנותבים לפי <b>רצפי איתות</b>:</p>
+    <ul>
+      <li><b>אל ה-ER (קו-טרנסלציוני):</b> פפטיד סיגנל מזוהה ע"י <b>SRP</b>, שמשהה את התרגום ומכוון את הריבוזום לקולטן SRP בקרום ה-ER.</li>
+      <li><b>אל המיטוכונדריה (פוסט-טרנסלציוני):</b> החלבון נכנס <b>פרוש</b> (לא-מקופל) דרך <b>TOM</b> ו-<b>TIM</b>, בעזרת מפל הפוטנציאל על הקרום הפנימי ו-Hsp70 (מנוע תלוי-ATP).</li>
+      <li><b>אל הגרעין:</b> רצף NLS מזוהה ע"י אימפורטין, מעבר דרך נקבובית גרעינית (במצב מקופל).</li>
+    </ul>
+    <div class="keybox"><b>תגובת החלבונים הלא-מקופלים (UPR)</b> — שלושה חיישנים בקרום ה-ER, שכל אחד פועל אחרת (סוג שאלה מבלבל):<br>
+    <b>ATF6</b> — ביקוע פרוטאוליטי ושחרור מקטע ציטוזולי שעובר לגרעין.<br>
+    <b>IRE1</b> — דימריזציה והפעלת אנדוריבונוקלאז ששוחבר mRNA (XBP1).<br>
+    <b>PERK</b> — זרחון eIF2α ובלימת תרגום כללית.</div>
+    <div class="chips">
+      <span class="termcard"><b>חלקיק זיהוי סיגנל</b><span>SRP</span></span>
+      <span class="termcard"><b>UPR</b><span>unfolded protein response</span></span>
+      <span class="termcard"><b>TOM / TIM</b><span>mito import</span></span>
+    </div>
+  </div>
+
+  <!-- תעבורה -->
+  <div class="panel" id="traffic">
+    <h2>תעבורה ממברנלית תוך-תאית</h2>
+    <table class="t">
+      <tr><th>ציפוי שלפוחית</th><th>מסלול</th></tr>
+      <tr><td><b>COPII</b></td><td>מה-ER קדימה (אנטרוגרדית) אל הגולג'י</td></tr>
+      <tr><td><b>COPI</b></td><td>מהגולג'י אחורה (רטרוגרדית) אל ה-ER (החזרת KDEL)</td></tr>
+      <tr><td><b>קלאתרין</b></td><td>אנדוציטוזה מקרום הפלזמה, ומרשת ה-trans-גולג'י</td></tr>
+    </table>
+    <h3>עגינה והיתוך</h3>
+    <p><b>Rab</b> (GTPases קטנים) מסמנים זהות קרום ומגייסים חלבוני <b>עגינה</b> (tethering) שמבטיחים ספציפיות. <b>SNARE</b>: v-SNARE בשלפוחית ו-t-SNARE בקרום המטרה מתפתלים יחד ומקרבים את הקרומים — ומבצעים את ה<b>היתוך</b>. אחר כך <b>NSF</b> (עם SNAP) מפרק את הקומפלקס בהידרוליזת ATP למחזור. <b>דינמין</b> מנתק שלפוחיות קלאתרין.</p>
+    <div class="keybox"><b>מיון ליזוזומלי:</b> הידרולאזות מקבלות תווית <b>מניטוז-6-פוספט (M6P)</b> בגולג'י; קולטן M6P מנתב אותן לאנדוזום ומשם לליזוזום. <b>אנדוציטוזה של LDL:</b> ה-pH החומצי באנדוזום משחרר את הליגנד — הקולטן ממוחזר לקרום וה-LDL ממשיך לליזוזום.</div>
+    <div class="chips">
+      <span class="termcard"><b>COPI / COPII</b><span>vesicle coats</span></span>
+      <span class="termcard"><b>SNARE</b><span>SNARE</span></span>
+      <span class="termcard"><b>מניטוז-6-פוספט</b><span>M6P</span></span>
+    </div>
+  </div>
+
+  <!-- מיטוכונדריה -->
+  <div class="panel" id="mito">
+    <h2>מיטוכונדריה והמרת אנרגיה</h2>
+    <p>קרום כפול: ה<b>חיצוני</b> חדיר למולקולות עד כ-5000 דלטון בזכות <b>פורין</b> (VDAC); ה<b>פנימי</b> אטום ובררני — תנאי לשמירת מפל הפרוטונים. אנרגיית מעבר האלקטרונים <b>שואבת פרוטונים</b> ויוצרת מפל אלקטרוכימי, וזרימתם חזרה דרך <b>ATP-סינתאז</b> מייצרת ATP (כימיוסמוזה). הקומפלקסים עצמם אינם מסנתזים ATP ישירות.</p>
+    <p><b>מוצא אנדוסימביוטי:</b> גנום DNA (מעגלי) עצמאי, ריבוזומים דמויי-חיידק, והתחלקות בפיצול. רוב החלבונים מקודדים בגרעין ומיובאים פרושים.</p>
+    <div class="chips">
+      <span class="termcard"><b>פורין</b><span>porin / VDAC</span></span>
+      <span class="termcard"><b>כימיוסמוזה</b><span>chemiosmosis</span></span>
+    </div>
+  </div>
+
+  <!-- איתות -->
+  <div class="panel" id="signaling">
+    <h2>איתות תאי</h2>
+    <h3>קולטנים מצומדי-G (GPCR)</h3>
+    <p>הפעלה משנה חלבון G הטרוטרימרי (החלפת GDP ב-GTP ב-Gα). <b>Gs</b> מפעיל אדנילט-ציקלאז → <b>cAMP</b> → PKA. מסלול <b>PLCβ</b>: פיצול PIP₂ ל-<b>IP₃</b> (משחרר Ca²⁺ מה-ER) ו-<b>DAG</b> (מפעיל PKC). <b>דה-סנסיטיזציה:</b> GRK מזרחנת את הקולטן, <b>ארסטין</b> נקשר, חוסם את חלבון G ומקדם אנדוציטוזה.</p>
+    <div class="keybox"><b>רעלן הכולרה</b> משבית את ה-GTPase של Gαs → Gαs נשאר פעיל → cAMP גבוה ללא בקרה. דוגמה קלאסית לשאלת מנגנון.</div>
+    <h3>קולטני טירוזין קינאז (RTK)</h3>
+    <p>קשירת ליגנד → <b>דימריזציה</b> → <b>טרנס-אוטופוספורילציה</b> של טירוזינים → אתרי עגינה לחלבוני SH2. מסלול <b>Ras/MAPK</b>: Grb2 (SH2) נקשר → מגייס <b>Sos</b> (GEF) → Ras (GDP→GTP) → Raf→MEK→ERK. <b>GEF</b> מפעיל את Ras, <b>GAP</b> מכבה (מאיץ הידרוליזה). מסלול <b>PI3K/Akt</b>: PI3K מזרחן PIP₂ ל-<b>PIP₃</b>, שמגייס את Akt ו-PDK1 (תחום PH). <b>Cbl</b> (ליגאז יוביקוויטין) ממסר את הקולטן לאנדוציטוזה.</p>
+    <p><b>קולטנים גרעיניים:</b> סטרואידים הידרופוביים חוצים את הממברנה ונקשרים לקולטן תוך-תאי שפועל כגורם שעתוק (תגובה איטית).</p>
+    <div class="chips">
+      <span class="termcard"><b>שליח שניוני</b><span>second messenger</span></span>
+      <span class="termcard"><b>Ras / MAPK</b><span>Ras / MAPK</span></span>
+      <span class="termcard"><b>PI3K / Akt</b><span>PI3K / Akt</span></span>
+    </div>
+  </div>
+
+  <!-- שלד התא -->
+  <div class="panel" id="cytoskeleton">
+    <h2>שלד התא</h2>
+    <table class="t">
+      <tr><th>סיב</th><th>תת-יחידה</th><th>נוקלאוטיד</th><th>קוטביות</th><th>מנועים</th></tr>
+      <tr><td><b>מיקרו-חוטים</b></td><td>אקטין</td><td>ATP</td><td>יש (+/−)</td><td>מיוזין</td></tr>
+      <tr><td><b>מיקרו-צינוריות</b></td><td>טובולין</td><td>GTP</td><td>יש (+/−)</td><td>קינזין (לפלוס), דינאין (למינוס)</td></tr>
+      <tr><td><b>חוטי ביניים</b></td><td>משתנה</td><td>אין</td><td>אין</td><td>אין</td></tr>
+    </table>
+    <p><b>דינמיקה:</b> <b>טרדמילינג</b> (אקטין — הבדל בריכוז קריטי בין הקצוות בזכות הידרוליזת ATP) ו<b>חוסר יציבות דינמית</b> (מיקרו-צינוריות — מעברי צמיחה/כיווץ עם הידרוליזת GTP). חוטי ביניים נטולי קוטביות ונוקלאוטיד — תפקידם מכני.</p>
+    <div class="chips">
+      <span class="termcard"><b>טרדמילינג</b><span>treadmilling</span></span>
+      <span class="termcard"><b>חוסר יציבות דינמית</b><span>dynamic instability</span></span>
+    </div>
+  </div>
+
+  <!-- מחזור התא -->
+  <div class="panel" id="cellcycle">
+    <h2>מחזור התא</h2>
+    <p>שלבים: G1, S (שכפול DNA), G2, M. המנוע: <b>ציקלינים</b> ו-<b>CDK</b>. <b>MPF</b> = cyclin B + Cdk1, מופעל במעבר G2/M ע"י <b>Cdc25</b> (הסרת זרחות מעכבות). <b>APC/C</b> מסמן את <b>securin</b> לפירוק → <b>separase</b> מבקע את ה<b>קוהזין</b> → הפרדת כרומטידות באנאפאזה, וגם מפרק את cyclin B ליציאה מהמיטוזה.</p>
+    <div class="keybox"><b>נקודות בקרה:</b> נקודת ביקורת הכישור (SAC) מעכבת את APC/C-Cdc20 כל עוד יש קינטוכור לא מחובר. <b>צנטרומר</b> = אזור DNA/כרומטין; <b>קינטוכור</b> = קומפלקס חלבונים הנבנה עליו ומעגן את חוטי הכישור; <b>צנטרוזום</b> = מרכז ארגון המיקרו-צינוריות בקטבים. אל תבלבלו ביניהם.</div>
+    <div class="chips">
+      <span class="termcard"><b>ציקלין / CDK</b><span>cyclin / CDK</span></span>
+      <span class="termcard"><b>APC/C</b><span>anaphase-promoting complex</span></span>
+      <span class="termcard"><b>קוהזין</b><span>cohesin</span></span>
+    </div>
+  </div>
+
+  <!-- מוות תאי -->
+  <div class="panel" id="death">
+    <h2>מוות תאי (אפופטוזיס)</h2>
+    <p>מבוצע ע"י <b>קספאזות</b>: <b>מתחילות</b> (8, 9) מופעלות בקומפלקסי הפעלה ומבקעות את ה<b>מבצעות</b> (3, 7) שמפרקות מצעים.</p>
+    <ul>
+      <li><b>מסלול פנימי (מיטוכונדריאלי):</b> <b>Bax/Bak</b> יוצרים נקבוביות בקרום החיצוני (MOMP) → שחרור <b>ציטוכרום c</b> → אפופטוזום → קספאז-9. <b>Bcl-2</b> (אנטי-אפופטוטי) מעכב את Bax/Bak.</li>
+      <li><b>מסלול חיצוני:</b> ליגנד מוות (כגון Fas) → קולטן מוות → DISC → קספאז-8.</li>
+      <li><b>גשר (type II):</b> קספאז-8 מבקע את <b>Bid</b> ל-tBid, שמפעיל את Bax/Bak ומגייס את המסלול הפנימי כמגבר.</li>
+    </ul>
+    <div class="chips">
+      <span class="termcard"><b>קספאזות</b><span>caspases</span></span>
+      <span class="termcard"><b>ציטוכרום c</b><span>cytochrome c</span></span>
+      <span class="termcard"><b>Bcl-2 / Bax</b><span>Bcl-2 / Bax</span></span>
+    </div>
+  </div>
+
+  <!-- צמתים -->
+  <div class="panel" id="junctions">
+    <h2>צמתים תאיים ומטריקס חוץ-תאי</h2>
+    <table class="t">
+      <tr><th>צומת</th><th>תפקיד</th></tr>
+      <tr><td><b>צומת הדוק</b> (tight)</td><td>אטם נגד מעבר פראצלולרי; שומר על קוטביות אפיקלי/בזולטרלי</td></tr>
+      <tr><td><b>דסמוזום</b></td><td>עיגון מכני תא-תא (קשור לחוטי ביניים)</td></tr>
+      <tr><td><b>צומת adherens</b></td><td>עיגון תא-תא (קשור לאקטין)</td></tr>
+      <tr><td><b>צומת פער</b> (gap)</td><td>תקשורת — מעבר מולקולות קטנות בין ציטופלזמות</td></tr>
+    </table>
+    <p><b>קולטני היצמדות:</b> <b>אינטגרינים</b> (הטרודימרים תלויי קטיונים) קושרים מטריקס חוץ-תאי (קולגן, פיברונקטין, למינין) ומקשרים לאקטין. <b>קדהרינים</b> מתווכים היצמדות תא-תא הומופילית תלוית <b>סידן</b>.</p>
+    <div class="chips">
+      <span class="termcard"><b>צומת הדוק</b><span>tight junction</span></span>
+      <span class="termcard"><b>אינטגרין</b><span>integrin</span></span>
+      <span class="termcard"><b>קדהרין</b><span>cadherin</span></span>
+    </div>
+  </div>
+
+  <div class="center mt-m">
+    <a class="btn btn--lg" href="tirgul.html#cell"><i class="fa-solid fa-pen-to-square"></i> לתרגול בביולוגיה של התא</a>
+    <a class="btn btn--lg btn--ghost" href="nosim.html"><i class="fa-solid fa-rotate-left"></i> לכל הנושאים</a>
+  </div>
+
+</div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="foot__inner">
+    <span>מבחן הידע לרפואה · מאגר הכנה</span>
+    <span><a href="mekorot.html">מקורות וספרי לימוד</a></span>
+  </div>
+</footer>
+</body>
+</html>

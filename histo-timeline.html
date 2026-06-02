@@ -18,7 +18,8 @@
     --radius-sm:8px; --radius-md:18px; --radius-pill:999px;
     --blob:60% 40% 55% 45% / 50% 60% 40% 50%; /* הצורה החוזרת (בלוב מרובע-רך) */
     --font:'Assistant','Heebo',system-ui,-apple-system,'Segoe UI',sans-serif;
-    --c-cosmos:var(--purple); --c-civ:var(--teal); --c-rel:var(--blue); --c-war:var(--pink); --c-sci:var(--mint);
+    /* חמישה גוונים מובחנים לקטגוריות — מקור אמת יחיד לצ'יפים, לנקודות ולקשת */
+    --c-cosmos:#8b7ff0; --c-civ:#22b3c2; --c-rel:#4f7cf0; --c-war:#f0607d; --c-sci:#33bf83;
     --c-inv:#f6a821; --c-jew:#6a5ae0;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -41,7 +42,7 @@
   /* ציר */
   #stage{position:relative;flex:1;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;-webkit-overflow-scrolling:touch;}
   #content{position:relative;width:100%;}
-  #axis{position:absolute;top:0;bottom:0;right:56px;width:3px;border-radius:3px;background:linear-gradient(var(--teal-light),var(--teal),var(--teal-light));}
+  #axis{position:absolute;top:0;bottom:0;right:56px;width:3px;border-radius:3px;background:linear-gradient(#e7e9f1,#d2d6e2,#e7e9f1);}
   .ev{position:absolute;right:0;left:0;height:0;transition:opacity .2s ease;will-change:opacity;}
   .ev .dot{position:absolute;right:57px;top:0;border-radius:50%;background:var(--c);border:2px solid #fff;transform:translate(50%,-50%);z-index:2;box-shadow:var(--shadow-sm);transition:width .2s,height .2s,background .2s,border-width .2s;}
   .ev .card{position:absolute;right:80px;left:14px;top:0;transform:translateY(-50%);background:#fff;border:1.5px solid var(--border);border-right:6px solid var(--c);border-radius:var(--radius-md);padding:9px 14px;text-align:right;box-shadow:var(--shadow-sm);cursor:pointer;transition:transform .12s,box-shadow .12s;}
