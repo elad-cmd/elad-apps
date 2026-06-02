@@ -19,6 +19,7 @@
     --blob:60% 40% 55% 45% / 50% 60% 40% 50%; /* הצורה החוזרת (בלוב מרובע-רך) */
     --font:'Assistant','Heebo',system-ui,-apple-system,'Segoe UI',sans-serif;
     --c-cosmos:var(--purple); --c-civ:var(--teal); --c-rel:var(--blue); --c-war:var(--pink); --c-sci:var(--mint);
+    --c-inv:#f6a821; --c-jew:#6a5ae0;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;height:100%;background:var(--bg-soft);color:var(--text);font-family:var(--font);overflow:hidden;-webkit-font-smoothing:antialiased;}
@@ -175,7 +176,7 @@ const FILTERS=[
 ];
 let activeFilter=FILTERS[0];
 const filtersEl=document.getElementById('filters');
-const FCOL={inv:'var(--c-sci)',rel:'var(--c-rel)',cosmos:'var(--c-cosmos)',civ:'var(--c-civ)',war:'var(--c-war)',sci:'var(--c-sci)'};
+const FCOL={inv:'var(--c-inv)',jew:'var(--c-jew)',rel:'var(--c-rel)',cosmos:'var(--c-cosmos)',civ:'var(--c-civ)',war:'var(--c-war)',sci:'var(--c-sci)'};
 FILTERS.forEach(f=>{
   const b=document.createElement('button');
   b.className='chip'+(f.id==='all'?' active':'');
@@ -186,7 +187,11 @@ FILTERS.forEach(f=>{
 
 function render(){
   content.style.height=((DATA.length-1)*UNIT*zoom+PAD*2)+'px';
-  nodes.forEach(n=>{ n.y=PAD+n.idx*UNIT*zoom; n.el.style.top=n.y+'px'; n.el.classList.remove('hidden','mini'); });
+  // צבע סינון חוצה-קטגוריות (ממציאים / תולדות עם ישראל) נצבע על האירועים עצמם
+  const fcol = FCOL[activeFilter.id];
+  const override = (activeFilter.id==='inv'||activeFilter.id==='jew') ? fcol : null;
+  nodes.forEach(n=>{ n.y=PAD+n.idx*UNIT*zoom; n.el.style.top=n.y+'px'; n.el.classList.remove('hidden','mini');
+    if(override) n.el.style.setProperty('--c', override); else n.el.style.removeProperty('--c'); });
   const placed=[]; const placedSet=new Set(); let shownCount=0;
   const ends = activeFilter.id==='all' ? [nodes[0], nodes[nodes.length-1]] : [];
   ends.forEach(n=>{ placed.push({y:n.y,half:n.card.offsetHeight/2+GAP/2}); placedSet.add(n); shownCount++; });
