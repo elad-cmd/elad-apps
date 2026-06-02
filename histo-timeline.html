@@ -174,7 +174,7 @@ const FILTERS=[
 ];
 let activeFilter=FILTERS[0];
 const filtersEl=document.getElementById('filters');
-const FCOL={inv:'var(--c-sci)',jew:'var(--yellow)',rel:'var(--c-rel)',cosmos:'var(--c-cosmos)',civ:'var(--c-civ)',war:'var(--c-war)',sci:'var(--c-sci)'};
+const FCOL={inv:'var(--c-sci)',rel:'var(--c-rel)',cosmos:'var(--c-cosmos)',civ:'var(--c-civ)',war:'var(--c-war)',sci:'var(--c-sci)'};
 FILTERS.forEach(f=>{
   const b=document.createElement('button');
   b.className='chip'+(f.id==='all'?' active':'');
