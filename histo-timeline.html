@@ -176,12 +176,12 @@ const FILTERS=[
 ];
 let activeFilter=FILTERS[0];
 const filtersEl=document.getElementById('filters');
-const FHEX={inv:'#f6a821',jew:'#6a5ae0',rel:'#96d7e8',cosmos:'#b9bafb',civ:'#80c6cf',war:'#f7a5b8',sci:'#a4e9d6'};
-const FCOL=FHEX;
+// מקור אמת אחד לכל הצבעים: משתני --c-* ב-:root. הצ'יפים, הנקודות והקשת קוראים מאותם משתנים.
+const COLORED_FILTERS=new Set(['inv','jew','rel','cosmos','civ','war','sci']);
 FILTERS.forEach(f=>{
   const b=document.createElement('button');
   b.className='chip'+(f.id==='all'?' active':'');
-  b.innerHTML=(FCOL[f.id]?'<span class="cdot" style="background:'+FCOL[f.id]+'"></span>':'')+f.label;
+  b.innerHTML=(COLORED_FILTERS.has(f.id)?'<span class="cdot" style="background:var(--c-'+f.id+')"></span>':'')+f.label;
   b.onclick=()=>{ activeFilter=f; [...filtersEl.children].forEach(c=>c.classList.remove('active')); b.classList.add('active'); render(); };
   filtersEl.appendChild(b);
 });
