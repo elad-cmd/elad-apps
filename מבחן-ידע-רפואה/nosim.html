@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>נושאים וסיכומים — לפי ארבעת המקצועות</title>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="psycho-components.css">
+<link rel="stylesheet" href="med.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="index.html">
+      <span class="brand__logo">יד</span>
+      <span class="brand__name">מבחן הידע לרפואה<small>תכנית 4 שנתית · מאגר הכנה</small></span>
+    </a>
+    <nav class="nav">
+      <a href="index.html">בית</a>
+      <a href="matzeget.html">על המבחן</a>
+      <a href="nosim.html" class="active">נושאים וסיכומים</a>
+      <a href="tirgul.html">תרגול</a>
+      <a href="diagrams.html">חזותיים</a>
+      <a href="mekorot.html">מקורות</a>
+    </nav>
+  </div>
+</header>
+
+<div class="pagehead">
+  <h1>נושאים וסיכומים</h1>
+  <p>תמצית מסודרת של ארבעת המקצועות. בחרו מקצוע ולחצו על הנושאים.</p>
+</div>
+
+<div class="tabbar" id="tabs">
+  <div class="tabbar__inner">
+    <button class="tab active" data-tab="biochem"><i class="fa-solid fa-flask"></i> ביוכימיה</button>
+    <button class="tab" data-tab="mol"><i class="fa-solid fa-dna"></i> מולקולרית</button>
+    <button class="tab" data-tab="cell"><i class="fa-solid fa-circle-nodes"></i> ביולוגיה של התא</button>
+    <button class="tab" data-tab="physio"><i class="fa-solid fa-heart-pulse"></i> פיזיולוגיה</button>
+  </div>
+</div>
+
+<main>
+<section class="section" style="padding-top:22px">
+<div class="section__inner">
+
+<!-- ===================== ביוכימיה ===================== -->
+<div class="tabpane active" id="biochem">
+
+  <div class="panel">
+    <h2>חלבונים וחומצות אמינו</h2>
+    <p>חלבונים בנויים מ-20 חומצות אמינו הקשורות ביניהן בקשר <b>פפטידי</b> (קשר אמיד בין קבוצת הקרבוקסיל של אחת לקבוצת האמינו של הבאה). לכל חומצת אמינו שלד זהה ושרשרת צד (R) ייחודית שקובעת את תכונותיה — קוטבית, טעונה, או הידרופובית.</p>
+    <h3>ארבע רמות מבנה</h3>
+    <ul>
+      <li><b>מבנה ראשוני</b> — רצף חומצות האמינו.</li>
+      <li><b>מבנה שניוני</b> — סלילי <b>אלפא</b> ויריעות <b>בטא</b>, מיוצבים בקשרי מימן בין אטומי השלד.</li>
+      <li><b>מבנה שלישוני</b> — הקיפול התלת-ממדי הכולל, מיוצב באינטראקציות בין שרשראות הצד: ליבה הידרופובית, גשרי דו-גופרית, קשרי מימן וקשרים יוניים.</li>
+      <li><b>מבנה רביעוני</b> — צירוף של כמה תת-יחידות חלבון לקומפלקס אחד (למשל המוגלובין).</li>
+    </ul>
+    <div class="chips">
+      <span class="termcard"><b>קשר פפטידי</b><span>peptide bond</span></span>
+      <span class="termcard"><b>סליל אלפא</b><span>α-helix</span></span>
+      <span class="termcard"><b>יריעת בטא</b><span>β-sheet</span></span>
+      <span class="termcard"><b>דנטורציה</b><span>denaturation</span></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>אנזימים וקינטיקה</h2>
+    <p>אנזימים הם זרזים ביולוגיים שמורידים את <b>אנרגיית השִּׁפעול</b> של תגובה ומאיצים אותה, בלי להיצרך ובלי לשנות את שיווי המשקל. הקינטיקה הבסיסית מתוארת במשוואת <b>מיכאליס-מנטן</b>: <b>Vmax</b> הוא הקצב המרבי, ו-<b>Km</b> הוא ריכוז הסובסטרט שבו הקצב הוא חצי מ-Vmax (מדד הפוך לזיקה).</p>
+    <h3>עיכוב וויסות</h3>
+    <ul>
+      <li><b>עיכוב תחרותי</b> — המעכב נקשר לאתר הפעיל; מעלה את Km הנראה אך Vmax נשמר (אפשר להתגבר בריכוז סובסטרט גבוה).</li>
+      <li><b>עיכוב לא-תחרותי</b> — המעכב נקשר לאתר אחר; מוריד את Vmax.</li>
+      <li><b>ויסות אלוסטרי</b> — מולקולה נקשרת לאתר נפרד ומשנה את צורת האנזים ופעילותו; בסיס לבקרת משוב במסלולים מטבוליים.</li>
+    </ul>
+    <div class="chips">
+      <span class="termcard"><b>אנרגיית שפעול</b><span>activation energy</span></span>
+      <span class="termcard"><b>סובסטרט</b><span>substrate</span></span>
+      <span class="termcard"><b>קו-פקטור</b><span>cofactor</span></span>
+      <span class="termcard"><b>ויסות אלוסטרי</b><span>allosteric</span></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>מטבוליזם של פחמימות</h2>
+    <h3>גליקוליזה</h3>
+    <p>פירוק גלוקוז ל-2 מולקולות <b>פירובט</b>, מתרחש בציטוזול. תפוקה נטו לכל גלוקוז: <b>2 ATP</b> ו-<b>2 NADH</b>. האנזים המווסת המרכזי הוא <b>פוספופרוקטוקינאז-1</b> (PFK-1). בתנאים אווירניים הפירובט נכנס למיטוכונדריה והופך ל<b>אצטיל-CoA</b>; בתנאים אל-אווירניים הוא הופך ל<b>לקטט</b> (כדי לחדש NAD⁺).</p>
+    <h3>מעגל קרבס</h3>
+    <p>מתרחש במטריקס המיטוכונדריאלי. לכל אצטיל-CoA המעגל מפיק <b>3 NADH</b>, <b>1 FADH₂</b>, <b>1 GTP</b> ו-<b>2 CO₂</b>. הוא ספק ה-NADH/FADH₂ העיקרי לשרשרת הנשימה.</p>
+    <h3>זרחון חמצוני</h3>
+    <p>מתרחש בקרום הפנימי של המיטוכונדריה. אלקטרונים מ-NADH ו-FADH₂ עוברים בשרשרת מעבר האלקטרונים, ומשאבת פרוטונים יוצרת מפל (גרדיאנט) שמניע את <b>ATP-סינתאז</b> — תהליך ה<b>כימיוסמוזה</b>. בקירוב: כל NADH ≈ 2.5 ATP, כל FADH₂ ≈ 1.5 ATP. החמצן הוא מקבל האלקטרונים הסופי.</p>
+    <div class="keybox"><b>תמונה כוללת:</b> מגלוקוז אחד מופקים בקירוב 30–32 ATP בנשימה אווירנית מלאה — רובם המכריע בזרחון החמצוני, לא בגליקוליזה עצמה.</div>
+    <div class="chips">
+      <span class="termcard"><b>גליקוליזה</b><span>glycolysis</span></span>
+      <span class="termcard"><b>מעגל קרבס</b><span>TCA / Krebs cycle</span></span>
+      <span class="termcard"><b>זרחון חמצוני</b><span>oxidative phosphorylation</span></span>
+      <span class="termcard"><b>גלוקונאוגנזה</b><span>gluconeogenesis</span></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>מטבוליזם של שומנים</h2>
+    <p><b>בטא-חמצון</b> של חומצות שומן מתרחש במיטוכונדריה ומפרק אותן ליחידות אצטיל-CoA תוך הפקת FADH₂ ו-NADH — מקור אנרגיה צפוף במיוחד. <b>סינתזת חומצות שומן</b>, לעומת זאת, מתרחשת בציטוזול ומשתמשת ב-NADPH. בצום ממושך הכבד מייצר <b>גופי קטון</b> כמקור אנרגיה חלופי למוח.</p>
+    <div class="chips">
+      <span class="termcard"><b>בטא-חמצון</b><span>β-oxidation</span></span>
+      <span class="termcard"><b>גופי קטון</b><span>ketone bodies</span></span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===================== מולקולרית ===================== -->
+<div class="tabpane" id="mol">
+
+  <div class="panel">
+    <h2>מבנה חומצות גרעין</h2>
+    <p>ה-DNA הוא סליל כפול אנטי-מקבילי. ההתאמה בין הבסיסים משלימה: <b>A מול T</b> (שני קשרי מימן) ו-<b>G מול C</b> (שלושה קשרי מימן). כל גדיל נקרא בכיוון <b>5′→3′</b>. ה-RNA חד-גדילי, מכיל אורציל (U) במקום תימין וסוכר ריבוז.</p>
+    <div class="chips">
+      <span class="termcard"><b>סליל כפול</b><span>double helix</span></span>
+      <span class="termcard"><b>בסיס משלים</b><span>complementary base</span></span>
+      <span class="termcard"><b>אנטי-מקבילי</b><span>antiparallel</span></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>שכפול DNA</h2>
+    <p>השכפול הוא <b>שמרני-למחצה</b> — כל מולקולת בת מכילה גדיל ישן וגדיל חדש. <b>DNA-פולימראז</b> מסנתז תמיד בכיוון 5′→3′ בלבד. לכן גדיל אחד (<b>מוביל</b>) נבנה ברציפות, והשני (<b>מפגר</b>) נבנה במקטעים קצרים — <b>מקטעי אוקזאקי</b> — שמאוחים יחד. שחקנים נוספים: <b>הליקאז</b> (פותח את הסליל), <b>פרימאז</b> (מניח פריימר RNA), ו-<b>ליגאז</b> (מאחה).</p>
+    <div class="chips">
+      <span class="termcard"><b>שמרני-למחצה</b><span>semiconservative</span></span>
+      <span class="termcard"><b>מקטעי אוקזאקי</b><span>Okazaki fragments</span></span>
+      <span class="termcard"><b>הליקאז</b><span>helicase</span></span>
+      <span class="termcard"><b>ליגאז</b><span>ligase</span></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>שעתוק ועיבוד RNA</h2>
+    <p><b>RNA-פולימראז</b> מסנתז mRNA לפי תבנית ה-DNA, החל מאזור ה<b>פרומוטר</b>. ביצורנים מורכבים (אאוקריוטים) ה-mRNA עובר עיבוד: הוספת <b>כיפה</b> בקצה 5′, <b>זנב פולי-A</b> בקצה 3′, ו<b>שחבור</b> — הסרת אינטרונים וחיבור אקסונים. שחבור חלופי מאפשר ייצור חלבונים שונים מאותו גן.</p>
+    <div class="chips">
+      <span class="termcard"><b>פרומוטר</b><span>promoter</span></span>
+      <span class="termcard"><b>שחבור</b><span>splicing</span></span>
+      <span class="termcard"><b>אקסון / אינטרון</b><span>exon / intron</span></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>תרגום (סינתזת חלבון)</h2>
+    <p>הריבוזום קורא את ה-mRNA בקודונים של שלושה בסיסים. כל <b>tRNA</b> נושא חומצת אמינו ומזהה קודון דרך ה<b>אנטי-קודון</b>. קודון הפתיחה הוא <b>AUG</b> (מתיונין), ויש שלושה קודוני עצירה. הקוד הגנטי <b>מנוון</b> — כמה קודונים מקודדים לאותה חומצת אמינו.</p>
+    <div class="chips">
+      <span class="termcard"><b>קודון</b><span>codon</span></span>
+      <span class="termcard"><b>אנטי-קודון</b><span>anticodon</span></span>
+      <span class="termcard"><b>קוד מנוון</b><span>degenerate code</span></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>ויסות ביטוי גנים</h2>
+    <p>ביצורנים פשוטים (פרוקריוטים) הוויסות נעשה ב<b>אופרונים</b> — למשל <b>אופרון הלקטוז</b>. ביצורנים מורכבים הוויסות מורכב יותר וכולל <b>גורמי שעתוק</b>, אזורי <b>מגביר</b>, ובקרה <b>אפיגנטית</b> (מתילציה של DNA ושינויי היסטונים) שאינה משנה את רצף הבסיסים.</p>
+    <div class="chips">
+      <span class="termcard"><b>אופרון</b><span>operon</span></span>
+      <span class="termcard"><b>גורם שעתוק</b><span>transcription factor</span></span>
+      <span class="termcard"><b>אפיגנטיקה</b><span>epigenetics</span></span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===================== תא ===================== -->
+<div class="tabpane" id="cell">
+
+  <div class="panel">
+    <h2>קרום התא ומעבר חומרים</h2>
+    <p>הקרום בנוי <b>דו-שכבת פוספוליפידים</b> במודל ה<b>פסיפס הנוזלי</b>: שכבה דינמית עם חלבונים שטים בה. הקרום <b>חדיר באופן בורר</b>. מעבר חומרים:</p>
+    <ul>
+      <li><b>מעבר סביל</b> — לפי מפל ריכוזים, בלי אנרגיה: דיפוזיה פשוטה ודיפוזיה מותאמת (דרך חלבוני תעלה ונשא).</li>
+      <li><b>מעבר פעיל</b> — נגד המפל, על חשבון ATP: למשל משאבת <b>נתרן-אשלגן</b> (Na⁺/K⁺-ATPase).</li>
+    </ul>
+    <div class="chips">
+      <span class="termcard"><b>פסיפס נוזלי</b><span>fluid mosaic</span></span>
+      <span class="termcard"><b>מעבר פעיל</b><span>active transport</span></span>
+      <span class="termcard"><b>משאבת נתרן-אשלגן</b><span>Na⁺/K⁺-ATPase</span></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>אברונים</h2>
+    <table class="t">
+      <tr><th>אברון</th><th>תפקיד</th></tr>
+      <tr><td><b>גרעין</b></td><td>מכיל את ה-DNA ומבקר ביטוי גנים.</td></tr>
+      <tr><td><b>רשת תוך-פלזמית</b><br><span class="muted" style="direction:ltr">ER</span></td><td>מחוספסת (עם ריבוזומים) — סינתזת חלבונים; חלקה — סינתזת שומנים וניקוי רעלים.</td></tr>
+      <tr><td><b>גולג'י</b></td><td>מיון, אריזה ושינוי של חלבונים לאחר הסינתזה.</td></tr>
+      <tr><td><b>מיטוכונדריה</b></td><td>"תחנת הכוח" — נשימה תאית והפקת ATP. בעלת קרום כפול ו-DNA משלה.</td></tr>
+      <tr><td><b>ליזוזום</b></td><td>פירוק ועיכול תוך-תאי באמצעות אנזימים חומציים.</td></tr>
+    </table>
+  </div>
+
+  <div class="panel">
+    <h2>שלד התא</h2>
+    <p>רשת חלבונים שמעניקה צורה, תמיכה ותנועה: <b>מיקרו-חוטים</b> (אקטין), <b>חוטי ביניים</b>, ו<b>מיקרו-צינוריות</b> (טובולין). חלבוני מנוע (כמו קינזין ודינאין) נעים לאורכם וגוררים מטענים ואברונים.</p>
+    <div class="chips">
+      <span class="termcard"><b>מיקרו-צינוריות</b><span>microtubules</span></span>
+      <span class="termcard"><b>אקטין</b><span>actin</span></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>מחזור התא</h2>
+    <p>השלבים: <b>G1</b> (גדילה), <b>S</b> (שכפול DNA), <b>G2</b> (הכנה), ו-<b>M</b> (חלוקה — מיטוזה). המעבר בין השלבים מבוקר ב<b>נקודות בקרה</b> ומונע על ידי <b>ציקלינים</b> ואנזימי <b>CDK</b>. תא פגום עשוי לעבור <b>מוות תאי מתוכנת</b> (אפופטוזיס). שיבוש בבקרה הזו עומד בבסיס הסרטן.</p>
+    <div class="chips">
+      <span class="termcard"><b>נקודת בקרה</b><span>checkpoint</span></span>
+      <span class="termcard"><b>ציקלין / CDK</b><span>cyclin / CDK</span></span>
+      <span class="termcard"><b>אפופטוזיס</b><span>apoptosis</span></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>העברת אותות</h2>
+    <p>תאים מתקשרים דרך קולטנים: <b>קולטנים מצומדי-G</b> (GPCR) ו<b>קולטנים בעלי פעילות קינאז</b> (RTK). הקליטה מפעילה <b>שליחים שניוניים</b> (כמו cAMP ויוני סידן) שמעבירים את האות פנימה במפל תגובות ומשנים את התנהגות התא.</p>
+    <div class="chips">
+      <span class="termcard"><b>שליח שניוני</b><span>second messenger</span></span>
+      <span class="termcard"><b>קולטן מצומד-G</b><span>GPCR</span></span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===================== פיזיולוגיה ===================== -->
+<div class="tabpane" id="physio">
+
+  <div class="panel">
+    <h2>עצב ושריר</h2>
+    <p><b>פוטנציאל המנוחה</b> של תא העצב נשמר בעיקר בזכות משאבת נתרן-אשלגן והחדירות לאשלגן. ב<b>פוטנציאל הפעולה</b>: כניסת נתרן גורמת ל<b>דה-פולריזציה</b>, ויציאת אשלגן מחזירה את המתח (<b>רה-פולריזציה</b>). האות עובר ב<b>סינפסה</b> דרך שחרור מוליכים עצביים.</p>
+    <p><b>כיווץ שריר</b> מתואר במודל ה<b>חוטים המחליקים</b>: גשרי מיוזין נקשרים לאקטין ומושכים. יוני <b>סידן</b> הם הטריגר, ובמפגש העצב-שריר המוליך הוא <b>אצטיל-כולין</b>.</p>
+    <div class="chips">
+      <span class="termcard"><b>פוטנציאל פעולה</b><span>action potential</span></span>
+      <span class="termcard"><b>דה-פולריזציה</b><span>depolarization</span></span>
+      <span class="termcard"><b>חוטים מחליקים</b><span>sliding filament</span></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>מערכת הלב וכלי הדם</h2>
+    <p>הלב פועם בזכות פעילות חשמלית עצמית שמתחילה ב<b>צומת הסינוס</b> (קוצב הלב הטבעי) ומתפשטת דרך מערכת ההולכה. <b>תפוקת הלב</b> = קצב הלב × נפח הפעימה. לחץ הדם נקבע מהתפוקה ומההתנגדות ההיקפית של כלי הדם.</p>
+    <div class="keybox"><b>נוסחה לזכור:</b> תפוקת לב (CO) = קצב לב (HR) × נפח פעימה (SV).</div>
+    <div class="chips">
+      <span class="termcard"><b>צומת הסינוס</b><span>SA node</span></span>
+      <span class="termcard"><b>תפוקת לב</b><span>cardiac output</span></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>מערכת הנשימה</h2>
+    <p>חילופי הגזים מתרחשים בנאדיות הריאה לפי מפלי לחץ חלקי: חמצן עובר לדם ופחמן דו-חמצני יוצא. רוב החמצן מובל קשור ל<b>המוגלובין</b>, ורוב ה-CO₂ מובל כביקרבונט. עקומת הסיפוח של ההמוגלובין היא בצורת S ומושפעת מ-pH, טמפרטורה ו-CO₂ (אפקט בוהר).</p>
+    <div class="chips">
+      <span class="termcard"><b>המוגלובין</b><span>hemoglobin</span></span>
+      <span class="termcard"><b>אפקט בוהר</b><span>Bohr effect</span></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>הכליה ומאזן הנוזלים</h2>
+    <p>יחידת התפקוד היא ה<b>נפרון</b>. השתן נוצר בשלושה שלבים: <b>סינון</b> בגלומרולוס, <b>ספיגה חוזרת</b> של חומרים חיוניים, ו<b>הפרשה</b>. הכליה מווסתת מאזן נוזלים ומלחים ולחץ דם, בין היתר דרך מערכת <b>רנין-אנגיוטנסין-אלדוסטרון</b> והורמון <b>ADH</b> (ואזופרסין) שמגביר ספיגת מים.</p>
+    <div class="chips">
+      <span class="termcard"><b>נפרון</b><span>nephron</span></span>
+      <span class="termcard"><b>סינון גלומרולרי</b><span>glomerular filtration</span></span>
+      <span class="termcard"><b>רנין-אנגיוטנסין</b><span>RAAS</span></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>המערכת האנדוקרינית</h2>
+    <p>הורמונים הם שליחים כימיים בדם המווסתים תהליכים בגוף, לרוב דרך לולאות <b>משוב שלילי</b>. ציר <b>היפותלמוס-יותרת המוח</b> מנצח על בלוטות רבות. דוגמה מרכזית: <b>אינסולין</b> מוריד סוכר בדם ו<b>גלוקגון</b> מעלה אותו — זוג מנוגד ששומר על איזון.</p>
+    <div class="chips">
+      <span class="termcard"><b>משוב שלילי</b><span>negative feedback</span></span>
+      <span class="termcard"><b>אינסולין / גלוקגון</b><span>insulin / glucagon</span></span>
+    </div>
+  </div>
+
+</div>
+
+<div class="center mt-m">
+  <a class="btn btn--lg" href="tirgul.html"><i class="fa-solid fa-pen-to-square"></i> עכשיו לתרגול</a>
+</div>
+
+</div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="foot__inner">
+    <span>מבחן הידע לרפואה · מאגר הכנה</span>
+    <span><a href="mekorot.html">מקורות וספרי לימוד</a></span>
+  </div>
+</footer>
+
+<script>
+const tabs=document.querySelectorAll('#tabs .tab');
+const panes=document.querySelectorAll('.tabpane');
+function show(id){
+  tabs.forEach(t=>t.classList.toggle('active',t.dataset.tab===id));
+  panes.forEach(p=>p.classList.toggle('active',p.id===id));
+}
+tabs.forEach(t=>t.addEventListener('click',()=>{show(t.dataset.tab);history.replaceState(null,'','#'+t.dataset.tab);}));
+if(location.hash){const id=location.hash.slice(1);if(document.getElementById(id))show(id);}
+</script>
+</body>
+</html>

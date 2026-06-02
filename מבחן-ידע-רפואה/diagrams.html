@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>חזותיים — מסלולים ותרשימים</title>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="psycho-components.css">
+<link rel="stylesheet" href="med.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="index.html">
+      <span class="brand__logo">יד</span>
+      <span class="brand__name">מבחן הידע לרפואה<small>תכנית 4 שנתית · מאגר הכנה</small></span>
+    </a>
+    <nav class="nav">
+      <a href="index.html">בית</a>
+      <a href="matzeget.html">על המבחן</a>
+      <a href="nosim.html">נושאים וסיכומים</a>
+      <a href="tirgul.html">תרגול</a>
+      <a href="diagrams.html" class="active">חזותיים</a>
+      <a href="mekorot.html">מקורות</a>
+    </nav>
+  </div>
+</header>
+
+<div class="pagehead">
+  <h1>חזותיים ודיאגרמות</h1>
+  <p>המסלולים והתהליכים המרכזיים — בקו אחד ברור.</p>
+</div>
+
+<main>
+<section class="section" style="padding-top:18px">
+<div class="section__inner">
+
+  <div class="panel">
+    <h2><i class="fa-solid fa-flask" style="color:var(--subj-biochem)"></i> נשימה תאית — מגלוקוז ל-ATP</h2>
+    <p class="muted">המסלול האנרגטי המרכזי, מהציטוזול אל המיטוכונדריה.</p>
+    <div class="flow">
+      <div class="flow__step"><b>גלוקוז</b><span>בציטוזול</span></div>
+      <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+      <div class="flow__step"><b>גליקוליזה</b><span>2 פירובט · 2 ATP · 2 NADH</span></div>
+      <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+      <div class="flow__step"><b>אצטיל-CoA</b><span>כניסה למיטוכונדריה</span></div>
+      <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+      <div class="flow__step"><b>מעגל קרבס</b><span>3 NADH · 1 FADH₂ · 1 GTP</span></div>
+      <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+      <div class="flow__step"><b>זרחון חמצוני</b><span>רוב ה-ATP · O₂ סופי</span></div>
+    </div>
+    <div class="keybox">סך הכול בקירוב <b>30–32 ATP</b> לכל גלוקוז — רובם המכריע בשלב האחרון (הזרחון החמצוני).</div>
+  </div>
+
+  <div class="panel">
+    <h2><i class="fa-solid fa-dna" style="color:var(--subj-mol)"></i> הדוגמה המרכזית — מ-DNA לחלבון</h2>
+    <p class="muted">זרימת המידע הגנטי בתא.</p>
+    <div class="flow">
+      <div class="flow__step"><b>DNA</b><span>שכפול → DNA</span></div>
+      <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+      <div class="flow__step"><b>שעתוק</b><span>RNA-פולימראז</span></div>
+      <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+      <div class="flow__step"><b>mRNA</b><span>עיבוד: כיפה · שחבור · פולי-A</span></div>
+      <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+      <div class="flow__step"><b>תרגום</b><span>ריבוזום · tRNA</span></div>
+      <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+      <div class="flow__step"><b>חלבון</b><span>שרשרת חומצות אמינו</span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2><i class="fa-solid fa-circle-nodes" style="color:var(--subj-cell)"></i> מחזור התא</h2>
+    <p class="muted">ארבעת השלבים, עם נקודות בקרה ביניהם.</p>
+    <div class="flow">
+      <div class="flow__step"><b>G1</b><span>גדילה</span></div>
+      <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+      <div class="flow__step"><b>S</b><span>שכפול DNA</span></div>
+      <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+      <div class="flow__step"><b>G2</b><span>הכנה לחלוקה</span></div>
+      <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+      <div class="flow__step"><b>M</b><span>מיטוזה — חלוקה</span></div>
+    </div>
+    <div class="keybox">המעבר בין שלבים מבוקר ב<b>נקודות בקרה</b> ומונע על ידי <b>ציקלינים ו-CDK</b>. שיבוש כאן עומד בבסיס הסרטן.</div>
+  </div>
+
+  <div class="panel">
+    <h2><i class="fa-solid fa-heart-pulse" style="color:var(--subj-physio)"></i> פוטנציאל פעולה בתא עצב</h2>
+    <p class="muted">השלבים לפי תנועת היונים.</p>
+    <div class="flow">
+      <div class="flow__step"><b>מנוחה</b><span>≈ −70 mV</span></div>
+      <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+      <div class="flow__step"><b>דה-פולריזציה</b><span>כניסת Na⁺</span></div>
+      <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+      <div class="flow__step"><b>שיא</b><span>היפוך מתח</span></div>
+      <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+      <div class="flow__step"><b>רה-פולריזציה</b><span>יציאת K⁺</span></div>
+      <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+      <div class="flow__step"><b>חזרה למנוחה</b><span>משאבת Na⁺/K⁺</span></div>
+    </div>
+  </div>
+
+  <div class="center mt-m">
+    <a class="btn btn--lg" href="tirgul.html"><i class="fa-solid fa-pen-to-square"></i> לתרגול</a>
+  </div>
+
+</div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="foot__inner">
+    <span>מבחן הידע לרפואה · מאגר הכנה</span>
+    <span><a href="mekorot.html">מקורות וספרי לימוד</a></span>
+  </div>
+</footer>
+</body>
+</html>

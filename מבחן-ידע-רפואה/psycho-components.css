@@ -1,0 +1,1155 @@
+/* =============================================================
+   ספריית קומפוננטות פסיכו - גרסה לשלומי
+   ============================================================= */
+/*
+   קובץ זה מכיל 23 קומפוננטות UI מסוננטות מאתר פסיכו הקיים,
+   מנוקות ומוכנות לשימוש. דרור לשלומי לבנייה מחדש.
+
+   מבנה:
+   1. Tokens (משתני CSS)
+   2. Reset קל
+   3. קומפוננטות
+
+   קונבנציה: BEM פשוט - .block, .block--modifier, .block__element
+
+   שימוש:
+   - לכלול בראש האתר: <link rel="stylesheet" href="psycho-components.css">
+   - לדרוש את הפונטים Assistant (מ-Google Fonts) ו-buDrakonit (מקומי, מ-buDrakonit2.1-Web)
+   - לדרוש Font Awesome 6 לאייקונים (אופציונלי)
+
+   תאריך: 26.5.2026
+   ============================================================= */
+
+
+/* =============================================================
+   1. TOKENS
+   ============================================================= */
+
+:root {
+    /* פלטה - צבעי מותג */
+    --color-teal:        #80c6cf;
+    --color-teal-dark:   #5fa3ac;
+    --color-teal-bg:     #d4ecf0;
+
+    --color-mint:        #a4e9d6;
+    --color-mint-dark:   #80c6d0;
+    --color-mint-soft:   #d6f6e8;
+
+    --color-yellow:      #fae45d;
+    --color-yellow-light:#fff5b0;
+
+    --color-blue:        #a6deed;
+    --color-blue-light:  #d6effa;
+
+    --color-purple:      #b9bafb;
+    --color-purple-soft: #e3e3fd;
+
+    --color-pink:        #f7a5b8;
+
+    /* טקסט */
+    --color-ink:         #151515;
+    --color-ink-soft:    #383636;
+    --color-muted:       #686868;
+
+    /* רקעים ומשטחים */
+    --color-bg:          #ffffff;
+    --color-bg-soft:     #f6f7fb;
+    --color-line:        #e2e4e9;
+    --color-chip-bg:     #f1f2f6;
+    --color-chip-hover:  #e6e8ef;
+
+    /* סמנטיים */
+    --color-success:     #4a9d68;
+    --color-success-bg:  #e6f5ec;
+    --color-error:       #d64545;
+    --color-error-bg:    #fbe9e9;
+    --color-warning:     #ba7517;
+    --color-warning-bg:  #fff5b0;
+    --color-info:        #5fa3ac;
+    --color-info-bg:     #d4ecf0;
+
+    /* רדיוסים */
+    --radius-sm:    8px;
+    --radius-md:    18px;  /* ברירת מחדל לכרטיסים, חלקים */
+    --radius-lg:    28px;  /* כרטיסים גדולים */
+    --radius-xl:    70px;  /* פינות סקציות */
+    --radius-pill:  999px; /* כפתורים, גלולות */
+
+    /* צללים */
+    --shadow-sm:   0 3px 10px rgba(0,0,0,0.04);
+    --shadow-md:   0 6px 24px rgba(0,0,0,0.06);
+    --shadow-lg:   0 20px 60px rgba(0,0,0,0.10);
+
+    /* גופנים */
+    --font-sans:    'Assistant', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-display: 'buDrakonit', 'Assistant', system-ui, sans-serif;
+
+    /* פריסה */
+    --container:   1240px;
+    --section-px:  16px;
+
+    /* אנימציה */
+    --transition-fast: 0.15s ease;
+    --transition:      0.25s ease;
+}
+
+@media (min-width: 1200px) {
+    :root { --section-px: 32px; }
+}
+
+
+/* =============================================================
+   2. RESET קל
+   ============================================================= */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--color-ink);
+    background: var(--color-bg);
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    margin: 0 0 0.5em;
+    line-height: 1.1;
+    font-weight: 700;
+}
+
+a { color: inherit; text-decoration: none; }
+img, video, svg { max-width: 100%; height: auto; display: block; }
+button { font: inherit; cursor: pointer; }
+
+
+/* =============================================================
+   3. COMPONENTS
+   ============================================================= */
+
+
+/* -------------------------------------------------------------
+   3.1 Button
+   ------------------------------------------------------------- */
+/*
+   כפתור פעולה בצורת גלולה. ברירת מחדל: צהוב.
+   Modifiers:
+   - .btn--primary | .btn--yellow | .btn--dark | .btn--mint | .btn--teal | .btn--purple | .btn--ghost
+   - .btn--sm | .btn--lg
+   - .btn--bordered (border שחור)
+   - .btn--full (רוחב מלא)
+   - .btn--icon-trailing (אייקון בסוף במקום בהתחלה)
+   States: :hover, :disabled, .btn--loading, .btn--pulse, .btn--in-cart
+*/
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 22px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--color-ink);
+    background: var(--color-yellow);
+    border: 0;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: transform var(--transition-fast),
+                box-shadow var(--transition-fast),
+                background var(--transition-fast);
+    text-decoration: none;
+    white-space: nowrap;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.btn:active { transform: translateY(0); }
+.btn:disabled,
+.btn[disabled] { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn--primary,
+.btn--teal     { background: var(--color-teal);   color: var(--color-ink); }
+.btn--yellow   { background: var(--color-yellow); color: var(--color-ink); }
+.btn--mint     { background: var(--color-mint);   color: var(--color-ink); }
+.btn--purple   { background: var(--color-purple); color: var(--color-ink); }
+.btn--dark     { background: var(--color-ink);    color: var(--color-yellow); }
+.btn--ghost    { background: transparent;         color: var(--color-ink); border: 1.5px solid var(--color-line); }
+.btn--bordered { border: 2px solid var(--color-ink); }
+
+.btn--sm  { padding: 8px 16px; font-size: 0.875rem; }
+.btn--lg  { padding: 16px 32px; font-size: 1.125rem; }
+.btn--full{ width: 100%; }
+
+.btn--icon-trailing { flex-direction: row-reverse; }
+
+.btn--loading {
+    pointer-events: none;
+    color: transparent;
+    position: relative;
+}
+.btn--loading::after {
+    content: '';
+    position: absolute;
+    width: 18px; height: 18px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: btn-spin 0.7s linear infinite;
+    color: var(--color-ink);
+}
+@keyframes btn-spin { to { transform: rotate(360deg); } }
+
+.btn--pulse { animation: btn-pulse 1.4s ease-in-out infinite; }
+@keyframes btn-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(128,198,207,0.4); }
+    50%      { box-shadow: 0 0 0 12px rgba(128,198,207,0); }
+}
+
+.btn--in-cart { background: var(--color-mint-dark); color: var(--color-ink); }
+
+
+/* -------------------------------------------------------------
+   3.2 Pill / Tag
+   ------------------------------------------------------------- */
+/*
+   תווית קטנה בצורת גלולה לסטטוס/קטגוריה/מספור.
+   Modifiers (variants):
+   - .pill--success | .pill--warning | .pill--error | .pill--info | .pill--accent | .pill--dashed
+   - .pill--xs | .pill--sm | .pill--md
+*/
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    background: var(--color-chip-bg);
+    border-radius: var(--radius-pill);
+    border: 1.5px solid transparent;
+    line-height: 1.2;
+}
+.pill--success { background: var(--color-success-bg); color: var(--color-success); }
+.pill--warning { background: var(--color-warning-bg); color: var(--color-warning); }
+.pill--error   { background: var(--color-error-bg);   color: var(--color-error); }
+.pill--info    { background: var(--color-info-bg);    color: var(--color-info); }
+.pill--accent  { background: var(--color-yellow);     color: var(--color-ink); }
+.pill--dashed  { background: transparent; border-style: dashed; border-color: var(--color-line); color: var(--color-muted); }
+
+.pill--xs { padding: 2px 8px;  font-size: 0.6875rem; }
+.pill--sm { padding: 4px 10px; font-size: 0.75rem; }
+.pill--md { padding: 6px 14px; font-size: 0.875rem; }
+
+
+/* -------------------------------------------------------------
+   3.3 Crumbs (Breadcrumbs)
+   ------------------------------------------------------------- */
+/*
+   שורת ניווט עם קישורים מופרדים בחץ. הפריט האחרון מודגש.
+*/
+.crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: var(--color-muted);
+    padding: 12px 0;
+    list-style: none;
+    margin: 0;
+}
+.crumbs__item { display: inline-flex; align-items: center; gap: 8px; }
+.crumbs__item:not(:last-child)::after {
+    content: '›';
+    color: var(--color-muted);
+    font-size: 1rem;
+}
+.crumbs__link {
+    color: var(--color-muted);
+    transition: color var(--transition-fast);
+}
+.crumbs__link:hover { color: var(--color-teal); }
+.crumbs__current { color: var(--color-ink); font-weight: 700; }
+
+
+/* -------------------------------------------------------------
+   3.4 FormField
+   ------------------------------------------------------------- */
+/*
+   זוג label+input אנכי עם hint וסימן חובה.
+   - .form-field__required מציג כוכבית
+   - .form-field--readonly: שדה לקריאה בלבד
+   - .form-field--error: מצב שגיאה
+*/
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+.form-field__label {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--color-ink-soft);
+}
+.form-field__required { color: var(--color-error); margin-inline-start: 4px; }
+.form-field__input {
+    height: 48px;
+    padding: 0 16px;
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--color-ink);
+    background: var(--color-bg);
+    border: 1.5px solid var(--color-line);
+    border-radius: var(--radius-sm);
+    transition: border-color var(--transition-fast);
+}
+.form-field__input:focus {
+    outline: none;
+    border-color: var(--color-teal);
+    box-shadow: 0 0 0 3px var(--color-teal-bg);
+}
+.form-field__hint { font-size: 0.8125rem; color: var(--color-muted); }
+.form-field__error { font-size: 0.8125rem; color: var(--color-error); }
+
+.form-field--error .form-field__input { border-color: var(--color-error); }
+.form-field--readonly .form-field__input {
+    background: var(--color-bg-soft);
+    border-color: transparent;
+    cursor: default;
+}
+
+textarea.form-field__input { height: auto; padding: 12px 16px; min-height: 100px; resize: vertical; }
+
+
+/* -------------------------------------------------------------
+   3.5 IconButton (כפתור עגול עם אייקון)
+   ------------------------------------------------------------- */
+/*
+   כפתור עגול 40-72px. Modifiers:
+   - .icon-btn--sm (32px) | .icon-btn--lg (56px) | .icon-btn--xl (72px)
+   - .icon-btn--outlined | .icon-btn--filled | .icon-btn--overlay (חצי שקוף)
+   - .icon-btn--pulsing
+*/
+.icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-ink);
+    cursor: pointer;
+    transition: background var(--transition-fast), transform var(--transition-fast);
+    font-size: 1.1rem;
+}
+.icon-btn:hover { background: var(--color-bg-soft); transform: scale(1.05); }
+.icon-btn--sm  { width: 32px; height: 32px; font-size: 0.95rem; }
+.icon-btn--lg  { width: 56px; height: 56px; font-size: 1.3rem; }
+.icon-btn--xl  { width: 72px; height: 72px; font-size: 1.6rem; }
+.icon-btn--outlined { border: 1.5px solid var(--color-line); }
+.icon-btn--filled   { background: var(--color-bg-soft); }
+.icon-btn--overlay  {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(4px);
+}
+.icon-btn--pulsing { animation: icon-btn-pulse 1.4s ease-in-out infinite; }
+@keyframes icon-btn-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(128,198,207,0.4); }
+    50%      { box-shadow: 0 0 0 10px rgba(128,198,207,0); }
+}
+
+
+/* -------------------------------------------------------------
+   3.6 Modal / Drawer
+   ------------------------------------------------------------- */
+/*
+   מעטפת fixed מעל overlay. וריאציות:
+   - .modal--center (ברירת מחדל) | .modal--drawer-start | .modal--drawer-end
+   - .modal--sm | .modal--md | .modal--lg
+*/
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    animation: modal-fade-in 0.2s ease-out;
+}
+@keyframes modal-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+.modal {
+    background: var(--color-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    width: 90%;
+    max-width: 480px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    animation: modal-slide-in 0.25s ease-out;
+}
+@keyframes modal-slide-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal--sm { max-width: 360px; }
+.modal--md { max-width: 480px; }
+.modal--lg { max-width: 720px; }
+
+.modal--drawer-start,
+.modal--drawer-end {
+    max-width: 380px;
+    width: 380px;
+    max-height: 100vh;
+    height: 100vh;
+    border-radius: 0;
+    margin: 0;
+}
+.modal--drawer-start { margin-inline-end: auto; border-end-end-radius: var(--radius-lg); border-start-end-radius: var(--radius-lg); }
+.modal--drawer-end   { margin-inline-start: auto; border-end-start-radius: var(--radius-lg); border-start-start-radius: var(--radius-lg); }
+
+.modal__header {
+    padding: 20px 24px 12px;
+    border-bottom: 1px solid var(--color-line);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.modal__title { font-family: var(--font-display); font-size: 1.4rem; margin: 0; flex: 1; }
+.modal__close { margin-inline-start: auto; }
+
+.modal__body {
+    padding: 20px 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+.modal__footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--color-line);
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+
+/* -------------------------------------------------------------
+   3.7 Alert
+   ------------------------------------------------------------- */
+/*
+   תיבת הודעה צבעונית. Modifiers:
+   - .alert--success | .alert--error | .alert--warning | .alert--info
+*/
+.alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: var(--radius-md);
+    border-inline-start: 4px solid var(--color-info);
+    background: var(--color-info-bg);
+    color: var(--color-ink);
+    font-size: 0.9375rem;
+}
+.alert__icon { flex: 0 0 auto; font-size: 1.2rem; }
+.alert__body { flex: 1; }
+.alert__title { font-weight: 700; margin-bottom: 4px; display: block; }
+
+.alert--success { background: var(--color-success-bg); border-inline-start-color: var(--color-success); color: var(--color-success); }
+.alert--error   { background: var(--color-error-bg);   border-inline-start-color: var(--color-error);   color: var(--color-error); }
+.alert--warning { background: var(--color-warning-bg); border-inline-start-color: var(--color-warning); color: var(--color-warning); }
+.alert--info    { background: var(--color-info-bg);    border-inline-start-color: var(--color-info);    color: var(--color-info); }
+
+
+/* -------------------------------------------------------------
+   3.8 KpiTile
+   ------------------------------------------------------------- */
+/*
+   תיבה עם תווית קטנה ומספר גדול. Modifiers:
+   - .kpi--accent-teal | .kpi--accent-mint | .kpi--accent-yellow | .kpi--accent-purple
+*/
+.kpi {
+    background: var(--color-bg);
+    padding: 20px 22px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    border-inline-end: 4px solid var(--color-teal);
+    text-align: start;
+}
+.kpi__label {
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+.kpi__value {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    line-height: 1.1;
+}
+.kpi__unit { font-size: 1rem; color: var(--color-muted); font-weight: 400; margin-inline-start: 4px; }
+.kpi__sub { font-size: 0.8125rem; color: var(--color-muted); margin-top: 4px; }
+
+.kpi--accent-teal   { border-inline-end-color: var(--color-teal); }
+.kpi--accent-mint   { border-inline-end-color: var(--color-mint); }
+.kpi--accent-yellow { border-inline-end-color: var(--color-yellow); }
+.kpi--accent-purple { border-inline-end-color: var(--color-purple); }
+
+
+/* -------------------------------------------------------------
+   3.9 ProgressBar
+   ------------------------------------------------------------- */
+/*
+   אינדיקטור התקדמות אופקי.
+   .progress--stepped: שלבים בדידים | .progress--zoned: אזורים סמנטיים
+   .progress--warn | .progress--danger: שינוי צבע
+*/
+.progress {
+    width: 100%;
+    height: 8px;
+    background: var(--color-chip-bg);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+    position: relative;
+}
+.progress__fill {
+    height: 100%;
+    background: var(--color-teal);
+    border-radius: var(--radius-pill);
+    transition: width 0.3s ease;
+}
+.progress--warn   .progress__fill { background: var(--color-warning); }
+.progress--danger .progress__fill { background: var(--color-error); }
+.progress--success .progress__fill { background: var(--color-success); }
+
+.progress--stepped {
+    display: flex;
+    gap: 4px;
+    background: transparent;
+    height: 8px;
+}
+.progress--stepped .progress__step {
+    flex: 1;
+    background: var(--color-chip-bg);
+    border-radius: var(--radius-pill);
+    transition: background 0.2s;
+}
+.progress--stepped .progress__step.is-done   { background: var(--color-mint); }
+.progress--stepped .progress__step.is-active { background: var(--color-teal); }
+
+.progress__label {
+    margin-top: 6px;
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    display: flex;
+    justify-content: space-between;
+}
+
+
+/* -------------------------------------------------------------
+   3.10 Accordion
+   ------------------------------------------------------------- */
+/*
+   סקציה מתקפלת מבוסס <details>.
+   .accordion--numbered: מציג מספור עיגול
+*/
+.accordion {
+    border-bottom: 1px solid var(--color-line);
+}
+.accordion__summary {
+    padding: 16px 0;
+    font-weight: 700;
+    font-size: 1.0625rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    list-style: none;
+    position: relative;
+}
+.accordion__summary::-webkit-details-marker { display: none; }
+.accordion__summary::after {
+    content: '\f078'; /* chevron-down (Font Awesome) */
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    margin-inline-start: auto;
+    transition: transform 0.2s;
+    color: var(--color-muted);
+}
+.accordion[open] .accordion__summary::after { transform: rotate(180deg); }
+.accordion__body {
+    padding: 0 0 16px;
+    color: var(--color-ink-soft);
+    line-height: 1.7;
+}
+.accordion--numbered .accordion__summary::before {
+    content: counter(accordion);
+    counter-increment: accordion;
+    width: 32px; height: 32px;
+    background: var(--color-yellow);
+    color: var(--color-ink);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.9375rem;
+}
+.accordion-group { counter-reset: accordion; }
+
+
+/* -------------------------------------------------------------
+   3.11 PageHead
+   ------------------------------------------------------------- */
+/*
+   כותרת עמוד פנימי - h1 גדול עם subtitle ופילטרים אופציונליים.
+   .page-head--start: יישור לימין (ברירת מחדל) | .page-head--center: יישור למרכז
+*/
+.page-head {
+    padding: 32px 0 24px;
+    text-align: start;
+}
+.page-head--center { text-align: center; }
+
+.page-head__title {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    margin: 0 0 8px;
+}
+.page-head__subtitle {
+    font-size: 1.125rem;
+    color: var(--color-muted);
+    margin: 0;
+    max-width: 70ch;
+}
+.page-head--center .page-head__subtitle { margin: 0 auto; }
+.page-head__filters {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.page-head--center .page-head__filters { justify-content: center; }
+
+
+/* -------------------------------------------------------------
+   3.12 Badge (מספר/אינדיקטור קטן)
+   ------------------------------------------------------------- */
+/*
+   תווית קטנטנה למספר התראות/כמות. Modifiers:
+   - .badge--success | .badge--info | .badge--accent
+*/
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    background: var(--color-teal);
+    color: var(--color-ink);
+    font-size: 0.6875rem;
+    font-weight: 800;
+    border-radius: 999px;
+    line-height: 1;
+}
+.badge--success { background: var(--color-success); color: #fff; }
+.badge--error   { background: var(--color-error);   color: #fff; }
+.badge--info    { background: var(--color-info);    color: #fff; }
+.badge--accent  { background: var(--color-yellow);  color: var(--color-ink); }
+
+
+/* -------------------------------------------------------------
+   3.13 FilterTabs / ChipGroup
+   ------------------------------------------------------------- */
+/*
+   שורת טאבים/צ'יפים לסינון. הפעיל מודגש.
+   .filter-tabs--underline: וריאציה עם קו תחתון במקום צבע מילוי
+*/
+.filter-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+.filter-tabs__tab {
+    padding: 8px 16px;
+    background: var(--color-chip-bg);
+    color: var(--color-ink-soft);
+    border: 0;
+    border-radius: var(--radius-pill);
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+.filter-tabs__tab:hover { background: var(--color-chip-hover); }
+.filter-tabs__tab.is-active {
+    background: var(--color-yellow);
+    color: var(--color-ink);
+}
+
+.filter-tabs--underline .filter-tabs__tab {
+    background: transparent;
+    border-radius: 0;
+    border-bottom: 2px solid transparent;
+    padding: 8px 4px;
+}
+.filter-tabs--underline .filter-tabs__tab.is-active {
+    background: transparent;
+    border-bottom-color: var(--color-teal);
+    color: var(--color-teal-dark);
+}
+
+
+/* -------------------------------------------------------------
+   3.14 ProductCard
+   ------------------------------------------------------------- */
+/*
+   כרטיס מוצר עם תמונה, כותרת, דירוג, מחיר, כפתור.
+   Modifiers: .product-card--carousel (גרדיאנט רקע במקום bg-soft)
+*/
+.product-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+.product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+
+.product-card--carousel {
+    background: linear-gradient(135deg, var(--color-teal-bg), #fff);
+    border-color: transparent;
+}
+
+.product-card__image {
+    aspect-ratio: 4/3;
+    background: var(--color-bg-soft);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    display: block;
+}
+.product-card__image img { width: 100%; height: 100%; object-fit: cover; }
+
+.product-card__title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    margin: 0;
+    line-height: 1.2;
+}
+.product-card__desc { font-size: 0.875rem; color: var(--color-muted); margin: 0; }
+.product-card__footer {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 8px;
+}
+
+
+/* -------------------------------------------------------------
+   3.15 StarRating
+   ------------------------------------------------------------- */
+/*
+   שורת כוכבים + ציון מספרי + ספירת ביקורות.
+   .star-rating--lg | .star-rating--sm
+*/
+.star-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+}
+.star-rating__stars {
+    color: var(--color-yellow);
+    display: inline-flex;
+    gap: 2px;
+}
+.star-rating__stars .is-empty { color: var(--color-line); }
+.star-rating__value { font-weight: 700; color: var(--color-ink); }
+.star-rating__count { color: var(--color-muted); }
+
+.star-rating--lg { font-size: 1rem; }
+.star-rating--lg .star-rating__stars { font-size: 1.1rem; }
+.star-rating--sm { font-size: 0.75rem; }
+
+
+/* -------------------------------------------------------------
+   3.16 PriceTag
+   ------------------------------------------------------------- */
+/*
+   מחיר נוכחי + מחיר ישן מחוק.
+   .price--lg | .price--sm
+   .price--stacked: כל מחיר בשורה משלו
+*/
+.price {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    font-family: var(--font-display);
+}
+.price__now {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-ink);
+}
+.price__now::after { content: ' \20AA'; /* ₪ */ font-weight: 400; font-size: 0.9em; }
+.price__was {
+    font-size: 1rem;
+    color: var(--color-muted);
+    text-decoration: line-through;
+    text-decoration-thickness: 1.5px;
+}
+.price__label { font-size: 0.8125rem; color: var(--color-muted); font-family: var(--font-sans); }
+
+.price--lg .price__now { font-size: 2rem; }
+.price--lg .price__was { font-size: 1.25rem; }
+.price--sm .price__now { font-size: 1.125rem; }
+.price--sm .price__was { font-size: 0.875rem; }
+
+.price--stacked { flex-direction: column; align-items: flex-start; gap: 2px; }
+
+
+/* -------------------------------------------------------------
+   3.17 Carousel (wrapper סביב Splide)
+   ------------------------------------------------------------- */
+/*
+   הסטיילים הבסיסיים לקרוסלה. תלוי בספריית Splide.
+*/
+.carousel { position: relative; padding: 0 60px; }
+.carousel__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--color-bg);
+    box-shadow: var(--shadow-md);
+    border: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    font-size: 1.1rem;
+}
+.carousel__arrow--prev { inset-inline-start: 0; }
+.carousel__arrow--next { inset-inline-end: 0; }
+
+.carousel__pagination {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 16px;
+}
+.carousel__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-line);
+    border: 0;
+    cursor: pointer;
+    transition: background 0.2s, width 0.2s;
+}
+.carousel__dot.is-active {
+    background: var(--color-teal);
+    width: 24px;
+    border-radius: 999px;
+}
+
+
+/* -------------------------------------------------------------
+   3.18 Footer (פוטר אתר)
+   ------------------------------------------------------------- */
+/*
+   פוטר אתר עם לוגו, ניווט, רשתות חברתיות.
+   הערה: הקומפוננטה הזו אמורה להיות מוזרקת מ-JS פעם אחת בכל דף.
+*/
+.site-footer {
+    background: var(--color-bg-soft);
+    padding: 40px var(--section-px) 24px;
+    margin-top: 60px;
+    position: relative;
+}
+.site-footer__inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    display: grid;
+    gap: 24px;
+}
+.site-footer__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+.site-footer__nav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+}
+.site-footer__nav a {
+    color: var(--color-ink-soft);
+    font-weight: 600;
+    transition: color var(--transition-fast);
+}
+.site-footer__nav a:hover { color: var(--color-teal); }
+
+.site-footer__social {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.site-footer__bottom {
+    padding-top: 16px;
+    border-top: 1px solid var(--color-line);
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+
+/* -------------------------------------------------------------
+   3.19 SectionBand (פס סקציה צבעוני - דפוס מיתוגי מובהק)
+   ------------------------------------------------------------- */
+/*
+   סקשן מלא רוחב בצבע פסטל עם פינה מעוגלת אחת (radius-xl=70px).
+   זה דפוס המיתוג המובהק של פסיכו.
+   Modifiers צבע: .section-band--mint | --teal | --blue | --purple | --yellow | --white
+   Modifiers פינה: .section-band--cut-bl | --cut-br | --cut-tl | --cut-tr
+*/
+.section-band {
+    padding: 60px var(--section-px);
+    background: var(--color-mint);
+    border-radius: 0;
+}
+.section-band__inner {
+    max-width: var(--container);
+    margin: 0 auto;
+}
+
+.section-band--mint   { background: var(--color-mint); }
+.section-band--teal   { background: var(--color-teal-bg); }
+.section-band--blue   { background: var(--color-blue-light); }
+.section-band--purple { background: var(--color-purple-soft); }
+.section-band--yellow { background: var(--color-yellow-light); }
+.section-band--white  { background: var(--color-bg); }
+
+.section-band--cut-bl { border-end-start-radius: var(--radius-xl); }
+.section-band--cut-br { border-end-end-radius: var(--radius-xl); }
+.section-band--cut-tl { border-start-start-radius: var(--radius-xl); }
+.section-band--cut-tr { border-start-end-radius: var(--radius-xl); }
+
+
+/* -------------------------------------------------------------
+   3.20 FeatureCard
+   ------------------------------------------------------------- */
+/*
+   כרטיס פסטל עם אייקון + כותרת + תיאור.
+   Modifiers צבע: .feature-card--mint | --yellow | --blue | --purple
+   Modifiers וריאציה: .feature-card--badge (אייקון עולה מעל), .feature-card--image (פס תמונה למעלה)
+*/
+.feature-card {
+    background: var(--color-mint);
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+}
+.feature-card__icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg);
+    border-radius: 50%;
+    margin-bottom: 16px;
+    font-size: 1.4rem;
+    color: var(--color-ink);
+}
+.feature-card__title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    margin: 0 0 8px;
+}
+.feature-card__desc { font-size: 0.9375rem; color: var(--color-ink-soft); margin: 0; }
+
+.feature-card--yellow { background: var(--color-yellow); }
+.feature-card--blue   { background: var(--color-blue); }
+.feature-card--purple { background: var(--color-purple); }
+
+.feature-card--badge { padding-top: 32px; }
+.feature-card--badge .feature-card__icon {
+    position: absolute;
+    top: -24px;
+    inset-inline-start: 24px;
+    width: 56px;
+    height: 56px;
+    box-shadow: var(--shadow-md);
+}
+
+.feature-card--image .feature-card__image {
+    height: 140px;
+    background: var(--color-bg-soft);
+    margin: -24px -24px 16px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    overflow: hidden;
+}
+
+
+/* -------------------------------------------------------------
+   3.21 Wizard
+   ------------------------------------------------------------- */
+/*
+   מסגרת ויזרד מרובה-שלבים עם header, badge, navigation, progress.
+*/
+.wizard {
+    background: var(--color-bg);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    box-shadow: var(--shadow-md);
+}
+.wizard__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+.wizard__badge {
+    background: var(--color-yellow);
+    color: var(--color-ink);
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    font-size: 0.8125rem;
+    font-weight: 800;
+}
+.wizard__title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    margin: 0;
+    flex: 1;
+}
+.wizard__nav {
+    display: flex;
+    gap: 8px;
+    margin-inline-start: auto;
+}
+.wizard__progress { margin-top: 24px; }
+
+
+/* -------------------------------------------------------------
+   3.22 SummaryCard
+   ------------------------------------------------------------- */
+/*
+   פאנל סיכום צד עם רשימה, קופון, סך הכל, הערות.
+   .summary-card--sticky: דבק לראש המסך בגלילה
+*/
+.summary-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+}
+.summary-card--sticky { position: sticky; top: 20px; }
+
+.summary-card__title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    margin: 0 0 16px;
+}
+.summary-card__row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 0.9375rem;
+}
+.summary-card__row--total {
+    border-top: 1px solid var(--color-line);
+    margin-top: 8px;
+    padding-top: 12px;
+    font-size: 1.125rem;
+    font-weight: 800;
+}
+.summary-card__coupon {
+    display: flex;
+    gap: 8px;
+    margin: 16px 0;
+}
+.summary-card__coupon input { flex: 1; }
+
+
+/* -------------------------------------------------------------
+   3.23 IconTile
+   ------------------------------------------------------------- */
+/*
+   אייקון עגול גדול + תווית מתחת. שימושי לדפי "צור קשר" וקישורים מהירים.
+*/
+.icon-tile {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+    padding: 16px;
+    text-decoration: none;
+    color: var(--color-ink);
+    border-radius: var(--radius-md);
+    transition: background var(--transition-fast);
+}
+.icon-tile:hover { background: var(--color-bg-soft); }
+.icon-tile__icon {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg-soft);
+    border-radius: 50%;
+    font-size: 1.6rem;
+}
+.icon-tile--mint   .icon-tile__icon { background: var(--color-mint); }
+.icon-tile--yellow .icon-tile__icon { background: var(--color-yellow); }
+.icon-tile--blue   .icon-tile__icon { background: var(--color-blue); }
+.icon-tile--purple .icon-tile__icon { background: var(--color-purple); }
+
+.icon-tile__label {
+    font-size: 0.9375rem;
+    font-weight: 700;
+}
+
+
+/* =============================================================
+   END OF FILE
+   ============================================================= */

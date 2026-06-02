@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>תרגול — שאלות בסגנון המבחן</title>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="psycho-components.css">
+<link rel="stylesheet" href="med.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="index.html">
+      <span class="brand__logo">יד</span>
+      <span class="brand__name">מבחן הידע לרפואה<small>תכנית 4 שנתית · מאגר הכנה</small></span>
+    </a>
+    <nav class="nav">
+      <a href="index.html">בית</a>
+      <a href="matzeget.html">על המבחן</a>
+      <a href="nosim.html">נושאים וסיכומים</a>
+      <a href="tirgul.html" class="active">תרגול</a>
+      <a href="diagrams.html">חזותיים</a>
+      <a href="mekorot.html">מקורות</a>
+    </nav>
+  </div>
+</header>
+
+<div class="pagehead">
+  <h1>תרגול בסגנון המבחן</h1>
+  <p>שאלות רב-ברירה עם בדיקה עצמית מיידית והסבר לכל תשובה. בחרו מקצוע.</p>
+</div>
+
+<div class="tabbar" id="tabs">
+  <div class="tabbar__inner">
+    <button class="tab active" data-tab="biochem"><i class="fa-solid fa-flask"></i> ביוכימיה</button>
+    <button class="tab" data-tab="mol"><i class="fa-solid fa-dna"></i> מולקולרית</button>
+    <button class="tab" data-tab="cell"><i class="fa-solid fa-circle-nodes"></i> ביולוגיה של התא</button>
+    <button class="tab" data-tab="physio"><i class="fa-solid fa-heart-pulse"></i> פיזיולוגיה</button>
+  </div>
+</div>
+
+<main>
+<section class="section" style="padding-top:22px">
+<div class="section__inner">
+  <div id="quizroot"></div>
+  <div class="center mt-m">
+    <a class="btn btn--ghost" href="nosim.html"><i class="fa-solid fa-rotate-left"></i> חזרה לסיכומים</a>
+  </div>
+</div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="foot__inner">
+    <span>מבחן הידע לרפואה · מאגר הכנה</span>
+    <span><a href="mekorot.html">מקורות וספרי לימוד</a></span>
+  </div>
+</footer>
+
+<script>
+const QUESTIONS = {
+  biochem: {label:"ביוכימיה", items:[
+    {q:"מהי תפוקת ה-ATP הנטו מגליקוליזה לכל מולקולת גלוקוז?",
+     o:["2 ATP","4 ATP","30 ATP","ללא ATP"], a:0,
+     e:"גליקוליזה מפיקה 4 ATP אך צורכת 2, ולכן הנטו הוא 2 ATP (וגם 2 NADH). התהליך מתרחש בציטוזול ואינו דורש חמצן."},
+    {q:"היכן מתרחש מעגל קרבס?",
+     o:["בציטוזול","במטריקס המיטוכונדריאלי","בקרום הפנימי של המיטוכונדריה","בגרעין"], a:1,
+     e:"מעגל קרבס מתרחש במטריקס המיטוכונדריאלי. הזרחון החמצוני, לעומתו, מתרחש בקרום הפנימי."},
+    {q:"כיצד משפיע מעכב תחרותי על הקינטיקה של אנזים?",
+     o:["מוריד את Vmax, Km ללא שינוי","מעלה את Km הנראה, Vmax ללא שינוי","מוריד גם Km וגם Vmax","מעלה את Vmax"], a:1,
+     e:"מעכב תחרותי נקשר לאתר הפעיל ומעלה את Km הנראה, אך אפשר להתגבר עליו בריכוז סובסטרט גבוה — ולכן Vmax נשמר."},
+    {q:"מהו מקבל האלקטרונים הסופי בשרשרת מעבר האלקטרונים?",
+     o:["NAD⁺","פירובט","חמצן","פחמן דו-חמצני"], a:2,
+     e:"החמצן הוא מקבל האלקטרונים הסופי ומתחבר לפרוטונים ליצירת מים. בלעדיו השרשרת נעצרת."},
+    {q:"איזה אנזים הוא נקודת הבקרה המרכזית של גליקוליזה?",
+     o:["הקסוקינאז","פוספופרוקטוקינאז-1 (PFK-1)","פירובט קינאז","לקטט דהידרוגנאז"], a:1,
+     e:"PFK-1 הוא השלב המווסת המרכזי (הבלתי-הפיך) של גליקוליזה, ומגיב לרמות האנרגיה בתא."}
+  ]},
+  mol: {label:"מולקולרית", items:[
+    {q:"עם איזה בסיס מזדווג גואנין (G) ב-DNA?",
+     o:["אדנין (A)","תימין (T)","ציטוזין (C)","אורציל (U)"], a:2,
+     e:"G מזדווג עם C בשלושה קשרי מימן. A מזדווג עם T בשני קשרי מימן."},
+    {q:"באיזה כיוון מסנתז אנזים ה-DNA-פולימראז גדיל חדש?",
+     o:["5′→3′ בלבד","3′→5′ בלבד","בשני הכיוונים","תלוי בגדיל"], a:0,
+     e:"DNA-פולימראז מסנתז תמיד 5′→3′. בגלל זה הגדיל המפגר נבנה במקטעי אוקזאקי."},
+    {q:"מהו התהליך שבו מוסרים אינטרונים ומחוברים אקסונים?",
+     o:["שעתוק","שחבור","תרגום","שכפול"], a:1,
+     e:"שחבור (splicing) הוא חלק מעיבוד ה-mRNA ביצורנים מורכבים, יחד עם הוספת כיפה וזנב פולי-A."},
+    {q:"מהו קודון הפתיחה בתרגום?",
+     o:["UAA","AUG","UGA","GGG"], a:1,
+     e:"AUG הוא קודון הפתיחה ומקודד למתיונין. UAA, UGA ו-UAG הם קודוני עצירה."},
+    {q:"מקטעי אוקזאקי נוצרים על איזה גדיל?",
+     o:["הגדיל המוביל","הגדיל המפגר","שני הגדילים","אף גדיל"], a:1,
+     e:"הגדיל המפגר נבנה במקטעים קצרים (אוקזאקי) משום שהפולימראז עובד רק 5′→3′ בכיוון ההפוך לפתיחת הסליל."}
+  ]},
+  cell: {label:"ביולוגיה של התא", items:[
+    {q:"לאיזה סוג מעבר שייכת משאבת הנתרן-אשלגן?",
+     o:["דיפוזיה פשוטה","דיפוזיה מותאמת","מעבר פעיל","אוסמוזה"], a:2,
+     e:"המשאבה מזיזה יונים נגד מפל הריכוזים תוך ניצול ATP — ולכן זהו מעבר פעיל."},
+    {q:"לאיזה אברון יש DNA משלו?",
+     o:["גולג'י","ליזוזום","מיטוכונדריה","רשת תוך-פלזמית חלקה"], a:2,
+     e:"למיטוכונדריה קרום כפול ו-DNA עצמאי — עדות למוצא אנדוסימביוטי. גם לכלורופלסט (בצמחים) יש DNA."},
+    {q:"מהו תפקיד הרשת התוך-פלזמית המחוספסת?",
+     o:["סינתזת חלבונים","פירוק רעלים","ייצור ATP","עיכול תוך-תאי"], a:0,
+     e:"הריבוזומים שעל הרשת המחוספסת מסנתזים חלבונים. הרשת החלקה עוסקת בשומנים וניקוי רעלים."},
+    {q:"מה מתרחש בשלב ה-S של מחזור התא?",
+     o:["חלוקת התא","שכפול ה-DNA","גדילה ראשונית","בקרת איכות"], a:1,
+     e:"בשלב S מוכפל ה-DNA. אחריו G2 (הכנה) ואז M (מיטוזה — החלוקה עצמה)."},
+    {q:"ממה בנויות המיקרו-צינוריות?",
+     o:["אקטין","טובולין","קרטין","קולגן"], a:1,
+     e:"מיקרו-צינוריות בנויות מטובולין ומשמשות לתנועה תוך-תאית ולחלוקת הכרומוזומים."}
+  ]},
+  physio: {label:"פיזיולוגיה", items:[
+    {q:"מה גורם לדה-פולריזציה בפוטנציאל הפעולה?",
+     o:["יציאת אשלגן","כניסת נתרן","יציאת סידן","כניסת כלור"], a:1,
+     e:"פתיחת תעלות נתרן וכניסת Na⁺ פנימה גורמת לדה-פולריזציה. יציאת K⁺ אחר-כך מחזירה את המתח (רה-פולריזציה)."},
+    {q:"מהו קוצב הלב הטבעי?",
+     o:["צומת הסינוס (SA)","צומת ה-AV","סיבי פורקיניה","שריר החדר"], a:0,
+     e:"צומת הסינוס יוזם את הפעימה ומכתיב את הקצב. ממנו האות מתפשט דרך מערכת ההולכה."},
+    {q:"כיצד מחושבת תפוקת הלב?",
+     o:["קצב לב ÷ נפח פעימה","קצב לב × נפח פעימה","נפח פעימה − קצב לב","לחץ דם × התנגדות"], a:1,
+     e:"תפוקת לב = קצב לב × נפח פעימה. זו כמות הדם שהלב שואב בדקה."},
+    {q:"איזה הורמון מגביר ספיגת מים חוזרת בכליה?",
+     o:["אינסולין","ADH (ואזופרסין)","גלוקגון","קלציטונין"], a:1,
+     e:"ADH (ואזופרסין) מגביר חדירות הצינורית למים ומעלה ספיגה חוזרת — וכך מרכז את השתן."},
+    {q:"מהו המוליך העצבי במפגש העצב-שריר?",
+     o:["דופמין","סרוטונין","אצטיל-כולין","אדרנלין"], a:2,
+     e:"במפגש העצב-שריר משוחרר אצטיל-כולין, שנקשר לקולטנים על תא השריר ומפעיל כיווץ."}
+  ]}
+};
+
+const root = document.getElementById('quizroot');
+
+function render(subj){
+  const data = QUESTIONS[subj];
+  root.innerHTML = '';
+  data.items.forEach((it, qi)=>{
+    const card = document.createElement('div');
+    card.className = 'quiz';
+    let html = '<span class="quiz__tag"><i class="fa-solid fa-circle-question"></i> שאלה '+(qi+1)+' · '+data.label+'</span>';
+    html += '<p class="quiz__q">'+it.q+'</p><div class="opts">';
+    it.o.forEach((opt,oi)=>{ html += '<button class="opt" data-i="'+oi+'">'+opt+'</button>'; });
+    html += '</div><div class="feedback"></div>';
+    card.innerHTML = html;
+    const fb = card.querySelector('.feedback');
+    const opts = card.querySelectorAll('.opt');
+    opts.forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const i = +btn.dataset.i;
+        if(card.dataset.done) return;
+        card.dataset.done = '1';
+        opts.forEach(b=>b.disabled=true);
+        opts[it.a].classList.add('correct');
+        if(i===it.a){
+          fb.className='feedback show ok';
+          fb.innerHTML='<i class="fa-solid fa-check"></i> נכון! '+it.e;
+        } else {
+          btn.classList.add('wrong');
+          fb.className='feedback show no';
+          fb.innerHTML='<i class="fa-solid fa-xmark"></i> לא מדויק. '+it.e;
+        }
+      });
+    });
+    root.appendChild(card);
+  });
+}
+
+const tabs=document.querySelectorAll('#tabs .tab');
+function show(id){
+  tabs.forEach(t=>t.classList.toggle('active',t.dataset.tab===id));
+  render(id);
+}
+tabs.forEach(t=>t.addEventListener('click',()=>{show(t.dataset.tab);history.replaceState(null,'','#'+t.dataset.tab);}));
+const start = (location.hash && QUESTIONS[location.hash.slice(1)]) ? location.hash.slice(1) : 'biochem';
+show(start);
+</script>
+</body>
+</html>

@@ -42,9 +42,10 @@
   #content{position:relative;width:100%;}
   #axis{position:absolute;top:0;bottom:0;right:56px;width:3px;border-radius:3px;background:linear-gradient(var(--teal-light),var(--teal),var(--teal-light));}
   .ev{position:absolute;right:0;left:0;height:0;transition:opacity .2s ease;will-change:opacity;}
-  .ev .dot{position:absolute;right:57px;border-radius:50%;background:var(--c);border:2px solid #fff;transform:translate(50%,-50%);z-index:2;box-shadow:var(--shadow-sm);transition:width .2s,height .2s,background .2s,border-width .2s;}
+  .ev .dot{position:absolute;right:57px;top:0;border-radius:50%;background:var(--c);border:2px solid #fff;transform:translate(50%,-50%);z-index:2;box-shadow:var(--shadow-sm);transition:width .2s,height .2s,background .2s,border-width .2s;}
   .ev .card{position:absolute;right:80px;left:14px;top:0;transform:translateY(-50%);background:#fff;border:1.5px solid var(--border);border-right:6px solid var(--c);border-radius:var(--radius-md);padding:9px 14px;text-align:right;box-shadow:var(--shadow-sm);cursor:pointer;transition:transform .12s,box-shadow .12s;}
   .ev .card:hover{transform:translateY(-50%) translateX(-3px);box-shadow:var(--shadow-md);}
+  .ev .card::before{content:"";position:absolute;top:50%;right:-24px;width:24px;height:3px;background:var(--c);transform:translateY(-50%);border-radius:2px;}
   .ev .year{font-size:11px;font-weight:700;color:var(--text-light);letter-spacing:.2px;}
   .ev .title{font-weight:700;line-height:1.25;margin-top:2px;color:var(--text);}
   .cat-cosmos{--c:var(--c-cosmos)} .cat-civ{--c:var(--c-civ)} .cat-rel{--c:var(--c-rel)} .cat-war{--c:var(--c-war)} .cat-sci{--c:var(--c-sci)}
