@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>אפליקציות אלעד</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root{
+    --teal:#80c6cf; --teal-dark:#5fa3ac; --teal-light:#b6dde2; --teal-bg:#d4ecf0;
+    --mint:#a4e9d6; --mint-soft:#d6f6e8; --yellow:#fae45d; --yellow-light:#fff5b0;
+    --blue:#a6deed; --blue-light:#d6effa; --purple:#b9bafb; --purple-soft:#e3e3fd; --pink:#f7a5b8;
+    --text:#151515; --text-soft:#383636; --text-light:#686868;
+    --bg:#ffffff; --bg-soft:#f6f7fb; --border:#e2e4e9;
+    --shadow-sm:0 3px 10px rgba(0,0,0,.04); --shadow-md:0 6px 24px rgba(0,0,0,.06); --shadow-lg:0 20px 60px rgba(0,0,0,.10);
+    --radius-md:18px; --radius-lg:28px; --radius-pill:999px;
+    --blob:60% 40% 55% 45% / 50% 60% 40% 50%;
+    --font:'Assistant','Heebo',system-ui,-apple-system,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);color:var(--text);background:var(--bg-soft);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{text-decoration:none;color:inherit}
+
+  /* ===== Hero ===== */
+  .hero{position:relative;overflow:hidden;background:
+      radial-gradient(circle at 18% 20%, var(--teal-bg) 0, transparent 42%),
+      radial-gradient(circle at 85% 12%, var(--purple-soft) 0, transparent 40%),
+      radial-gradient(circle at 70% 90%, var(--mint-soft) 0, transparent 45%),
+      var(--bg)}
+  .hero__blob{position:absolute;border-radius:var(--blob);filter:blur(2px);opacity:.55;z-index:0}
+  .hero__blob--1{width:260px;height:260px;background:var(--teal-light);top:-70px;left:-60px}
+  .hero__blob--2{width:200px;height:200px;background:var(--yellow-light);top:30px;right:8%}
+  .hero__blob--3{width:230px;height:230px;background:var(--purple-soft);bottom:-90px;left:35%}
+  .hero__inner{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:72px 22px 60px;text-align:center}
+  .hero__kicker{display:inline-block;background:#fff;border:1px solid var(--border);color:var(--teal-dark);
+      font-weight:700;font-size:.9rem;padding:7px 16px;border-radius:var(--radius-pill);box-shadow:var(--shadow-sm)}
+  .hero__title{font-size:clamp(2.1rem,5vw,3.4rem);font-weight:800;letter-spacing:-.5px;margin:18px 0 12px}
+  .hero__sub{font-size:1.12rem;color:var(--text-soft);max-width:620px;margin:0 auto}
+
+  /* ===== Section ===== */
+  main{max-width:1100px;margin:0 auto;padding:8px 22px 70px}
+  .section__title{font-size:1.05rem;font-weight:700;color:var(--text-light);text-align:center;margin:46px 0 6px;
+      letter-spacing:.5px}
+
+  /* ===== Cards grid ===== */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:22px;margin-top:24px}
+  .app-card{position:relative;display:flex;flex-direction:column;background:#fff;border:1px solid var(--border);
+      border-radius:var(--radius-lg);padding:28px 26px 24px;box-shadow:var(--shadow-sm);overflow:hidden;
+      transition:transform .25s ease,box-shadow .25s ease}
+  .app-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg)}
+  .app-card::after{content:"";position:absolute;width:150px;height:150px;border-radius:var(--blob);
+      top:-60px;left:-50px;opacity:.5;z-index:0;transition:transform .4s ease}
+  .app-card:hover::after{transform:scale(1.25) rotate(12deg)}
+  .app-card--teal::after{background:var(--teal-light)}
+  .app-card--yellow::after{background:var(--yellow-light)}
+  .app-card--purple::after{background:var(--purple-soft)}
+  .app-card--mint::after{background:var(--mint-soft)}
+  .app-card--blue::after{background:var(--blue-light)}
+  .app-card--pink::after{background:#fcdce3}
+  .app-card>*{position:relative;z-index:1}
+  .app-card__icon{width:62px;height:62px;display:grid;place-items:center;border-radius:var(--blob);
+      font-size:1.6rem;color:var(--text);margin-bottom:16px;box-shadow:var(--shadow-sm)}
+  .app-card--teal .app-card__icon{background:var(--teal)}
+  .app-card--yellow .app-card__icon{background:var(--yellow)}
+  .app-card--purple .app-card__icon{background:var(--purple)}
+  .app-card--mint .app-card__icon{background:var(--mint)}
+  .app-card--blue .app-card__icon{background:var(--blue)}
+  .app-card--pink .app-card__icon{background:var(--pink)}
+  .app-card__tag{display:inline-block;font-size:.78rem;font-weight:700;color:var(--text-light);
+      background:var(--bg-soft);border:1px solid var(--border);padding:3px 11px;border-radius:var(--radius-pill);
+      align-self:flex-start;margin-bottom:10px}
+  .app-card__title{font-size:1.4rem;font-weight:800;margin-bottom:8px}
+  .app-card__desc{color:var(--text-soft);font-size:1rem;flex:1}
+  .app-card__go{display:inline-flex;align-items:center;gap:8px;margin-top:18px;font-weight:700;color:var(--teal-dark)}
+  .app-card__go i{transition:transform .25s ease}
+  .app-card:hover .app-card__go i{transform:translateX(-5px)}
+
+  /* ===== Soon card ===== */
+  .app-card--soon{border-style:dashed;background:transparent;box-shadow:none;align-items:center;justify-content:center;
+      text-align:center;color:var(--text-light);min-height:230px}
+  .app-card--soon:hover{transform:none;box-shadow:none}
+  .app-card--soon .app-card__icon{background:#fff;border:1px dashed var(--border);box-shadow:none}
+
+  footer{text-align:center;color:var(--text-light);font-size:.9rem;padding:28px 22px 40px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="hero__blob hero__blob--1"></span>
+  <span class="hero__blob hero__blob--2"></span>
+  <span class="hero__blob hero__blob--3"></span>
+  <div class="hero__inner">
+    <span class="hero__kicker">אזור אישי</span>
+    <h1 class="hero__title">אפליקציות אלעד</h1>
+    <p class="hero__sub">כל הכלים והאפליקציות הפרטיים שלי במקום אחד — לחיצה אחת לכל אחד מהם.</p>
+  </div>
+</header>
+
+<main>
+  <h2 class="section__title">האפליקציות שלי</h2>
+  <div class="grid">
+
+    <a class="app-card app-card--teal" href="histo-timeline.html">
+      <div class="app-card__icon"><i class="fa-solid fa-timeline"></i></div>
+      <span class="app-card__tag">היסטוריה</span>
+      <h3 class="app-card__title">ציר הזמן</h3>
+      <p class="app-card__desc">ציר הזמן של ההיסטוריה — אירועים ודמויות לאורך הזמן בקו אחד ברור ואינטראקטיבי.</p>
+      <span class="app-card__go">פתיחה <i class="fa-solid fa-arrow-left"></i></span>
+    </a>
+
+    <a class="app-card app-card--yellow" href="clear-dashboard/dist/index.html">
+      <div class="app-card__icon"><i class="fa-solid fa-list-check"></i></div>
+      <span class="app-card__tag">פרודוקטיביות</span>
+      <h3 class="app-card__title">משימות</h3>
+      <p class="app-card__desc">דשבורד המשימות בסגנון Clear, עם מחוות החלקה. אפליקציה להתקנה בטלפון (PWA).</p>
+      <span class="app-card__go">פתיחה <i class="fa-solid fa-arrow-left"></i></span>
+    </a>
+
+    <a class="app-card app-card--purple" href="מאגר-תנך-כיתה-ו/index.html">
+      <div class="app-card__icon"><i class="fa-solid fa-scroll"></i></div>
+      <span class="app-card__tag">לימודים</span>
+      <h3 class="app-card__title">מבדק תנ"ך</h3>
+      <p class="app-card__desc">מאגר ההכנה למבדק תנ"ך כיתה ו' — סיכומים, תרגול אינטראקטיבי, ציר זמן ואזור מורה.</p>
+      <span class="app-card__go">פתיחה <i class="fa-solid fa-arrow-left"></i></span>
+    </a>
+
+    <div class="app-card app-card--soon">
+      <div class="app-card__icon"><i class="fa-solid fa-plus"></i></div>
+      <h3 class="app-card__title">בקרוב</h3>
+      <p class="app-card__desc">כאן נוסיף את האפליקציה הפרטית הבאה.</p>
+    </div>
+
+  </div>
+</main>
+
+<footer>אפליקציות אלעד · עוצב בשפת פסיכו</footer>
+
+</body>
+</html>

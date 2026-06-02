@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>על המבדק – מבנה, יחידות וסוגי שאלות</title>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="psycho-components.css">
+<link rel="stylesheet" href="tanakh.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="index.html">
+      <span class="brand__logo">ת</span>
+      <span class="brand__name">מאגר מבדק תנ״ך<small>כיתה ו' · תנופה תשפ"ו</small></span>
+    </a>
+    <nav class="nav">
+      <a href="index.html">בית</a>
+      <a href="matzeget.html" class="active">על המבדק</a>
+      <a href="nosim.html">נושאים וסיכומים</a>
+      <a href="tirgul.html">תרגול</a>
+      <a href="zman.html">ציר זמן</a>
+      <a href="morim.html">אזור מורה</a>
+      <a href="mekorot.html">מקורות</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="container" style="text-align:center;padding:16px 16px 2px">
+    <h1 style="font-family:var(--font-display);color:var(--color-teal);font-size:1.7rem;margin:0">על המבדק</h1>
+    <p class="muted" style="margin:.3em 0 0">מצגת היכרות — לחצו "הבא" כדי לעבור בין השקופיות</p>
+  </div>
+
+  <section class="section" style="padding:14px 16px 26px">
+    <div class="deck">
+      <div class="deck__stage" id="stage">
+
+        <!-- 1 · שער -->
+        <div class="slide slide--cover active">
+          <span class="slide__kicker">תנופה · תשפ"ו</span>
+          <h2>מבדק תנ״ך לכיתה ו'</h2>
+          <p style="font-size:1.35rem;max-width:680px">היכרות עם המבחן — שלושת הצירים, שלוש היחידות, חלוקת המשקלים, סוגי השאלות, ושאלות אמיתיות לדוגמה בכל חלק.</p>
+          <p class="muted" style="margin-top:22px"><i class="fa-solid fa-hand-pointer"></i> לחצו "הבא" כדי להתחיל</p>
+        </div>
+
+        <!-- 2 · מה זה המבדק -->
+        <div class="slide">
+          <span class="slide__kicker">מה זה?</span>
+          <h2>מה זה המבדק?</h2>
+          <p>מבדק תנופה בתנ"ך הוא כלי ל<b>הערכה מסכמת</b> של הידע, המיומנויות והערכים שנרכשו לאורך לימודי התנ"ך בבית הספר היסודי. הוא מצטרף למערך המבחנים הארצי — לצד שפת אם, אנגלית, מתמטיקה ומדעים — ובוחן את רמת השליטה בהתאם לתכנית הלימודים.</p>
+          <p style="margin-top:.6em">המבדק נשען על <b>שלושה צירים פדגוגיים</b> משלימים, שאותם נכיר בשקופית הבאה.</p>
+        </div>
+
+        <!-- 3 · שלושת הצירים -->
+        <div class="slide">
+          <span class="slide__kicker">שלושה צירים</span>
+          <h2>על מה המבדק בנוי?</h2>
+          <div class="grid grid--3">
+            <div class="feature-card feature-card--blue"><div class="feature-card__icon"><i class="fa-solid fa-book"></i></div><h3 class="feature-card__title">ציר הידע</h3><p class="feature-card__desc">שליטה בתכנים השוטפים של ה'–ו' (הידע הקרוב) לצד פרקי יסוד מכל היסודי (הידע הרחוק).</p></div>
+            <div class="feature-card feature-card--mint"><div class="feature-card__icon"><i class="fa-solid fa-magnifying-glass"></i></div><h3 class="feature-card__title">ציר המיומנות</h3><p class="feature-card__desc">התמצאות עצמאית בפרקי התנ"ך ומיומנויות עיון: ידע, הבנה והסקה עד גיבוש תובנות.</p></div>
+            <div class="feature-card feature-card--purple"><div class="feature-card__icon"><i class="fa-solid fa-scale-balanced"></i></div><h3 class="feature-card__title">ציר הערכים</h3><p class="feature-card__desc">בירור ערכי, מוסרי וחברתי — קישור בין המקורות למציאות וגיבוש עמדה אישית.</p></div>
+          </div>
+        </div>
+
+        <!-- 4 · שלוש היחידות -->
+        <div class="slide">
+          <span class="slide__kicker">מבנה</span>
+          <h2>שלוש יחידות המבדק</h2>
+          <table class="t">
+            <tr><th style="width:34px">#</th><th>היחידה</th><th>על מה היא בוחנת</th><th>משותף / מותאם</th></tr>
+            <tr><td>1</td><td><b>נושאי הלימוד</b> (ה'–ו')</td><td>ידע ובקיאות בתכני תכנית הלימודים והיכולת לעבד אותם.</td><td>יחידה נפרדת, מותאמת לכל מגזר</td></tr>
+            <tr><td>2</td><td><b>עיון</b></td><td>התמודדות עצמאית עם טקסט תנ"כי — ידע, הבנה והסקה.</td><td>משותפת ברובה: קטע ושאלות משותפים לצד שאלות ייחודיות</td></tr>
+            <tr><td>3</td><td><b>פרקי יסוד</b> וידע כללי</td><td>ידע רחב המצופה מכל תלמיד — דמויות מפתח ואירועים מכוננים.</td><td>משותפת בעיקרה: בסיס אחיד לצד התאמות</td></tr>
+          </table>
+        </div>
+
+        <!-- 5 · חלוקת המשקלים -->
+        <div class="slide">
+          <span class="slide__kicker">משקלים</span>
+          <h2>חלוקת המשקלים · ~23 שאלות · 90 דקות</h2>
+          <p>איזון בין מיומנויות עצמאיות ("איך" — 40%) ובין שליטה בתכנים ("מה" — 60%):</p>
+          <div class="grid grid--3" style="margin-top:16px">
+            <div class="kpi kpi--accent-yellow"><div class="kpi__label">נושאי לימוד ה'–ו'</div><div class="kpi__value">40%</div></div>
+            <div class="kpi kpi--accent-teal"><div class="kpi__label">עיון ומיומנויות</div><div class="kpi__value">40%</div></div>
+            <div class="kpi kpi--accent-mint"><div class="kpi__label">פרקי יסוד וידע כללי</div><div class="kpi__value">20%</div></div>
+          </div>
+          <div class="alert alert--info mt-m"><span class="alert__icon"><i class="fa-solid fa-lightbulb"></i></span><div class="alert__body">40% למיומנויות משקפים יכולת יישום וחשיבה עצמאית מול הטקסט; 60% הנותרים מבססים את גוף הידע ההכרחי.</div></div>
+        </div>
+
+        <!-- 6 · סוגי השאלות -->
+        <div class="slide">
+          <span class="slide__kicker">איך נראות השאלות</span>
+          <h2>סוגי השאלות</h2>
+          <p style="margin-bottom:10px">במבדק כ-23 שאלות מסוגים מגוונים — כדאי להכיר את כולם:</p>
+          <div class="chips">
+            <span class="pill pill--md">שאלות פתוחות</span>
+            <span class="pill pill--md pill--accent">רב-ברירה (אמריקאיות)</span>
+            <span class="pill pill--md">קלוז</span>
+            <span class="pill pill--md">השלמת משפטים</span>
+            <span class="pill pill--md">היגדים (נכון/לא נכון)</span>
+            <span class="pill pill--md">השוואה</span>
+            <span class="pill pill--md">התאמה</span>
+            <span class="pill pill--md">שילוב מקורות</span>
+            <span class="pill pill--md">איורים, קומיקס ומפות</span>
+          </div>
+          <p class="mt-s">הדגש: היכולת <b>לקרוא, להבין ולפרש את הכתוב באופן עצמאי</b> — התמצאות במבנה הספר, הבנת הלשון התנ"כית והאמצעים הספרותיים, ניתוח טקסטואלי ועיסוק בערכים.</p>
+        </div>
+
+        <!-- 7 · יום הבחינה -->
+        <div class="slide">
+          <span class="slide__kicker">יום הבחינה</span>
+          <h2>איך זה עובד בפועל?</h2>
+          <ul class="links" style="margin-top:6px">
+            <li><div class="meta"><b>מתכונת</b><span>בתשפ"ו — משימה פנימית בבית הספר. מתשפ"ז — מבחן חיצוני כמו מבחני תנופה.</span></div></li>
+            <li><div class="meta"><b>משך</b><span>כ-90 דקות (אפשר לבקש תוספת זמן מהמורה).</span></div></li>
+            <li><div class="meta"><b>עזרים מותרים</b><span>תנ"ך שלם ללא פירושים — לכן חשוב להתאמן בניווט מהיר בין הפרקים.</span></div></li>
+            <li><div class="meta"><b>מטרת המבדק</b><span>מיפוי רמת השליטה לשם קידום ההוראה — ולא "ציון בתעודה".</span></div></li>
+          </ul>
+        </div>
+
+        <!-- 8 · חלק 1 -->
+        <div class="slide">
+          <span class="slide__kicker">חלק 1 · 40%</span>
+          <h2>נושאי הלימוד (כיתות ה'–ו')</h2>
+          <p>בודק ידע ובקיאות בחומר הנלמד — בכיתה ו' בעיקר <b>יהושע ושופטים</b>, וגם נושאים כמו חוקים חברתיים בויקרא י״ט.</p>
+          <div class="slide__example">
+            <span class="lbl"><i class="fa-solid fa-star" style="color:#b08518"></i> שאלה רשמית לדוגמה (ראמ"ה)</span>
+            <p style="margin:.4em 0">"וְלֹא תְשַׁקְּרוּ אִישׁ בַּעֲמִיתוֹ" · "לֹא תִגְנֹבוּ וְלֹא תְכַחֲשׁוּ" — מהו הערך המשותף? (עזרה לזולת / סבלנות / יושר / אחריות)</p>
+            <p style="margin:0">תשובה: <span class="slide__ans">יושר</span></p>
+          </div>
+        </div>
+
+        <!-- 9 · חלק 2 -->
+        <div class="slide">
+          <span class="slide__kicker">חלק 2 · 40%</span>
+          <h2>עיון — התמודדות עם הטקסט</h2>
+          <p>קוראים פרק מהתורה ופרק מהנביאים ועונים על שאלות הבנה, השוואה והסקה — באופן עצמאי מול הכתוב.</p>
+          <div class="slide__example">
+            <span class="lbl"><i class="fa-solid fa-star" style="color:#b08518"></i> שאלה רשמית לדוגמה (יהושע א')</span>
+            <p style="margin:.4em 0">מתי יוכלו שניים וחצי השבטים לחזור אל נחלתם? (אחרי חציית הירדן / אחרי שיכבשו את הארץ וכל השבטים יקבלו נחלה / אחרי שנה / אחרי יריחו)</p>
+            <p style="margin:0">תשובה: <span class="slide__ans">אחרי שיכבשו את הארץ וכל השבטים יקבלו נחלה</span></p>
+          </div>
+        </div>
+
+        <!-- 10 · חלק 3 -->
+        <div class="slide">
+          <span class="slide__kicker">חלק 3 · 20%</span>
+          <h2>פרקי יסוד וידע כללי</h2>
+          <p>בקיאות רחבה בדמויות ובאירועים המכוננים — "למי נאמר?", סדר אירועים, שבטי ישראל, עצי משפחה ודמויות וערכים.</p>
+          <div class="slide__example">
+            <span class="lbl"><i class="fa-solid fa-star" style="color:#b08518"></i> שאלה רשמית לדוגמה (סדר אירועים)</span>
+            <p style="margin:.4em 0">איזה אירוע קרה ראשון? (מעמד הר סיני / המבול / כניסה לארץ כנען / חטא המרגלים)</p>
+            <p style="margin:0">תשובה: <span class="slide__ans">המבול</span> &nbsp;|&nbsp; הסדר: המבול ← יוסף למצרים ← הר סיני ← מרגלים ← כניסה לארץ</p>
+          </div>
+        </div>
+
+        <!-- 11 · סיום -->
+        <div class="slide slide--cover">
+          <span class="slide__kicker">מוכנים!</span>
+          <h2>זהו — עכשיו לתרגול</h2>
+          <p style="font-size:1.3rem;max-width:640px">הכרתם את מבנה המבחן ושלושת חלקיו. הדרך הכי טובה להתכונן — לתרגל שאלות אמיתיות בכל נושא.</p>
+          <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+            <a class="btn btn--lg" href="tirgul.html"><i class="fa-solid fa-pen-to-square"></i> למאגר התרגול</a>
+            <a class="btn btn--lg btn--ghost" href="nosim.html">לסיכומי הנושאים</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- שורת ניווט -->
+      <div class="deck__bar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="deck__count" id="count">1 / 11</span>
+          <div class="deck__dots" id="dots"></div>
+        </div>
+        <div class="deck__nav">
+          <button class="btn btn--ghost" id="prevBtn"><i class="fa-solid fa-chevron-right"></i> הקודם</button>
+          <button class="btn" id="nextBtn">הבא <i class="fa-solid fa-chevron-left"></i></button>
+        </div>
+      </div>
+      <p class="kbd-hint"><i class="fa-regular fa-keyboard"></i> אפשר גם בחיצי המקלדת → / ←</p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot__inner">
+    <div>מאגר לימודי למבדק תנ״ך כיתה ו'</div>
+    <div>על המבדק · מבוסס על מפרט המבדק של ראמ"ה</div>
+  </div>
+</footer>
+
+<script>
+var slides=document.querySelectorAll('.slide');
+var total=slides.length, i=0;
+var dots=document.getElementById('dots');
+var count=document.getElementById('count');
+var prevB=document.getElementById('prevBtn'), nextB=document.getElementById('nextBtn');
+for(var d=0; d<total; d++){
+  var b=document.createElement('button'); b.className='deck__dot'; b.dataset.i=d;
+  b.setAttribute('aria-label','שקופית '+(d+1));
+  b.addEventListener('click',function(e){ go(parseInt(e.currentTarget.dataset.i)); });
+  dots.appendChild(b);
+}
+function go(n){
+  i=Math.max(0, Math.min(total-1, n));
+  slides.forEach(function(s,k){ s.classList.toggle('active', k===i); });
+  dots.querySelectorAll('.deck__dot').forEach(function(x,k){ x.classList.toggle('active', k===i); });
+  count.textContent=(i+1)+' / '+total;
+  prevB.disabled=(i===0); nextB.disabled=(i===total-1);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+nextB.addEventListener('click',function(){ go(i+1); });
+prevB.addEventListener('click',function(){ go(i-1); });
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowLeft'){ go(i+1); }
+  else if(e.key==='ArrowRight'){ go(i-1); }
+});
+go(0);
+</script>
+</body>
+</html>
