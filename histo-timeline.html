@@ -176,7 +176,8 @@ const FILTERS=[
 ];
 let activeFilter=FILTERS[0];
 const filtersEl=document.getElementById('filters');
-const FCOL={inv:'var(--c-inv)',jew:'var(--c-jew)',rel:'var(--c-rel)',cosmos:'var(--c-cosmos)',civ:'var(--c-civ)',war:'var(--c-war)',sci:'var(--c-sci)'};
+const FHEX={inv:'#f6a821',jew:'#6a5ae0',rel:'#96d7e8',cosmos:'#b9bafb',civ:'#80c6cf',war:'#f7a5b8',sci:'#a4e9d6'};
+const FCOL=FHEX;
 FILTERS.forEach(f=>{
   const b=document.createElement('button');
   b.className='chip'+(f.id==='all'?' active':'');
@@ -188,8 +189,7 @@ FILTERS.forEach(f=>{
 function render(){
   content.style.height=((DATA.length-1)*UNIT*zoom+PAD*2)+'px';
   // צבע סינון חוצה-קטגוריות (ממציאים / תולדות עם ישראל) נצבע על האירועים עצמם
-  const fcol = FCOL[activeFilter.id];
-  const override = (activeFilter.id==='inv'||activeFilter.id==='jew') ? fcol : null;
+  const override = FHEX[activeFilter.id] || null;
   nodes.forEach(n=>{ n.y=PAD+n.idx*UNIT*zoom; n.el.style.top=n.y+'px'; n.el.classList.remove('hidden','mini');
     if(override) n.el.style.setProperty('--c', override); else n.el.style.removeProperty('--c'); });
   const placed=[]; const placedSet=new Set(); let shownCount=0;
