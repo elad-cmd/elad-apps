@@ -1,0 +1,5 @@
+biochem: tagged 111/143 (77%)
+mol: tagged 78/135 (57%)
+cell: tagged 94/139 (67%)
+physio: tagged 103/133 (77%)
+TOTAL tagged 386/550

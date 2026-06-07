@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ביולוגיה מולקולרית — סיכום מעמיק לפי הסילבוס</title>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="psycho-components.css">
+<link rel="stylesheet" href="med.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="index.html">
+      <span class="brand__logo">יד</span>
+      <span class="brand__name">מבחן הידע לרפואה<small>תכנית 4 שנתית · מאגר הכנה</small></span>
+    </a>
+    <nav class="nav">
+      <a href="index.html">בית</a>
+      <a href="matzeget.html">על המבחן</a>
+      <a href="nosim.html" class="active">נושאים וסיכומים</a>
+      <a href="tirgul.html">תרגול</a>
+      <a href="diagrams.html">חזותיים</a>
+      <a href="mekorot.html">מקורות</a>
+    </nav>
+  </div>
+</header>
+
+<div class="pagehead">
+  <h1>ביולוגיה מולקולרית — סיכום מעמיק</h1>
+  <p>לפי הסילבוס הרשמי, ספר הליבה אלברטס (Molecular Biology of the Cell) מהדורה 7, פרקים 1, 4–9.</p>
+</div>
+
+<div class="tabbar">
+  <div class="tabbar__inner">
+    <a class="tab" href="#dna">DNA וכרומוזומים</a>
+    <a class="tab" href="#replication">שכפול</a>
+    <a class="tab" href="#repair">תיקון ורקומבינציה</a>
+    <a class="tab" href="#transcription">שעתוק</a>
+    <a class="tab" href="#processing">עיבוד RNA</a>
+    <a class="tab" href="#translation">תרגום</a>
+    <a class="tab" href="#genecontrol">בקרת גנים</a>
+    <a class="tab" href="#methods">שיטות מחקר</a>
+  </div>
+</div>
+
+<main>
+<section class="section" style="padding-top:20px">
+<div class="section__inner">
+
+  <div class="alert alert--info">
+    <span class="alert__icon"><i class="fa-solid fa-circle-info"></i></span>
+    <div class="alert__body"><span class="alert__title">איך ללמוד מכאן</span>המבחן אוהב כיווניות (5′→3′), מי-עושה-מה (איזה אנזים/גורם), והבחנות בין מנגנונים דומים — וגם תרחישי מעבדה. בסוף — <a href="tirgul.html#mol">לתרגול במולקולרית</a>.</div>
+  </div>
+
+  <!-- DNA -->
+  <div class="panel" id="dna">
+    <h2>DNA, כרומוזומים וגנום</h2>
+    <p>ה-DNA נארז בכרומטין: <b>נוקלאוזום</b> = אוקטמר היסטונים (שני עותקים מכל אחד מ-H2A, H2B, H3, H4) שסביבו כרוכים כ-147 זוגות בסיסים. היסטון המקשר <b>H1</b> נקשר ל-DNA המקשר בין נוקלאוזומים ומסייע לדחיסה לסיב 30 ננומטר. כרומטין פתוח (אוכרומטין) פעיל שעתוקית; דחוס (הטרוכרומטין) מושתק.</p>
+    <p><b>טלומרים</b> מגנים על קצות הכרומוזומים. בעיית קצה השכפול נפתרת ע"י <b>טלומראז</b> — שעתוק-לאחור (reverse transcriptase) הנושא רכיב RNA פנימי כתבנית להוספת חזרות לקצה ה-3′.</p>
+    <div class="chips">
+      <span class="termcard"><b>נוקלאוזום</b><span>nucleosome</span></span>
+      <span class="termcard"><b>היסטון</b><span>histone</span></span>
+      <span class="termcard"><b>טלומראז</b><span>telomerase</span></span>
+    </div>
+  </div>
+
+  <!-- שכפול -->
+  <div class="panel" id="replication">
+    <h2>שכפול DNA</h2>
+    <p>שמרני-למחצה. <b>DNA-פולימראז</b> מסנתז אך ורק בכיוון <b>5′→3′</b>, ומוסיף נוקלאוטיד לקצה ה-3′-OH החופשי. לכן:</p>
+    <table class="t">
+      <tr><th>שחקן</th><th>תפקיד</th></tr>
+      <tr><td><b>הליקאז</b></td><td>פותח את הסליל הכפול במזלג</td></tr>
+      <tr><td><b>פרימאז</b></td><td>מסנתז פריימר RNA קצר (כי הפולימראז אינו יכול להתחיל מאפס)</td></tr>
+      <tr><td><b>DNA-פולימראז</b></td><td>מאריך 5′→3′; בעל פעילות תיקון (proofreading) אקסונוקלאז 3′→5′</td></tr>
+      <tr><td><b>ליגאז</b></td><td>מאחה מקטעים (סוגר nick)</td></tr>
+    </table>
+    <p>הגדיל ה<b>מוביל</b> נבנה ברציפות; הגדיל ה<b>מפגר</b> נבנה במקטעי <b>אוקזאקי</b> קצרים (כי כיוון הסינתזה הפוך לכיוון פתיחת המזלג). נאמנות גבוהה: התאמת בסיסים + proofreading + תיקון אי-התאמה לאחר השכפול.</p>
+    <div class="chips">
+      <span class="termcard"><b>גדיל מוביל/מפגר</b><span>leading/lagging</span></span>
+      <span class="termcard"><b>מקטעי אוקזאקי</b><span>Okazaki</span></span>
+      <span class="termcard"><b>תיקון תוך-כדי</b><span>proofreading</span></span>
+    </div>
+  </div>
+
+  <!-- תיקון -->
+  <div class="panel" id="repair">
+    <h2>תיקון DNA ורקומבינציה</h2>
+    <ul>
+      <li><b>תיקון אי-התאמה</b> (mismatch repair): מתקן זיווגים שגויים שחמקו מה-proofreading; ביונקים מזהה את הגדיל החדש לפי חריצים (nicks).</li>
+      <li><b>כריתת בסיס</b> (BER): גליקוזילאז מסיר בסיס פגום בודד → אתר AP → אנדונוקלאז → מילוי וסגירה.</li>
+      <li><b>כריתת נוקלאוטיד</b> (NER): מסיר אוליגונוקלאוטיד שלם סביב נגע מעוות-סליל (כמו דימרי תימין).</li>
+    </ul>
+    <div class="keybox"><b>שבר דו-גדילי — שני מסלולים:</b> <b>רקומבינציה הומולוגית (HR)</b> — מדויקת, משתמשת בכרומטיד האחות כתבנית (בעיקר S/G2); לאחר resection ל-זנב 3′ חד-גדילי, <b>RAD51</b> מצפה אותו ומקדם פלישת גדיל; <b>רזולבאז</b> פותר את צומת הולידיי. <b>NHEJ</b> — מחבר קצוות ישירות ללא תבנית, מהיר אך עלול לאבד נוקלאוטידים.</div>
+    <div class="chips">
+      <span class="termcard"><b>רקומבינציה הומולוגית</b><span>HR</span></span>
+      <span class="termcard"><b>RAD51</b><span>RAD51</span></span>
+      <span class="termcard"><b>צומת הולידיי</b><span>Holliday junction</span></span>
+    </div>
+  </div>
+
+  <!-- שעתוק -->
+  <div class="panel" id="transcription">
+    <h2>שעתוק</h2>
+    <p>ביונקים שלוש פולימראזות: <b>RNA-pol I</b> (rRNA), <b>II</b> (mRNA — רגיש לאלפא-אמניטין), <b>III</b> (tRNA, 5S rRNA). אתחול ב-pol II דורש <b>גורמי שעתוק כלליים</b>: <b>TFIID</b> (מכיל TBP שקושר את קופסת ה-TATA), אחריו TFIIB, TFIIF, TFIIE ו-<b>TFIIH</b> (הליקאז/קינאז שפותח את ה-DNA ומזרחן את הזנב הקרבוקסילי של הפולימראז).</p>
+    <div class="keybox"><b>פרוקריוטי מול אאוקריוטי:</b> בחיידק תת-היחידה <b>סיגמא</b> שבהולואנזים מזהה ישירות את רצפי הפרומוטר (-10, -35). באאוקריוטים הפולימראז אינו מזהה פרומוטר לבדו ונדרשים גורמי השעתוק הכלליים.</div>
+    <div class="chips">
+      <span class="termcard"><b>גורם שעתוק כללי</b><span>TFII</span></span>
+      <span class="termcard"><b>TBP / קופסת TATA</b><span>TBP / TATA</span></span>
+      <span class="termcard"><b>גורם סיגמא</b><span>sigma factor</span></span>
+    </div>
+  </div>
+
+  <!-- עיבוד -->
+  <div class="panel" id="processing">
+    <h2>עיבוד RNA (אאוקריוטי)</h2>
+    <ul>
+      <li><b>כיפת 5′</b>: מתווספת מוקדם (תעתיק כ-25 נוקלאוטידים) — 7-מתיל-גואנוזין בקשר 5′-5′ טריפוספט בלתי-רגיל.</li>
+      <li><b>זנב פולי-A</b>: מתווסף בקצה 3′ בסיום.</li>
+      <li><b>שחבור</b> (splicing): הספלייסוזום (snRNP מסוג U1–U6) מסיר אינטרונים ומחבר אקסונים. <b>U1</b> מזהה את אתר ה-5′, <b>U2</b> את אתר ההסתעפות. אדנוזין באתר ההסתעפות תוקף את אתר ה-5′ ויוצר <b>לאסו</b> (lariat) בקשר 2′-5′.</li>
+    </ul>
+    <p><b>שחבור חלופי</b> מאפשר לגן יחיד לקודד כמה חלבונים. פגם באתר שחבור עלול להשאיר אינטרון, להכניס קודון עצירה מוקדם ולהוביל לחלבון קטוע או לפירוק התעתיק ב-NMD.</p>
+    <div class="chips">
+      <span class="termcard"><b>שחבור</b><span>splicing</span></span>
+      <span class="termcard"><b>ספלייסוזום</b><span>spliceosome</span></span>
+      <span class="termcard"><b>שחבור חלופי</b><span>alternative splicing</span></span>
+    </div>
+  </div>
+
+  <!-- תרגום -->
+  <div class="panel" id="translation">
+    <h2>תרגום (סינתזת חלבון)</h2>
+    <p>הקוד הגנטי <b>מנוון</b> (כמה קודונים לאותה חומצת אמינו) אך לא דו-משמעי. <b>אמינואציל-tRNA סינתטאז</b> טוען את חומצת האמינו הנכונה על ה-tRNA המתאים — שלב קריטי לנאמנות, כי הריבוזום בודק רק את זיווג קודון-אנטיקודון, לא את זהות חומצת האמינו.</p>
+    <p>הריבוזום: שלושה אתרים — <b>A</b> (כניסת aminoacyl-tRNA), <b>P</b> (peptidyl), <b>E</b> (יציאה). הקשר הפפטידי נוצר ע"י פעילות ה-rRNA (ריבוזים). באאוקריוטים האתחול: זיהוי <b>כיפת 5′</b> וסריקה עד קודון <b>AUG</b> הראשון (בחיידק: רצף שיין-דלגרנו). סיום: <b>גורם שחרור</b> מזהה קודון עצירה ומשחרר את הפוליפפטיד. <b>NMD</b> מפרק תעתיקים עם קודון עצירה מוקדם.</p>
+    <div class="chips">
+      <span class="termcard"><b>אמינואציל-tRNA סינתטאז</b><span>aminoacyl-tRNA synthetase</span></span>
+      <span class="termcard"><b>אתרי A/P/E</b><span>A/P/E sites</span></span>
+      <span class="termcard"><b>קוד מנוון</b><span>degenerate</span></span>
+    </div>
+  </div>
+
+  <!-- בקרת גנים -->
+  <div class="panel" id="genecontrol">
+    <h2>בקרת ביטוי גנים</h2>
+    <p><b>בחיידק — אופרונים:</b> ב<b>אופרון הלקטוז</b>, ה-Lac repressor חוסם שעתוק בהיעדר לקטוז; <b>CAP-cAMP</b> (משפעל חיובי) מגביר שעתוק כשהגלוקוז נמוך. ב<b>אופרון הטריפטופן</b>, טריפטופן הוא <b>קו-מדכא</b> — בריכוז גבוה הוא מפעיל את המדכא.</p>
+    <p><b>באאוקריוטים:</b> <b>מגבירים</b> (enhancers) פועלים גם ממרחק ע"י לולאת DNA המקרבת גורמי שעתוק לפרומוטר. בקרה <b>אפיגנטית</b>: מתילציה של CpG בפרומוטר → השתקה; שינויי היסטונים. בקרה פוסט-שעתוקית: <b>miRNA/RNAi</b> — גדיל מנחה ב-RISC מכוון לפירוק/עיכוב mRNA.</p>
+    <div class="chips">
+      <span class="termcard"><b>אופרון</b><span>operon</span></span>
+      <span class="termcard"><b>מגביר</b><span>enhancer</span></span>
+      <span class="termcard"><b>RNAi</b><span>RNAi</span></span>
+    </div>
+  </div>
+
+  <!-- שיטות -->
+  <div class="panel" id="methods">
+    <h2>שיטות מחקר</h2>
+    <table class="t">
+      <tr><th>שיטה</th><th>למה משמשת</th></tr>
+      <tr><td><b>PCR</b></td><td>הגברת DNA: פריימרים (קצה 3′-OH), דנטורציה בחום, היצמדות, התארכות ע"י Taq</td></tr>
+      <tr><td><b>אנזימי הגבלה + שיבוט</b></td><td>חיתוך ב"קצוות דביקים" משלימים; ליגאז מחבר וקטור ומקטע</td></tr>
+      <tr><td><b>ריצוף סנגר</b></td><td>סיום מוקדם ע"י דידאוקסי-נוקלאוטידים (חסרי 3′-OH)</td></tr>
+      <tr><td><b>ג'ל אלקטרופורזה</b></td><td>DNA טעון שלילית נודד לאנודה; מקטעים קטנים מהר ורחוק יותר</td></tr>
+      <tr><td><b>Southern / Northern / Western</b></td><td>DNA / RNA / חלבון (בהתאמה). חלבון מזוהה בנוגדנים</td></tr>
+      <tr><td><b>CRISPR-Cas9</b></td><td>gRNA מכוון את Cas9 (נוקלאז) לשבר דו-גדילי באתר ספציפי</td></tr>
+      <tr><td><b>GFP / מיקרוסקופ פלואורסצנטי</b></td><td>מעקב מיקום חלבון בתא חי; מגבלת רזולוציה כ-200 ננומטר</td></tr>
+    </table>
+    <div class="keybox"><b>זכרו את כלל ה-blot:</b> <b>S</b>outhern = <b>DNA</b>, <b>N</b>orthern = <b>RNA</b>, <b>W</b>estern = חלבון. בלבול ביניהם הוא טעות נפוצה במבחן.</div>
+    <div class="chips">
+      <span class="termcard"><b>אנזים הגבלה</b><span>restriction enzyme</span></span>
+      <span class="termcard"><b>ריצוף סנגר</b><span>Sanger sequencing</span></span>
+      <span class="termcard"><b>CRISPR-Cas9</b><span>CRISPR-Cas9</span></span>
+    </div>
+  </div>
+
+  <div class="center mt-m">
+    <a class="btn btn--lg" href="tirgul.html#mol"><i class="fa-solid fa-pen-to-square"></i> לתרגול במולקולרית</a>
+    <a class="btn btn--lg btn--ghost" href="nosim.html"><i class="fa-solid fa-rotate-left"></i> לכל הנושאים</a>
+  </div>
+
+</div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="foot__inner">
+    <span>מבחן הידע לרפואה · מאגר הכנה</span>
+    <span><a href="mekorot.html">מקורות וספרי לימוד</a></span>
+  </div>
+</footer>
+</body>
+</html>

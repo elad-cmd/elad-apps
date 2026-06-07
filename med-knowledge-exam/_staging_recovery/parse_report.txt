@@ -1,0 +1,6 @@
+מועד א מאי 2026: total=120 full4=116 bio=30 mol=30 cell=30 phys=30
+מועד ב מאי 2025: total=114 full4=98 bio=30 mol=30 cell=28 phys=26
+מועד ג יולי 2025: total=115 full4=47 bio=29 mol=29 cell=29 phys=28
+מועד יוני 2024: total=82 full4=62 bio=23 mol=16 cell=23 phys=20
+מועד מאי 2024: total=119 full4=118 bio=31 mol=30 cell=29 phys=29
+TOTAL=550 full4=441 partial=109

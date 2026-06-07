@@ -78,6 +78,10 @@
   .app-card__go i{transition:transform .25s ease}
   .app-card:hover .app-card__go i{transform:translateX(-5px)}
 
+  /* ===== Portal card (קישור חוצה לאינדקס אחר) ===== */
+  .app-card--portal{border:2px solid var(--pink);background:linear-gradient(180deg,#fff,#fff7f9)}
+  .app-card--portal .app-card__go{color:#c0566e}
+
   /* ===== Soon card ===== */
   .app-card--soon{border-style:dashed;background:transparent;box-shadow:none;align-items:center;justify-content:center;
       text-align:center;color:var(--text-light);min-height:230px}
@@ -104,7 +108,15 @@
   <h2 class="section__title">האפליקציות שלי</h2>
   <div class="grid">
 
-    <a class="app-card app-card--teal" href="histo-timeline.html">
+    <a class="app-card app-card--pink app-card--portal" href="https://learning-systems-tau.vercel.app/">
+      <div class="app-card__icon"><i class="fa-solid fa-graduation-cap"></i></div>
+      <span class="app-card__tag">פסיכו · אינדקס</span>
+      <h3 class="app-card__title">מערכות לימוד</h3>
+      <p class="app-card__desc">עמוד האינדקס של מערכות הלימוד של פסיכו — שער לכל מערכות הלימוד.</p>
+      <span class="app-card__go">למעבר לאינדקס <i class="fa-solid fa-arrow-left"></i></span>
+    </a>
+
+    <a class="app-card app-card--teal" href="https://elad-cmd.github.io/elad-apps/histo-timeline.html" target="_blank" rel="noopener">
       <div class="app-card__icon"><i class="fa-solid fa-timeline"></i></div>
       <span class="app-card__tag">היסטוריה</span>
       <h3 class="app-card__title">ציר הזמן</h3>
@@ -112,7 +124,7 @@
       <span class="app-card__go">פתיחה <i class="fa-solid fa-arrow-left"></i></span>
     </a>
 
-    <a class="app-card app-card--yellow" href="clear-dashboard/dist/index.html">
+    <a class="app-card app-card--yellow" href="https://elad-cmd.github.io/elad-apps/clear-dashboard/dist/index.html" target="_blank" rel="noopener">
       <div class="app-card__icon"><i class="fa-solid fa-list-check"></i></div>
       <span class="app-card__tag">פרודוקטיביות</span>
       <h3 class="app-card__title">משימות</h3>
@@ -120,7 +132,7 @@
       <span class="app-card__go">פתיחה <i class="fa-solid fa-arrow-left"></i></span>
     </a>
 
-    <a class="app-card app-card--purple" href="mivdak-tanach/index.html">
+    <a class="app-card app-card--purple" href="https://mivdak-tanach.vercel.app/" target="_blank" rel="noopener">
       <div class="app-card__icon"><i class="fa-solid fa-scroll"></i></div>
       <span class="app-card__tag">לימודים</span>
       <h3 class="app-card__title">מבדק תנ"ך</h3>
@@ -128,7 +140,7 @@
       <span class="app-card__go">פתיחה <i class="fa-solid fa-arrow-left"></i></span>
     </a>
 
-    <a class="app-card app-card--blue" href="med-knowledge-exam/index.html">
+    <a class="app-card app-card--blue" href="https://elad-cmd.github.io/elad-apps/med-knowledge-exam/index.html" target="_blank" rel="noopener">
       <div class="app-card__icon"><i class="fa-solid fa-heart-pulse"></i></div>
       <span class="app-card__tag">לימודים</span>
       <h3 class="app-card__title">מבחן הידע לרפואה</h3>

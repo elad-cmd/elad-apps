@@ -29,13 +29,12 @@
 
 <div class="pagehead">
   <h1>תרגול</h1>
-  <p>שאלות לדוגמה רשמיות, ושאלות נוספות שנכתבו בסגנון המבחן. בחרו לשונית.</p>
+  <p>בכל נושא: שאלות רשמיות לדוגמה ושאלות לתרגול, עם בדיקה מיידית והסבר. בחרו נושא.</p>
 </div>
 
 <div class="tabbar" id="tabs">
   <div class="tabbar__inner">
-    <button class="tab active" data-tab="official"><i class="fa-solid fa-certificate"></i> שאלות רשמיות</button>
-    <button class="tab" data-tab="biochem"><i class="fa-solid fa-flask"></i> ביוכימיה</button>
+    <button class="tab active" data-tab="biochem"><i class="fa-solid fa-flask"></i> ביוכימיה</button>
     <button class="tab" data-tab="mol"><i class="fa-solid fa-dna"></i> מולקולרית</button>
     <button class="tab" data-tab="cell"><i class="fa-solid fa-circle-nodes"></i> ביולוגיה של התא</button>
     <button class="tab" data-tab="physio"><i class="fa-solid fa-heart-pulse"></i> פיזיולוגיה</button>
@@ -128,10 +127,9 @@ function makeCard(it, idx, isOfficial){
   card.className = 'quiz ' + (isOfficial ? 'is-official' : 'is-added');
   let tags = '<div class="tags">';
   if(isOfficial){
-    tags += '<span class="quiz__tag quiz__tag--official"><i class="fa-solid fa-certificate"></i> שאלה רשמית</span>';
-    if(it.subj){ tags += '<span class="quiz__tag quiz__tag--added">' + SUBJ[it.subj] + '</span>'; }
+    tags += '<span class="quiz__tag quiz__tag--official"><i class="fa-solid fa-certificate"></i> שאלה רשמית לדוגמה</span>';
   } else {
-    tags += '<span class="quiz__tag quiz__tag--added"><i class="fa-solid fa-pen"></i> בסגנון המבחן</span>';
+    tags += '<span class="quiz__tag quiz__tag--added"><i class="fa-solid fa-pen"></i> שאלה לתרגול</span>';
     if(it.topic){ tags += '<span class="quiz__tag">' + it.topic + '</span>'; }
   }
   tags += '<span class="quiz__tag">שאלה ' + (idx+1) + '</span></div>';
@@ -163,14 +161,13 @@ function makeCard(it, idx, isOfficial){
 
 function render(tab){
   root.innerHTML='';
-  if(tab==='official'){
-    banner.innerHTML='<div class="alert alert--warning" style="margin-bottom:16px"><span class="alert__icon"><i class="fa-solid fa-circle-info"></i></span><div class="alert__body"><span class="alert__title">18 שאלות לדוגמה רשמיות, מהאתר של אוניברסיטת תל אביב</span>השאלות מובאות כלשונן מהמקור הרשמי. ה-PDF הרשמי אינו כולל מפתח תשובות, ולכן התשובות וההסברים כאן הם פתרון שלי (לא מפתח רשמי). השאלות מעורבבות בין כל ארבעת המקצועות, כמו במבחן עצמו.</div></div>';
-    OFFICIAL.forEach(function(it,idx){ root.appendChild(makeCard(it,idx,true)); });
-  } else {
-    const bank = PRACTICE[tab] || [];
-    banner.innerHTML='<div class="alert alert--info" style="margin-bottom:16px"><span class="alert__icon"><i class="fa-solid fa-pen"></i></span><div class="alert__body"><span class="alert__title">שאלות תרגול, '+SUBJ[tab]+' ('+bank.length+' שאלות)</span>שאלות שנכתבו בסגנון ובנושאי המבחן (לא שאלות רשמיות), עם בדיקה מיידית והסבר.</div></div>';
-    bank.forEach(function(it,idx){ root.appendChild(makeCard(it,idx,false)); });
-  }
+  const officials = OFFICIAL.filter(function(it){ return it.subj===tab; });
+  const bank = PRACTICE[tab] || [];
+  const total = officials.length + bank.length;
+  banner.innerHTML='<div class="alert alert--info" style="margin-bottom:16px"><span class="alert__icon"><i class="fa-solid fa-layer-group"></i></span><div class="alert__body"><span class="alert__title">'+SUBJ[tab]+' — '+total+' שאלות לתרגול</span><span class="quiz__tag quiz__tag--official"><i class="fa-solid fa-certificate"></i> '+officials.length+' שאלות רשמיות לדוגמה</span> <span class="quiz__tag quiz__tag--added"><i class="fa-solid fa-pen"></i> '+bank.length+' שאלות לתרגול</span></div></div>';
+  let n=0;
+  officials.forEach(function(it){ root.appendChild(makeCard(it,n++,true)); });
+  bank.forEach(function(it){ root.appendChild(makeCard(it,n++,false)); });
 }
 
 const tabs=document.querySelectorAll('#tabs .tab');
@@ -179,8 +176,8 @@ function show(id){
   render(id);
 }
 tabs.forEach(function(t){ t.addEventListener('click', function(){ show(t.dataset.tab); history.replaceState(null,'','#'+t.dataset.tab); }); });
-const valid = ['official','biochem','mol','cell','physio'];
-const start = (location.hash && valid.indexOf(location.hash.slice(1))>=0) ? location.hash.slice(1) : 'official';
+const valid = ['biochem','mol','cell','physio'];
+const start = (location.hash && valid.indexOf(location.hash.slice(1))>=0) ? location.hash.slice(1) : 'biochem';
 show(start);
 </script>
 </body>

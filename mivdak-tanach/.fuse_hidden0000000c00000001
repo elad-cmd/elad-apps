@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>תרגול אינטראקטיבי – בסגנון המבדק</title>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="psycho-components.css">
+<link rel="stylesheet" href="tanakh.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="index.html">
+      <span class="brand__logo">ת</span>
+      <span class="brand__name">מאגר מבדק תנ״ך<small>כיתה ו' · תנופה תשפ"ו</small></span>
+    </a>
+    <nav class="nav">
+      <a href="index.html">בית</a>
+      <a href="matzeget.html">על המבדק</a>
+      <a href="nosim.html">נושאים וסיכומים</a>
+      <a href="tirgul.html" class="active">תרגול</a>
+      <a href="zman.html">ציר זמן</a>
+      <a href="morim.html">אזור מורה</a>
+      <a href="mekorot.html">מקורות</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-head page-head--center container">
+    <h1 class="page-head__title">תרגול בסגנון המבדק</h1>
+    <p class="page-head__subtitle">שאלות אינטראקטיביות עם בדיקה עצמית מיידית. לחצו על תשובה או הקלידו וקבלו משוב.</p>
+  </div>
+
+  <div class="tabbar" id="topicTabs">
+    <div class="tabbar__inner">
+      <button class="tab" data-target="u1">חוקים חברתיים</button>
+      <button class="tab" data-target="u2">חלומות יוסף</button>
+      <button class="tab" data-target="shneim">שניים וחצי השבטים</button>
+      <button class="tab" data-target="kibush">כיבוש הארץ</button>
+      <button class="tab" data-target="shoftim">שופטים</button>
+      <button class="tab" data-target="u3">בקיאות</button>
+      <button class="tab" data-target="avot">האבות</button>
+      <button class="tab" data-target="mitzrayim">יציאת מצרים</button>
+      <button class="tab" data-target="lang">לשון</button>
+      <button class="tab" data-target="sifrut">אמצעים ספרותיים</button>
+      <button class="tab" data-target="mapa">מפות</button>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="section__inner" id="topicHost">
+      <!-- ===== יחידה 1 ===== -->
+      <h2 class="section__title" id="u1" style="margin-top:18px"><span class="pill pill--accent">חוקים חברתיים</span> ויקרא י״ט · מתוך נושאי הלימוד (ה'–ו')</h2>
+
+      <div class="quiz is-official" data-type="mc" data-explain="שני החוקים עוסקים ביושר ובאמינות — להימנע משקר, מהכחשה ומגנֵבה. הערך המשותף הוא יושר.">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">רב-ברירה</span></div>
+        <p class="quiz__q">לפניכם שני חוקים: “וְלֹא תְשַׁקְּרוּ אִישׁ בַּעֲמִיתוֹ” · “לֹא תִגְנֹבוּ וְלֹא תְכַחֲשׁוּ”. מהו הערך המשותף להם?</p>
+        <div class="opts">
+          <div class="opt" data-correct="false">עזרה לזולת</div>
+          <div class="opt" data-correct="false">סבלנות</div>
+          <div class="opt" data-correct="true">יושר</div>
+          <div class="opt" data-correct="false">אחריות</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-official" data-type="mc" data-explain="שני החוקים דורשים לכבד אנשים מבוגרים — לקום מפניהם ולהדר את פניהם.">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">רב-ברירה</span></div>
+        <p class="quiz__q">“מִפְּנֵי שֵׂיבָה תָּקוּם” · “וְהָדַרְתָּ פְּנֵי זָקֵן” — מה משותף לשני החוקים?</p>
+        <div class="opts">
+          <div class="opt" data-correct="false">הדרישה להסכים עם אנשים מבוגרים</div>
+          <div class="opt" data-correct="true">הדרישה לכבד אנשים מבוגרים</div>
+          <div class="opt" data-correct="false">הדרישה ללמוד מאנשים מבוגרים</div>
+          <div class="opt" data-correct="false">הדרישה לציית לאנשים מבוגרים</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-official" data-type="open-check" data-min="3"
+        data-points="גֵר / זר::גר|זר|זרים|גרים;;חֵרֵשׁ::חרש|חירש;;עיוור::עיוור|עוור|עיור;;שכיר / עובד::שכיר|עובד|פועל|שכירים;;זקֵן / מבוגר::זקן|שיבה|מבוגר|קשיש">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">פתוחה</span></div>
+        <p class="quiz__q">לפניכם פסוקים מתוך ויקרא י"ט. כתבו שלוש דוגמאות לאנשים הזקוקים להגנה או לסיוע המוזכרים בהם:</p>
+        <div class="qverse"><span class="ref">ויקרא י"ט · פסוקים נבחרים</span>“לֹא תַעֲשֹׁק אֶת רֵעֲךָ… לֹא תָלִין פְּעֻלַּת שָׂכִיר אִתְּךָ עַד בֹּקֶר” (יג) · “לֹא תְקַלֵּל חֵרֵשׁ, וְלִפְנֵי עִוֵּר לֹא תִתֵּן מִכְשֹׁל…” (יד) · “מִפְּנֵי שֵׂיבָה תָּקוּם וְהָדַרְתָּ פְּנֵי זָקֵן…” (לב) · “וְכִי יָגוּר אִתְּךָ גֵּר בְּאַרְצְכֶם, לֹא תוֹנוּ אֹתוֹ. כְּאֶזְרָח מִכֶּם יִהְיֶה לָכֶם הַגֵּר… וְאָהַבְתָּ לוֹ כָּמוֹךָ…” (לג–לד)</div>
+        <textarea placeholder="כתבו שלוש דוגמאות..."></textarea>
+        <button class="btn checkbtn"><i class="fa-solid fa-wand-magic-sparkles"></i> בדיקת תשובה</button>
+        <div class="feedback"></div>
+        <details class="model"><summary>הצגת תשובה</summary><p>למשל: הגֵר (“כְּאֶזְרָח מִכֶּם יִהְיֶה לָכֶם הַגֵּר”), החֵרֵשׁ והעיוור (“לֹא תְקַלֵּל חֵרֵשׁ וְלִפְנֵי עִוֵּר…”), והשכיר/העובד (“לֹא תָלִין פְּעֻלַּת שָׂכִיר”). אפשר גם הזקֵן (“מִפְּנֵי שֵׂיבָה תָּקוּם”).</p></details>
+      </div>
+
+      <div class="quiz is-official" data-type="match">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">התאמה</span></div>
+        <p class="quiz__q">התאימו לכל הסבר את החוק המתאים — לחצו על פריט אחד ואז על ההתאמה שלו בצד השני.</p>
+        <div class="match">
+          <div class="match__col">
+            <span class="match__head">ההסבר בלשון ימינו</span>
+            <button class="mitem" data-k="hagar" data-lbl="א">א. יחס שווה לזרים שנמצאים איתך בארצך</button>
+            <button class="mitem" data-k="rachil" data-lbl="ב">ב. אסור לספר על אחרים דברים שעלולים לפגוע בהם</button>
+            <button class="mitem" data-k="dam" data-lbl="ג">ג. כשאדם בסכנה — עליך להציל ולא להתעלם</button>
+            <button class="mitem" data-k="sachir" data-lbl="ד">ד. יש לשלם לעובד בזמן ולא לעכב את התשלום</button>
+          </div>
+          <div class="match__col">
+            <span class="match__head">החוק בלשון התורה</span>
+            <button class="mopt" data-k="sachir">“לֹא תָלִין פְּעֻלַּת שָׂכִיר”</button>
+            <button class="mopt" data-k="dam">“לֹא תַעֲמֹד עַל דַּם רֵעֶךָ”</button>
+            <button class="mopt" data-k="">“לֹא תַעֲשׂוּ עָוֶל בַּמִּשְׁפָּט”</button>
+            <button class="mopt" data-k="hagar">“כְּאֶזְרָח מִכֶּם יִהְיֶה לָכֶם הַגֵּר”</button>
+            <button class="mopt" data-k="rachil">“לֹא תֵלֵךְ רָכִיל בְּעַמֶּיךָ”</button>
+          </div>
+        </div>
+        <p class="match__hint">שימו לב — יש חוק אחד מיותר.</p>
+        <div class="feedback"></div>
+        <details class="model"><summary>הצגת התשובה</summary><p>א ← “כְּאֶזְרָח מִכֶּם…” · ב ← “לֹא תֵלֵךְ רָכִיל” · ג ← “לֹא תַעֲמֹד עַל דַּם רֵעֶךָ” · ד ← “לֹא תָלִין פְּעֻלַּת שָׂכִיר”.</p></details>
+      </div>
+
+      <div class="quiz is-official" data-type="match">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">התאמה</span></div>
+        <p class="quiz__q">לכל מקרה שקרה לילדים בכיתה ו' — התאימו את החוק שממנו לומדים כיצד לנהוג. לחצו על פריט אחד ואז על ההתאמה שלו בצד השני.</p>
+        <div class="match">
+          <div class="match__col">
+            <span class="match__head">המקרה</span>
+            <button class="mitem" data-k="tzedek" data-lbl="א">א. המדריכה הקשיבה רק לנגה ולא ליעל</button>
+            <button class="mitem" data-k="tikom" data-lbl="ב">ב. דניאל לא השאיל מחק כי עידו לא השאיל לו בעבר</button>
+            <button class="mitem" data-k="cheresh" data-lbl="ג">ג. ילדים לעגו לילד אחר שלא יכול היה לשמוע ולהגיב</button>
+            <button class="mitem" data-k="iver" data-lbl="ד">ד. נועם הטעה את אחיו והחליף קלף רגיל כ"נדיר"</button>
+          </div>
+          <div class="match__col">
+            <span class="match__head">החוק</span>
+            <button class="mopt" data-k="cheresh">“לֹא תְקַלֵּל חֵרֵשׁ”</button>
+            <button class="mopt" data-k="tikom">“לֹא תִקֹּם וְלֹא תִטֹּר”</button>
+            <button class="mopt" data-k="iver">“וְלִפְנֵי עִוֵּר לֹא תִתֵּן מִכְשֹׁל”</button>
+            <button class="mopt" data-k="">“כְּאֶזְרָח מִכֶּם יִהְיֶה לָכֶם הַגֵּר”</button>
+            <button class="mopt" data-k="tzedek">“בְּצֶדֶק תִּשְׁפֹּט עֲמִיתֶךָ”</button>
+          </div>
+        </div>
+        <p class="match__hint">שימו לב — יש חוק אחד מיותר.</p>
+        <div class="feedback"></div>
+        <details class="model"><summary>הצגת התשובה</summary><p>א ← “בְּצֶדֶק תִּשְׁפֹּט עֲמִיתֶךָ” · ב ← “לֹא תִקֹּם וְלֹא תִטֹּר” · ג ← “לֹא תְקַלֵּל חֵרֵשׁ” · ד ← “וְלִפְנֵי עִוֵּר לֹא תִתֵּן מִכְשֹׁל”.</p></details>
+      </div>
+
+      <div class="quiz is-official" data-type="open">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">פתוחה · ערכים</span></div>
+        <p class="quiz__q">בחרו חוק אחד שהייתם רוצים להוסיף לחוקי הכיתה: “וְאָהַבְתָּ לְרֵעֲךָ כָּמוֹךָ” / “לֹא תֵלֵךְ רָכִיל” / “לֹא תַעֲמֹד עַל דַּם רֵעֶךָ”. הסבירו כיצד החוק שבחרתם עשוי לתרום לאווירה בכיתה.</p>
+        <details class="model"><summary>הצגת תשובה לדוגמה</summary><p>לדוגמה — “לֹא תֵלֵךְ רָכִיל”: כשלא מרכלים ולא מספרים דברים רעים מאחורי הגב, נשמרת אווירה של אמון; כל ילד מרגיש בטוח, וכך פחות ריבים ויותר חברוּת.</p></details>
+      </div>
+
+      <!-- ===== שופטים (השלמת פער) ===== -->
+      <h2 class="section__title" id="shoftim" style="margin-top:8px"><span class="pill pill--accent">שופטים</span> תקופת השופטים — דבורה, גדעון, שמשון</h2>
+      <p class="muted" style="margin:0 0 6px">נושא מרכזי בכיתה ו' שלא הופיע בדוגמה הרשמית — כל השאלות חוברו באותו סגנון ורמה, לפי תכנית הלימודים ומערכי 929.</p>
+
+      <div class="quiz is-added" data-type="mc" data-explain="המעגל: העם חוטא ← אויב משעבד (עונש) ← העם זועק ← ה' מקים שופט שמושיע (הצלה).">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · מבנה</span></div>
+        <p class="quiz__q">ספר שופטים בנוי על "מעגל חוזר". מהו הסדר הנכון של שלביו?</p>
+        <div class="opts">
+          <div class="opt" data-correct="false">חטא ← זעקה ← עונש ← הצלה</div>
+          <div class="opt" data-correct="true">חטא ← עונש ← זעקה ← הצלה</div>
+          <div class="opt" data-correct="false">עונש ← חטא ← זעקה ← הצלה</div>
+          <div class="opt" data-correct="false">זעקה ← חטא ← עונש ← הצלה</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="דבורה הנביאה והשופטת הנהיגה את המלחמה יחד עם ברק בן אבינועם (שופטים ד'–ה'). יעל היא זו שהרגה את סיסרא באוהל, אך לא הנהיגה את המלחמה.">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · דמויות</span></div>
+        <p class="quiz__q">מי הנהיגה את המלחמה נגד סיסרא, שר צבא כנען?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">דבורה (יחד עם ברק)</div>
+          <div class="opt" data-correct="false">יעל</div>
+          <div class="opt" data-correct="false">מרים</div>
+          <div class="opt" data-correct="false">רחל</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="fill" data-answer="300|שלוש מאות|שלוש-מאות" data-explain="ה' צמצם את צבא גדעון ל-300 לוחמים בלבד, כדי שיהיה ברור שהניצחון מאת ה' ולא מכוח האדם (שופטים ז').">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">השלמה</span></div>
+        <p class="quiz__q">גדעון ניצח את צבא מדיין הגדול עם ______ לוחמים בלבד.</p>
+        <input type="text" placeholder="מספר...">
+        <button class="btn checkbtn"><i class="fa-solid fa-check"></i> בדיקה</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="נכון. שמשון היה נזיר מבטן, וכוחו היה קשור לשערו; כשדלילה גרמה לגזיזת שערו — כוחו סר (שופטים י״ג–ט״ז).">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">נכון / לא נכון</span></div>
+        <p class="quiz__q">היגד: "שמשון היה נזיר מבטן, ואחד מסימני נזירותו היה שלא גזז את שערו." נכון או לא נכון?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">נכון</div>
+          <div class="opt" data-correct="false">לא נכון</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="open-check"
+        data-points="הניצחון בא מה' ולא מכוח האדם::מאת ה|אלוהים|השם|לא בכוח|לא מכוח|מכוחו|בכוחו|לא בזכות|ה הושיע|ה ניצח|בזכות ה|הביא לניצחון;;צמצום מספר הלוחמים::300|שלוש מאות|מעט|הקטין|צמצם|פחות;;הערך — ענווה/צניעות::ענוה|ענווה|צניעות|צנוע|לא להתגאות|לא להתפאר|לא בזכותי">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">פתוחה · ערכים</span></div>
+        <p class="quiz__q">ה' ביקש מגדעון להילחם עם 300 לוחמים בלבד במקום אלפים. הסבירו מדוע, ואיזה ערך אפשר ללמוד מכך.</p>
+        <textarea placeholder="כתבו את תשובתכם כאן..."></textarea>
+        <button class="btn checkbtn"><i class="fa-solid fa-wand-magic-sparkles"></i> בדיקת תשובה</button>
+        <div class="feedback"></div>
+        <details class="model"><summary>הצגת תשובה לדוגמה</summary><p>כדי שיהיה ברור שהניצחון בא מה' ולא מכוחו וגבורתו של האדם (“פֶּן יִתְפָּאֵר עָלַי יִשְׂרָאֵל לֵאמֹר יָדִי הוֹשִׁיעָה לִּי”). הערך: <b>ענווה / צניעות</b> — להכיר שההצלחה אינה רק בזכותי, ולא להתגאות.</p></details>
+      </div>
+
+      <!-- ===== כיבוש הארץ (השלמת פער) ===== -->
+      <h2 class="section__title" id="kibush" style="margin-top:8px"><span class="pill pill--accent">כיבוש הארץ</span> ספר יהושע — רחב, הירדן, יריחו והעי</h2>
+      <p class="muted" style="margin:0 0 6px">נושא מרכזי בכיתה ו' שלא הופיע בדוגמה הרשמית — כל השאלות חוברו באותו סגנון ורמה, לפי תכנית הלימודים ומערכי 929.</p>
+
+      <div class="quiz is-added" data-type="mc" data-explain="רחב, אישה מיריחו, הסתירה את שני המרגלים ששלח יהושע, ובזכות זה ניצלה היא ומשפחתה בכיבוש העיר (יהושע ב').">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · דמויות</span></div>
+        <p class="quiz__q">מי הסתירה את שני המרגלים ששלח יהושע אל יריחו?</p>
+        <div class="opts">
+          <div class="opt" data-correct="false">דבורה</div>
+          <div class="opt" data-correct="false">יעל</div>
+          <div class="opt" data-correct="true">רחב</div>
+          <div class="opt" data-correct="false">מרים</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="fill" data-answer="שבעה|7|שבעת ימים|שבעה ימים" data-explain="בני ישראל הקיפו את יריחו פעם ביום במשך שבעה ימים, וביום השביעי — לאחר תקיעת השופרות ותרועת העם — נפלו חומות העיר (יהושע ו').">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">השלמה</span></div>
+        <p class="quiz__q">בני ישראל הקיפו את העיר יריחו במשך ______ ימים, וביום האחרון נפלו חומות העיר.</p>
+        <input type="text" placeholder="מספר הימים...">
+        <button class="btn checkbtn"><i class="fa-solid fa-check"></i> בדיקה</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="נכון. מי הירדן נעצרו (“וַיַּעַמְדוּ”) ובני ישראל עברו ביבשה בתוך הירדן, בדומה לקריעת ים סוף (יהושע ג').">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">נכון / לא נכון</span></div>
+        <p class="quiz__q">היגד: "בכניסה לארץ מי הירדן נעצרו, ובני ישראל עברו את הירדן ביבשה." נכון או לא נכון?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">נכון</div>
+          <div class="opt" data-correct="false">לא נכון</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="עכן לקח מן השלל שהוחרם (“מן החֵרֶם”), ובגלל חטא זה נכשלו בני ישראל בקרב הראשון על העי. רק לאחר שהדבר התברר וטופל — ניצחו (יהושע ז'–ח').">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · הסקה</span></div>
+        <p class="quiz__q">מדוע נכשלו בני ישראל בקרב הראשון על העיר העַי?</p>
+        <div class="opts">
+          <div class="opt" data-correct="false">כי הלוחמים היו עייפים מהקרב על יריחו</div>
+          <div class="opt" data-correct="true">בגלל חטא עכן, שלקח מן השלל שהוחרם</div>
+          <div class="opt" data-correct="false">כי לא היו להם מספיק לוחמים</div>
+          <div class="opt" data-correct="false">כי יהושע לא הוביל אותם בעצמו</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="open-check"
+        data-points="אות וזיכרון לדורות::זיכרון|זכרון|אות|לזכור|יזכרו|לדורות|לדור|להזכיר;;שהילדים ישאלו ויספרו להם::ישאלו|כששאל|ישאל|לספר|יספרו|מה האבנים|בניכם;;הנס בחציית הירדן::נס|הירדן|נעצר|נעצרו|עברו ביבשה|מה שעשה|פלא|ה הראה">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">פתוחה · ערכים</span></div>
+        <p class="quiz__q">לאחר חציית הירדן ציווה יהושע להקים שתים-עשרה אבנים לזיכרון. מה מטרת האבנים, ומה הילדים בדורות הבאים אמורים ללמוד מהן?</p>
+        <textarea placeholder="כתבו את תשובתכם כאן..."></textarea>
+        <button class="btn checkbtn"><i class="fa-solid fa-wand-magic-sparkles"></i> בדיקת תשובה</button>
+        <div class="feedback"></div>
+        <details class="model"><summary>הצגת תשובה לדוגמה</summary><p>האבנים הן <b>אות וזיכרון לדורות</b>: כשהילדים בעתיד ישאלו "מה האבנים האלה?", יספרו להם על הנס שה' עשה כשעצר את מי הירדן והעביר את העם ביבשה. הערך: <b>זיכרון והעברת המסורת בין הדורות</b> — לזכור ולהודות על מה שנעשה למען העם. (ולמספר יש משמעות: <b>שתים-עשרה האבנים — כמספר שנים-עשר שבטי ישראל</b>, אבן לכל שבט.)</p></details>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="לפני הכניסה לארץ חזר ה' וחיזק את יהושע במילים “חֲזַק וֶאֱמָץ” — אל תפחד ואל תיחת, כי ה' עִמּו (יהושע א').">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · לשון</span></div>
+        <p class="quiz__q">באיזה ציווי חוזר חיזק ה' את יהושע לפני הכניסה לארץ?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">“חֲזַק וֶאֱמָץ”</div>
+          <div class="opt" data-correct="false">“לֶךְ לְךָ”</div>
+          <div class="opt" data-correct="false">“שַׁל נְעָלֶיךָ”</div>
+          <div class="opt" data-correct="false">“פְּרוּ וּרְבוּ”</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="רחב קשרה בחלון חוט אדום (“תִּקְוַת חוּט הַשָּׁנִי”) כסימן למרגלים, וכך ניצלו היא וכל בני משפחתה בכיבוש יריחו (יהושע ב').">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · דמויות</span></div>
+        <p class="quiz__q">באיזה סימן השתמשה רחב כדי שבני ישראל יזהו את ביתה ויחוסו עליה?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">חוט שני (אדום) קשור בחלון</div>
+          <div class="opt" data-correct="false">דגל לבן על הגג</div>
+          <div class="opt" data-correct="false">נר דולק בחלון בלילה</div>
+          <div class="opt" data-correct="false">ענף זית קשור בפתח</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="נכון. רחב סיפרה למרגלים שאנשי כנען שמעו על קריעת ים סוף ועל ניצחונות ישראל — “וַיִּמַּס לְבָבֵנוּ”, פחד גדול נפל עליהם (יהושע ב').">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">נכון / לא נכון</span></div>
+        <p class="quiz__q">היגד: "רחב סיפרה למרגלים שאנשי כנען פוחדים מאוד מבני ישראל, כי שמעו מה עשה להם ה'." נכון או לא נכון?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">נכון</div>
+          <div class="opt" data-correct="false">לא נכון</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="fill" data-answer="שתים עשרה|שתים-עשרה|12|שנים עשר|שנים-עשר|שתים עשרה אבנים" data-explain="מתוך הירדן נטלו שתים-עשרה אבנים — כמספר שנים-עשר שבטי ישראל — והקימו מהן גל זיכרון (יהושע ד').">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">השלמה</span></div>
+        <p class="quiz__q">בני ישראל נטלו מתוך הירדן ______ אבנים — כמספר שבטי ישראל — להקים מהן זיכרון. כמה אבנים?</p>
+        <input type="text" placeholder="מספר האבנים...">
+        <button class="btn checkbtn"><i class="fa-solid fa-check"></i> בדיקה</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="סביב יריחו נשאו הכוהנים את אֲרוֹן ה', ולפניו תקעו בשבעה שופרות; ביום השביעי הקיפו שבע פעמים, ובתרועת העם נפלו החומות (יהושע ו').">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · ידע</span></div>
+        <p class="quiz__q">מה נשאו הכוהנים בהקפות סביב חומות יריחו?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">את ארון ה' ושבעה שופרות</div>
+          <div class="opt" data-correct="false">את לוחות הברית בלבד</div>
+          <div class="opt" data-correct="false">סולמות וכלי מצור</div>
+          <div class="opt" data-correct="false">את כתר המלכות</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="בפעם השנייה כבשו את העי בעזרת מארב (אורב): חלק מהצבא הסתתר מאחורי העיר ומשך את אנשיה החוצה, ואז נכבשה (יהושע ח').">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · הסקה</span></div>
+        <p class="quiz__q">כיצד הצליחו בני ישראל לכבוש את העי בפעם השנייה?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">הניחו מארב (אורב) מאחורי העיר ומשכו את אנשיה החוצה</div>
+          <div class="opt" data-correct="false">הקיפו אותה שבעה ימים כמו ביריחו</div>
+          <div class="opt" data-correct="false">שלחו אליה את רחב</div>
+          <div class="opt" data-correct="false">בנו סוללה גבוהה מול החומה</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="הגבעונים פחדו והערימו על יהושע: התחפשו לשליחים שבאו מארץ רחוקה — עם לחם יבש ומעופש, נאדות יין בלויים ונעליים בלות — וכך השיגו ברית שלא ייכבשו (יהושע ט').">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · הסקה</span></div>
+        <p class="quiz__q">כיצד הערימו הגבעונים על יהושע כדי שיכרות איתם ברית שלום?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">התחפשו לבאים מארץ רחוקה — עם לחם יבש ובגדים ונעליים בלויים</div>
+          <div class="opt" data-correct="false">שלחו ליהושע מתנות יקרות וזהב</div>
+          <div class="opt" data-correct="false">איימו עליו במלחמה גדולה</div>
+          <div class="opt" data-correct="false">הביאו אליו את מלכי כנען כבני ערובה</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="במלחמה לעזרת הגבעונים קרא יהושע “שֶׁמֶשׁ בְּגִבְעוֹן דּוֹם וְיָרֵחַ בְּעֵמֶק אַיָּלוֹן” — והשמש עמדה עד שניצחו את אויביהם (יהושע י').">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · ידע</span></div>
+        <p class="quiz__q">מה ביקש יהושע שיקרה בשמיים, במלחמה לעזרת הגבעונים?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">שהשמש תעמוד — “שֶׁמֶשׁ בְּגִבְעוֹן דּוֹם”</div>
+          <div class="opt" data-correct="false">שירד גשם וברד כבד</div>
+          <div class="opt" data-correct="false">שתבוא רוח סערה</div>
+          <div class="opt" data-correct="false">שתרד חשכה על האויב</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="fill" data-answer="גורל|בגורל|הגורל|על פי גורל" data-explain="לאחר הכיבוש חולקה הארץ לשבטים בגורל, וכל שבט קיבל את נחלתו (יהושע י״ג–י״ט).">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">השלמה</span></div>
+        <p class="quiz__q">לאחר הכיבוש חולקה הארץ בין השבטים ב______, וכל שבט קיבל נחלה. השלימו את המילה.</p>
+        <input type="text" placeholder="כיצד חולקה הארץ?">
+        <button class="btn checkbtn"><i class="fa-solid fa-check"></i> בדיקה</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="היגד נכון. בזכות הסימן והברית עם המרגלים, רחב וכל בני משפחתה שהיו בביתה ניצלו בעת כיבוש יריחו (יהושע ו').">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">נכון / לא נכון</span></div>
+        <p class="quiz__q">היגד: "כשנכבשה יריחו, רחב וכל בני משפחתה שהיו בביתה ניצלו." נכון או לא נכון?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">נכון</div>
+          <div class="opt" data-correct="false">לא נכון</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="open-check" data-min="2"
+        data-points="לעבוד רק את ה'::לעבוד את ה|רק את ה|רק בה|עבודת ה|לא לעבוד אלוהים אחרים|לא אלילים|אלהים אחרים|נאמנים לה|לא ללכת אחרי;;לזכור מה ה' עשה למענם::מה ה עשה|הוציא ממצרים|הכניס לארץ|הנסים|הנס|לזכור|חסדי ה|כל הטוב;;לבחור בה' מרצונם::בחרו|ובחרתם|אנכי וביתי|נעבוד את ה|מרצון|בוחרים">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">פתוחה · ערכים</span></div>
+        <p class="quiz__q">בנאום הפרידה (יהושע כ״ד) כינס יהושע את העם בשכם וכרת איתם ברית. מהו המסר המרכזי שהזהיר בו את העם? (כתבו לפחות שני דברים)</p>
+        <textarea placeholder="כתבו את תשובתכם כאן..."></textarea>
+        <button class="btn checkbtn"><i class="fa-solid fa-wand-magic-sparkles"></i> בדיקת תשובה</button>
+        <div class="feedback"></div>
+        <details class="model"><summary>הצגת תשובה לדוגמה</summary><p>יהושע הזהיר את העם <b>לעבוד אך ורק את ה'</b> ולא ללכת אחרי אלוהים אחרים, <b>לזכור את כל מה שה' עשה למענם</b> (הוציאם ממצרים והכניסם לארץ), ו<b>לבחור בו מרצונם</b> — “וְאָנֹכִי וּבֵיתִי נַעֲבֹד אֶת ה'”.</p></details>
+      </div>
+
+      <!-- ===== יחידה 2 — תורה ===== -->
+      <h2 class="section__title" id="u2" style="margin-top:8px"><span class="pill pill--accent">חלומות יוסף</span> בראשית ל״ז · עיון בתורה</h2>
+      <div class="qverse"><span class="ref">בראשית ל״ז, א–י״א (מקוצר)</span>וַיֵּשֶׁב יַעֲקֹב בְּאֶרֶץ מְגוּרֵי אָבִיו, בְּאֶרֶץ כְּנָעַן. …יוֹסֵף בֶּן שְׁבַע עֶשְׂרֵה שָׁנָה הָיָה רֹעֶה אֶת אֶחָיו בַּצֹּאן… וַיָּבֵא יוֹסֵף אֶת דִּבָּתָם רָעָה אֶל אֲבִיהֶם. וְיִשְׂרָאֵל אָהַב אֶת יוֹסֵף מִכׇּל בָּנָיו כִּי בֶן זְקֻנִים הוּא לוֹ, וְעָשָׂה לוֹ כְּתֹנֶת פַּסִּים. וַיִּרְאוּ אֶחָיו כִּי אֹתוֹ אָהַב אֲבִיהֶם מִכׇּל אֶחָיו, וַיִּשְׂנְאוּ אֹתוֹ… וַיַּחֲלֹם יוֹסֵף חֲלוֹם: וְהִנֵּה אֲנַחְנוּ מְאַלְּמִים אֲלֻמִּים בְּתוֹךְ הַשָּׂדֶה, וְהִנֵּה קָמָה אֲלֻמָּתִי וְגַם נִצָּבָה, וְהִנֵּה תְסֻבֶּינָה אֲלֻמֹּתֵיכֶם וַתִּשְׁתַּחֲוֶיןָ לַאֲלֻמָּתִי… וַיַּחֲלֹם עוֹד חֲלוֹם אַחֵר: וְהִנֵּה הַשֶּׁמֶשׁ וְהַיָּרֵחַ וְאַחַד עָשָׂר כּוֹכָבִים מִשְׁתַּחֲוִים לִי… וַיְקַנְאוּ בוֹ אֶחָיו, וְאָבִיו שָׁמַר אֶת הַדָּבָר.</div>
+
+      <div class="quiz is-official" data-type="fill" data-answer="כנען|ארץ כנען" data-explain="“וַיֵּשֶׁב יַעֲקֹב בְּאֶרֶץ מְגוּרֵי אָבִיו, בְּאֶרֶץ כְּנָעַן” (פסוק א').">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">השלמת משפט</span></div>
+        <p class="quiz__q">השלימו לפי פסוקים א'–ד': “יעקב ישב בארץ שנקראת ______”.</p>
+        <input type="text" placeholder="שם הארץ...">
+        <button class="btn checkbtn"><i class="fa-solid fa-check"></i> בדיקה</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-official" data-type="open-check"
+        data-points="הסמלים (אלומות / שמש-ירח-כוכבים)::אלומות|אלומה|שמש|ירח|כוכבים;;מי השתחווה (האחים / ההורים)::אחים|אחיו|הורים|אבא|אמא|אביו|אמו|משפחה;;תגובת האחים (קנאה ושנאה)::קנאה|קינאו|שנאה|שנאו|כעס|כעסו">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">השלמת טבלה · השוואה</span></div>
+        <p class="quiz__q">השלימו את הטבלה: חלום ראשון (ה'–ח') מול חלום שני (ט'–י״א) — אילו סמלים ראה יוסף? מי השתחווה לו? כיצד הגיבו האחים לכל חלום?</p>
+        <textarea placeholder="כתבו את תשובתכם כאן..."></textarea>
+        <button class="btn checkbtn"><i class="fa-solid fa-wand-magic-sparkles"></i> בדיקת תשובה</button>
+        <div class="feedback"></div>
+        <details class="model"><summary>הצגת התשובות</summary><p>
+          סמלים — חלום ראשון: <b>אלומות בשדה</b>; חלום שני: <b>שמש, ירח ואחד-עשר כוכבים</b>.<br>
+          מי השתחווה — האחים (חלום ראשון), וגם ההורים והאחים (חלום שני).<br>
+          תגובת האחים — הקנאה והשנאה גברו (“וַיּוֹסִפוּ עוֹד שְׂנֹא אֹתוֹ”).
+        </p></details>
+      </div>
+
+      <div class="quiz is-official" data-type="open-check"
+        data-points="שאלת האחים — האם תמלוך עלינו::תמלוך|למלוך|המלוך|תשלוט|תמשול|תהיה מלך|מלך עלינו;;שאלת יעקב — האם נבוא להשתחוות::נבוא|השתחוות|נשתחווה|להשתחוות|אמך;;במה דומות — תוהות אם יוסף ישלוט::דומות|שתיהן|לעג|כעס|ספק|תוהות|לא ייתכן|איך ייתכן">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">פתוחה</span></div>
+        <p class="quiz__q">כתבו בלשונכם את שתי השאלות: (1) שאלת אחיו של יוסף בתגובה לחלום הראשון (פסוק ח'). (2) שאלת יעקב בתגובה לחלום השני (פסוק י'). במה דומות השאלות?</p>
+        <textarea placeholder="כתבו את תשובתכם כאן..."></textarea>
+        <button class="btn checkbtn"><i class="fa-solid fa-wand-magic-sparkles"></i> בדיקת תשובה</button>
+        <div class="feedback"></div>
+        <details class="model"><summary>הצגת תשובה לדוגמה</summary><p>(1) “האם באמת תמלוך עלינו?” (2) “האם אנחנו — אני, אמך ואחיך — נבוא להשתחוות לך?”. שתי השאלות תוהות בלעג/בכעס האם ייתכן שיוסף ישלוט בהם.</p></details>
+      </div>
+
+      <div class="quiz is-official" data-type="open-check"
+        data-points="להרגיע/לפייס את האחים::להרגיע|הרגיע|לפייס|לפיס|להפחית|הפיג|לא יכעסו|להוריד את הכעס;;להפחית קנאה ושנאה::קנאה|קנאו|יקנאו|שנאה|ישנאו|שנאו;;למנוע סכסוך/מריבה::סכסוך|מריבה|ריב|פירוד|מתח|שלום במשפחה|אחדות">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">פתוחה · פרשנות</span></div>
+        <p class="quiz__q">פרשנים מסבירים שיעקב האמין שחלומות יוסף יתגשמו, ובכל זאת גער בו (פסוק י'). לפי פירוש זה — מה ניסה יעקב להשיג בכך שגער ביוסף?</p>
+        <textarea placeholder="כתבו את תשובתכם כאן..."></textarea>
+        <button class="btn checkbtn"><i class="fa-solid fa-wand-magic-sparkles"></i> בדיקת תשובה</button>
+        <div class="feedback"></div>
+        <details class="model"><summary>הצגת תשובה לדוגמה</summary><p>להרגיע את האחים ולהפחית את הקנאה והשנאה — להראות שגם הוא לא מקבל את ההתנשאות, וכך למנוע סכסוך גדול יותר.</p></details>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="האחים שנאו את יוסף כי ראו שאביהם אוהב אותו יותר מכולם (פסוק ד'), וגם בגלל חלומותיו.">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · הסקה</span></div>
+        <p class="quiz__q">מדוע שנאו האחים את יוסף?</p>
+        <div class="opts">
+          <div class="opt" data-correct="false">כי הוא היה הצעיר במשפחה</div>
+          <div class="opt" data-correct="true">כי אביהם אהב אותו יותר מכל האחים</div>
+          <div class="opt" data-correct="false">כי הוא לא עזר להם לרעות את הצאן</div>
+          <div class="opt" data-correct="false">כי הוא היה חזק מכולם</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <!-- ===== יחידה 2 — נביאים ===== -->
+      <h2 class="section__title" id="shneim" style="margin-top:8px"><span class="pill pill--accent">שניים וחצי השבטים</span> יהושע א' · עיון בנביאים</h2>
+      <div class="qverse"><span class="ref">יהושע א', י״ב–ט״ז</span>וְלָראוּבֵנִי וְלַגָּדִי וְלַחֲצִי שֵׁבֶט הַמְנַשֶּׁה אָמַר יְהוֹשֻׁעַ לֵאמֹר: …נְשֵׁיכֶם טַפְּכֶם וּמִקְנֵיכֶם יֵשְׁבוּ בָּאָרֶץ אֲשֶׁר נָתַן לָכֶם מֹשֶׁה בְּעֵבֶר הַיַּרְדֵּן, וְאַתֶּם תַּעַבְרוּ חֲמֻשִׁים לִפְנֵי אֲחֵיכֶם כֹּל גִּבּוֹרֵי הַחַיִל, וַעֲזַרְתֶּם אוֹתָם. עַד אֲשֶׁר יָנִיחַ ה' לַאֲחֵיכֶם כָּכֶם וְיָרְשׁוּ גַם הֵמָּה אֶת הָאָרֶץ… וְשַׁבְתֶּם לְאֶרֶץ יְרֻשַּׁתְכֶם… וַיַּעֲנוּ אֶת יְהוֹשֻׁעַ לֵאמֹר: כֹּל אֲשֶׁר צִוִּיתָנוּ נַעֲשֶׂה, וְאֶל כׇּל אֲשֶׁר תִּשְׁלָחֵנוּ נֵלֵךְ.</div>
+
+      <div class="quiz is-official" data-type="mc" data-explain="התנאי היה לעבור חלוצים לפני אחיהם ולעזור בכיבוש; רק אחרי שכל השבטים ינוחו ויקבלו נחלה — יחזרו (פסוקים י״ד–ט״ו).">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">רב-ברירה</span></div>
+        <p class="quiz__q">מתי יוכלו שניים וחצי השבטים לחזור אל משפחותיהם ואל נחלתם?</p>
+        <div class="opts">
+          <div class="opt" data-correct="false">אחרי שיחצו את הירדן וייכנסו לארץ</div>
+          <div class="opt" data-correct="true">אחרי שיכבשו את הארץ וכל השבטים יקבלו נחלה</div>
+          <div class="opt" data-correct="false">אחרי שתעבור שנה</div>
+          <div class="opt" data-correct="false">אחרי שייכנסו אל יריחו</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-official" data-type="open-check"
+        data-points="ראובן::ראובן;;גד::גד;;מנשה::מנשה;;עבר הירדן המזרחי::עבר הירדן|מזרח הירדן|עבר ירדן|מזרחי">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">השלמה</span></div>
+        <p class="quiz__q">השלימו על-פי הפסוקים: יהושע פונה אל שבט ___, שבט ___ וחצי שבט ___. שבטים אלו התיישבו ב___.</p>
+        <textarea placeholder="כתבו את שלושת השבטים והמקום..."></textarea>
+        <button class="btn checkbtn"><i class="fa-solid fa-wand-magic-sparkles"></i> בדיקת תשובה</button>
+        <div class="feedback"></div>
+        <details class="model"><summary>הצגת התשובות</summary><p>שבט <b>רְאוּבֵן</b>, שבט <b>גָּד</b> וחצי שבט <b>מְנַשֶּׁה</b>. התיישבו ב<b>עֵבֶר הירדן המזרחי</b>.</p></details>
+      </div>
+
+      <div class="quiz is-official" data-type="open-check"
+        data-points="לעבור חלוצים/חמושים לפני אחיהם::חלוצים|חמושים|לפני אחיהם|לפני העם;;לעזור בכיבוש הארץ::לעזור|עזרה|לכבוש|כיבוש|להילחם|נלחם">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">פתוחה</span></div>
+        <p class="quiz__q">לפי פסוקים י״ג–י״ד, איזה תנאי מזכיר להם יהושע — תנאי שהציב משה — כדי שיוכלו להישאר בנחלה שביקשו?</p>
+        <textarea placeholder="כתבו את תשובתכם כאן..."></textarea>
+        <button class="btn checkbtn"><i class="fa-solid fa-wand-magic-sparkles"></i> בדיקת תשובה</button>
+        <div class="feedback"></div>
+        <details class="model"><summary>הצגת תשובה</summary><p>שיעברו <b>חֲלוּצִים (חמושים) לפני אחיהם</b> את הירדן, ויעזרו לשאר השבטים לכבוש את הארץ — ורק אז יחזרו לנחלתם.</p></details>
+      </div>
+
+      <div class="quiz is-official" data-type="fill" data-answer="חמושים|חמשים|ועזרתם|עזרתם|חלוצים" data-explain="המילה “חֲמֻשִׁים” (“וְאַתֶּם תַּעַבְרוּ חֲמֻשִׁים לִפְנֵי אֲחֵיכֶם”), או הפועל “וַעֲזַרְתֶּם”, מדגישה את ההתחייבות לעזור לאחיהם.">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">פתוחה · לשון</span></div>
+        <p class="quiz__q">איזו מילה בפסוקים י״ד–ט״ו מדגישה את המחויבות של שניים וחצי השבטים כלפי יתר השבטים? (כתבו מילה אחת)</p>
+        <input type="text" placeholder="מילה אחת...">
+        <button class="btn checkbtn"><i class="fa-solid fa-check"></i> בדיקה</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-official" data-type="open-check"
+        data-points="לעזור לאחרים::לעזור|עזרה|נעזור|עוזרים|לסייע|לחשוב על אחרים|אכפת;;ערבות הדדית / אחדות::ערבות|אחדות|ביחד|הדדית|כולם|חברים|אחד את השני;;גם כשלי כבר טוב / לא רק על עצמי::גם אם|למרות|כבר יש|אצלי טוב|קיבלתי|רק על עצמ|לא רק">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">ערכים · מסר</span></div>
+        <p class="quiz__q">לפי המסר העולה מהסיפור על שניים וחצי השבטים — כיצד הילדים צריכים לפעול? הסבירו לפי הסיפור המקראי.</p>
+        <textarea placeholder="כתבו את תשובתכם כאן..."></textarea>
+        <button class="btn checkbtn"><i class="fa-solid fa-wand-magic-sparkles"></i> בדיקת תשובה</button>
+        <div class="feedback"></div>
+        <details class="model"><summary>הצגת תשובה לדוגמה</summary><p>גם כשמשהו כבר “מסודר” אצלי, חשוב לעזור לאחרים עד שגם להם יהיה טוב — כמו השבטים שקיבלו נחלה אך התחייבו לעזור לאחיהם לכבוש את הארץ לפני שחזרו הביתה. ערך הערבות ההדדית והאחדות.</p></details>
+      </div>
+
+      <!-- ===== יחידה 3 ===== -->
+      <h2 class="section__title" id="u3" style="margin-top:8px"><span class="pill pill--accent">בקיאות</span> פרקי יסוד וידע כללי — דמויות, אירועים ושבטים</h2>
+
+      <div class="quiz is-official" data-type="mc" data-explain="הסדר: המבול ← ירידת יוסף למצרים ← מעמד הר סיני ← חטא המרגלים ← כניסה לארץ כנען.">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">סדר אירועים</span></div>
+        <p class="quiz__q">איזה אירוע קרה <b>ראשון</b> בתנ״ך? (מתוך: כניסה לארץ כנען · מעמד הר סיני · המבול · חטא המרגלים)</p>
+        <div class="opts">
+          <div class="opt" data-correct="false">מעמד הר סיני</div>
+          <div class="opt" data-correct="true">המבול</div>
+          <div class="opt" data-correct="false">כניסת עם ישראל לארץ כנען</div>
+          <div class="opt" data-correct="false">חטא המרגלים</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-official" data-type="mc" data-explain="“אַל תִּקְרַב הֲלֹם, שַׁל נְעָלֶיךָ” נאמר למשה בסנה (שמות ג').">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">למי נאמר?</span></div>
+        <p class="quiz__q">“וַיֹּאמֶר אַל תִּקְרַב הֲלֹם, שַׁל נְעָלֶיךָ מֵעַל רַגְלֶיךָ, כִּי הַמָּקוֹם… אַדְמַת קֹדֶשׁ הוּא” — למי נאמר?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">משה</div>
+          <div class="opt" data-correct="false">יצחק</div>
+          <div class="opt" data-correct="false">יעקב</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-official" data-type="mc" data-explain="“לֶךְ לְךָ מֵאַרְצְךָ” נאמר לאברהם (בראשית י״ב).">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">למי נאמר?</span></div>
+        <p class="quiz__q">“לֶךְ לְךָ מֵאַרְצְךָ וּמִמּוֹלַדְתְּךָ וּמִבֵּית אָבִיךָ אֶל הָאָרֶץ אֲשֶׁר אַרְאֶךָּ” — למי נאמר?</p>
+        <div class="opts">
+          <div class="opt" data-correct="false">קין</div>
+          <div class="opt" data-correct="false">נוח</div>
+          <div class="opt" data-correct="true">אברהם</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-official" data-type="mc" data-explain="“מֹשֶׁה עַבְדִּי מֵת… קוּם עֲבֹר אֶת הַיַּרְדֵּן” נאמר ליהושע (יהושע א').">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">למי נאמר?</span></div>
+        <p class="quiz__q">“מֹשֶׁה עַבְדִּי מֵת, וְעַתָּה קוּם עֲבֹר אֶת הַיַּרְדֵּן הַזֶּה אַתָּה וְכָל הָעָם הַזֶּה…” — למי נאמר?</p>
+        <div class="opts">
+          <div class="opt" data-correct="false">אהרן</div>
+          <div class="opt" data-correct="true">יהושע</div>
+          <div class="opt" data-correct="false">יוסף</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-official" data-type="open">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">רב-בחירה (שניים)</span></div>
+        <p class="quiz__q">סמנו את <b>שני</b> השמות אשר אינם משמות שבטי ישראל: יהודה · שמעון · זבולון · אהרן · לוי · אשר · יעקב.</p>
+        <details class="model"><summary>הצגת התשובה</summary><p><b>אהרן</b> (מבני לוי) ו<b>יעקב</b> (אבי השבטים) — אינם שמות של שבטים.</p></details>
+      </div>
+
+      <div class="quiz is-official" data-type="open">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">עצי משפחה · ויזואלי</span></div>
+        <p class="quiz__q">השלימו את השמות החסרים בעצי המשפחה (בחרו מתוך רשימת השמות):</p>
+        <ol class="qmatch">
+          <li>א. שושלת האבות: אברהם ← ______ ← יעקב ← ______.</li>
+          <li>ב. ילדיהם של עמרם ויוכבד: ______, משה ו______.</li>
+          <li>ג. בניו של האדם הראשון: קין ו______.</li>
+        </ol>
+        <div class="qbank"><b>רשימת השמות</b> (שימו לב — יש יותר שמות מהנדרש): אדם · הבל · יצחק · יעקב · יוסף · אהרן · אברהם · מרים</div>
+        <details class="model"><summary>הצגת התשובה</summary><p>א. אברהם ← <b>יצחק</b> ← יעקב ← <b>יוסף</b>. &nbsp; ב. <b>אהרן</b>, משה ו<b>מרים</b>. &nbsp; ג. קין ו<b>הבל</b>.</p></details>
+      </div>
+
+      <div class="quiz is-official" data-type="match">
+        <div class="tags"><span class="quiz__tag quiz__tag--official">★ רשמי · דוגמת המבדק</span><span class="quiz__tag">דמויות וערכים</span></div>
+        <p class="quiz__q">התאימו לכל מעשה את הדמות שעשתה אותו — לחצו על פריט אחד ואז על ההתאמה שלו בצד השני.</p>
+        <div class="match">
+          <div class="match__col">
+            <span class="match__head">המעשה</span>
+            <button class="mitem" data-k="par" data-lbl="1">1. הצילה את משה מן היאור</button>
+            <button class="mitem" data-k="rivka" data-lbl="2">2. השקתה את גמלי עבד אברהם</button>
+            <button class="mitem" data-k="moshe" data-lbl="3">3. גער באיש העברי שהכה את חברו</button>
+            <button class="mitem" data-k="yosef" data-lbl="4">4. סלח לאחיו אף שמכרו אותו לעבד</button>
+          </div>
+          <div class="match__col">
+            <span class="match__head">הדמות</span>
+            <button class="mopt" data-k="">אברהם</button>
+            <button class="mopt" data-k="par">בת פרעה</button>
+            <button class="mopt" data-k="rivka">רבקה</button>
+            <button class="mopt" data-k="moshe">משה</button>
+            <button class="mopt" data-k="">שרה</button>
+            <button class="mopt" data-k="yosef">יוסף</button>
+          </div>
+        </div>
+        <p class="match__hint">שימו לב — יש דמויות מיותרות.</p>
+        <div class="feedback"></div>
+        <details class="model"><summary>הצגת התשובות + ערכים</summary><p>1 ← בת פרעה · 2 ← רבקה · 3 ← משה · 4 ← יוסף. &nbsp; ערכים לדוגמה: יוזמה/אומץ, נדיבות, צדק, סליחה.</p></details>
+      </div>
+
+      <!-- ===== סיפורי האבות (השלמת פער) ===== -->
+      <h2 class="section__title" id="avot" style="margin-top:8px"><span class="pill pill--accent">האבות</span> סיפורי האבות — אברהם, יצחק ויעקב</h2>
+      <p class="muted" style="margin:0 0 6px">בסיס חשוב לבקיאות (פרקי יסוד מבראשית) — השאלות חוברו באותו סגנון ורמה, לפי תכנית הלימודים.</p>
+
+      <div class="quiz is-added" data-type="mc" data-explain="אברהם נצטווה בניסיון העֲקֵדה להעלות את בנו יצחק לעולה, ובסוף מלאך עצר אותו (בראשית כ״ב).">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · דמויות</span></div>
+        <p class="quiz__q">מי היה מוכן, בניסיון, להעלות את בנו לעולה על המזבח (סיפור העֲקֵדה)?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">אברהם</div>
+          <div class="opt" data-correct="false">יצחק</div>
+          <div class="opt" data-correct="false">יעקב</div>
+          <div class="opt" data-correct="false">נוח</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="fill" data-answer="סולם" data-explain="בחלום ראה יעקב סֻלָּם מוצב ארצה וראשו מגיע השמימה, ומלאכי אלוהים עולים ויורדים בו (בראשית כ״ח).">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">השלמה</span></div>
+        <p class="quiz__q">יעקב חלם חלום ובו ______ מוצב ארצה וראשו מגיע השמימה, ומלאכים עולים ויורדים בו.</p>
+        <input type="text" placeholder="מה ראה בחלום?">
+        <button class="btn checkbtn"><i class="fa-solid fa-check"></i> בדיקה</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="יעקב הוא בנם של יצחק ורבקה, ונכדם של אברהם ושרה (בראשית כ״ה).">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · שושלת</span></div>
+        <p class="quiz__q">מי הם הוריו של יעקב?</p>
+        <div class="opts">
+          <div class="opt" data-correct="false">אברהם ושרה</div>
+          <div class="opt" data-correct="true">יצחק ורבקה</div>
+          <div class="opt" data-correct="false">אברהם ורבקה</div>
+          <div class="opt" data-correct="false">יצחק ולאה</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="נכון. ליעקב נולדו שנים-עשר בנים, ומהם נוצרו שנים-עשר שבטי ישראל.">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">נכון / לא נכון</span></div>
+        <p class="quiz__q">היגד: "ליעקב נולדו שנים-עשר בנים, שמהם נוצרו שנים-עשר שבטי ישראל." נכון או לא נכון?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">נכון</div>
+          <div class="opt" data-correct="false">לא נכון</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="open-check"
+        data-points="הכנסת אורחים / חסד::הכנסת אורחים|אורחים|חסד|נדיבות|לארח|אירח|כיבד|לתת לאחר;;מיהר ורץ לשרת אותם::רץ|מיהר|זריזות|הזדרז|טרח|מהר;;דאגה לאחר/לזולת::דאג|דאגה|לזולת|לאחר|הגיש|נתן להם|מים|אוכל">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">פתוחה · ערכים</span></div>
+        <p class="quiz__q">אברהם ראה שלושה אורחים בפתח אוהלו ומיהר לארח אותם. איזה ערך אנו לומדים ממעשהו, וכיצד הוא בא לידי ביטוי?</p>
+        <textarea placeholder="כתבו את תשובתכם כאן..."></textarea>
+        <button class="btn checkbtn"><i class="fa-solid fa-wand-magic-sparkles"></i> בדיקת תשובה</button>
+        <div class="feedback"></div>
+        <details class="model"><summary>הצגת תשובה לדוגמה</summary><p>הערך הוא <b>הכנסת אורחים וחסד</b>. אברהם <b>רץ לקראת</b> האורחים, הגיש להם מים ומזון ודאג לנוחותם — למרות שהיה זקֵן. אנו לומדים לקבל אורחים בשמחה, לדאוג לזולת ולעזור לאחר בזריזות ובנדיבות.</p></details>
+      </div>
+
+      <!-- ===== יציאת מצרים (השלמת פער) ===== -->
+      <h2 class="section__title" id="mitzrayim" style="margin-top:8px"><span class="pill pill--accent">יציאת מצרים</span> שעבוד מצרים, משה והיציאה</h2>
+      <p class="muted" style="margin:0 0 6px">פרקי יסוד מספר שמות — השאלות חוברו באותו סגנון ורמה, לפי תכנית הלימודים.</p>
+
+      <div class="quiz is-added" data-type="mc" data-explain="משה, בשליחות ה' ויחד עם אהרן אחיו, הוציא את בני ישראל ממצרים (ספר שמות).">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · דמויות</span></div>
+        <p class="quiz__q">מי הוביל את בני ישראל ביציאתם ממצרים?</p>
+        <div class="opts">
+          <div class="opt" data-correct="false">יהושע</div>
+          <div class="opt" data-correct="true">משה</div>
+          <div class="opt" data-correct="false">יוסף</div>
+          <div class="opt" data-correct="false">אברהם</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="fill" data-answer="עשר|10|עשרה|עשר מכות" data-explain="המצרים הוכו בעשר מכות (דם, צפרדע, כינים... ועד מכת בכורות) לפני שפרעה שילח את בני ישראל (שמות ז'–י״ב).">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">השלמה</span></div>
+        <p class="quiz__q">לפני היציאה ממצרים הוכו המצרים ב-______ מכות.</p>
+        <input type="text" placeholder="מספר המכות...">
+        <button class="btn checkbtn"><i class="fa-solid fa-check"></i> בדיקה</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="ים סוף נבקע לשניים, ובני ישראל עברו בתוכו ביבשה, ואילו המצרים שרדפו אחריהם טבעו (שמות י״ד).">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה</span></div>
+        <p class="quiz__q">מה קרה בים סוף כאשר בני ישראל הגיעו אליו, ופרעה רדף אחריהם?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">הים נבקע והם עברו בתוכו ביבשה</div>
+          <div class="opt" data-correct="false">הם בנו גשר ועברו</div>
+          <div class="opt" data-correct="false">הם עברו בסירות</div>
+          <div class="opt" data-correct="false">הם הקיפו את הים ברגל</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="נכון. אהרן היה אחיו הגדול של משה, שימש כדוברו ולימים ככהן הגדול.">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">נכון / לא נכון</span></div>
+        <p class="quiz__q">היגד: "אהרן היה אחיו של משה, ושימש ככהן." נכון או לא נכון?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">נכון</div>
+          <div class="opt" data-correct="false">לא נכון</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="open-check"
+        data-points="מעבר מעבדות לחירות::עבדות|עבדים|חירות|חופש|בני חורין|חופשי|שחרור|גאולה|השתחררו;;הפיכה לעם חופשי::עם|לעם|אומה|נעשו לעם;;הערך חירות / הכרת תודה::חירות|חופש|תודה|להודות|פסח|לזכור|חג">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">פתוחה · ערכים</span></div>
+        <p class="quiz__q">לפני היציאה ממצרים היו בני ישראל עבדים. מה המשמעות של היציאה ממצרים עבור העם, ואיזה ערך קשור לכך?</p>
+        <textarea placeholder="כתבו את תשובתכם כאן..."></textarea>
+        <button class="btn checkbtn"><i class="fa-solid fa-wand-magic-sparkles"></i> בדיקת תשובה</button>
+        <div class="feedback"></div>
+        <details class="model"><summary>הצגת תשובה לדוגמה</summary><p>היציאה ממצרים היא המעבר <b>מעבדות לחירות</b> — בני ישראל הפכו מעבדים לעם בן חורין. הערך: <b>חירות והכרת תודה</b> על הגאולה — ולכן זוכרים זאת בכל שנה בחג הפסח.</p></details>
+      </div>
+
+      <!-- ===== לשון ===== -->
+      <h2 class="section__title" id="lang" style="margin-top:8px"><span class="pill pill--accent">לשון</span> לשון התנ״ך</h2>
+      <p class="muted" style="margin:0 0 6px">היחידה הזו כולה תוספות שלי — בדוגמה הרשמית לא הופיעו שאלות לשון נפרדות, אך המפרט מפרט אותן במפורש (ו' ההיפוך, ה"א השאלה, ה"א המגמה).</p>
+
+      <div class="quiz is-added" data-type="mc" data-explain="“הַשָּׁמַיְמָה” = אל השמים. ה' בסוף המילה מציינת כיוון — זו ה״א המגמה.">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · לשון</span></div>
+        <p class="quiz__q">במילה “הַשָּׁמַיְמָה” — איזו תופעה לשונית מופיעה?</p>
+        <div class="opts">
+          <div class="opt" data-correct="false">ה״א השאלה</div>
+          <div class="opt" data-correct="true">ה״א המגמה (כיוון)</div>
+          <div class="opt" data-correct="false">ו' ההיפוך</div>
+          <div class="opt" data-correct="false">כינוי מושא חבור</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="“הֲמָלֹךְ תִּמְלֹךְ עָלֵינוּ?” (בראשית ל״ז, ח') — ה' בתחילת המילה שואלת שאלה. זו ה״א השאלה.">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · לשון</span></div>
+        <p class="quiz__q">“הֲמָלֹךְ תִּמְלֹךְ עָלֵינוּ?” — מהי הה״א שבתחילת המילה “הֲמָלֹךְ”?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">ה״א השאלה</div>
+          <div class="opt" data-correct="false">ה״א המגמה</div>
+          <div class="opt" data-correct="false">ה״א הידיעה</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="“וַיֹּאמֶר” נראה כעתיד אך הוראתו עבר — זו ו' ההיפוך, ההופכת עתיד לעבר.">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · לשון</span></div>
+        <p class="quiz__q">המילה “וַיֹּאמֶר” משמעה “ואז אמר” (בעבר). איזו תופעה גורמת לכך?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">ו' ההיפוך</div>
+          <div class="opt" data-correct="false">ה״א המגמה</div>
+          <div class="opt" data-correct="false">לשון מצרפת</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <!-- ===== אמצעים ספרותיים (השלמת פער) ===== -->
+      <h2 class="section__title" id="sifrut" style="margin-top:8px"><span class="pill pill--accent">אמצעים ספרותיים</span> איך בנוי הסיפור המקראי</h2>
+      <p class="muted" style="margin:0 0 6px">מיומנות עיון מהמפרט — זיהוי אמצעים ומבנה הסיפור. השאלות חוברו באותו סגנון ורמה.</p>
+
+      <div class="quiz is-added" data-type="mc" data-explain="מילה החוזרת שוב ושוב בסיפור ומדגישה רעיון מרכזי נקראת מילה מנחה (למשל 'אח/אחים' בסיפור יוסף).">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה</span></div>
+        <p class="quiz__q">המילה "אח / אחים" חוזרת שוב ושוב בסיפור יוסף. כיצד נקראת מילה החוזרת ומדגישה רעיון מרכזי?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">מילה מנחה</div>
+          <div class="opt" data-correct="false">מילה נרדפת</div>
+          <div class="opt" data-correct="false">חרוז</div>
+          <div class="opt" data-correct="false">משל</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="שיחה בין שתי דמויות בסיפור נקראת דו-שיח (דיאלוג).">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה</span></div>
+        <p class="quiz__q">כיצד נקראת שיחה בין שתי דמויות בסיפור המקראי?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">דו-שיח</div>
+          <div class="opt" data-correct="false">תיאור</div>
+          <div class="opt" data-correct="false">מסר</div>
+          <div class="opt" data-correct="false">פתיחה</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="נכון. כשהסיפור משאיר פרט עלום ולא מספר אותו במפורש — נוצר 'פער' שהקורא משלים בעצמו.">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">נכון / לא נכון</span></div>
+        <p class="quiz__q">היגד: "כשהסיפור המקראי משאיר פרט עלום ולא מספר אותו במפורש — נקרא הדבר 'פער'." נכון או לא נכון?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">נכון</div>
+          <div class="opt" data-correct="false">לא נכון</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="החלק הפותח את הסיפור, שבו מוצגים הדמויות, הזמן והמקום, נקרא 'פתיחה' (חלק ממבנה העלילה: פתיחה, בעיה, פתרון, מסר).">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · מבנה</span></div>
+        <p class="quiz__q">החלק בסיפור שבו מוצגים הדמויות, הזמן והמקום נקרא...</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">פתיחה</div>
+          <div class="opt" data-correct="false">בעיה</div>
+          <div class="opt" data-correct="false">פתרון</div>
+          <div class="opt" data-correct="false">מסר</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="open-check"
+        data-points="חוזרת כמה פעמים::חוזר|חוזרת|שוב|פעמים|הרבה|כמה פעמים;;מדגישה רעיון מרכזי::מדגיש|מדגישה|רעיון|נושא|מרכזי|חשוב|מבליט|להבליט;;דוגמה::אח|אחים|יוסף|ברכה|דוגמה">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">פתוחה · מיומנות</span></div>
+        <p class="quiz__q">בסיפורי המקרא יש "מילים מנחות". מה תפקידן בסיפור? תנו דוגמה.</p>
+        <textarea placeholder="כתבו את תשובתכם כאן..."></textarea>
+        <button class="btn checkbtn"><i class="fa-solid fa-wand-magic-sparkles"></i> בדיקת תשובה</button>
+        <div class="feedback"></div>
+        <details class="model"><summary>הצגת תשובה לדוגמה</summary><p>המילה המנחה <b>חוזרת כמה פעמים</b> בסיפור ו<b>מדגישה את הרעיון או הנושא המרכזי</b>, ועוזרת לקורא לשים לב למה שחשוב. דוגמה: "אח/אחים" בסיפור יוסף, או "ברכה" בסיפורי האבות.</p></details>
+      </div>
+
+      <!-- ===== מפות וגיאוגרפיה (השלמת פער) ===== -->
+      <h2 class="section__title" id="mapa" style="margin-top:8px"><span class="pill pill--accent">מפות</span> מקומות וגיאוגרפיה בתנ"ך</h2>
+      <p class="muted" style="margin:0 0 6px">זיהוי אתרים ומקומות. לתרגול מפה אינטראקטיבי מלא — <a href="https://edu.929.org.il/%d7%97%d7%95%d7%9e%d7%a8%d7%99-%d7%9c%d7%9e%d7%99%d7%93%d7%94-%d7%95%d7%94%d7%a2%d7%a9%d7%a8%d7%94/%d7%9e%d7%a4%d7%94-%d7%9e%d7%9c%d7%90%d7%94/" target="_blank" rel="noopener">מפת המקומות של 929</a>.</p>
+
+      <div class="quiz is-added" data-type="mc" data-explain="בני ישראל חצו את נהר הירדן (שמימיו נעצרו) כדי להיכנס לארץ כנען (יהושע ג').">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · מפה</span></div>
+        <p class="quiz__q">את איזה נהר חצו בני ישראל כדי להיכנס לארץ כנען?</p>
+        <div class="opts">
+          <div class="opt" data-correct="false">נהר הנילוס</div>
+          <div class="opt" data-correct="true">נהר הירדן</div>
+          <div class="opt" data-correct="false">נהר פרת</div>
+          <div class="opt" data-correct="false">ים סוף</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="בני ישראל היו עבדים במצרים, ומשם יצאו בהנהגת משה אל ארץ כנען.">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · מפה</span></div>
+        <p class="quiz__q">באיזו ארץ היו בני ישראל עבדים לפני הכניסה לארץ כנען?</p>
+        <div class="opts">
+          <div class="opt" data-correct="false">בבל</div>
+          <div class="opt" data-correct="true">מצרים</div>
+          <div class="opt" data-correct="false">כנען</div>
+          <div class="opt" data-correct="false">מדיין</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="fill" data-answer="יריחו" data-explain="יריחו הייתה העיר הראשונה שכבשו בני ישראל עם כניסתם לארץ (יהושע ו').">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">השלמה · מפה</span></div>
+        <p class="quiz__q">העיר הראשונה שכבשו בני ישראל בכניסתם לארץ הייתה ______.</p>
+        <input type="text" placeholder="שם העיר...">
+        <button class="btn checkbtn"><i class="fa-solid fa-check"></i> בדיקה</button>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="נכון. מעמד הר סיני התרחש במדבר, בדרך של בני ישראל ממצרים אל ארץ כנען.">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">נכון / לא נכון</span></div>
+        <p class="quiz__q">היגד: "מעמד הר סיני התרחש במדבר, בדרך ממצרים לארץ כנען." נכון או לא נכון?</p>
+        <div class="opts">
+          <div class="opt" data-correct="true">נכון</div>
+          <div class="opt" data-correct="false">לא נכון</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz is-added" data-type="mc" data-explain="ראובן, גד וחצי שבט מנשה התיישבו בעבר הירדן המזרחי (יהושע א').">
+        <div class="tags"><span class="quiz__tag quiz__tag--added">✎ תוספת · אותו סגנון</span><span class="quiz__tag">רב-ברירה · מפה</span></div>
+        <p class="quiz__q">היכן התיישבו שניים וחצי השבטים (ראובן, גד וחצי מנשה)?</p>
+        <div class="opts">
+          <div class="opt" data-correct="false">במדבר סיני</div>
+          <div class="opt" data-correct="true">בעבר הירדן המזרחי</div>
+          <div class="opt" data-correct="false">במצרים</div>
+          <div class="opt" data-correct="false">בגליל</div>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="center mt-m">
+        <a class="btn btn--ghost" href="nosim.html">לחזרה על הסיכומים</a>
+        <a class="btn btn--lg btn--mint" href="matzeget.html"><i class="fa-solid fa-display"></i> למצגת על המבחן</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot__inner">
+    <div>מאגר לימודי למבדק תנ״ך כיתה ו'</div>
+    <div>★ שאלות רשמיות מתוך דוגמת המבדק של ראמ"ה · ✎ תוספות באותו סגנון</div>
+  </div>
+</footer>
+
+<script>
+function norm(s){
+  return (s||'').trim()
+    .replace(/["'.,־–\-]/g,'')
+    .replace(/\s+/g,'')
+    .replace(/[ךםןףץ]/g,function(c){return {'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'}[c];});
+}
+document.querySelectorAll('.quiz[data-type="mc"]').forEach(function(q){
+  var opts=q.querySelectorAll('.opt');
+  var fb=q.querySelector('.feedback');
+  opts.forEach(function(o){
+    o.addEventListener('click',function(){
+      if(q.dataset.answered) return;
+      q.dataset.answered='1';
+      opts.forEach(function(x){ if(x.dataset.correct==='true') x.classList.add('correct'); });
+      if(o.dataset.correct==='true'){
+        fb.className='feedback show ok'; fb.innerHTML='✔ נכון! '+(q.dataset.explain||'');
+      }else{
+        o.classList.add('wrong');
+        fb.className='feedback show no'; fb.innerHTML='✘ לא מדויק. '+(q.dataset.explain||'');
+      }
+    });
+  });
+});
+document.querySelectorAll('.quiz[data-type="fill"]').forEach(function(q){
+  var inp=q.querySelector('input');
+  var btn=q.querySelector('.checkbtn');
+  var fb=q.querySelector('.feedback');
+  var answers=(q.dataset.answer||'').split('|').map(norm);
+  function check(){
+    if(answers.indexOf(norm(inp.value))>-1){
+      fb.className='feedback show ok'; fb.innerHTML='✔ נכון! '+(q.dataset.explain||'');
+    }else{
+      fb.className='feedback show no';
+      fb.innerHTML='✘ נסו שוב. תשובה אפשרית: <b>'+(q.dataset.answer.split('|')[0])+'</b>';
+    }
+  }
+  btn.addEventListener('click',check);
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter')check();});
+});
+// שאלה פתוחה — בדיקה מבוססת רעיונות/מילות מפתח
+function normOpen(s){
+  return (s||'')
+    .replace(/[֑-ׇ]/g,'')
+    .replace(/["'.,־–\-?!:;()]/g,'')
+    .replace(/[ךםןףץ]/g,function(c){return {'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'}[c];})
+    .replace(/\s+/g,' ').trim();
+}
+document.querySelectorAll('.quiz[data-type="open-check"]').forEach(function(q){
+  var ta=q.querySelector('textarea'), btn=q.querySelector('.checkbtn'), fb=q.querySelector('.feedback'), model=q.querySelector('.model');
+  var points=(q.dataset.points||'').split(';;').map(function(p){var i=p.split('::');return {label:i[0], syns:(i[1]||'').split('|').map(normOpen).filter(Boolean)};});
+  btn.addEventListener('click',function(){
+    var t=normOpen(ta.value);
+    if(t.length<2){ fb.className='feedback show no'; fb.innerHTML='כתבו תשובה ואז לחצו "בדיקה".'; return; }
+    var hit=[],miss=[];
+    points.forEach(function(pt){ (pt.syns.some(function(s){return t.indexOf(s)>-1;})) ? hit.push(pt.label) : miss.push(pt.label); });
+    var need=q.dataset.min?parseInt(q.dataset.min,10):points.length;
+    var ok=q.dataset.min?(hit.length>=need):(miss.length===0);
+    var html=q.dataset.min
+      ? ('מצאת <b>'+hit.length+'</b> דוגמאות מתאימות (צריך לפחות '+need+').')
+      : ('כיסית <b>'+hit.length+'</b> מתוך <b>'+points.length+'</b> רעיונות מרכזיים.');
+    if(hit.length) html+='<br>✔ זיהינו בתשובתך: '+hit.join(' · ');
+    if(miss.length && !q.dataset.min) html+='<br><span class="miss"><i class="fa-solid fa-lightbulb"></i> כדאי להתייחס גם ל: '+miss.join(' · ')+'</span>';
+    html+='<br><span style="opacity:.8">השוו לתשובה לדוגמה שנפתחה למטה.</span>';
+    fb.className='feedback show '+(ok?'ok':(hit.length?'partial':'no'));
+    fb.innerHTML=html;
+    if(model) model.open=true;
+  });
+});
+// התאמה ויזואלית — מתחברים בקווים, ואז "בדיקה" מסמן נכון/טעות
+document.querySelectorAll('.quiz[data-type="match"]').forEach(function(q){
+  var match=q.querySelector('.match'), fb=q.querySelector('.feedback');
+  if(!match) return;
+  var SVGNS='http://www.w3.org/2000/svg';
+  var svg=document.createElementNS(SVGNS,'svg'); svg.setAttribute('class','match__lines');
+  match.insertBefore(svg, match.firstChild);
+  var items=Array.prototype.slice.call(q.querySelectorAll('.mitem'));
+  var cells=Array.prototype.slice.call(q.querySelectorAll('.mitem, .mopt'));
+  var btn=document.createElement('button'); btn.className='btn matchcheck';
+  btn.innerHTML='<i class="fa-solid fa-check"></i> בדיקה';
+  fb.parentNode.insertBefore(btn, fb);
+  var sel=null, pairs=[];
+  function role(c){ return c.classList.contains('mitem')?'item':'opt'; }
+  function clearSel(){ if(sel){ sel.classList.remove('sel'); sel=null; } }
+  function pairOf(c){ for(var i=0;i<pairs.length;i++){ if(pairs[i].item===c||pairs[i].opt===c) return pairs[i]; } return null; }
+  function resetColors(){ cells.forEach(function(c){ c.classList.remove('matched','wrong'); }); }
+  function removePair(p){ if(!p) return; if(p.line.parentNode) p.line.parentNode.removeChild(p.line); pairs.splice(pairs.indexOf(p),1); }
+  function position(p){
+    var box=match.getBoundingClientRect(), a=p.item.getBoundingClientRect(), b=p.opt.getBoundingClientRect();
+    p.line.setAttribute('x1', a.left-box.left); p.line.setAttribute('y1', a.top-box.top+a.height/2);
+    p.line.setAttribute('x2', b.right-box.left); p.line.setAttribute('y2', b.top-box.top+b.height/2);
+  }
+  function redraw(){ pairs.forEach(position); }
+  function addPair(item,opt){
+    removePair(pairOf(item)); removePair(pairOf(opt));
+    var line=document.createElementNS(SVGNS,'line'); svg.appendChild(line);
+    var p={item:item,opt:opt,line:line}; pairs.push(p); position(p);
+    resetColors(); fb.className='feedback';
+  }
+  cells.forEach(function(c){
+    c.addEventListener('click',function(){
+      var ep=pairOf(c);
+      if(!sel){ if(ep){ removePair(ep); resetColors(); fb.className='feedback'; return; } c.classList.add('sel'); sel=c; return; }
+      if(sel===c){ clearSel(); return; }
+      if(role(sel)===role(c)){ sel.classList.remove('sel'); c.classList.add('sel'); sel=c; return; }
+      var item=role(sel)==='item'?sel:c, opt=role(sel)==='item'?c:sel;
+      addPair(item,opt); clearSel();
+    });
+  });
+  btn.addEventListener('click',function(){
+    if(!pairs.length){ fb.className='feedback show no'; fb.innerHTML='לחצו על פריט ואז על ההתאמה שלו בצד השני, ואז על "בדיקה".'; return; }
+    var correct=0, total=items.length;
+    pairs.forEach(function(p){
+      var ok=p.opt.dataset.k && p.opt.dataset.k===p.item.dataset.k;
+      p.line.setAttribute('class', ok?'ok':'bad');
+      p.item.classList.remove('matched','wrong'); p.opt.classList.remove('matched','wrong');
+      p.item.classList.add(ok?'matched':'wrong'); p.opt.classList.add(ok?'matched':'wrong');
+      if(ok) correct++;
+    });
+    fb.className='feedback show '+(correct===total?'ok':(correct?'partial':'no'));
+    fb.innerHTML=(correct===total)
+      ? ('✔ כל הכבוד! כל '+total+' ההתאמות נכונות.')
+      : ('סימנתי: <b>'+correct+'</b> מתוך <b>'+total+'</b> נכונות — ירוק = נכון, אדום = טעות. תקנו ובדקו שוב.');
+  });
+  window.addEventListener('resize', redraw);
+});
+// טאבים: מציג נושא אחד בכל פעם
+(function(){
+  var bar=document.getElementById('topicTabs'), host=document.getElementById('topicHost');
+  if(!bar||!host) return;
+  var tabs=Array.prototype.slice.call(bar.querySelectorAll('.tab'));
+  var ids=tabs.map(function(t){return t.dataset.target;});
+  var panels={}; ids.forEach(function(id){panels[id]=[];});
+  var cur=null;
+  Array.prototype.slice.call(host.children).forEach(function(node){
+    var isGlobal=node.classList&&(node.classList.contains('legend')||node.classList.contains('center'));
+    if(node.id&&ids.indexOf(node.id)>-1){ cur=node.id; panels[cur].push(node); }
+    else if(isGlobal){ /* גלובלי — תמיד מוצג */ }
+    else if(cur){ panels[cur].push(node); }
+  });
+  function show(id){
+    ids.forEach(function(pid){
+      var disp=(pid===id)?'':'none';
+      panels[pid].forEach(function(n){ n.style.display=disp; });
+    });
+    tabs.forEach(function(t){ t.classList.toggle('active', t.dataset.target===id); });
+    var at=bar.querySelector('.tab.active'); if(at&&at.scrollIntoView) at.scrollIntoView({inline:'center',block:'nearest'});
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  tabs.forEach(function(t){ t.addEventListener('click',function(){ show(t.dataset.target); }); });
+  var hdr=document.querySelector('.site-header');
+  function setTop(){ bar.style.top=((hdr?hdr.offsetHeight:0))+'px'; }
+  setTop(); window.addEventListener('resize',setTop);
+  show(ids[0]);
+})();
+</script>
+</body>
+</html>

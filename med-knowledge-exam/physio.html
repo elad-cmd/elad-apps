@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>פיזיולוגיה — סיכום מעמיק לפי הסילבוס</title>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="psycho-components.css">
+<link rel="stylesheet" href="med.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="index.html">
+      <span class="brand__logo">יד</span>
+      <span class="brand__name">מבחן הידע לרפואה<small>תכנית 4 שנתית · מאגר הכנה</small></span>
+    </a>
+    <nav class="nav">
+      <a href="index.html">בית</a>
+      <a href="matzeget.html">על המבחן</a>
+      <a href="nosim.html" class="active">נושאים וסיכומים</a>
+      <a href="tirgul.html">תרגול</a>
+      <a href="diagrams.html">חזותיים</a>
+      <a href="mekorot.html">מקורות</a>
+    </nav>
+  </div>
+</header>
+
+<div class="pagehead">
+  <h1>פיזיולוגיה — סיכום מעמיק</h1>
+  <p>לפי הסילבוס הרשמי, ספר הליבה ברן ולוי (Berne &amp; Levy Physiology) מהדורה 8.</p>
+</div>
+
+<div class="tabbar">
+  <div class="tabbar__inner">
+    <a class="tab" href="#membrane">תא וממברנה</a>
+    <a class="tab" href="#ap">פוטנציאל פעולה</a>
+    <a class="tab" href="#synapse">סינפסה</a>
+    <a class="tab" href="#muscle">שריר</a>
+    <a class="tab" href="#cardio">לב וכלי דם</a>
+    <a class="tab" href="#resp">נשימה</a>
+    <a class="tab" href="#renal">כליה</a>
+    <a class="tab" href="#endo">אנדוקרינית</a>
+  </div>
+</div>
+
+<main>
+<section class="section" style="padding-top:20px">
+<div class="section__inner">
+
+  <div class="alert alert--info">
+    <span class="alert__icon"><i class="fa-solid fa-circle-info"></i></span>
+    <div class="alert__body"><span class="alert__title">איך ללמוד מכאן</span>פיזיולוגיה היא מנגנונים וכיוונים: איזה יון זורם מתי, מה קורה כשמשהו עולה/יורד, ולולאות משוב. שימו לב לחישובים (נרנסט, תפוקת לב, GFR). בסוף — <a href="tirgul.html#physio">לתרגול בפיזיולוגיה</a>.</div>
+  </div>
+
+  <!-- תא וממברנה -->
+  <div class="panel" id="membrane">
+    <h2>תא, ממברנה ופוטנציאל מנוחה</h2>
+    <p>פוטנציאל המנוחה (כ-70mV−) קרוב לפוטנציאל שיווי המשקל של <b>אשלגן</b> (EK כ-90mV−), כי חדירות הממברנה במנוחה לאשלגן גבוהה בהרבה מאשר לנתרן (משוואת <b>גולדמן</b>: המתח נמשך ליון בעל החדירות הגבוהה). היונים הדומיננטיים: <b>אשלגן</b> תוך-תאי, <b>נתרן</b> חוץ-תאי — מדרגים שנשמרים ע"י משאבת <b>נתרן-אשלגן</b>.</p>
+    <div class="keybox"><b>משוואת נרנסט:</b> E = 61 × log([יון בחוץ]/[יון בפנים]) ב-37°C. הכפלה פי 10 בריכוז האשלגן החיצוני מעלה את EK בכ-61mV (הופך פחות שלילי) — ולכן היפר-קלמיה מדה-פולרת את התא.</div>
+    <div class="chips">
+      <span class="termcard"><b>פוטנציאל מנוחה</b><span>resting potential</span></span>
+      <span class="termcard"><b>משוואת נרנסט</b><span>Nernst equation</span></span>
+      <span class="termcard"><b>משאבת נתרן-אשלגן</b><span>Na/K-ATPase</span></span>
+    </div>
+  </div>
+
+  <!-- פוטנציאל פעולה -->
+  <div class="panel" id="ap">
+    <h2>פוטנציאל פעולה והולכה</h2>
+    <table class="t">
+      <tr><th>שלב</th><th>מנגנון יוני</th></tr>
+      <tr><td><b>דה-פולריזציה</b></td><td>פתיחת תעלות <b>נתרן</b> תלויות-מתח → כניסת Na⁺</td></tr>
+      <tr><td><b>רה-פולריזציה</b></td><td>השבתת תעלות הנתרן + פתיחה מאוחרת של תעלות <b>אשלגן</b> → יציאת K⁺</td></tr>
+    </table>
+    <p><b>תקופה רפרקטורית מוחלטת:</b> תעלות הנתרן במצב <b>השבתה</b> (inactivated) ולא ניתנות לפתיחה — אי אפשר ליצור פוטנציאל פעולה חדש בכל עוצמה. <b>יחסית:</b> חלק מתעלות הנתרן כבר התאוששו אך זרם האשלגן עדיין מוגבר — נדרש גירוי חזק מהרגיל. ההשבתה גם מבטיחה הולכה <b>חד-כיוונית</b>.</p>
+    <div class="keybox"><b>מיאלין והולכה קפיצנית:</b> מיאלין מוריד את קיבול הממברנה ומעלה את התנגדותה, כך שהזרם זורם רחוק יותר. תעלות הנתרן מרוכזות ב<b>מפרצי רנוויה</b>, והפוטנציאל "קופץ" ביניהם — הולכה מהירה.</div>
+    <div class="chips">
+      <span class="termcard"><b>תקופה רפרקטורית</b><span>refractory period</span></span>
+      <span class="termcard"><b>השבתה</b><span>inactivation</span></span>
+      <span class="termcard"><b>הולכה קפיצנית</b><span>saltatory conduction</span></span>
+    </div>
+  </div>
+
+  <!-- סינפסה -->
+  <div class="panel" id="synapse">
+    <h2>העברה סינפטית</h2>
+    <p>פוטנציאל פעולה בקצה העצב → כניסת <b>סידן</b> → שחרור מוליך עצבי → קשירה לקולטנים פוסט-סינפטיים. <b>EPSP</b> (מעורר) — לרוב כניסת נתרן (דה-פולריזציה). <b>IPSP</b> (מעכב) — כניסת כלוריד או יציאת אשלגן (היפר-פולריזציה).</p>
+    <p><b>סיכום זמני</b> — EPSPs מאותה סינפסה ברצף מהיר מצטברים. <b>סיכום מרחבי</b> — EPSPs ממספר סינפסות בו-זמנית. שניהם יכולים להביא את התא לסף. במפגש העצב-שריר המוליך הוא <b>אצטיל-כולין</b>.</p>
+    <div class="chips">
+      <span class="termcard"><b>EPSP / IPSP</b><span>EPSP / IPSP</span></span>
+      <span class="termcard"><b>סיכום זמני/מרחבי</b><span>temporal/spatial</span></span>
+    </div>
+  </div>
+
+  <!-- שריר -->
+  <div class="panel" id="muscle">
+    <h2>פיזיולוגיה של שריר</h2>
+    <h3>צימוד עירור-כיווץ</h3>
+    <p><b>שריר השלד:</b> צימוד <b>מכני-ישיר</b> — חיישן המתח <b>DHPR</b> בצינורית-T מעביר שינוי קונפורמציה ל<b>RyR</b> ב-SR ופותח אותו (בלי תלות בכניסת סידן חוץ-תאי). <b>שריר הלב:</b> <b>CICR</b> — כניסת סידן חוץ-תאי דרך תעלות-L היא הטריגר לשחרור סידן מה-SR. <b>הרפיה:</b> משאבת <b>SERCA</b> מחזירה את הסידן ל-SR. <b>שריר חלק:</b> סידן נקשר ל<b>קלמודולין</b> → מפעיל MLCK → זרחון שרשרת המיוזין הקלה (אין טרופונין).</p>
+    <div class="keybox"><b>מה מגדיל כוח בשריר שלם:</b> <b>גיוס</b> יחידות מוטוריות נוספות + העלאת <b>תדירות</b> הגירוי (סיכום זמני עד טטנוס). מתיחה מעבר לאורך האופטימלי או הורדת סידן דווקא מפחיתות כוח.</div>
+    <div class="chips">
+      <span class="termcard"><b>DHPR / RyR</b><span>DHPR / RyR</span></span>
+      <span class="termcard"><b>SERCA</b><span>SERCA</span></span>
+      <span class="termcard"><b>שחרור מושרה-סידן</b><span>CICR</span></span>
+    </div>
+  </div>
+
+  <!-- לב -->
+  <div class="panel" id="cardio">
+    <h2>מערכת הלב וכלי הדם</h2>
+    <p><b>קוצב:</b> תאי <b>צומת הסינוס (SA)</b> מתאפיינים בדה-פולריזציה ספונטנית איטית (פאזה 4) בזכות <b>זרם מצחיק (If)</b> דרך תעלות HCN. ההולכה: SA → עליות → <b>צומת AV</b> (עיכוב שמאפשר מילוי חדרים) → צרור His → סיבי פורקיניה.</p>
+    <p><b>פוטנציאל פעולה חדרי:</b> פאזה 0 — זרם נתרן מהיר; פאזה 2 (<b>רמה/plateau</b>) — איזון בין סידן נכנס (תעלות-L) לאשלגן יוצא; פאזה 3 — רה-פולריזציה (יציאת אשלגן).</p>
+    <div class="keybox">
+      <b>נוסחאות:</b> תפוקת לב = קצב לב × נפח פעימה (SV = EDV − ESV). <b>חוק פרנק-סטרלינג:</b> עלייה ב-preload מותחת את הסיבים ומגדילה את נפח הפעימה. <b>לחץ עורקי ממוצע</b> ≈ תפוקת לב × התנגדות היקפית (MAP = CO × TPR).
+    </div>
+    <p><b>רפלקס בארורצפטורי:</b> ירידת לחץ → פחות ירי מהבארורצפטורים → הגברה <b>סימפתטית</b> והפחתה פאראסימפתטית → עלייה בקצב, כיווציות והתנגדות — להחזרת הלחץ.</p>
+    <div class="chips">
+      <span class="termcard"><b>צומת הסינוס</b><span>SA node</span></span>
+      <span class="termcard"><b>פרנק-סטרלינג</b><span>Frank-Starling</span></span>
+      <span class="termcard"><b>בארורצפטור</b><span>baroreceptor</span></span>
+    </div>
+  </div>
+
+  <!-- נשימה -->
+  <div class="panel" id="resp">
+    <h2>מערכת הנשימה</h2>
+    <p><b>אוורור:</b> בשאיפה הסרעפת מתכווצת, הלחץ התוך-צדרי נעשה שלילי יותר, הלחץ הנאדי יורד מתחת לאטמוספרי ואוויר נכנס. <b>הובלת חמצן:</b> רובו קשור ל<b>המוגלובין</b>, בעקומת סיפוח סיגמואידלית.</p>
+    <div class="keybox"><b>אפקט בוהר:</b> ירידת pH, עליית CO₂ ועליית טמפרטורה מסיטים את עקומת ההמוגלובין <b>ימינה</b> — מורידים זיקה ומשחררים יותר חמצן ברקמות הפעילות. הסטה שמאלה = זיקה גבוהה יותר. <b>הובלת CO₂:</b> רובו כ<b>ביקרבונט</b> (HCO₃⁻) בעזרת אנהידראז פחמני בכדורית, עם chloride shift.</div>
+    <p><b>ויסות נשימה:</b> כימורצפטורים <b>מרכזיים</b> מגיבים בעיקר ל-CO₂/pH; כימורצפטורים <b>היקפיים</b> (גופיפי התרדמה) מגיבים גם לירידת חמצן (היפוקסמיה).</p>
+    <div class="chips">
+      <span class="termcard"><b>אפקט בוהר</b><span>Bohr effect</span></span>
+      <span class="termcard"><b>ביקרבונט</b><span>bicarbonate</span></span>
+      <span class="termcard"><b>כימורצפטור</b><span>chemoreceptor</span></span>
+    </div>
+  </div>
+
+  <!-- כליה -->
+  <div class="panel" id="renal">
+    <h2>הכליה ומאזן הנוזלים</h2>
+    <p>ה<b>נפרון</b>: <b>סינון</b> בגלומרולוס → <b>ספיגה חוזרת</b> (רוב הנוזל והמומסים) → <b>הפרשה</b> → שתן. <b>קלירנס</b> מודד טיפול: קלירנס אינולין = GFR; קלירנס גבוה מ-GFR → הפרשה נטו; נמוך → ספיגה חוזרת נטו.</p>
+    <p><b>ויסות עצמי</b> שומר על GFR יציב בטווח לחץ כ-70–180 ממ"כ (מנגנון מיוגני ומשוב טובולו-גלומרולרי). <b>אנגיוטנסין II</b> מכווץ בעיקר את העורקיק <b>היוצא</b> ושומר על GFR; מעכב ACE מרחיב אותו ומוריד GFR.</p>
+    <div class="keybox"><b>הורמונים:</b> <b>ADH</b> (ואזופרסין) מגביר חדירות הצינורית המאספת למים (aquaporin-2) → שתן מרוכז; שתיית מים מדכאת ADH → שתן מדולל. <b>RAAS</b>: אלדוסטרון מגביר ספיגת נתרן והפרשת אשלגן. <b>חומצה-בסיס:</b> בחמצת — פיצוי נשימתי מהיר (הגברת אוורור) ופיצוי כלייתי איטי (הפרשת H⁺ וייצור HCO₃⁻).</div>
+    <div class="chips">
+      <span class="termcard"><b>נפרון / GFR</b><span>nephron / GFR</span></span>
+      <span class="termcard"><b>קלירנס</b><span>clearance</span></span>
+      <span class="termcard"><b>RAAS / ADH</b><span>RAAS / ADH</span></span>
+    </div>
+  </div>
+
+  <!-- אנדוקרינית -->
+  <div class="panel" id="endo">
+    <h2>המערכת האנדוקרינית</h2>
+    <p>הורמונים פועלים דרך לולאות <b>משוב שלילי</b>. ציר <b>היפותלמוס-יותרת המוח</b> מנצח על בלוטות המטרה.</p>
+    <div class="keybox"><b>ראשוני מול מרכזי — נושא מבחן אהוב:</b> בתת-פעילות תריס <b>ראשונית</b> (פגיעה בבלוטה): T4 נמוך ו-<b>TSH גבוה</b> (אין עכבה על יותרת המוח). ב<b>מרכזית</b> (פגיעה ביותרת המוח): T4 נמוך ו-TSH נמוך.</div>
+    <p><b>אדרנל:</b> <b>אלדוסטרון</b> אוצר נתרן ומפריש אשלגן; במחלת <b>אדיסון</b> (אי-ספיקה ראשונית) — איבוד נתרן, אצירת אשלגן ותת לחץ דם. גלוקוקורטיקואידים חיצוניים ממושכים מדכאים את ציר CRH/ACTH וגורמים לניוון האדרנל. <b>אינסולין/גלוקגון:</b> בצום היחס אינסולין/גלוקגון יורד → גליקוגנוליזה, גלוקונאוגנזה וקטוגנזה.</p>
+    <div class="chips">
+      <span class="termcard"><b>משוב שלילי</b><span>negative feedback</span></span>
+      <span class="termcard"><b>ציר HPA</b><span>hypothalamus-pituitary</span></span>
+      <span class="termcard"><b>אלדוסטרון</b><span>aldosterone</span></span>
+    </div>
+  </div>
+
+  <div class="center mt-m">
+    <a class="btn btn--lg" href="tirgul.html#physio"><i class="fa-solid fa-pen-to-square"></i> לתרגול בפיזיולוגיה</a>
+    <a class="btn btn--lg btn--ghost" href="nosim.html"><i class="fa-solid fa-rotate-left"></i> לכל הנושאים</a>
+  </div>
+
+</div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="foot__inner">
+    <span>מבחן הידע לרפואה · מאגר הכנה</span>
+    <span><a href="mekorot.html">מקורות וספרי לימוד</a></span>
+  </div>
+</footer>
+</body>
+</html>
