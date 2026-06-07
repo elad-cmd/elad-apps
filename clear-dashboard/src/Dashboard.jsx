@@ -222,12 +222,24 @@ export default function Dashboard() {
   const navigateTo = (newView) => {
     if (view === 'home' && newView !== 'home') {
       lastViewRef.current = newView;
+      // Push a history entry so the device/browser Back button returns to the
+      // home view instead of leaving the app (which left a blank background).
+      try { window.history.pushState({ appView: newView }, ''); } catch (e) {}
     }
     setView(newView);
     if (newView !== 'home') {
       requestAnimationFrame(() => window.scrollTo(0, 0));
     }
   };
+
+  // Make the device/browser Back button bring us back to the home view rather
+  // than navigating away from the app. Opening a sub-view pushes one history
+  // entry (see navigateTo); pressing Back pops it and fires popstate here.
+  useEffect(() => {
+    const onPopState = () => setView('home');
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
 
   // When the home view becomes active, scroll so the card we came from is at the top.
   // AnimatePresence mode="wait" delays mounting home until the previous view's exit
@@ -490,7 +502,7 @@ export default function Dashboard() {
       {/* Bottom nav - hidden on home, shows back on subviews */}
       <BottomNav
         view={view}
-        onBack={() => navigateTo('home')}
+        onBack={() => { if (window.history.state && window.history.state.appView) { window.history.back(); } else { navigateTo('home'); } }}
         paletteId={palettes[view]}
       />
 
