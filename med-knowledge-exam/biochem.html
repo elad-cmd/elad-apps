@@ -29,11 +29,12 @@
 
 <div class="pagehead">
   <h1>ביוכימיה — סיכום מעמיק</h1>
-  <p>לפי הסילבוס הרשמי, ספר הליבה לנינגר (Lehninger) מהדורה 8. מאורגן לפי נושאי הבחינה.</p>
+  <p>לפי הסילבוס הרשמי, ספר הליבה לנינגר (Lehninger) מהדורה 8. כל נושא — עם תרשים ועוגן זיכרון.</p>
 </div>
 
 <div class="tabbar">
   <div class="tabbar__inner">
+    <a class="tab" href="#foundations">יסודות</a>
     <a class="tab" href="#proteins">חלבונים</a>
     <a class="tab" href="#enzymes">אנזימים</a>
     <a class="tab" href="#carbs">פחמימות</a>
@@ -46,6 +47,7 @@
     <a class="tab" href="#oxphos">זרחון חמצוני</a>
     <a class="tab" href="#fat">חומצות שומן</a>
     <a class="tab" href="#nitrogen">חנקן ואוריאה</a>
+    <a class="tab" href="#aasynth">סינתזת חומצות אמינו</a>
     <a class="tab" href="#synthesis">סינתזת שומנים</a>
     <a class="tab" href="#integration">שילוב הורמונלי</a>
     <a class="tab" href="#signaling">העברת אותות</a>
@@ -58,7 +60,38 @@
 
   <div class="alert alert--info">
     <span class="alert__icon"><i class="fa-solid fa-circle-info"></i></span>
-    <div class="alert__body"><span class="alert__title">איך ללמוד מכאן</span>הבחינה בודקת הבנה ושילוב, לא שינון. לכל מסלול שימו לב ל: מיקום בתא, השלב המווסת (הבלתי-הפיך), המווסתים האלוסטריים, התפוקה האנרגטית, והקשר למסלולים אחרים. בסוף — <a href="tirgul.html#biochem">לתרגול בביוכימיה</a>.</div>
+    <div class="alert__body"><span class="alert__title">איך ללמוד מכאן</span>הבחינה בודקת הבנה ושילוב, לא שינון. לכל מסלול שימו לב ל: מיקום בתא, השלב המווסת (הבלתי-הפיך), המווסתים האלוסטריים, התפוקה האנרגטית, והקשר למסלולים אחרים. כל נושא כולל <b>תרשים</b> ו<b>עוגן זיכרון</b> סגול. בסוף — <a href="tirgul.html#biochem">לתרגול בביוכימיה</a>.</div>
+  </div>
+
+  <!-- ===== יסודות ===== -->
+  <div class="panel" id="foundations">
+    <h2>יסודות: מים, pH ובופרים</h2>
+    <p>כל הביוכימיה מתרחשת במים, וכל תכונותיהם הביולוגיות נובעות ממקור אחד: ה<b>קוטביות</b> של מולקולת המים ויכולתה ליצור עד ארבעה <b>קשרי מימן</b>. רשת קשרי המימן מסבירה את נקודת הרתיחה הגבוהה, החום הסגולי, וכושר ההמסה של חומרים קוטביים ויוניים.</p>
+    <p>ה<b>אפקט ההידרופובי</b> הוא כוח מארגן מרכזי: מולקולות לא-קוטביות מתקבצות יחד כדי למזער את ההפרעה לרשת קשרי המימן של המים. ההנעה אינה משיכה בין השומנים אלא <b>רווח אנטרופי</b> של המים המשתחררים מסידור כפוי. זהו הכוח שמקפל חלבונים (ליבה הידרופובית) ומרכיב ממברנות.</p>
+    <h3>חומצות, בסיסים ובופרים</h3>
+    <p>ה-<b>pKa</b> הוא ה-pH שבו קבוצה מתפרקת חצי-חצי. לפי <b>הנדרסון-הסלבך</b>, בופר יעיל ביותר כש-<b>pH = pKa</b> — שם יחס הבסיס/חומצה כ-1:1 והוא בולם תוספת חומצה או בסיס בשני הכיוונים. ככל שמתרחקים מ-pKa, כושר הבופר צונח.</p>
+    <div class="fig">
+      <svg viewBox="0 0 360 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="עקומת טיטרציה: אזור הבופר סביב ה-pKa שבו השיפוע מתון.">
+        <line x1="45" y1="175" x2="340" y2="175" stroke="var(--color-line)" stroke-width="1.5"/>
+        <line x1="45" y1="20" x2="45" y2="175" stroke="var(--color-line)" stroke-width="1.5"/>
+        <path d="M55,165 C120,160 150,150 175,100 C200,50 230,40 320,33" fill="none" stroke="var(--subj-biochem)" stroke-width="3"/>
+        <rect x="138" y="60" width="74" height="80" fill="var(--color-yellow)" opacity="0.25"/>
+        <line x1="175" y1="40" x2="175" y2="175" stroke="var(--color-muted)" stroke-width="1" stroke-dasharray="4 3"/>
+        <text x="175" y="195" text-anchor="middle" font-size="12" fill="var(--color-ink)">pKa</text>
+        <text x="175" y="55" text-anchor="middle" font-size="11" fill="#7a5b08">אזור בופר</text>
+        <text x="20" y="100" text-anchor="middle" font-size="12" fill="var(--color-muted)" transform="rotate(-90 20 100)">pH</text>
+        <text x="300" y="195" text-anchor="middle" font-size="12" fill="var(--color-muted)">בסיס שנוסף ←</text>
+      </svg>
+      <div class="fig__cap">בעקומת הטיטרציה, סביב ה-<b>pKa</b> השיפוע מתון — כל תוספת חומצה/בסיס משנה מעט את ה-pH. זהו <b>אזור הבופר</b>.</div>
+    </div>
+    <div class="mnemo">
+      <div class="mnemo__tag"><i class="fa-solid fa-brain"></i> עוגן זיכרון</div>
+      <b>בופר חזק כש-pH = pKa.</b> חשבו על נדנדה מאוזנת — קל לה לספוג דחיפה משני הצדדים רק כשהיא במרכז (יחס 1:1). וכן: <span class="key">הכול נובע מקשרי מימן</span> — רתיחה, המסה, ואפילו האפקט ההידרופובי (המים "בורחים" כדי לשמור על הרשת).</div>
+    <div class="chips">
+      <span class="termcard"><b>קשר מימן</b><span>hydrogen bond</span></span>
+      <span class="termcard"><b>אפקט הידרופובי</b><span>hydrophobic effect</span></span>
+      <span class="termcard"><b>הנדרסון-הסלבך</b><span>Henderson-Hasselbalch</span></span>
+    </div>
   </div>
 
   <!-- ===== חלבונים ===== -->
@@ -76,8 +109,25 @@
       <tr><td><b>רביעוני</b></td><td>צירוף תת-יחידות</td><td>אותם כוחות לא-קוולנטיים בין השרשראות</td></tr>
     </table>
     <div class="keybox"><b>ניסוי אנפינסן:</b> חלבון שעבר דנטורציה (אוריאה + מחזר) חזר לפעילות מלאה לאחר הסרת הריאגנטים — הוכחה שהמבנה הסופי מקודד כולו ב<b>רצף</b> (המבנה היציב תרמודינמית). זה סוג שאלה אהוב על הבחינה.</div>
+    <p><b>קולגן</b> ממחיש את קשר רצף-מבנה: רצף חוזר <b>Gly-X-Y</b>, שבו כל שארית שלישית היא גליצין הקטן שנכנס לליבת הסליל המשולש הצפוף; הידרוקסילציה של פרולין (תלוית ויטמין C) מייצבת בקשרי מימן, וחסרונה גורם צפדינה.</p>
     <h3>תפקוד: המוגלובין מול מיוגלובין</h3>
     <p><b>מיוגלובין</b> מונומרי — עקומת קשירת חמצן <b>היפרבולית</b>. <b>המוגלובין</b> רב-תת-יחידתי ומפגין <b>קואופרטיביות</b> (מעבר בין מצב T בעל זיקה נמוכה למצב R בעל זיקה גבוהה) — עקומה <b>סיגמואידלית</b>. מווסתים: <b>אפקט בוהר</b> (pH נמוך ו-CO₂ מייצבים את מצב T ומשחררים חמצן ברקמות פעילות) ו-<b>2,3-BPG</b> (נקשר בחלל המרכזי של מצב T, מוריד זיקה ומאפשר פריקה יעילה).</p>
+    <div class="fig">
+      <svg viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="עקומות קשירת חמצן: מיוגלובין היפרבולית, המוגלובין סיגמואידלית.">
+        <line x1="45" y1="185" x2="345" y2="185" stroke="var(--color-line)" stroke-width="1.5"/>
+        <line x1="45" y1="20" x2="45" y2="185" stroke="var(--color-line)" stroke-width="1.5"/>
+        <path d="M45,185 C70,70 120,45 200,38 C270,33 320,32 340,31" fill="none" stroke="var(--subj-physio)" stroke-width="3"/>
+        <path d="M45,182 C90,178 120,160 165,110 C200,70 250,48 340,40" fill="none" stroke="var(--subj-biochem)" stroke-width="3"/>
+        <circle cx="300" cy="33" r="4" fill="var(--subj-physio)"/><text x="293" y="28" text-anchor="end" font-size="12" fill="var(--color-ink)">מיוגלובין</text>
+        <circle cx="300" cy="43" r="4" fill="var(--subj-biochem)"/><text x="293" y="58" text-anchor="end" font-size="12" fill="var(--color-ink)">המוגלובין</text>
+        <text x="20" y="105" text-anchor="middle" font-size="12" fill="var(--color-muted)" transform="rotate(-90 20 105)">% רוויה</text>
+        <text x="195" y="205" text-anchor="middle" font-size="12" fill="var(--color-muted)">לחץ חלקי של O₂ ←</text>
+      </svg>
+      <div class="fig__cap">מיוגלובין (<b>היפרבולית</b>) רווי כבר בלחץ נמוך — מאגר. המוגלובין (<b>סיגמואידלית</b>) — הקואופרטיביות מאפשרת טעינה בריאות ופריקה ברקמות.</div>
+    </div>
+    <div class="mnemo">
+      <div class="mnemo__tag"><i class="fa-solid fa-brain"></i> עוגן זיכרון</div>
+      <b>9 חומצות אמינו חיוניות</b> — באנגלית: <span class="key">PVT TIM HaLL</span> (Phe, Val, Thr · Trp, Ile, Met · His, Leu, Lys). חשבו על "פרייבט טים הול" — חייל פרטי ששמו טים הול. <b>קולגן:</b> זכרו <span class="key">Gly-X-Y</span> — גליצין כל שלישית כי רק הוא קטן מספיק לליבה.</div>
     <div class="chips">
       <span class="termcard"><b>קשר פפטידי</b><span>peptide bond</span></span>
       <span class="termcard"><b>קואופרטיביות</b><span>cooperativity</span></span>
@@ -92,6 +142,22 @@
     <p>אנזים מוריד את <b>אנרגיית השפעול</b> ומאיץ תגובה בלי לשנות שיווי משקל. לאנזימים <b>סטריאו-ספציפיות</b> (הבחנה בין סטריאו-איזומרים) — תכונה שנכונה תמיד, בניגוד לזיקה גבוהה לתוצר (שדווקא הייתה מעכבת קטליזה).</p>
     <h3>מיכאליס-מנטן</h3>
     <p><b>Vmax</b> — הקצב המרבי (בריווי). <b>Km</b> — ריכוז הסובסטרט שבו הקצב חצי מ-Vmax; Km נמוך = זיקה גבוהה. <b>kcat</b> — מספר המחזור. בריכוז סובסטרט נמוך הקצב נשלט על ידי <b>kcat/Km</b> (קבוע היעילות) — המדד להשוואת יעילות אנזימים.</p>
+    <div class="fig">
+      <svg viewBox="0 0 360 215" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="עקומת מיכאליס-מנטן: היפרבולה המתקרבת ל-Vmax, עם Km בחצי הקצב.">
+        <line x1="48" y1="180" x2="345" y2="180" stroke="var(--color-line)" stroke-width="1.5"/>
+        <line x1="48" y1="18" x2="48" y2="180" stroke="var(--color-line)" stroke-width="1.5"/>
+        <path d="M48,180 C110,90 180,62 345,52" fill="none" stroke="var(--subj-biochem)" stroke-width="3"/>
+        <line x1="48" y1="50" x2="345" y2="50" stroke="var(--color-muted)" stroke-width="1" stroke-dasharray="5 3"/>
+        <text x="335" y="44" text-anchor="end" font-size="12" fill="var(--color-ink)">Vmax</text>
+        <line x1="48" y1="115" x2="120" y2="115" stroke="var(--color-muted)" stroke-width="1" stroke-dasharray="4 3"/>
+        <line x1="120" y1="115" x2="120" y2="180" stroke="var(--color-muted)" stroke-width="1" stroke-dasharray="4 3"/>
+        <text x="20" y="118" text-anchor="middle" font-size="11" fill="var(--color-muted)">½Vmax</text>
+        <text x="120" y="197" text-anchor="middle" font-size="12" fill="var(--color-ink)">Km</text>
+        <text x="22" y="100" text-anchor="middle" font-size="12" fill="var(--color-muted)" transform="rotate(-90 22 100)">V</text>
+        <text x="250" y="200" text-anchor="middle" font-size="12" fill="var(--color-muted)">[S] ←</text>
+      </svg>
+      <div class="fig__cap">ה-<b>Km</b> הוא ריכוז הסובסטרט בחצי הקצב המרבי. Km נמוך = זיקה גבוהה (מגיעים לחצי-מהירות כבר בריכוז קטן).</div>
+    </div>
     <h3>סוגי עיכוב</h3>
     <table class="t">
       <tr><th>סוג</th><th>נקשר ל</th><th>Km נראה</th><th>Vmax</th><th>Lineweaver-Burk</th></tr>
@@ -101,6 +167,9 @@
     </table>
     <h3>ויסות פעילות</h3>
     <p><b>אלוסטרי:</b> מאפנן נקשר לאתר נפרד ומשנה קונפורמציה; מאפנן שלילי מסיט עקומה סיגמואידלית ימינה (מעלה K0.5). <b>שינוי קוולנטי:</b> זרחון (הפיך) או חיתוך פרוטאוליטי. <b>זימוגנים</b> מופעלים בחיתוך פרוטאוליטי <b>בלתי-הפיך</b> — בקרה על אנזימים הרסניים (עיכול, קרישה) ומניעת פעילות מוקדמת.</p>
+    <div class="mnemo">
+      <div class="mnemo__tag"><i class="fa-solid fa-brain"></i> עוגן זיכרון</div>
+      <b>סוגי העיכוב — מה משתנה?</b> <span class="key">תחרותי מעלה Km</span> (מתחרה על האתר — צריך יותר סובסטרט, אבל ב-Vmax אפשר "להציף" אותו). <span class="key">לא-תחרותי מוריד Vmax</span> (משבית אנזים — סובסטרט לא עוזר). <b>א-תחרותי</b> = שניהם יורדים (נקשר רק ל-ES). זכרו: "<b>תחרות → צריך יותר</b> (Km↑); <b>השבתה → פחות תקרה</b> (Vmax↓)".</div>
     <div class="chips">
       <span class="termcard"><b>אנרגיית שפעול</b><span>activation energy</span></span>
       <span class="termcard"><b>קבוע היעילות</b><span>kcat/Km</span></span>
@@ -111,11 +180,17 @@
   <!-- ===== פחמימות ===== -->
   <div class="panel" id="carbs">
     <h2>פחמימות</h2>
-    <p>מונוסוכרים (גלוקוז, פרוקטוז, גלקטוז) מתחברים ב<b>קשר גליקוזידי</b>. סוכר <b>מחזר</b> דורש <b>פחמן אנומרי חופשי</b> (קצה הֶמיאצטל): ללקטוז יש קצה מחזר, ואילו ב<b>סוכרוז</b> שני הפחמנים האנומריים קשורים זה לזה ולכן הוא אינו מחזר. פוליסוכרים: גליקוגן ועמילן (אגירת גלוקוז), צלולוז (מבני). אופי הקשר (alpha מול beta) קובע עיכול: בני אדם מפרקים alpha-גליקוזידי אך לא beta של צלולוז.</p>
+    <p>מונוסוכרים (גלוקוז, פרוקטוז, גלקטוז) מתחברים ב<b>קשר גליקוזידי</b>. הפחמן ה<b>אנומרי</b> (C1) יכול להיות בתצורת alpha או beta; בתמיסה הטבעת נפתחת לצורה פתוחה (אלדהיד) וחוזרת ונסגרת — זו ה<b>מוטרוטציה</b>, התאזנות בין האנומרים.</p>
+    <p>סוכר <b>מחזר</b> דורש <b>פחמן אנומרי חופשי</b> (קצה הֶמיאצטל): ללקטוז יש קצה מחזר, ואילו ב<b>סוכרוז</b> שני הפחמנים האנומריים קשורים זה לזה ולכן הוא אינו מחזר. פוליסוכרים: גליקוגן ועמילן (אגירת גלוקוז), צלולוז (מבני). אופי הקשר (alpha מול beta) קובע עיכול: בני אדם מפרקים alpha-גליקוזידי אך לא beta של צלולוז.</p>
+    <p><b>גליקוקוניוגטים:</b> סוכרים על פני התא (גליקופרוטאינים, גליקוליפידים) הם "תעודת זהות" לזיהוי תאי ולהכרה חיסונית — מערכת סוגי הדם ABO נקבעת בסוכר הקצה.</p>
+    <div class="mnemo">
+      <div class="mnemo__tag"><i class="fa-solid fa-brain"></i> עוגן זיכרון</div>
+      <b>מחזר = פחמן אנומרי חופשי.</b> סוכרוז (סוכר שולחן) — שני האנומרים "לוחצים ידיים", אין קצה חופשי, ולכן <span class="key">סוכרוז אינו מחזר</span>. מוטרוטציה = החלפת alpha/beta דרך הצורה הפתוחה.</div>
     <div class="chips">
       <span class="termcard"><b>קשר גליקוזידי</b><span>glycosidic bond</span></span>
       <span class="termcard"><b>סוכר מחזר</b><span>reducing sugar</span></span>
       <span class="termcard"><b>פחמן אנומרי</b><span>anomeric carbon</span></span>
+      <span class="termcard"><b>מוטרוטציה</b><span>mutarotation</span></span>
     </div>
   </div>
 
@@ -125,6 +200,9 @@
     <p><b>ΔG</b> הממשי תלוי גם ב-ΔG°' וגם בריכוזים: <b>ΔG = ΔG°' + RT·ln([תוצרים]/[מגיבים])</b>. לכן תגובה עם ΔG°' חיובי <b>יכולה</b> להתקדם קדימה אם יחס המגיבים לתוצרים גבוה מספיק. ΔG קובע ספונטניות, לא קצב (הקצב תלוי באנרגיית השפעול).</p>
     <p><b>ATP</b> הוא מטבע האנרגיה. האנרגיה הגבוהה בהידרוליזה אינה "כלואה בקשר" אלא נובעת מ<b>יציבות התוצרים</b> (הקלת דחיית מטענים, ייצוב רזוננס וסולבטציה). מולקולות עתירות-אנרגיה אף יותר: פוספואנול-פירובט (PEP), קריאטין-פוספט.</p>
     <p><b>חיזור:</b> אלקטרונים זורמים ספונטנית מזוג בעל פוטנציאל חיזור (E°') נמוך (מחזר חזק) לזוג בעל E°' גבוה (מחמצן חזק). <b>ΔG°' = −nF·ΔE°'</b>. הנשאים: NAD⁺/NADH, FAD/FADH₂, NADP⁺/NADPH (לרוב בתהליכי בנייה/סינתזה).</p>
+    <div class="mnemo">
+      <div class="mnemo__tag"><i class="fa-solid fa-brain"></i> עוגן זיכרון</div>
+      <b>אלקטרונים זורמים "במורד" — מ-E°' נמוך ל-E°' גבוה.</b> חשבו: החמצן (מחמצן חזק, E°' גבוה) "מושך" אליו את האלקטרונים בסוף השרשרת. <span class="key">NADPH = בנייה</span> (סינתזה והגנה מחמצון); <span class="key">NADH = פירוק</span> (אנרגיה).</div>
     <div class="chips">
       <span class="termcard"><b>אנרגיה חופשית</b><span>ΔG</span></span>
       <span class="termcard"><b>פוטנציאל חיזור</b><span>redox potential</span></span>
@@ -135,6 +213,18 @@
   <div class="panel" id="glycolysis">
     <h2>גליקוליזה</h2>
     <p>פירוק גלוקוז ל-2 פירובט ב<b>ציטוזול</b>, בשני שלבים: <b>שלב השקעה</b> (צריכת 2 ATP) ו<b>שלב תפוקה</b> (ייצור 4 ATP + 2 NADH). תפוקה נטו: <b>2 ATP, 2 NADH</b>.</p>
+    <div class="fig">
+      <div class="flow">
+        <div class="flow__step"><b>גלוקוז</b><span>השקעה: −2 ATP</span></div>
+        <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+        <div class="flow__step" style="border-color:var(--subj-biochem)"><b>F1,6BP</b><span>PFK-1 · נקודת המחויבות</span></div>
+        <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+        <div class="flow__step"><b>2× G3P</b><span>תפוקה: +4 ATP, +2 NADH</span></div>
+        <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+        <div class="flow__step"><b>2× פירובט</b><span>נטו: +2 ATP, +2 NADH</span></div>
+      </div>
+      <div class="fig__cap">שני שלבים: <b>השקעה</b> ואז <b>תפוקה</b>. נקודת הבקרה המחייבת היא <b>PFK-1</b> (ורוד).</div>
+    </div>
     <h3>שלושת השלבים הבלתי-הפיכים (נקודות בקרה)</h3>
     <table class="t">
       <tr><th>אנזים</th><th>תגובה</th><th>ויסות</th></tr>
@@ -142,9 +232,13 @@
       <tr><td><b>PFK-1</b></td><td>F6P → F1,6BP</td><td>השלב המחייב. מעוכב ע"י ATP וציטרט; מופעל ע"י AMP ו-<b>פרוקטוז-2,6-ביספוספט</b></td></tr>
       <tr><td><b>פירובט קינאז</b></td><td>PEP → פירובט (+ATP)</td><td>זרחון ברמת המצע; מופעל ע"י F1,6BP</td></tr>
     </table>
-    <p>זרחון ברמת המצע (substrate-level) מתרחש בשני שלבים: פוספוגליצרט קינאז ופירובט קינאז. ל-PEP אנרגיית הידרוליזה גבוהה במיוחד.</p>
     <h3>גורלות הפירובט</h3>
     <p><b>אווירני:</b> פירובט → אצטיל-CoA (פירובט דהידרוגנאז, דקרבוקסילציה מחמצנת בלתי-הפיכה, במיטוכונדריה, מייצר NADH+CO₂). <b>אל-אווירני (לקטט):</b> מחדש NAD⁺ ציטוזולי כדי לאפשר המשך גליקוליזה — בתהליך הכולל מגלוקוז ללקטט אין צבירת NADH נטו. <b>בשמרים:</b> תסיסה אלכוהולית (אצטאלדהיד → אתנול).</p>
+    <div class="mnemo">
+      <div class="mnemo__tag"><i class="fa-solid fa-brain"></i> עוגן זיכרון</div>
+      <b>3 אנזימי הבקרה (בלתי-הפיכים): ה׳ · פ׳ · פ׳</b>
+      <div class="seq"><span>הקסוקינאז</span><span>PFK-1</span><span>פירובט קינאז</span></div>
+      משפט: "<span class="key">הָאוֹר פּוֹעֵל פַּעֲמַיִם</span>". התפוקה נטו — <span class="key">2 ATP · 2 NADH</span> ("גליקו<b>ליז</b>ה משאירה <b>2 ביד</b>").</div>
     <div class="chips">
       <span class="termcard"><b>גליקוליזה</b><span>glycolysis</span></span>
       <span class="termcard"><b>PFK-1</b><span>phosphofructokinase-1</span></span>
@@ -155,13 +249,37 @@
   <!-- ===== גלוקונאוגנזה ===== -->
   <div class="panel" id="gng">
     <h2>גלוקונאוגנזה וויסות הדדי</h2>
-    <p>בניית גלוקוז מפירובט (וגליצרול, לקטט, חומצות אמינו), בעיקר בכבד. את שלושת השלבים הבלתי-הפיכים של הגליקוליזה עוקפים:</p>
+    <p>בניית גלוקוז מפירובט (וגליצרול, לקטט, חומצות אמינו), בעיקר בכבד. את שלושת השלבים הבלתי-הפיכים של הגליקוליזה עוקפים בארבעה אנזימים ייעודיים:</p>
     <ul>
       <li><b>פירובט → PEP:</b> דרך <b>פירובט קרבוקסילאז</b> (פירובט → אוקסלואצטט, צורך ATP, במיטוכונדריה, מופעל ע"י אצטיל-CoA) ואז <b>PEPCK</b> (אוקסלואצטט → PEP, צורך GTP).</li>
       <li><b>F1,6BP → F6P:</b> דרך <b>FBPase-1</b>.</li>
       <li><b>G6P → גלוקוז:</b> דרך <b>גלוקוז-6-פוספטאז</b> (בכבד).</li>
     </ul>
     <div class="keybox"><b>הוויסות ההדדי — נושא מועדף:</b> <b>פרוקטוז-2,6-ביספוספט</b> (F2,6BP) <b>מפעיל</b> את PFK-1 (גליקוליזה) ו<b>מעכב</b> את FBPase-1 (גלוקונאוגנזה). בצום, גלוקגון מעלה cAMP → PKA מזרחן את האנזים הדו-תפקודי PFK-2/FBPase-2 → פעילות הפוספטאז גוברת → F2,6BP <b>יורד</b> → גליקוליזה יורדת וגלוקונאוגנזה עולה. בשובע, אינסולין הופך את התמונה.</div>
+    <div class="fig">
+      <svg viewBox="0 0 360 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="פרוקטוז-2,6-ביספוספט מפעיל גליקוליזה ומעכב גלוקונאוגנזה.">
+        <rect x="135" y="55" width="90" height="40" rx="8" fill="var(--color-purple-soft)" stroke="var(--color-purple)" stroke-width="1.5"/>
+        <text x="180" y="72" text-anchor="middle" font-size="12" font-weight="700" fill="var(--color-ink)">F2,6BP</text>
+        <text x="180" y="87" text-anchor="middle" font-size="9.5" fill="var(--color-muted)">עולה בשובע</text>
+        <line x1="135" y1="75" x2="60" y2="40" stroke="var(--color-success)" stroke-width="2.5" marker-end="url(#ar)"/>
+        <text x="62" y="30" text-anchor="middle" font-size="11" fill="var(--color-success)">מפעיל +</text>
+        <rect x="15" y="30" width="95" height="34" rx="8" fill="var(--color-success-bg)"/>
+        <text x="62" y="51" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--color-ink)">PFK-1 (גליקוליזה)</text>
+        <line x1="225" y1="75" x2="300" y2="40" stroke="var(--color-error)" stroke-width="2.5" marker-end="url(#ar2)"/>
+        <text x="298" y="30" text-anchor="middle" font-size="11" fill="var(--color-error)">מעכב −</text>
+        <rect x="250" y="30" width="100" height="34" rx="8" fill="var(--color-error-bg)"/>
+        <text x="300" y="51" text-anchor="middle" font-size="11" font-weight="700" fill="var(--color-ink)">FBPase-1 (גלוקונא׳)</text>
+        <defs>
+          <marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--color-success)"/></marker>
+          <marker id="ar2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--color-error)"/></marker>
+        </defs>
+      </svg>
+      <div class="fig__cap">מתג אחד, שני כיוונים: <b>F2,6BP</b> מאיץ גליקוליזה ובולם גלוקונאוגנזה — כך התא לא מבזבז אנרגיה על שני המסלולים ההפוכים יחד.</div>
+    </div>
+    <div class="mnemo">
+      <div class="mnemo__tag"><i class="fa-solid fa-brain"></i> עוגן זיכרון</div>
+      <b>4 אנזימי העקיפה</b> (מפירובט לגלוקוז): <div class="seq"><span>פירובט קרבוקסילאז</span><span>PEPCK</span><span>FBPase-1</span><span>גלוקוז-6-פוספטאז</span></div>
+      <span class="key">F2,6BP גבוה = שובע = גליקוליזה</span>. כשיש סוכר בשפע — שורפים אותו.</div>
     <div class="chips">
       <span class="termcard"><b>פרוקטוז-2,6-ביספוספט</b><span>F2,6BP</span></span>
       <span class="termcard"><b>פירובט קרבוקסילאז</b><span>pyruvate carboxylase</span></span>
@@ -177,6 +295,10 @@
       <li><b>חלק חמצוני:</b> מייצר NADPH. השלב קובע-הקצב הוא <b>גלוקוז-6-פוספט דהידרוגנאז (G6PD)</b>, מעוכב ביחס NADPH/NADP⁺ גבוה.</li>
       <li><b>חלק לא-חמצוני (הפיך):</b> טרנסקטולאז וטרנסאלדולאז ממירים פנטוזות חזרה ל-F6P ו-גליצראלדהיד-3-פוספט. כך, כשנדרש הרבה NADPH ומעט ריבוז, הפחמן חוזר לגליקוליזה.</li>
     </ul>
+    <div class="keybox"><b>קליני:</b> מחסור ב-G6PD פוגע בכדוריות הדם האדומות — אין להן מקור NADPH חלופי, ובלי NADPH לא משחזרים גלותתיון, ולכן עקה חמצונית (תרופות, פול) גורמת ל<b>המוליזה</b>.</div>
+    <div class="mnemo">
+      <div class="mnemo__tag"><i class="fa-solid fa-brain"></i> עוגן זיכרון</div>
+      <b>שרשרת ההגנה:</b> <span class="key">G6PD ← NADPH ← גלותתיון ← הגנה מחמצון</span>. נפילה בחוליה הראשונה (G6PD) שוברת את כל השרשרת בכדורית.</div>
     <div class="chips">
       <span class="termcard"><b>NADPH</b><span>NADPH</span></span>
       <span class="termcard"><b>G6PD</b><span>glucose-6-P dehydrogenase</span></span>
@@ -190,6 +312,9 @@
     <div class="keybox"><b>ויסות הורמונלי הפוך על שני האנזימים:</b><br>
     <b>אדרנלין/גלוקגון</b> → cAMP → PKA → פוספורילאז קינאז → <b>זרחון</b>: מפעיל את פוספורילאז (פירוק) ומשבית את הסינתאז.<br>
     <b>אינסולין</b> → דה-זרחון (דרך PP1): משבית את פוספורילאז (עוצר פירוק) ומפעיל את הסינתאז (אגירה).</div>
+    <div class="mnemo">
+      <div class="mnemo__tag"><i class="fa-solid fa-brain"></i> עוגן זיכרון</div>
+      <b>זרחון = פירוק; דה-זרחון = אגירה.</b> כשהגוף ב"מצב חירום" (אדרנלין מזרחן) — מפרקים מאגר לאנרגיה. <span class="key">פוספורוליזה חוסכת ATP</span> — משתמשת ב-Pi חינם במקום לבזבז ATP.</div>
     <div class="chips">
       <span class="termcard"><b>פוספורוליזה</b><span>phosphorolysis</span></span>
       <span class="termcard"><b>גליקוגן פוספורילאז</b><span>glycogen phosphorylase</span></span>
@@ -200,8 +325,35 @@
   <div class="panel" id="tca">
     <h2>מעגל קרבס (החומצה הציטרית)</h2>
     <p>במטריקס המיטוכונדריאלי. עיבוי אצטיל-CoA עם אוקסלואצטט → ציטרט, וחזרה לאוקסלואצטט. <b>תפוקה לכל אצטיל-CoA:</b> 3 NADH, 1 FADH₂, 1 GTP, 2 CO₂. (שימו לב: ה-NADH מ-פירובט דהידרוגנאז אינו חלק מהמעגל עצמו — טעות נפוצה.)</p>
-    <p><b>ויסות:</b> נקודת הבקרה המרכזית היא <b>איזוציטרט דהידרוגנאז</b> (מופעל ע"י ADP ו-Ca²⁺, מעוכב ע"י ATP ו-NADH). גם ציטרט סינתאז ו-אלפא-קטוגלוטרט דהידרוגנאז מווסתים.</p>
-    <p><b>תגובה אנפלרוטית</b> מרכזית: <b>פירובט קרבוקסילאז</b> ממלא מחדש אוקסלואצטט (מופעל ע"י אצטיל-CoA). המעגל גם מספק שלדי פחמן לביוסינתזה.</p>
+    <div class="fig">
+      <svg viewBox="0 0 340 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="מעגל קרבס: שמונה ביניימים, עם שחרור CO2, NADH, FADH2 ו-GTP.">
+        <circle cx="170" cy="150" r="112" fill="none" stroke="var(--color-line)" stroke-width="2" stroke-dasharray="3 4"/>
+        <g font-size="11" font-weight="700" fill="var(--color-ink)" text-anchor="middle">
+          <circle cx="170" cy="38" r="20" fill="var(--subj-biochem)"/><text x="170" y="42">OAA</text>
+          <circle cx="249" cy="71" r="20" fill="var(--color-bg)"/><text x="249" y="75">ציטרט</text>
+          <circle cx="282" cy="150" r="20" fill="var(--color-bg)"/><text x="282" y="154">איזו׳</text>
+          <circle cx="249" cy="229" r="20" fill="var(--color-bg)"/><text x="249" y="233">αKG</text>
+          <circle cx="170" cy="262" r="22" fill="var(--color-bg)"/><text x="170" y="259" font-size="9.5">סוקצי׳</text><text x="170" y="270" font-size="9.5">CoA</text>
+          <circle cx="91" cy="229" r="20" fill="var(--color-bg)"/><text x="91" y="233">סוקצי׳</text>
+          <circle cx="58" cy="150" r="20" fill="var(--color-bg)"/><text x="58" y="154">פומ׳</text>
+          <circle cx="91" cy="71" r="20" fill="var(--color-bg)"/><text x="91" y="75">מלאט</text>
+        </g>
+        <g font-size="10" font-weight="700">
+          <text x="287" y="108" fill="var(--color-teal-dark)">CO₂·NADH</text>
+          <text x="212" y="255" fill="var(--color-teal-dark)">CO₂·NADH</text>
+          <text x="150" y="298" fill="#7a5b08">GTP</text>
+          <text x="34" y="195" fill="var(--color-info)">FADH₂</text>
+          <text x="40" y="110" fill="var(--color-teal-dark)">NADH</text>
+        </g>
+      </svg>
+      <div class="fig__cap">המעגל מתחיל ב<b>OAA</b> (ורוד) ומסתיים בו. שני שחרורי <b>CO₂</b> (איזוציטרט→αKG→סוקציניל). תפוקה: <b>3 NADH · 1 FADH₂ · 1 GTP</b>.</div>
+    </div>
+    <p><b>ויסות:</b> נקודת הבקרה המרכזית היא <b>איזוציטרט דהידרוגנאז</b> (מופעל ע"י ADP ו-Ca²⁺, מעוכב ע"י ATP ו-NADH). גם ציטרט סינתאז ו-אלפא-קטוגלוטרט דהידרוגנאז מווסתים. <b>תגובה אנפלרוטית</b> מרכזית: <b>פירובט קרבוקסילאז</b> ממלא מחדש אוקסלואצטט (מופעל ע"י אצטיל-CoA).</p>
+    <div class="mnemo">
+      <div class="mnemo__tag"><i class="fa-solid fa-brain"></i> עוגן זיכרון</div>
+      <b>8 הביניימים לפי הסדר</b> (צ·א·ק·ס·ס·פ·מ·א):
+      <div class="seq"><span>ציטרט</span><span>איזוציטרט</span><span>αKG</span><span>סוקציניל-CoA</span><span>סוקצינט</span><span>פומרט</span><span>מלאט</span><span>OAA</span></div>
+      משפט: "<span class="key">צִיפּוֹר אַחַת קְטַנְטֹנֶת סוֹעֶרֶת סְבִיב פֶּרַח מוּל אֲגַם</span>". התפוקה — <span class="key">3·1·1</span> (3 NADH, 1 FADH₂, 1 GTP).</div>
     <div class="chips">
       <span class="termcard"><b>מעגל קרבס</b><span>TCA / citric acid cycle</span></span>
       <span class="termcard"><b>אנפלרוטי</b><span>anaplerotic</span></span>
@@ -212,13 +364,36 @@
   <div class="panel" id="oxphos">
     <h2>זרחון חמצוני ושרשרת מעבר אלקטרונים</h2>
     <p>בקרום הפנימי של המיטוכונדריה. אלקטרונים זורמים דרך הקומפלקסים, ואנרגיית הזרימה משמשת ל<b>שאיבת פרוטונים</b> אל המרחב הבין-ממברנלי. המפל האלקטרוכימי (<b>כוח מניע פרוטונים</b>) מניע את <b>ATP-סינתאז</b> — זוהי ה<b>כימיוסמוזה</b> של מיטשל.</p>
+    <div class="fig">
+      <svg viewBox="0 0 460 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="שרשרת מעבר אלקטרונים: קומפלקסים I עד IV ו-ATP סינתאז עם שאיבת פרוטונים.">
+        <rect x="20" y="80" width="420" height="40" fill="var(--color-bg-soft)" stroke="var(--color-line)"/>
+        <g text-anchor="middle" font-size="12" font-weight="700" fill="#fff">
+          <rect x="40" y="70" width="48" height="60" rx="6" fill="var(--color-teal-dark)"/><text x="64" y="105">I</text>
+          <rect x="110" y="85" width="48" height="45" rx="6" fill="var(--color-info)"/><text x="134" y="112">II</text>
+          <rect x="190" y="70" width="48" height="60" rx="6" fill="var(--color-teal-dark)"/><text x="214" y="105">III</text>
+          <rect x="270" y="70" width="48" height="60" rx="6" fill="var(--color-teal-dark)"/><text x="294" y="105">IV</text>
+          <rect x="360" y="62" width="52" height="76" rx="6" fill="#7a5b08"/><text x="386" y="100" font-size="11">ATP-ס׳</text>
+        </g>
+        <path d="M64,68 Q90,40 120,55" fill="none" stroke="var(--color-purple)" stroke-width="2" marker-end="url(#hp)"/>
+        <path d="M214,68 Q240,40 270,55" fill="none" stroke="var(--color-purple)" stroke-width="2" marker-end="url(#hp)"/>
+        <path d="M294,68 Q320,40 348,55" fill="none" stroke="var(--color-purple)" stroke-width="2" marker-end="url(#hp)"/>
+        <text x="150" y="160" font-size="11" fill="var(--color-ink)">זרימת e⁻ →  ⟶  O₂ (מקבל סופי, קומפלקס IV)</text>
+        <text x="386" y="158" text-anchor="middle" font-size="10" fill="#7a5b08">H⁺ ↓ ATP</text>
+        <text x="40" y="30" font-size="10" fill="var(--color-purple)">שאיבת H⁺ (I, III, IV)</text>
+        <defs><marker id="hp" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--color-purple)"/></marker></defs>
+      </svg>
+      <div class="fig__cap"><b>קומפלקס II אינו שואב פרוטונים</b> — לכן FADH₂ (שנכנס ב-II) מניב פחות ATP מ-NADH. החמצן מקבל אלקטרונים רק ב-IV.</div>
+    </div>
     <table class="t">
       <tr><th>מקור</th><th>נכנס בקומפלקס</th><th>שואב פרוטונים דרך</th><th>תפוקה ≈</th></tr>
       <tr><td><b>NADH</b></td><td>קומפלקס I</td><td>I, III, IV</td><td>≈ 2.5 ATP</td></tr>
       <tr><td><b>FADH₂</b> (סוקצינאט)</td><td>קומפלקס II</td><td>III, IV (מדלג על I)</td><td>≈ 1.5 ATP</td></tr>
     </table>
-    <p><b>קומפלקס II</b> (Succinate dehydrogenase) <b>אינו</b> שואב פרוטונים. החמצן מקבל אלקטרונים בקומפלקס IV (מקבל סופי).</p>
-    <div class="keybox"><b>חומרים מעכבים ומפרידים:</b> <b>רוטנון</b> (קומפלקס I), <b>ציאניד/CO</b> (קומפלקס IV), <b>אוליגומיצין</b> (ATP-סינתאז) — כולם עוצרים בסופו של דבר את צריכת החמצן. <b>מפריד (uncoupler)</b> כמו <b>DNP</b> מבריח פרוטונים חזרה ומנתק את הצימוד: צריכת חמצן עולה, ATP כמעט לא נוצר, והאנרגיה מתבזבזת כ<b>חום</b>.</div>
+    <div class="mnemo">
+      <div class="mnemo__tag"><i class="fa-solid fa-brain"></i> עוגן זיכרון</div>
+      <b>מעכבים — לפי הקומפלקס:</b>
+      <div class="seq"><span>רוטנון → I</span><span>אנטימיצין → III</span><span>ציאניד/CO → IV</span><span>אוליגומיצין → ATP-סינתאז</span></div>
+      <span class="key">FADH₂ מדלג על I → רק 1.5 ATP</span> (NADH עובר את כל השלושה → 2.5). <b>מפריד (DNP):</b> מבריח H⁺ → חום במקום ATP.</div>
     <div class="chips">
       <span class="termcard"><b>כימיוסמוזה</b><span>chemiosmosis</span></span>
       <span class="termcard"><b>כוח מניע פרוטונים</b><span>proton-motive force</span></span>
@@ -230,8 +405,22 @@
   <div class="panel" id="fat">
     <h2>חמצון חומצות שומן וגופי קטון</h2>
     <p>חומצת שומן מופעלת ל-<b>אציל-CoA</b> בציטוזול, ונכנסת למיטוכונדריה דרך <b>מעבורת הקרניטין</b>. השלב קובע-הקצב הוא <b>CPT I</b>, המעוכב ע"י <b>מלוניל-CoA</b> (התוצר הראשון של סינתזת שומן) — כך נמנעים פירוק ובנייה בו-זמנית.</p>
-    <p><b>בטא-אוקסידציה:</b> כל מחזור מקצר את השרשרת ב-2 פחמנים ומפיק אצטיל-CoA, NADH ו-FADH₂. לפלמיטויל-CoA (16 פחמנים): <b>8 אצטיל-CoA</b> ב-<b>7 מחזורים</b> (המחזור האחרון מפצל יחידת 4 פחמנים לשתיים).</p>
-    <p><b>גופי קטון:</b> בצום, אוקסלואצטט מנותב לגלוקונאוגנזה → מאגרו יורד → אצטיל-CoA עודף (מבטא-אוקסידציה) מנותב לייצור גופי קטון בכבד. גלוקגון מעודד זאת (ליפוליזה + הורדת מלוניל-CoA).</p>
+    <div class="fig">
+      <div class="flow">
+        <div class="flow__step"><b>אציל-CoA</b><span>בציטוזול</span></div>
+        <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+        <div class="flow__step" style="border-color:var(--subj-biochem)"><b>CPT I</b><span>שלב מווסת · מעוכב ע"י מלוניל-CoA</span></div>
+        <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+        <div class="flow__step"><b>מטריקס</b><span>בטא-אוקסידציה</span></div>
+        <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+        <div class="flow__step"><b>אצטיל-CoA</b><span>+ NADH + FADH₂</span></div>
+      </div>
+      <div class="fig__cap"><b>מעבורת הקרניטין</b> מכניסה את חומצת השומן למיטוכונדריה; ה"שומר בשער" הוא <b>CPT I</b>.</div>
+    </div>
+    <p><b>בטא-אוקסידציה:</b> כל מחזור מקצר את השרשרת ב-2 פחמנים ומפיק אצטיל-CoA, NADH ו-FADH₂. <b>גופי קטון:</b> בצום, אוקסלואצטט מנותב לגלוקונאוגנזה → מאגרו יורד → אצטיל-CoA עודף מנותב לייצור גופי קטון בכבד. גלוקגון מעודד זאת.</p>
+    <div class="mnemo">
+      <div class="mnemo__tag"><i class="fa-solid fa-brain"></i> עוגן זיכרון</div>
+      <b>פלמיטט (16 פחמנים):</b> <span class="key">8 אצטיל-CoA ב-7 מחזורים</span> (n/2 חתיכות, n/2−1 חיתוכים — המחזור האחרון מפצל יחידת 4 לשתיים). <b>מלוניל-CoA = מתג</b>: הסימן לבנייה, ולכן <b>חוסם</b> את הפירוק (CPT I).</div>
     <div class="chips">
       <span class="termcard"><b>מעבורת קרניטין</b><span>carnitine shuttle</span></span>
       <span class="termcard"><b>CPT I</b><span>carnitine acyltransferase I</span></span>
@@ -243,7 +432,10 @@
   <div class="panel" id="nitrogen">
     <h2>קטבוליזם חומצות אמינו ומעגל האוריאה</h2>
     <p><b>טרנסאמינציה:</b> העברת קבוצת אמינו ל-אלפא-קטוגלוטרט → <b>גלוטמט</b>, בעזרת הקו-פקטור <b>פירידוקסל-פוספט (PLP)</b> (נגזרת B6). אחר כך <b>דאמינציה מחמצנת</b> (גלוטמט דהידרוגנאז) משחררת אמוניה.</p>
-    <p><b>מעגל האוריאה</b> מסלק עודף חנקן. שני אטומי החנקן באוריאה: אחד מ<b>קרבמואיל-פוספט</b> (אמוניה) ואחד מ<b>אספרטט</b>. השלב קובע-הקצב: <b>CPS I</b>, הדורש מפעיל אלוסטרי מחויב — <b>N-אצטילגלוטמט (NAG)</b>, שמסמן עודף חנקן.</p>
+    <p><b>מעגל האוריאה</b> מסלק עודף חנקן. שני אטומי החנקן באוריאה: אחד מ<b>קרבמואיל-פוספט</b> (אמוניה) ואחד מ<b>אספרטט</b>; פחמן האוריאה מ-CO₂. השלב קובע-הקצב: <b>CPS I</b>, הדורש מפעיל אלוסטרי מחויב — <b>N-אצטילגלוטמט (NAG)</b>, שמסמן עודף חנקן.</p>
+    <div class="mnemo">
+      <div class="mnemo__tag"><i class="fa-solid fa-brain"></i> עוגן זיכרון</div>
+      <b>שני החנקנים של האוריאה:</b> <span class="key">אמוניה + אספרטט</span> (לא שניהם אמוניה!). <b>NAG = מתג ההצתה</b> של המעגל — עולה כשיש עודף חומצות אמינו לפרק. <b>טרנסאמינציה תמיד עם PLP</b> (ויטמין B6).</div>
     <div class="chips">
       <span class="termcard"><b>טרנסאמינציה</b><span>transamination</span></span>
       <span class="termcard"><b>פירידוקסל-פוספט</b><span>PLP (B6)</span></span>
@@ -251,11 +443,29 @@
     </div>
   </div>
 
+  <!-- ===== סינתזת חומצות אמינו ===== -->
+  <div class="panel" id="aasynth">
+    <h2>סינתזת חומצות אמינו</h2>
+    <p>חומצות אמינו <b>לא-חיוניות</b> מסונתזות בגוף, לרוב מביניימי מטבוליזם (פירובט, אוקסלואצטט, αקטוגלוטרט) ב<b>טרנסאמינציה</b>. ה<b>חיוניות</b> חייבות להגיע מהמזון — מסלול הסינתזה שלהן נעדר או לא מספיק באדם.</p>
+    <p>ה<b>גלוטמט</b> הוא צומת החנקן המרכזי: נוצר מקיבוע אמוניה על αקטוגלוטרט, ומחלק את קבוצת האמינו לאלפא-קטו-חומצות שונות. ה<b>טטרההידרופולאט (THF)</b> נושא יחידות <b>פחמן-בודד</b> (מתיל, מתילן, פורמיל) לסינתזות (מתיונין, גליצין/סרין) ולנוקלאוטידים.</p>
+    <div class="mnemo">
+      <div class="mnemo__tag"><i class="fa-solid fa-brain"></i> עוגן זיכרון</div>
+      <b>גלוטמט = "מחלק החנקן".</b> כמעט כל חומצת אמינו לא-חיונית מקבלת את החנקן שלה מגלוטמט בטרנסאמינציה. <span class="key">THF = מונית של פחמן-בודד</span>; <span class="key">PLP = הקו-פקטור של כל טרנסאמינציה</span>.</div>
+    <div class="chips">
+      <span class="termcard"><b>חומצה חיונית</b><span>essential AA</span></span>
+      <span class="termcard"><b>טטרההידרופולאט</b><span>THF</span></span>
+      <span class="termcard"><b>גלוטמט</b><span>glutamate</span></span>
+    </div>
+  </div>
+
   <!-- ===== סינתזת שומנים ===== -->
   <div class="panel" id="synthesis">
     <h2>סינתזת חומצות שומן</h2>
     <p>בציטוזול, דורשת אצטיל-CoA ו-<b>NADPH</b>. אצטיל-CoA יוצא מהמיטוכונדריה כ<b>ציטרט</b> (מעבורת הציטראט); בציטוזול ATP-citrate lyase משחרר אותו. ה-NADPH מגיע מ<b>האנזים המאלי</b> ומ<b>מסלול הפנטוז פוספט</b>.</p>
-    <p>השלב קובע-הקצב: <b>אצטיל-CoA קרבוקסילאז (ACC)</b> (אצטיל-CoA → מלוניל-CoA). <b>מופעל</b> ע"י ציטרט וע"י אינסולין (דה-זרחון); <b>מעוכב</b> ע"י גלוקגון/אדרנלין (זרחון דרך PKA/AMPK). שימו לב: ציטרט <b>מפעיל</b> (טעות נפוצה לחשוב שמעכב).</p>
+    <p>השלב קובע-הקצב: <b>אצטיל-CoA קרבוקסילאז (ACC)</b> (אצטיל-CoA → מלוניל-CoA). <b>מופעל</b> ע"י ציטרט וע"י אינסולין (דה-זרחון); <b>מעוכב</b> ע"י גלוקגון/אדרנלין (זרחון דרך PKA/AMPK).</p>
+    <div class="mnemo">
+      <div class="mnemo__tag"><i class="fa-solid fa-triangle-exclamation"></i> מלכודת נפוצה</div>
+      <b>ציטרט מפעיל את ACC</b> (לא מעכב!). ההיגיון: ציטרט גבוה = יש שפע אנרגיה ושלדי פחמן → הזמן לבנות שומן. <span class="key">מלוניל-CoA</span> (התוצר) גם חוסם פירוק שומן (CPT I) — בנייה ופירוק לא יחד.</div>
     <div class="chips">
       <span class="termcard"><b>אצטיל-CoA קרבוקסילאז</b><span>ACC</span></span>
       <span class="termcard"><b>מעבורת ציטראט</b><span>citrate shuttle</span></span>
@@ -270,7 +480,10 @@
       <tr><td><b>שובע</b></td><td>אינסולין</td><td>גליקוליזה, אגירת גליקוגן, ליפוגנזה. F2,6BP גבוה.</td></tr>
       <tr><td><b>צום</b></td><td>גלוקגון</td><td>גלוקונאוגנזה, גליקוגנוליזה, ליפוליזה, קטוגנזה. F2,6BP נמוך.</td></tr>
     </table>
-    <p><b>בצום ממושך:</b> הכבד מבצע גלוקונאוגנזה ומייצר גופי קטון; ה<b>מוח</b> (שאינו מחמצן חומצות שומן) מסתגל לנצל <b>גופי קטון</b> כמקור אנרגיה עיקרי, וכך חוסך גלוקוז. השריר משתמש בחומצות שומן.</p>
+    <p><b>בצום ממושך:</b> הכבד מבצע גלוקונאוגנזה ומייצר גופי קטון; ה<b>מוח</b> (שאינו מחמצן חומצות שומן) מסתגל לנצל <b>גופי קטון</b> כמקור אנרגיה עיקרי, וכך חוסך גלוקוז וחוסך פירוק חלבון שריר. השריר משתמש בחומצות שומן.</p>
+    <div class="mnemo">
+      <div class="mnemo__tag"><i class="fa-solid fa-brain"></i> עוגן זיכרון</div>
+      <b>אינסולין = "אגור" (שובע); גלוקגון = "גַייס" (צום).</b> שתי האותיות הראשונות עוזרות: <span class="key">אִינסולין → אֲגירה</span>, <span class="key">גְלוקגון → גִיוס</span>. בצום ממושך — <b>גופי קטון חוסכים חלבון</b>.</div>
     <div class="chips">
       <span class="termcard"><b>אינסולין / גלוקגון</b><span>insulin / glucagon</span></span>
       <span class="termcard"><b>מצב סעודה/צום</b><span>fed / fasted</span></span>
@@ -280,8 +493,23 @@
   <!-- ===== איתות ===== -->
   <div class="panel" id="signaling">
     <h2>העברת אותות</h2>
-    <p><b>קולטנים מצומדי-G (GPCR):</b> הפעלה משנה חלבון G, שמפעיל אנזים אפקטור (כמו אדנילט ציקלאז) → <b>שליח שניוני</b> (cAMP) → PKA. דוגמה: מפל אדרנלין/גלוקגון. שליחים שניוניים נוספים: סידן, IP₃/DAG.</p>
-    <p><b>קולטני טירוזין קינאז (RTK):</b> קשירת ליגנד גורמת לדימריזציה ולאוטו-זרחון על שאריות טירוזין, שמגייסות חלבוני מסר (דוגמת מסלול Ras/MAPK). דוגמה: קולטן האינסולין. ויסות שלילי: <b>Cbl</b> (ליגאז יוביקוויטין) מסמן את הקולטן ביוביקוויטין ומגביר אנדוציטוזה.</p>
+    <p><b>קולטנים מצומדי-G (GPCR):</b> הפעלה מחליפה GDP ב-GTP על תת-יחידת Gα, שמפעילה אנזים אפקטור (כמו אדנילט ציקלאז) → <b>שליח שניוני</b> (cAMP) → PKA. סיום האות: פעילות ה-GTPaze הפנימית של Gα מהדרלת GTP ל-GDP ("מכבה").</p>
+    <div class="fig">
+      <div class="flow">
+        <div class="flow__step"><b>הורמון</b><span>נקשר ל-GPCR</span></div>
+        <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+        <div class="flow__step"><b>Gα-GTP</b><span>החלפת GDP→GTP</span></div>
+        <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+        <div class="flow__step" style="border-color:var(--subj-biochem)"><b>אדנילט ציקלאז</b><span>→ cAMP</span></div>
+        <div class="flow__arrow"><i class="fa-solid fa-arrow-left-long"></i></div>
+        <div class="flow__step"><b>PKA</b><span>מזרחן מטרות</span></div>
+      </div>
+      <div class="fig__cap">מפל הגברה: קולטן בודד מפעיל חלבוני G רבים, וכל אנזים מייצר תוצר רב — אות זעיר → תגובה גדולה.</div>
+    </div>
+    <p><b>שליחים שניוניים נוספים:</b> מסלול PLC מפצל PIP₂ ל-<b>IP₃</b> (משחרר Ca²⁺ מה-ER) ו-<b>DAG</b> (מפעיל PKC). <b>קולטני טירוזין קינאז (RTK):</b> קשירת ליגנד גורמת לדימריזציה ולאוטו-זרחון על טירוזין, שמגייסות חלבוני מסר (מסלול Ras/MAPK). דוגמה: קולטן האינסולין.</p>
+    <div class="mnemo">
+      <div class="mnemo__tag"><i class="fa-solid fa-brain"></i> עוגן זיכרון</div>
+      <b>GPCR:</b> "<span class="key">ליגנד ← G ← ציקלאז ← cAMP ← PKA</span>". <b>GTP = דלוק, GDP = כבוי.</b> <b>רעלן הכולרה</b> משבית את ה-GTPaze → Gα תקוע "דלוק" → cAMP מצטבר → איבוד מלחים ומים. <b>PLC:</b> IP₃ = סידן מה-ER, DAG = PKC.</div>
     <div class="chips">
       <span class="termcard"><b>שליח שניוני</b><span>second messenger</span></span>
       <span class="termcard"><b>קולטן מצומד-G</b><span>GPCR</span></span>
@@ -291,6 +519,7 @@
 
   <div class="center mt-m">
     <a class="btn btn--lg" href="tirgul.html#biochem"><i class="fa-solid fa-pen-to-square"></i> לתרגול בביוכימיה</a>
+    <a class="btn btn--lg btn--ghost" href="diagrams.html"><i class="fa-solid fa-diagram-project"></i> למרכז החזותי</a>
     <a class="btn btn--lg btn--ghost" href="nosim.html"><i class="fa-solid fa-rotate-left"></i> לכל הנושאים</a>
   </div>
 

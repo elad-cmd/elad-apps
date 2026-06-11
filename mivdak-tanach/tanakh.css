@@ -300,3 +300,11 @@ details.model p{margin:.6em 0 0;color:var(--color-ink-soft);}
 .mitem,.mopt{position:relative;z-index:2;}
 .mitem.wrong,.mopt.wrong{border-color:var(--color-error);background:var(--color-error-bg);color:var(--color-error);}
 .matchcheck{margin-top:6px;}
+
+
+/* ---------- פירורי לחם ---------- */
+.crumbs{max-width:var(--container);margin:0 auto;padding:12px var(--section-px) 0;font-size:.9rem;display:flex;gap:7px;flex-wrap:wrap;align-items:center;}
+.crumbs a{color:var(--color-teal-dark);text-decoration:none;font-weight:700;}
+.crumbs a:hover{text-decoration:underline;}
+.crumbs span{color:var(--color-muted);}
+.crumbs__cur{color:var(--color-ink-soft);font-weight:700;}

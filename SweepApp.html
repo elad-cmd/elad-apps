@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SweepApp — ניקוי אנשי קשר</title>
+<style>
+  :root{
+    --surface:#ffffff;
+    --ink:#2f2a3d;
+    --muted:#938da3;
+    --line:#f0ebf2;
+    --keep:#1fb068;   --keep-soft:#d3f4e2;
+    --del:#fd4f6f;    --del-soft:#ffe0e7;
+    --maybe:#ff9a3d;  --maybe-soft:#ffecd6;
+    --teal:#2f9fc4;   --teal-soft:#dcf0f7;
+    --purple:#8b7be8; --purple-soft:#e8e2fb;
+    --flame1:#ff6b5e; --flame2:#fd3d7a;
+    font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{
+    background:linear-gradient(165deg,#fdecef 0%,#f6eef4 55%,#efe9f4 100%);
+    background-attachment:fixed;
+    color:var(--ink);
+    overflow:hidden;
+    user-select:none;
+  }
+  #app{height:100dvh;display:flex;flex-direction:column;max-width:540px;margin:0 auto;position:relative;}
+
+  /* ---------- Top bar ---------- */
+  .topbar{flex:0 0 auto;padding:18px 20px 8px;display:flex;align-items:center;gap:10px;}
+  .brand{font-weight:700;font-size:20px;letter-spacing:-.3px;line-height:1.1;
+    background:linear-gradient(135deg,var(--flame1),var(--flame2));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;}
+  .brand small{font-weight:500;color:var(--muted);font-size:12.5px;display:block;letter-spacing:0;margin-top:2px;-webkit-text-fill-color:var(--muted);}
+  .menu-btn{margin-inline-start:auto;border:none;background:var(--surface);width:44px;height:44px;border-radius:15px;
+    font-size:19px;cursor:pointer;color:var(--ink);box-shadow:0 6px 16px -8px rgba(90,70,130,.3);transition:transform .12s;}
+  .menu-btn:active{transform:scale(.9);}
+  .menu-btn.rst svg{width:21px;height:21px;color:var(--muted);display:block;}
+  .confirm-backdrop{position:absolute;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:30px;background:rgba(45,32,66,0);transition:background .2s;}
+  .confirm-backdrop.show{background:rgba(45,32,66,.45);}
+  .confirm-box{background:#fff;border-radius:22px;padding:22px;max-width:340px;width:100%;box-shadow:0 20px 50px -16px rgba(40,30,60,.5);transform:scale(.92);opacity:0;transition:transform .2s,opacity .2s;}
+  .confirm-backdrop.show .confirm-box{transform:scale(1);opacity:1;}
+  .confirm-msg{font-size:16px;font-weight:600;line-height:1.5;margin-bottom:18px;text-align:center;}
+  .confirm-actions{display:flex;gap:10px;}
+  .confirm-actions .btn{flex:1;padding:13px;font-size:15px;}
+  .hbtn{border:none;background:var(--surface);width:44px;height:44px;border-radius:15px;cursor:pointer;color:var(--teal);
+    box-shadow:0 6px 16px -8px rgba(90,70,130,.3);transition:transform .12s;display:flex;align-items:center;justify-content:center;}
+  .hbtn:active{transform:scale(.9);} .hbtn svg{width:23px;height:23px;}
+  .stats{flex:0 0 auto;display:flex;gap:9px;padding:8px 20px 12px;}
+  .stat{flex:1;background:var(--surface);border-radius:16px;padding:10px 6px;text-align:center;box-shadow:0 6px 16px -10px rgba(90,70,130,.28);}
+  .stat b{display:block;font-size:18px;font-weight:700;line-height:1;}
+  .stat span{font-size:11px;color:var(--muted);font-weight:500;}
+  .stat.keep b{color:var(--keep);} .stat.del b{color:var(--del);}
+  .stat.maybe b{color:var(--maybe);} .stat.left b{color:var(--purple);}
+
+  /* ---------- Deck ---------- */
+  .deck{flex:1 1 auto;position:relative;margin:8px 20px;min-height:0;}
+  .card{
+    position:absolute;inset:0;background:var(--surface);border-radius:32px;
+    box-shadow:0 22px 50px -24px rgba(90,70,130,.45), 0 6px 16px -12px rgba(90,70,130,.3);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:36px 30px;text-align:center;will-change:transform;touch-action:none;overflow:hidden;transition:transform .3s cubic-bezier(0.22,1,0.36,1);
+  }
+  .card.behind1{transform:scale(.95) translateY(16px);}
+  .card.behind2{transform:scale(.9) translateY(32px);}
+  .tint{position:absolute;inset:0;border-radius:32px;opacity:0;pointer-events:none;}
+  .card .avatar{
+    width:128px;height:128px;border-radius:50%;
+    background:radial-gradient(circle at 50% 32%, #f3eefb, #e7eff7);
+    display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:24px;flex:0 0 auto;
+  }
+  .card .avatar svg{width:74px;height:74px;color:#c2bdd6;}
+  .card .avatar img{width:100%;height:100%;object-fit:cover;}
+  .card .name{font-size:30px;font-weight:700;line-height:1.15;margin:0 0 6px;word-break:break-word;letter-spacing:-.3px;}
+  .card .name.empty{color:var(--muted);font-weight:600;font-size:24px;}
+  .card .org{font-size:16px;color:var(--ink);font-weight:600;margin:2px 0;opacity:.78;word-break:break-word;}
+  .card .email{font-size:16px;color:var(--teal);font-weight:600;margin:9px 0 2px;word-break:break-all;direction:ltr;}
+  .card .phone{font-size:15px;color:var(--muted);font-weight:500;margin:3px 0;direction:ltr;}
+  .card .extra{font-size:13px;color:var(--muted);margin-top:10px;}
+
+  /* drag indicator icons (corners — never over the name) */
+  .stamp{position:absolute;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    opacity:0;box-shadow:0 8px 18px -8px rgba(90,70,130,.4);}
+  .stamp svg{width:30px;height:30px;}
+  .stamp.keep{inset-inline-start:22px;top:22px;background:var(--keep-soft);color:var(--keep);}
+  .stamp.del{inset-inline-end:22px;top:22px;background:var(--del-soft);color:var(--del);}
+  .stamp.maybe{left:50%;transform:translateX(-50%);bottom:22px;background:var(--maybe-soft);color:var(--maybe);}
+
+  /* intro card */
+  .card.intro{align-items:stretch;justify-content:center;padding:30px 28px;gap:0;}
+  .intro h2{font-size:25px;font-weight:700;margin:0 0 4px;text-align:center;letter-spacing:-.3px;}
+  .intro .lead{text-align:center;color:var(--muted);font-size:14px;margin-bottom:14px;}
+  .mb-wrap{position:relative;width:248px;height:248px;margin:4px auto 0;}
+  .mb-wrap svg{width:100%;height:100%;display:block;filter:drop-shadow(0 10px 22px rgba(90,70,130,.18));}
+  .mb-card3{flex:0 0 auto;width:100%;max-width:300px;margin:8px auto 2px;border-radius:16px;overflow:hidden;box-shadow:0 14px 30px -16px rgba(0,0,0,.4);}
+  .mb-card3 svg{width:100%;height:auto;display:block;}
+  .cta-row{flex:0 0 auto;display:flex;gap:8px;width:100%;max-width:300px;margin:12px auto 0;}
+  .cta2{flex:1;border:none;border-radius:12px;padding:10px 8px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 8px 18px -10px rgba(20,154,147,.7);transition:transform .12s;}
+  .cta2:active{transform:scale(.96);} .cta2 svg{width:16px;height:16px;flex:0 0 auto;}
+  .mb-lbl{position:absolute;font-weight:700;font-size:15px;}
+  .mb-keep{color:var(--keep);top:41%;right:7%;}
+  .mb-del{color:var(--del);top:41%;left:7%;}
+  .mb-maybe{color:#7e8498;bottom:8%;left:0;right:0;text-align:center;font-size:14px;}
+  .intro .start{margin-top:22px;border:none;border-radius:16px;padding:15px;font-family:inherit;font-size:16px;font-weight:700;
+    color:#fff;cursor:pointer;background:linear-gradient(135deg,var(--flame1),var(--flame2));box-shadow:0 14px 28px -12px rgba(253,61,122,.6);}
+  .intro .swipehint{text-align:center;color:var(--muted);font-size:12.5px;margin-top:13px;}
+
+  /* ---------- Actions ---------- */
+  .actions{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:18px;padding:14px 16px 22px;}
+  .act{border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;background:#fff;transition:transform .12s;}
+  .act:active{transform:scale(.9);}
+  .act svg{width:28px;height:28px;}
+  .act.keep{width:66px;height:66px;color:var(--keep);box-shadow:0 13px 26px -12px rgba(31,176,104,.55);}
+  .act.del{width:66px;height:66px;color:var(--del);box-shadow:0 13px 26px -12px rgba(253,79,111,.6);}
+  .act.maybe{width:56px;height:56px;color:var(--maybe);box-shadow:0 11px 22px -12px rgba(255,154,61,.6);}
+  .act.maybe svg{width:25px;height:25px;}
+
+  /* floating undo (last card only) — pinned to left wall, auto-fades */
+  .float-back{position:absolute;z-index:20;
+    border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    background:rgba(58,42,86,.52);color:#fff;backdrop-filter:blur(7px);border-radius:50%;width:54px;height:54px;
+    opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;box-shadow:0 12px 30px -10px rgba(40,30,60,.5);}
+  /* position follows the direction the card flew */
+  .float-back.fb-left{top:50%;left:14px;right:auto;bottom:auto;transform:translateY(-50%) scale(.85);}
+  .float-back.fb-right{top:50%;right:14px;left:auto;bottom:auto;transform:translateY(-50%) scale(.85);}
+  .float-back.fb-down{bottom:18px;left:50%;right:auto;top:auto;transform:translateX(-50%) scale(.85);}
+  .float-back.fb-left.show,.float-back.fb-right.show{transform:translateY(-50%) scale(1);}
+  .float-back.fb-down.show{transform:translateX(-50%) scale(1);}
+  .float-back.show{opacity:.82;pointer-events:auto;}
+  .float-back svg{width:24px;height:24px;}
+  .hint{position:absolute;bottom:5px;left:0;right:0;text-align:center;font-size:11.5px;color:var(--muted);}
+
+  /* ---------- Screens ---------- */
+  .screen{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;background:#f9f7fc;animation:screenIn .3s cubic-bezier(0.22,1,0.36,1);}
+  @keyframes screenIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  @keyframes screenOut{to{opacity:0;transform:translateY(16px)}}
+  .screen-head{padding:20px 20px 12px;display:flex;align-items:center;gap:10px;}
+  .screen-head h2{margin:0;font-size:22px;font-weight:700;color:var(--ink);}
+  .screen-head .close{margin-inline-start:auto;border:none;background:#fff;width:42px;height:42px;border-radius:13px;font-size:18px;cursor:pointer;color:var(--ink);box-shadow:0 6px 16px -8px rgba(90,70,130,.3);}
+  .screen-body{flex:1;overflow-y:auto;padding:6px 20px 22px;}
+  .list-item{background:#fff;border-radius:18px;padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 18px -14px rgba(90,70,130,.5);}
+  .li-av{width:48px;height:48px;border-radius:50%;background:radial-gradient(circle at 50% 32%,#f3eefb,#e7eff7);flex:0 0 auto;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .li-av svg{width:25px;height:25px;color:#c2bdd6;} .li-av img{width:100%;height:100%;object-fit:cover;}
+  .li-av.init{background:var(--purple-soft);color:var(--purple);font-weight:700;font-size:20px;}
+  .li-txt{flex:1;min-width:0;}
+  .li-txt .n{font-weight:600;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .li-txt .s{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:right;}
+  .li-btn{border:none;border-radius:12px;padding:9px 13px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:transform .12s;}
+  .li-btn:active{transform:scale(.92);}
+  .list-item{transition:opacity .2s, transform .12s;}
+  .screen-head .close{transition:transform .12s;} .screen-head .close:active{transform:scale(.9);}
+  .li-btn.keep{background:var(--keep-soft);color:var(--keep);}
+  .li-btn.del{background:var(--del-soft);color:var(--del);}
+  .empty-note{text-align:center;color:var(--muted);margin-top:46px;font-size:15px;}
+  .menu-list{display:flex;flex-direction:column;gap:11px;}
+  .menu-list button{font-family:inherit;text-align:start;border:none;background:#fff;border-radius:18px;padding:16px;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 8px 18px -14px rgba(90,70,130,.5);color:var(--ink);display:flex;align-items:center;gap:12px;}
+  .menu-list button.danger{color:var(--del);}
+  .menu-list button svg{width:22px;height:22px;flex:0 0 auto;}
+  .menu-list button:active{transform:scale(.97);}
+  .menu-list .i-home svg{color:var(--teal);} .menu-list .i-del svg{color:var(--del);}
+  .menu-list .i-maybe svg{color:var(--maybe);} .menu-list .i-keep svg{color:var(--keep);}
+  .menu-list .i-export svg{color:var(--purple);}
+
+  /* side drawer */
+  .drawer-backdrop{position:absolute;inset:0;z-index:40;background:rgba(45,32,66,0);transition:background .28s;}
+  .drawer-backdrop.show{background:rgba(45,32,66,.42);}
+  .drawer{position:absolute;left:0;top:0;bottom:0;width:82%;max-width:322px;background:#f9f7fc;
+    box-shadow:12px 0 50px -12px rgba(45,32,66,.55);transform:translateX(-100%);
+    transition:transform .34s cubic-bezier(0.22,1,0.36,1);display:flex;flex-direction:column;padding:22px 16px;overflow-y:auto;}
+  .drawer.show{transform:translateX(0);}
+  .drawer .dhead{display:flex;align-items:center;margin-bottom:18px;padding-inline:4px;}
+  .drawer .dhead .dt{font-size:21px;font-weight:700;
+    background:linear-gradient(135deg,var(--flame1),var(--flame2));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;}
+  .drawer .dhead .close{margin-inline-start:auto;}
+  .drawer.show .menu-list button{animation:itemIn .42s both;}
+  .drawer.show .menu-list button:nth-child(1){animation-delay:.05s}
+  .drawer.show .menu-list button:nth-child(2){animation-delay:.09s}
+  .drawer.show .menu-list button:nth-child(3){animation-delay:.13s}
+  .drawer.show .menu-list button:nth-child(4){animation-delay:.17s}
+  .drawer.show .menu-list button:nth-child(5){animation-delay:.21s}
+  .drawer.show .menu-list button:nth-child(6){animation-delay:.25s}
+  .drawer.show .menu-list button:nth-child(7){animation-delay:.29s}
+  .drawer.show .menu-list button:nth-child(8){animation-delay:.33s}
+  @keyframes itemIn{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+  .menu-list .i-dup svg{color:var(--purple);} .menu-list .i-filt svg{color:var(--teal);}
+  .menu-list .i-filt-all svg{color:var(--keep);}
+  .sub2{color:var(--muted);font-size:14px;margin:0 2px 16px;line-height:1.5;}
+  .filter-bar{flex:0 0 auto;display:flex;align-items:center;gap:8px;margin:0 18px 6px;background:var(--maybe-soft);color:#9a6c12;border-radius:13px;padding:9px 13px;font-size:13.5px;font-weight:600;}
+  .filter-bar b{font-weight:800;}
+  .filter-bar svg{width:18px;height:18px;flex:0 0 auto;}
+  .filter-bar button{margin-inline-start:auto;border:none;background:rgba(154,108,18,.14);color:inherit;border-radius:9px;padding:5px 11px;font-family:inherit;font-weight:700;cursor:pointer;font-size:12.5px;transition:transform .12s;}
+  .filter-bar button:active{transform:scale(.94);}
+  /* duplicates screen */
+  .dup-group{background:#fff;border-radius:20px;padding:14px;margin-bottom:14px;box-shadow:0 8px 18px -14px rgba(90,70,130,.5);}
+  .dup-title{font-size:13px;color:var(--muted);font-weight:600;margin:0 2px 10px;}
+  .dup-member{display:flex;align-items:center;gap:12px;padding:10px;border-radius:14px;border:2px solid transparent;cursor:pointer;transition:background .15s,border-color .15s;}
+  .dup-member .dot{width:20px;height:20px;border-radius:50%;border:2px solid #cfc8de;flex:0 0 auto;transition:all .15s;}
+  .dup-member.selected{background:var(--keep-soft);border-color:var(--keep);}
+  .dup-member.selected .dot{border-color:var(--keep);background:var(--keep);box-shadow:inset 0 0 0 3px #fff;}
+  .dup-member .li-txt{flex:1;min-width:0;}
+  .dup-member .li-txt .n{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .dup-member .li-txt .s{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:right;}
+  .dup-member .kept-badge{font-size:11px;font-weight:700;color:var(--keep);opacity:0;flex:0 0 auto;}
+  .dup-member.selected .kept-badge{opacity:1;}
+  .dup-actions{display:flex;gap:10px;margin-top:12px;}
+  .dup-actions .btn{flex:1;padding:12px;font-size:15px;border-radius:14px;}
+  .dup-cta{margin-top:14px;border:none;border-radius:14px;padding:13px;font-family:inherit;font-size:14.5px;font-weight:700;cursor:pointer;
+    background:var(--teal-soft);color:var(--teal);display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s;}
+  .dup-cta:active{transform:scale(.97);} .dup-cta svg{width:20px;height:20px;}
+  /* merge picker */
+  .mp-section{margin-bottom:18px;}
+  .mp-section h3{font-size:14px;color:var(--muted);font-weight:700;margin:0 0 8px 2px;}
+  .mp-opt{display:flex;align-items:center;gap:12px;background:#fff;border-radius:14px;padding:12px 14px;margin-bottom:8px;border:2px solid transparent;cursor:pointer;transition:border-color .15s,background .15s;box-shadow:0 6px 14px -12px rgba(90,70,130,.4);}
+  .mp-opt .chk{width:23px;height:23px;border-radius:8px;border:2px solid #cfc8de;flex:0 0 auto;display:flex;align-items:center;justify-content:center;color:#fff;transition:all .15s;}
+  .mp-opt .chk svg{width:14px;height:14px;opacity:0;}
+  .mp-opt.on{border-color:var(--keep);background:var(--keep-soft);}
+  .mp-opt.on .chk{background:var(--keep);border-color:var(--keep);} .mp-opt.on .chk svg{opacity:1;}
+  .mp-opt .v{flex:1;min-width:0;font-weight:600;font-size:15px;word-break:break-word;}
+  .mp-opt .v.ltr{direction:ltr;text-align:right;}
+  .mp-auto{background:var(--teal-soft);color:var(--teal);border-radius:12px;padding:10px 14px;font-size:13px;margin-bottom:16px;line-height:1.5;word-break:break-word;}
+  .mp-confirm{width:100%;margin-top:6px;}
+
+  /* ---------- Upload / done ---------- */
+  .center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;gap:15px;overflow-y:auto;}
+  .title-xl{font-size:30px;font-weight:700;letter-spacing:-.4px;color:var(--ink);}
+  .sub{color:var(--muted);font-size:15px;max-width:390px;line-height:1.55;}
+  .drop{width:100%;max-width:370px;border:2px dashed #d7d0e6;border-radius:22px;padding:26px 20px;background:rgba(255,255,255,.55);color:var(--ink);cursor:pointer;}
+  .drop.over{border-color:var(--teal);background:#fff;}
+  .drop .di{font-size:32px;margin-bottom:6px;}
+  .drop .dt{font-weight:600;font-size:15px;}
+  .file-name{font-size:13px;color:var(--muted);}
+  .btn{font-family:inherit;border:none;border-radius:16px;padding:15px 22px;font-size:16px;font-weight:700;cursor:pointer;transition:transform .12s, box-shadow .2s;}
+  .btn:active{transform:scale(.96);}
+  .btn.primary{color:#fff;background:linear-gradient(135deg,var(--flame1),var(--flame2));box-shadow:0 14px 28px -12px rgba(253,61,122,.6);}
+  .btn.ghost{background:#fff;color:var(--ink);box-shadow:0 8px 18px -12px rgba(90,70,130,.35);}
+  .btn.keepc{color:#fff;background:linear-gradient(135deg,#36c984,var(--keep));box-shadow:0 14px 28px -12px rgba(31,176,104,.6);}
+  .resume-box{background:#fff;border-radius:18px;padding:15px 16px;max-width:370px;width:100%;font-size:14px;box-shadow:0 10px 24px -16px rgba(90,70,130,.5);}
+  .done-emoji{font-size:54px;}
+  .warn{background:var(--maybe-soft);color:#9a6c12;border-radius:14px;padding:11px 15px;font-size:13px;max-width:390px;line-height:1.5;}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:14px;font-weight:600;font-size:14px;z-index:99;opacity:0;transition:opacity .2s;pointer-events:none;}
+  .toast.show{opacity:1;}
+  .small-link{background:none;border:none;color:var(--muted);font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;text-decoration:underline;}
+  input[type=file]{display:none;}
+  .screen-foot{padding:0 20px 18px;color:var(--muted);font-size:12.5px;line-height:1.5;text-align:center;}
+
+  /* ===== Clear-inspired turquoise theme ===== */
+  :root{--warm:linear-gradient(180deg,#0e7e84 0%,#179a93 32%,#23b6a2 64%,#3acdb0 100%);--ink:#234a4e;}
+  body{background:var(--warm);background-attachment:fixed;}
+  .screen,.drawer{background:var(--warm);}
+  .drawer{right:0;left:auto;transform:translateX(100%);box-shadow:-14px 0 60px -12px rgba(10,60,60,.5);overflow:hidden;}
+  .drawer.show{transform:translateX(0);}
+  .drawer-scroll{will-change:transform;touch-action:none;}
+  .drawer-scroll *{touch-action:none;}
+  .brand{background:none;-webkit-text-fill-color:#fff;color:#fff;}
+  .brand small{color:rgba(255,255,255,.85);-webkit-text-fill-color:rgba(255,255,255,.85);}
+  .menu-btn{background:rgba(255,255,255,.22);color:#fff;box-shadow:none;}
+  .menu-btn.rst svg{color:#fff;}
+  .hbtn{background:rgba(255,255,255,.22);box-shadow:none;} .hbtn svg{color:#fff;}
+  .stats .stat{background:rgba(255,255,255,.2);box-shadow:none;}
+  .stat b,.stat.keep b,.stat.del b,.stat.maybe b,.stat.left b{color:#fff;}
+  .stat span{color:rgba(255,255,255,.85);}
+  .card{box-shadow:0 24px 55px -22px rgba(10,60,60,.55),0 8px 20px -12px rgba(10,60,60,.4);}
+  .card .name{color:var(--ink);} .card .name.empty{color:#7fa7a8;}
+  .card .org{color:var(--ink);} .card .email{color:#0c8f8f;} .card .phone{color:#7c9ea0;}
+  .screen-head h2{color:#fff;}
+  .screen-head .close{background:rgba(255,255,255,.22);color:#fff;box-shadow:none;}
+  .empty-note{color:#fff;}
+  .title-xl{color:#fff;}
+  .sub,.sub2{color:rgba(255,255,255,.92);}
+  .small-link{color:rgba(255,255,255,.92);}
+  .screen-foot{color:rgba(255,255,255,.85);}
+  .drop{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.5);color:#fff;}
+  .drop.over{background:rgba(255,255,255,.3);border-color:#fff;}
+  .file-name{color:rgba(255,255,255,.82);}
+  .warn{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.25);}
+  .dup-cta{background:rgba(255,255,255,.92);color:#0c8285;} .dup-cta svg{color:#0c8285;}
+  .filter-bar{background:rgba(255,255,255,.92);color:#0c7f82;}
+  .filter-bar button{background:rgba(12,127,130,.14);}
+  /* intro: smaller diagram, no start button */
+  .card.intro{padding:24px 22px;}
+  .mb-wrap{width:182px;height:182px;margin:2px auto 0;}
+  .mb-lbl{font-size:13px;} .mb-hint{text-align:center;color:#7c9ea0;font-size:13px;margin-top:14px;font-weight:600;}
+  /* Clear-style bands in the side menu */
+  .drawer{padding:0 0 0 48px;}
+  .drawer-strip{position:absolute;left:0;right:auto;top:0;bottom:0;width:48px;background:rgba(0,0,0,.16);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3;}
+  .drawer-strip svg{width:26px;height:26px;color:rgba(0,0,0,.42);}
+  .drawer-strip:active{background:rgba(0,0,0,.26);}
+  .drawer .dhead .dt{background:none;-webkit-text-fill-color:#fff;color:#fff;}
+  .drawer .dhead{padding:20px 18px 14px;margin-bottom:0;}
+  .drawer .menu-list{gap:0;}
+  .drawer .menu-list button{background:transparent;color:#fff;border-radius:0;box-shadow:none;margin:0;padding:19px 22px;border-bottom:1px solid rgba(255,255,255,.16);font-weight:700;}
+  .drawer .menu-list button:last-child{border-bottom:none;}
+  .drawer .menu-list button svg{color:#fff;}
+  .drawer .menu-list button.danger{color:#fff;}
+  /* search in top bar */
+  .menu-btn svg{width:21px;height:21px;display:block;}
+  .searchwrap{display:none;} .searchwrap.show{display:flex;flex:1;align-items:center;}
+  .topsearch{width:100%;border:none;border-radius:12px;padding:11px 14px;font-family:inherit;font-size:16px;background:rgba(255,255,255,.96);color:var(--ink);outline:none;}
+  .topsearch::placeholder{color:#8fb1b2;}
+  #searchClose{display:none;align-items:center;justify-content:center;}
+  .search-results{display:none;flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 16px 22px;min-height:0;}
+  .search-results.show{display:block;}
+  .search-empty{color:#fff;text-align:center;padding:28px 12px;font-weight:600;opacity:.92;}
+  .li-tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:8px;flex:0 0 auto;}
+  .li-tag.keep{background:var(--keep-soft);color:var(--keep);}
+  .li-tag.maybe{background:var(--maybe-soft);color:#9a6c12;}
+  .swipe-row{position:relative;margin-bottom:10px;border-radius:18px;overflow:hidden;}
+  .swipe-bg{position:absolute;inset:0;display:flex;align-items:center;padding:0 24px;color:#fff;}
+  .swipe-bg.keepbg{background:var(--keep);justify-content:flex-start;}
+  .swipe-bg.delbg{background:var(--del);justify-content:flex-end;}
+  .swipe-bg svg{width:25px;height:25px;}
+  .swipe-bg .sa-arrow{display:inline-flex;margin:0 8px;opacity:.9;}
+  .swipe-bg .sa-arrow svg{width:20px;height:20px;}
+  .swipe-fg{position:relative;touch-action:pan-y;cursor:grab;}
+  .swipe-fg.list-item{margin-bottom:0;box-shadow:none;}
+  .swipe-hint{display:flex;direction:ltr;gap:8px;margin-bottom:14px;}
+  .sh-side{flex:1;display:flex;align-items:center;gap:8px;padding:11px 18px;border-radius:14px;color:#fff;}
+  .sh-side.del{background:var(--del);justify-content:flex-start;}
+  .sh-side.keep{background:var(--keep);justify-content:flex-end;}
+  .sh-side svg{width:24px;height:24px;}
+  .sh-side .sa-arrow{display:inline-flex;opacity:.9;}
+  .sh-side .sa-arrow svg{width:19px;height:19px;}
+  /* SweepApp branding */
+  .logo{font-weight:800;letter-spacing:-.3px;color:#fff;-webkit-text-fill-color:#fff;background:none;}
+  .logo .logo-app{font-weight:600;color:rgba(255,255,255,.6);-webkit-text-fill-color:rgba(255,255,255,.6);}
+  .hero{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;margin-bottom:6px;}
+  .broomrow{flex:0 0 auto;display:flex;justify-content:center;align-items:center;height:46px;overflow:visible;margin-top:-50px;}
+  .broom{display:inline-block;font-size:34px;transform-origin:50% 55%;animation:sweepit 2.2s ease-in-out infinite;}
+  @keyframes sweepit{0%{transform:translateX(0) rotate(-72deg);}50%{transform:translateX(-108px) rotate(8deg);}100%{transform:translateX(0) rotate(-72deg);}}
+  .hero-logo{font-size:42px;font-weight:800;letter-spacing:-1px;background:linear-gradient(110deg,#fff 0%,#fff 42%,#cffaf0 50%,#fff 58%,#fff 100%);background-size:230% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shine 3.4s ease-in-out infinite;}
+  .hero-logo span{font-weight:600;opacity:.7;}
+  @keyframes shine{0%{background-position:120% 0;}55%,100%{background-position:-30% 0;}}
+  .fab-menu{position:fixed;bottom:28px;left:16px;right:auto;z-index:35;width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;background:rgba(255,255,255,.94);color:var(--ink);font-size:23px;line-height:1;box-shadow:0 12px 28px -10px rgba(10,60,60,.55);transition:transform .12s;}
+  .fab-menu:active{transform:scale(.9);}
+  .fab-menu.right{left:auto;right:16px;}
+  .fab-menu svg{width:23px;height:23px;color:var(--ink);}
+  .hbar-backdrop{position:fixed;inset:0;z-index:44;background:rgba(8,40,42,0);transition:background .22s;}
+  .hbar-backdrop.show{background:rgba(8,40,42,.4);}
+  .hbar{position:fixed;bottom:30px;left:80px;right:12px;z-index:45;display:flex;direction:ltr;flex-direction:row;justify-content:flex-start;align-items:flex-end;gap:6px;overflow-x:auto;overflow-y:visible;padding-bottom:2px;}
+  .hbar::-webkit-scrollbar{display:none;}
+  .hm-item{pointer-events:auto;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;padding:0;flex:0 0 auto;animation:hmIn .32s cubic-bezier(.22,1,.36,1) both;}
+  @keyframes hmIn{from{opacity:0;transform:translateX(-34px) scale(.7);}to{opacity:1;transform:none;}}
+  .hm-labwrap{display:flex;align-items:center;justify-content:center;min-height:16px;}
+  .hm-label{white-space:nowrap;font-size:12px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.4);}
+  .hm-ic{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.96);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px -8px rgba(8,50,50,.6);transition:transform .12s;}
+  .hm-item:active .hm-ic{transform:scale(.88);}
+  .hm-ic svg{width:23px;height:23px;color:var(--ink);}
+  .mp-hint{color:rgba(255,255,255,.92);font-size:13.5px;line-height:1.5;margin-bottom:14px;font-weight:600;}
+  .mp-section h3{color:#fff;opacity:.9;}
+  .mp-same{font-size:12px;font-weight:600;opacity:.72;}
+  /* tap chevron on swipe rows */
+  .li-chev{flex:0 0 auto;display:flex;align-items:center;color:#c7c1d6;}
+  .li-chev svg{width:20px;height:20px;}
+  /* ===== contact detail card ===== */
+  .cd-body .swipe-hint{margin-bottom:14px;}
+  .cd-deck{position:relative;}
+  .cd-card{position:relative;inset:auto;height:auto;min-height:0;margin:0;border-radius:26px;padding:24px 20px;
+    align-items:stretch;justify-content:flex-start;text-align:right;cursor:grab;touch-action:pan-y;}
+  .cd-top{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:4px;}
+  .cd-av{width:94px;height:94px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;
+    background:radial-gradient(circle at 50% 32%,#f3eefb,#e7eff7);margin-bottom:12px;flex:0 0 auto;}
+  .cd-av.init{background:var(--purple-soft);color:var(--purple);font-weight:700;font-size:36px;}
+  .cd-av img{width:100%;height:100%;object-fit:cover;} .cd-av svg{width:50px;height:50px;color:#c2bdd6;}
+  .cd-name{font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-.3px;word-break:break-word;line-height:1.15;}
+  .cd-name.empty{color:var(--muted);font-size:21px;}
+  .cd-org{font-size:15px;color:var(--ink);opacity:.75;font-weight:600;margin-top:5px;word-break:break-word;}
+  .cd-fields{margin-top:16px;display:flex;flex-direction:column;gap:9px;}
+  .cd-field{background:#f7f5fb;border-radius:14px;padding:10px 14px;}
+  .cd-field .lbl{font-size:11.5px;color:var(--muted);font-weight:700;margin-bottom:2px;}
+  .cd-field .val{font-size:15.5px;color:var(--ink);font-weight:600;word-break:break-word;}
+  .cd-field .val.ltr{direction:ltr;text-align:right;}
+  .cd-empty{text-align:center;color:var(--muted);padding:14px;}
+  .sh-side .sh-lbl{font-size:13px;font-weight:700;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+const ICON={
+  person:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.4c-3.3 0-9.8 1.6-9.8 4.9v2.5h19.6v-2.5c0-3.3-6.5-4.9-9.8-4.9z"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4 11 13"/><path d="M11 13l3.2 3.2"/><path d="M14.2 16.2l-4.4 4.4L3 19l3.8-6z"/><path d="M6.6 17.8l1.7 1.7M9 16.2l1.7 1.7"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-4-4 4-4"/><path d="M5 10h9a5 5 0 0 1 0 10h-1"/></svg>',
+  backLeft:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-4-4 4-4"/><path d="M5 10h9a5 5 0 0 1 0 10h-1"/></svg>',
+  backRight:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14l4-4-4-4"/><path d="M19 10h-9a5 5 0 0 0 0 10h1"/></svg>',
+  backUp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9l-4-4-4 4"/><path d="M10 5v9a5 5 0 0 0 10 0v-1"/></svg>',
+  aright:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  aleft:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>',
+  aup:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>',
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/></svg>',
+  down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>',
+  merge:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7h3a4 4 0 0 1 0 8H8M16 17h-3a4 4 0 0 1 0-8h3"/></svg>',
+  filter:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 8v5l-4 2v-7z"/></svg>',
+  phoneOff:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M9.2 5.1A2 2 0 0 0 7.5 4H5a2 2 0 0 0-2 2c0 7.2 5.8 13 13 13a2 2 0 0 0 2-2v-2.5a2 2 0 0 0-1.3-1.9l-2.3-.8"/></svg>',
+  mailOff:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M4 6h14a2 2 0 0 1 2 2v8M4 8v8a2 2 0 0 0 2 2h11"/></svg>',
+  reset:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.6-6.3L3 8"/><path d="M3 3v5h5"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>',
+  chevR:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  chevL:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>',
+  grid:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg>',
+  dots:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2.1"/><circle cx="12" cy="12" r="2.1"/><circle cx="19" cy="12" r="2.1"/></svg>'
+};
+
+const DEMO_CSV=`First Name,Middle Name,Last Name,Organization Name,Organization Title,E-mail 1 - Value,Phone 1 - Value,Notes,Labels
+גלית,,גולן,,,,053-6974339,ספק,* myContacts
+נועה,,,,,,04-8973443,,* myContacts
+יואב,,שפירא,,,user102@walla.co.il,04-8315666,מהעבודה הקודמת,* myContacts
+ליאת,,,בנק הפועלים,מורה,user103@yahoo.com,04-3219538,שכן,* myContacts
+חן,,אדרי,מרפאת ויטה,,,054-3184589,הכרות מכנס,* myContacts
+שני,,גבאי,משרד עו״ד גולן,,user105@hotmail.com,053-9027624,חבר מהצבא,* myContacts
+חן,,גבאי,,,user106@yahoo.com,077-1796252,חבר מהצבא,* myContacts
+עמית,,בן חיים,,,user107@walla.co.il,058-9565342,חבר מהצבא,* myContacts
+רונית,,אזולאי,משרד עו״ד גולן,VP Sales,user108@gmail.com,,,* myContacts
+מיכל,,חדד,חדר כושר אקטיב,טכנאי,user109@walla.co.il,053-5689440,מהעבודה הקודמת,* myContacts
+הילה,,כהן,,,user110@company.co.il,04-1517234,מהעבודה הקודמת,* myContacts
+יוסי,,גולן,,,user111@outlook.com,,ספק,* myContacts
+יואב,,,,,user112@company.co.il,054-6916515,לקוח,* myContacts
+איתי,,ויזל,גן ילדים פעמון,,,03-8150233,,* myContacts
+גלית,,גבאי,,,user114@gmail.com,050-4293529,הכרות מכנס,* myContacts
+שרה,,בן חיים,,,,077-7940492,ספק,* myContacts
+גלית,,אדרי,חברת ביטוח הראל,טכנאי,user116@yahoo.com,055-0082199,מהאוניברסיטה,* myContacts
+אסף,,,,,,04-1306367,ספק,* myContacts
+נועה,,ברקוביץ,,,,050-1510546,מהאוניברסיטה,* myContacts
+יואב,,,משרד עו״ד גולן,מנהלת שיווק,user119@outlook.com,050-8336280,לקוח,* myContacts
+בר,,לוי,חדר כושר אקטיב,שותף,,,לקוח,* myContacts
+רותם,,מזרחי,מוסך הצפון,,user121@walla.co.il,03-1548387,שכן,* myContacts
+רותם,,שפירא,חדר כושר אקטיב,VP Sales,,054-4957583,אבא של ילד מהגן,* myContacts
+ליאור,,מלכה,,,user123@walla.co.il,077-3965565,מהעבודה הקודמת,* myContacts
+שרה,,אדרי,מוסך הצפון,,user124@company.co.il,,מהאוניברסיטה,* myContacts
+יוסי,,בן חיים,חברת הייטק נקסט,,user125@yahoo.com,09-1918868,חבר מהצבא,* myContacts
+יואב,,אוחיון,חדר כושר אקטיב,רואה חשבון,user126@yahoo.com,077-1841567,,* myContacts
+עמית,,גולן,גן ילדים פעמון,מנהלת שיווק,,050-0492577,אבא של ילד מהגן,* myContacts
+מאיה,,אדרי,,,user128@hotmail.com,053-0667814,,* myContacts
+ליאת,,לוי,Acme Corp,טכנאי,user129@company.co.il,053-1515844,שכן,* myContacts
+נועה,,מזרחי,חברת הייטק נקסט,מעצבת גרפית,user130@walla.co.il,03-1352047,שכן,* myContacts
+טל,,גולן,סטודיו אורבן,,,09-6432065,מהעבודה הקודמת,* myContacts
+עידו,,מזרחי,,,user132@gmail.com,,הכרות מכנס,* myContacts
+דוד,,,,,,,,* myContacts
+חן,,אוחיון,מוסך הצפון,מנהלת שיווק,,09-8228424,הכרות מכנס,* myContacts
+ניר,,ברקוביץ,דפוס מהיר,מפתח,,,חבר מהצבא,* myContacts
+רותם,,סבן,סטארטאפ קלאוד,מנהלת שיווק,user136@outlook.com,04-3800448,,* myContacts
+בר,,,,,user137@gmail.com,077-2326312,ספק,* myContacts
+שרה,,שמש,מוסך הצפון,שותף,user138@walla.co.il,,ספק,* myContacts
+קרן,,שפירא,Acme Corp,מעצבת גרפית,user139@yahoo.com,09-3067140,חבר מהצבא,* myContacts
+אלון,,חדד,סטארטאפ קלאוד,,user140@walla.co.il,09-3300326,חבר מהצבא,* myContacts
+גלית,,ברקוביץ,,,,03-7897552,הכרות מכנס,* myContacts
+נועה,,אוחיון,בנק הפועלים,מורה,user142@yahoo.com,050-0962213,אבא של ילד מהגן,* myContacts
+מאיה,,חדד,,,user143@outlook.com,052-6073822,הכרות מכנס,* myContacts
+אלון,,לוי,,,user144@gmail.com,055-7806257,ספק,* myContacts
+רונית,,גבאי,בנק הפועלים,VP Sales,user145@company.co.il,,לקוח,* myContacts
+יואב,,אברהם,סטארטאפ קלאוד,רואה חשבון,user146@walla.co.il,04-2841150,ספק,* myContacts
+דנה,,אדרי,Acme Corp,מפתח,,,,* myContacts
+גיא,,שפירא,,,user148@gmail.com,04-9121112,חבר מהצבא,* myContacts
+יובל,,חדד,,,,053-5270481,אבא של ילד מהגן,* myContacts
+עידו,,אוחיון,רשת מסעדות באבא,,,04-6759904,ספק,* myContacts
+אבי,,בן דוד,,,user151@company.co.il,09-8117930,שכן,* myContacts
+דור,,,,,user152@gmail.com,,,* myContacts
+נדב,,בן חיים,מוסך הצפון,שותף,,058-6094995,,* myContacts
+שני,,רוזן,,,user154@yahoo.com,09-3039113,אבא של ילד מהגן,* myContacts
+Nina,,Garcia,מרפאת ויטה,,nina.garcia@yahoo.com,,colleague,* myContacts
+Tom,,Garcia,חדר כושר אקטיב,,tom.garcia@gmail.com,04-2024276,,* myContacts
+James,,Miller,,,james.miller@yahoo.com,,,* myContacts
+Sarah,,Khan,,,,,,* myContacts
+Sarah,,Smith,סטארטאפ קלאוד,רואה חשבון,sarah.smith@hotmail.com,,,* myContacts
+Anna,,Wilson,,,anna.wilson@hotmail.com,052-7963343,,* myContacts
+Anna,,Wilson,חברת הייטק נקסט,מפתח,anna.wilson@gmail.com,054-2409449,,* myContacts
+John,,Khan,מוסך הצפון,,john.khan@walla.co.il,,,* myContacts
+James,,Lee,מרפאת ויטה,,,077-6506702,,* myContacts
+Michael,,Smith,רשת מסעדות באבא,,michael.smith@outlook.com,055-6693153,colleague,* myContacts
+James,,Davis,Acme Corp,טכנאי,,03-1047744,,* myContacts
+James,,Cohen,משרד עו״ד גולן,,james.cohen@walla.co.il,052-9548222,,* myContacts
+David,,Wilson,,,david.wilson@outlook.com,053-8911875,,* myContacts
+Paul,,Brown,,,paul.brown@gmail.com,054-1458624,colleague,* myContacts
+Michael,,Brown,רשת מסעדות באבא,מנהל,michael.brown@company.co.il,,,* myContacts
+,,,,,info@deliveryfast.co.il,,,* myContacts
+,,,,,support@bank-hapoalim.co.il,,שירות,* myContacts
+,,,,,noreply@booking.com,055-6762212,שירות,* myContacts
+,,,,,newsletter@promo-store.com,058-1385901,שירות,* myContacts
+,,,,,service@bezeq.co.il,,,* myContacts
+,,,,,orders@pizzahut.co.il,,,* myContacts
+,,,,,hello@wolt.com,,שירות,* myContacts
+,,,,,team@monday.com,,שירות,* myContacts
+,,,,,billing@netflix.com,,שירות,* myContacts
+,,,,,care@superpharm.co.il,,,* myContacts
+,,,,,contact@ikea.co.il,058-8024317,,* myContacts
+,,,,,sales@office-depot.co.il,,,* myContacts
+,,,,,,055-5789352,חשמלאי,* myContacts
+,,,,,,055-1933428,אינסטלטור,* myContacts
+,,,,,,077-3876375,,* myContacts
+,,,,,,077-2450654,,* myContacts
+,,,,,,09-2593733,שליח,* myContacts
+,,,,,,053-7560296,,* myContacts
+,,,,,,04-3302716,,* myContacts
+,,,,,,052-2341848,אינסטלטור,* myContacts
+,,,,,,052-7942591,מונית,* myContacts
+,,,,,,04-3223807,מטפלת,* myContacts
+,,,מוסך הצפון,,david@garage-north.co.il,053-4455667,טיפול לרכב,* myContacts
+,,,חברת חשמל,,,103,שירות,* myContacts
+,,,טכנאי מזגנים רפי,,,058-1112233,קירור,* myContacts
+,,,מספרה סטייל,,,052-7788990,,* myContacts
+,,,רופא שיניים ד״ר רן,,clinic@dental.co.il,03-6200000,,* myContacts
+,,,פיצרייה רומא,,,077-2003004,,* myContacts
+,,,וטרינר ד״ר שגב,,vet@petcare.co.il,050-9001002,חתול,* myContacts
+,,,חנות חיות אנימל,,,04-8123456,,* myContacts
+דנה,,כהן,,,dana.k@gmail.com,050-1111111,חברה,* myContacts
+דנה,,כהן ל.,,,dana.k@gmail.com,,,* myContacts
+אבי,,לוי,,,,054-2223333,,* myContacts
+א.,,לוי,,,avi.levi@walla.co.il,054-222-3333,עבודה,* myContacts
+Michael,,Brown,Acme Corp,,mb@acme.com,,,* myContacts
+Michael,,Brown,,,,+1-415-555-0001,,* myContacts
+,,,מרפאת ויטה,,,03-9001234,קליניקה,* myContacts
+"ד""ר כהן",,,,,cohen@vita.co.il,03-900-1234,,* myContacts
+,,,מרפאת ויטה צפון,,info@vita.co.il,039001234,,* myContacts`;
+
+const MY_CONTACTS_VCF='';
+const MY_CONTACTS_COUNT=0;
+
+/* ===== CSV core ===== */
+function parseCSV(text){
+  text=text.replace(/^\uFEFF/,'');const rows=[];let row=[],field='',i=0,q=false;
+  while(i<text.length){const c=text[i];
+    if(q){if(c==='"'){if(text[i+1]==='"'){field+='"';i+=2;continue;}q=false;i++;continue;}field+=c;i++;continue;}
+    if(c==='"'){q=true;i++;continue;}
+    if(c===','){row.push(field);field='';i++;continue;}
+    if(c==='\r'){i++;continue;}
+    if(c==='\n'){row.push(field);rows.push(row);row=[];field='';i++;continue;}
+    field+=c;i++;}
+  if(field.length>0||row.length>0){row.push(field);rows.push(row);}
+  return rows.filter(r=>!(r.length===1&&r[0]===''));
+}
+function esc(v){v=v==null?'':String(v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+function toCSV(headers,records){const out=[headers.map(esc).join(',')];for(const r of records)out.push(headers.map(h=>esc(r[h])).join(','));return '\uFEFF'+out.join('\r\n');}
+function findHeader(headers,re){for(const h of headers)if(re.test(h))return h;return null;}
+function deriveDisplay(raw,maps){
+  let name=''; if(maps.name&&raw[maps.name])name=raw[maps.name].trim();
+  if(!name){const parts=[maps.first,maps.middle,maps.last].map(h=>h?(raw[h]||'').trim():'').filter(Boolean);name=parts.join(' ').trim();}
+  let email='';for(const h of maps.emails){if(raw[h]&&raw[h].trim()){email=raw[h].trim();break;}}
+  let phone='';for(const h of maps.phones){if(raw[h]&&raw[h].trim()){phone=raw[h].trim();break;}}
+  let org=maps.org&&raw[maps.org]?raw[maps.org].trim():'';
+  let photo=maps.photo&&raw[maps.photo]?raw[maps.photo].trim():''; if(photo&&!/^https?:\/\//i.test(photo))photo='';
+  return {name,email,phone,org,photo};
+}
+/* ===== vCard core ===== */
+function qpDecode(str){const b=[];for(let i=0;i<str.length;i++){const c=str[i];if(c==='='){const h=str.substr(i+1,2);if(/^[0-9A-Fa-f]{2}$/.test(h)){b.push(parseInt(h,16));i+=2;}else b.push(c.charCodeAt(0));}else b.push(c.charCodeAt(0));}try{return new TextDecoder('utf-8').decode(new Uint8Array(b));}catch(e){return str;}}
+function splitVCards(t){const out=[];const re=/BEGIN:VCARD[\s\S]*?END:VCARD/gi;let m;while((m=re.exec(t)))out.push(m[0]);return out;}
+function parseVBlock(block){
+  const phys=block.split(/\r\n|\n/);const L=[];
+  for(const ln of phys){if((ln.startsWith(' ')||ln.startsWith('\t'))&&L.length)L[L.length-1]+=ln.slice(1);else L.push(ln);}
+  const L2=[];for(let i=0;i<L.length;i++){let line=L[i];if(/quoted-printable/i.test(line)){while(line.endsWith('=')&&i+1<L.length)line=line.slice(0,-1)+L[++i];}L2.push(line);}
+  const rec={emails:[],phones:[],name:'',org:'',title:'',photo:''};let fn='',nf='';
+  for(const line of L2){const ci=line.indexOf(':');if(ci<0)continue;const left=line.slice(0,ci),val=line.slice(ci+1);
+    const segs=left.split(';');const prop=segs[0].toUpperCase();const isQP=segs.slice(1).some(p=>/quoted-printable/i.test(p));const dec=v=>isQP?qpDecode(v):v;
+    if(prop==='FN')fn=dec(val).trim();else if(prop==='N')nf=dec(val);
+    else if(prop==='EMAIL'){const e=val.trim();if(e)rec.emails.push(e);}
+    else if(prop==='TEL'){const t=val.trim();if(t)rec.phones.push(t);}
+    else if(prop==='ORG')rec.org=dec(val).split(';').filter(Boolean).join(' ').trim();
+    else if(prop==='TITLE')rec.title=dec(val).trim();}
+  if(fn)rec.name=fn;else if(nf){const p=nf.split(';');rec.name=[p[1]||'',p[2]||'',p[0]||''].map(s=>s.trim()).filter(Boolean).join(' ');}
+  rec.email=rec.emails[0]||'';rec.phone=rec.phones[0]||'';return rec;
+}
+function buildVCard(text){
+  const blocks=splitVCards(text);
+  if(!blocks.length)throw new Error('לא נמצאו אנשי קשר בקובץ ה-vCard.');
+  const records=blocks.map((b,i)=>{const r=parseVBlock(b);return {id:String(i),raw:b,emails:r.emails,phones:r.phones,name:r.name,org:r.org,email:r.email,phone:r.phone,photo:''};});
+  return {format:'vcard',headers:null,maps:null,records};
+}
+function buildData(text){
+  if(/BEGIN:VCARD/i.test(text.slice(0,4000)))return buildVCard(text);
+  return buildCSV(text);
+}
+function buildCSV(csvText){
+  const rows=parseCSV(csvText);
+  if(rows.length<2)throw new Error('הקובץ ריק או חסר שורות אנשי קשר.');
+  const headers=rows[0];
+  const maps={name:findHeader(headers,/^name$/i),first:findHeader(headers,/^(first name|given name)$/i),
+    middle:findHeader(headers,/^(middle name|additional name)$/i),last:findHeader(headers,/^(last name|family name)$/i),
+    org:findHeader(headers,/^(organization name|organization 1 - name|organization)$/i),
+    photo:findHeader(headers,/^photo$/i),
+    emails:headers.filter(h=>/e-?mail.*value/i.test(h)),phones:headers.filter(h=>/phone.*value/i.test(h))};
+  const records=[];
+  for(let r=1;r<rows.length;r++){const raw={};headers.forEach((h,idx)=>raw[h]=rows[r][idx]!==undefined?rows[r][idx]:'');
+    const d=deriveDisplay(raw,maps);
+    const emails=maps.emails.map(h=>raw[h]).filter(v=>v&&v.trim());
+    const phones=maps.phones.map(h=>raw[h]).filter(v=>v&&v.trim());
+    records.push({id:String(r-1),raw,emails,phones,...d});}
+  return {format:'csv',headers,records,maps};
+}
+
+/* ===== state ===== */
+const KEY='contacts_swipe_v8';
+let S=null;
+function persist(){try{localStorage.setItem(KEY,JSON.stringify({csv:S._csv,decisions:S.decisions,pos:S.pos,fileName:S.fileName,introDone:S.introDone,order:S.order,filterLabel:S.filterLabel}));}catch(e){}}
+function loadPersisted(){try{const raw=localStorage.getItem(KEY);return raw?JSON.parse(raw):null;}catch(e){return null;}}
+function initFromCSV(text,fileName){const d=buildData(text);
+  S={...d,_csv:text,fileName:fileName||'contacts.csv',order:d.records.map(r=>r.id),pos:0,decisions:{},history:[],introDone:false,filterLabel:null};}
+function resumeFromCSV(p){const d=buildData(p.csv);
+  S={...d,_csv:p.csv,fileName:p.fileName||'contacts.csv',order:(p.order&&p.order.length)?p.order:d.records.map(r=>r.id),pos:p.pos||0,decisions:p.decisions||{},history:[],introDone:p.introDone||((p.pos||0)>0),filterLabel:p.filterLabel||null};}
+function recById(id){return S.records.find(r=>r.id===id);}
+function normEmail(e){return (e||'').trim().toLowerCase();}
+function normPhone(p){const d=(p||'').replace(/\D/g,'');return d.length>=7?d.slice(-9):'';}
+function normName(n){try{return (n||'').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu,'').trim().split(/\s+/).filter(Boolean).sort().join(' ');}catch(e){return (n||'').toLowerCase().replace(/[^a-z0-9\u0590-\u05ff\s]/g,'').trim().split(/\s+/).filter(Boolean).sort().join(' ');}}
+function recScore(r){let s=0;if(r.name)s+=2;if(r.org)s++;s+=(r.emails||[]).length;s+=(r.phones||[]).length;return s;}
+function computeDuplicateGroups(){
+  const recs=S.records.filter(r=>S.decisions[r.id]!=='delete');
+  const parent={};recs.forEach(r=>parent[r.id]=r.id);
+  const find=x=>{while(parent[x]!==x){parent[x]=parent[parent[x]];x=parent[x];}return x;};
+  const uni=(a,b)=>{parent[find(a)]=find(b);};
+  const byKey={};
+  const link=(k,id)=>{if(!k)return;if(byKey[k]!==undefined)uni(byKey[k],id);else byKey[k]=id;};
+  recs.forEach(r=>{
+    (r.emails||[]).forEach(e=>link('e:'+normEmail(e),r.id));
+    (r.phones||[]).forEach(p=>{const k=normPhone(p);if(k)link('p:'+k,r.id);});
+    const nk=normName(r.name);if(nk)link('n:'+nk,r.id);
+  });
+  const groups={};
+  recs.forEach(r=>{const root=find(r.id);(groups[root]=groups[root]||[]).push(r.id);});
+  return Object.values(groups).filter(g=>g.length>=2);
+}
+function mergeGroup(ids,keepId){
+  if(S.format==='vcard')return mergeGroupVcard(ids,keepId);
+  const keep=recById(keepId);const ordered=[keepId,...ids.filter(i=>i!==keepId)];
+  const emails=[],phones=[];
+  ordered.forEach(id=>{const r=recById(id);
+    (r.emails||[]).forEach(e=>{if(!emails.some(x=>normEmail(x)===normEmail(e)))emails.push(e);});
+    (r.phones||[]).forEach(p=>{const k=normPhone(p);if(!phones.some(x=>(normPhone(x)&&normPhone(x)===k)||x===p))phones.push(p);});
+  });
+  if(S.maps.emails)S.maps.emails.forEach((h,i)=>{if(emails[i]!==undefined)keep.raw[h]=emails[i];});
+  if(S.maps.phones)S.maps.phones.forEach((h,i)=>{if(phones[i]!==undefined)keep.raw[h]=phones[i];});
+  if(S.maps.org&&!keep.raw[S.maps.org]){for(const id of ordered){const r=recById(id);if(r.raw[S.maps.org]){keep.raw[S.maps.org]=r.raw[S.maps.org];break;}}}
+  Object.assign(keep,deriveDisplay(keep.raw,S.maps));
+  keep.emails=S.maps.emails?S.maps.emails.map(h=>keep.raw[h]).filter(v=>v&&v.trim()):[];
+  keep.phones=S.maps.phones?S.maps.phones.map(h=>keep.raw[h]).filter(v=>v&&v.trim()):[];
+  ids.filter(i=>i!==keepId).forEach(i=>{S.decisions[i]='delete';});
+  persist();
+}
+function mergeGroupVcard(ids,keepId){
+  const keep=recById(keepId);const ordered=[keepId,...ids.filter(i=>i!==keepId)];
+  const emails=[],phones=[];
+  ordered.forEach(id=>{const r=recById(id);
+    r.emails.forEach(e=>{if(!emails.some(x=>normEmail(x)===normEmail(e)))emails.push(e);});
+    r.phones.forEach(p=>{const k=normPhone(p);if(!phones.some(x=>(normPhone(x)&&normPhone(x)===k)||x===p))phones.push(p);});
+  });
+  let org=keep.org; if(!org){for(const id of ordered){const r=recById(id);if(r.org){org=r.org;break;}}}
+  keep.raw=rebuildVcard(keep.raw,keep.name,emails,phones,org);
+  const re=parseVBlock(keep.raw);keep.emails=re.emails;keep.phones=re.phones;keep.email=re.email;keep.phone=re.phone;keep.org=re.org||keep.org;
+  ids.filter(i=>i!==keepId).forEach(i=>{S.decisions[i]='delete';});
+  persist();
+}
+function qpEncode(str){const bytes=new TextEncoder().encode(str);let out='';for(const b of bytes){if(b===0x3D||b<0x20||b>0x7E)out+='='+b.toString(16).toUpperCase().padStart(2,'0');else out+=String.fromCharCode(b);}return out;}
+function vcLine(prop,val){return /[^\x00-\x7F]/.test(val)?prop+';CHARSET=UTF-8;ENCODING=QUOTED-PRINTABLE:'+qpEncode(val):prop+':'+val;}
+function rebuildVcard(baseRaw,name,emails,phones,org){
+  const lines=baseRaw.split(/\r\n|\n/);const out=[];let insertAt=-1;
+  for(let i=0;i<lines.length;i++){const up=lines[i].toUpperCase();
+    if(/^(FN|N|EMAIL|TEL|ORG)[;:]/.test(up)){if(insertAt<0)insertAt=out.length;continue;}
+    out.push(lines[i]);}
+  const props=[];
+  if(name){props.push(vcLine('FN',name));props.push(/[^\x00-\x7F]/.test(name)?'N;CHARSET=UTF-8;ENCODING=QUOTED-PRINTABLE:'+qpEncode(name)+';;;;':'N:'+name+';;;;');}
+  (emails||[]).forEach(e=>props.push('EMAIL:'+e));
+  (phones||[]).forEach(p=>props.push('TEL;CELL:'+p));
+  if(org)props.push(vcLine('ORG',org));
+  const endIdx=out.findIndex(l=>/^END:VCARD/i.test(l));
+  const at=insertAt>=0?insertAt:(endIdx>=0?endIdx:out.length);
+  out.splice(at,0,...props);
+  return out.join('\r\n');
+}
+function collectMergeFields(ids){
+  const names=[],emails=[],phones=[],orgs=[];
+  ids.forEach(id=>{const r=recById(id);
+    if(r.name&&!names.includes(r.name))names.push(r.name);
+    r.emails.forEach(e=>{if(!emails.some(x=>normEmail(x)===normEmail(e)))emails.push(e);});
+    r.phones.forEach(p=>{const k=normPhone(p);if(!phones.some(x=>(normPhone(x)&&normPhone(x)===k)||x===p))phones.push(p);});
+    if(r.org&&!orgs.includes(r.org))orgs.push(r.org);});
+  return {names,emails,phones,orgs};
+}
+function applyMergeSelections(ids,keepId,sel){
+  const keep=recById(keepId);
+  const name=(sel.names&&sel.names.length?sel.names:[keep.name]).filter(Boolean).join(' / ');
+  const org=(sel.orgs||[]).filter(Boolean).join(' / ');
+  if(S.format==='vcard'){
+    keep.raw=rebuildVcard(keep.raw,name,sel.emails||[],sel.phones||[],org);
+    const re=parseVBlock(keep.raw);keep.name=re.name||name;keep.emails=re.emails;keep.phones=re.phones;keep.email=re.email;keep.phone=re.phone;keep.org=re.org;
+  } else {
+    if(S.maps.name)keep.raw[S.maps.name]=name; else {if(S.maps.first)keep.raw[S.maps.first]=name;if(S.maps.middle)keep.raw[S.maps.middle]='';if(S.maps.last)keep.raw[S.maps.last]='';}
+    if(S.maps.emails)S.maps.emails.forEach((h,i)=>keep.raw[h]=(sel.emails&&sel.emails[i]!==undefined)?sel.emails[i]:'');
+    if(S.maps.phones)S.maps.phones.forEach((h,i)=>keep.raw[h]=(sel.phones&&sel.phones[i]!==undefined)?sel.phones[i]:'');
+    if(S.maps.org)keep.raw[S.maps.org]=org;
+    Object.assign(keep,deriveDisplay(keep.raw,S.maps));
+    keep.emails=S.maps.emails?S.maps.emails.map(h=>keep.raw[h]).filter(v=>v&&v.trim()):[];
+    keep.phones=S.maps.phones?S.maps.phones.map(h=>keep.raw[h]).filter(v=>v&&v.trim()):[];
+  }
+  ids.filter(i=>i!==keepId).forEach(i=>{S.decisions[i]='delete';});
+  persist();
+}
+function openMergePicker(ids,keepId,fields,onConfirm){
+  const ov=document.createElement('div');ov.className='screen';
+  const baseName=(recById(keepId).name)||fields.names[0]||'';
+  const state={names:new Set(),emails:new Set(fields.emails),phones:new Set(fields.phones),orgs:new Set()};
+  if(baseName)state.names.add(baseName);else if(fields.names[0])state.names.add(fields.names[0]);
+  if(fields.orgs[0])state.orgs.add(fields.orgs[0]);
+  const sets={names:state.names,emails:state.emails,phones:state.phones,orgs:state.orgs};
+  function section(key,title,values,ltr){
+    if(!values.length)return '';
+    const same=values.length===1?' <span class="mp-same">(זהה בכפילויות)</span>':'';
+    return `<div class="mp-section"><h3>${title}${same}</h3>`+values.map((v,i)=>
+      `<div class="mp-opt${sets[key].has(v)?' on':''}" data-key="${key}" data-idx="${i}"><div class="chk">${ICON.check}</div><div class="v${ltr?' ltr':''}">${escapeHtml(v)}</div></div>`).join('')+`</div>`;
+  }
+  ov.innerHTML=`<div class="screen-head"><h2>מה לשמור במיזוג?</h2><button class="close">✕</button></div>
+    <div class="screen-body">
+      <div class="mp-hint">סמן מה לשמור. שדה זהה בכל הכפילויות נשמר פעם אחת; בשדה עם ערכים שונים אפשר לסמן ולשמור כמה.</div>
+      ${section('names','שמות',fields.names,false)}
+      ${section('emails','אימיילים',fields.emails,true)}
+      ${section('phones','טלפונים',fields.phones,true)}
+      ${section('orgs','חברה',fields.orgs,false)}
+      <button class="btn keepc mp-confirm" id="mpDo">אשר מיזוג</button>
+    </div>`;
+  app.appendChild(ov);
+  ov.querySelector('.close').onclick=()=>closeScreen(ov);
+  ov.querySelectorAll('.mp-opt').forEach(o=>{o.onclick=()=>{const key=o.dataset.key,idx=+o.dataset.idx,val=fields[key][idx];
+    if(sets[key].has(val))sets[key].delete(val);else sets[key].add(val);o.classList.toggle('on',sets[key].has(val));};});
+  ov.querySelector('#mpDo').onclick=()=>{
+    const pick=(key)=>fields[key].filter(v=>sets[key].has(v));
+    const sel={names:pick('names'),emails:pick('emails'),phones:pick('phones'),orgs:pick('orgs')};
+    if(!sel.names.length&&recById(keepId).name)sel.names=[recById(keepId).name];
+    applyMergeSelections(ids,keepId,sel);
+    closeScreen(ov,onConfirm);
+  };
+}
+function counts(){let k=0,d=0,m=0;for(const r of S.records){const v=S.decisions[r.id];if(v==='keep')k++;else if(v==='delete')d++;else if(v==='maybe')m++;}return {keep:k,del:d,maybe:m,left:S.order.length-S.pos,total:S.order.length};}
+
+const app=document.getElementById('app');
+const menuFab=document.createElement('button');
+menuFab.className='fab-menu right';menuFab.id='menuFab';menuFab.setAttribute('aria-label','תפריט');
+menuFab.textContent='☰';menuFab.style.display='none';
+menuFab.onclick=()=>renderMenu();
+document.body.appendChild(menuFab);
+const menuFab2=document.createElement('button');
+menuFab2.className='fab-menu';menuFab2.id='menuFab2';menuFab2.setAttribute('aria-label','תפריט מהיר');
+menuFab2.innerHTML=ICON.dots;menuFab2.style.display='none';
+menuFab2.onclick=()=>openHbar();
+document.body.appendChild(menuFab2);
+function showFab(v){menuFab.style.display=v?'':'none';menuFab2.style.display=v?'':'none';}
+function openHbar(){
+  if(document.querySelector('.hbar-backdrop'))return;
+  const items=[
+    {ic:ICON.home,label:'בית',fn:goHome},
+    {ic:ICON.filter,label:'סינון',fn:renderFilters},
+    {ic:ICON.merge,label:'מיזוג',fn:renderDuplicates},
+    {ic:ICON.trash,label:'נמחקו',fn:()=>renderList('delete','נמחקו')},
+    {ic:ICON.clock,label:'לבדיקה',fn:()=>renderList('maybe','לבדיקה מאוחרת')},
+    {ic:ICON.check,label:'נשמרו',fn:()=>renderList('keep','נשמרו')},
+    {ic:ICON.down,label:'ייצוא',fn:renderDone},
+    {ic:ICON.reset,label:'איפוס',fn:()=>uiConfirm('לאפס? כל המיון יימחק ותחזור למסך ההעלאה.',resetApp)}
+  ];
+  const bd=document.createElement('div');bd.className='hbar-backdrop';
+  const bar=document.createElement('div');bar.className='hbar';
+  bar.innerHTML=items.map((it,i)=>`<button class="hm-item" style="animation-delay:${(i*0.035).toFixed(3)}s" data-i="${i}"><span class="hm-labwrap"><span class="hm-label">${it.label}</span></span><span class="hm-ic">${it.ic}</span></button>`).join('');
+  bd.appendChild(bar);document.body.appendChild(bd);
+  requestAnimationFrame(()=>bd.classList.add('show'));
+  const close=cb=>{bd.classList.remove('show');setTimeout(()=>{bd.remove();cb&&cb();},220);};
+  bd.addEventListener('click',e=>{if(e.target===bd||e.target===bar)close();});
+  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{const it=items[+b.dataset.i];close(it.fn);};});
+}
+function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+window.PERSON_SVG=ICON.person;
+function avatarHTML(rec,cls){
+  if(rec.photo)return `<div class="${cls}"><img src="${escapeHtml(rec.photo)}" onerror="this.parentNode.innerHTML=PERSON_SVG"></div>`;
+  return `<div class="${cls}">${ICON.person}</div>`;
+}
+function initialBadge(rec,cls){
+  let ch=(rec.name||rec.email||rec.phone||'').trim().charAt(0).toUpperCase();
+  if(!ch||/[0-9*+#]/.test(ch))ch='•';
+  return `<div class="${cls} init">${escapeHtml(ch)}</div>`;
+}
+
+/* ===== upload ===== */
+function renderUpload(p){
+  showFab(false);
+  const resume=p?`<div class="resume-box">
+      <div style="font-weight:700;margin-bottom:6px;">נמצאה עבודה שמורה</div>
+      <div style="color:var(--muted);margin-bottom:12px;">${escapeHtml(p.fileName||'')} — בכרטיס ${(p.pos||0)+1}.</div>
+      <button class="btn primary" id="resumeBtn" style="width:100%;margin-bottom:8px;">המשך מאיפה שהפסקתי</button>
+      <button class="small-link" id="discardBtn">התחל מחדש</button></div>`:'';
+  app.innerHTML=`
+    <div class="topbar"><div class="brand"><span class="logo">Sweep<span class="logo-app">App</span></span><small>swipe · sweep · done</small></div></div>
+    <div class="broomrow"><span class="broom">🧹</span></div>
+    <div class="center">
+      <div class="sub">${MY_CONTACTS_COUNT>0?'טען את אנשי הקשר שהעלית, נסה רשימת הדגמה, או העלה קובץ ':'נסה רשימת הדגמה, או העלה קובץ '}<b>CSV</b> / <b>vCard</b> משלך.</div>
+      ${resume}
+      ${MY_CONTACTS_COUNT>0?`<button class="btn primary" id="mineBtn" style="min-width:300px;">טען את אנשי הקשר שלי (${MY_CONTACTS_COUNT})</button>`:''}
+      <button class="btn ghost" id="demoBtn" style="min-width:300px;">רשימת הדגמה</button>
+      <label class="drop" id="drop"><input type="file" id="file" accept=".csv,.vcf,text/csv,text/vcard">
+        <div class="di">📇</div><div class="dt">או העלה קובץ CSV / vCard משלך</div><div class="file-name" id="fname"></div></label>
+      ${MY_CONTACTS_COUNT>0?`<div class="warn">בגרסה המוטמעת כאן התמונות הוסרו לשמירה על מהירות. כדי לשמר תמונות בייצוא, פתח את הקובץ עצמאית בדפדפן והעלה את ה-vCard המקורי.</div>`:`<div class="warn">איך מייצאים מ-Google: היכנס ל-contacts.google.com ← "ייצוא" ← בחר vCard או CSV. טען את הקובץ כאן, מיין, וייצא חזרה.</div>`}
+    </div>`;
+  const mb=document.getElementById('mineBtn');if(mb)mb.onclick=()=>{initFromCSV(MY_CONTACTS_VCF,'אנשי הקשר שלי.vcf');persist();renderMain();};
+  document.getElementById('demoBtn').onclick=()=>{initFromCSV(DEMO_CSV,'רשימת הדגמה.csv');persist();renderMain();};
+  const fi=document.getElementById('file'),drop=document.getElementById('drop');
+  fi.addEventListener('change',e=>{if(e.target.files[0])handleFile(e.target.files[0]);});
+  ['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');}));
+  ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');}));
+  drop.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)handleFile(f);});
+  if(p){document.getElementById('resumeBtn').onclick=()=>{resumeFromCSV(p);renderMain();};
+        document.getElementById('discardBtn').onclick=()=>{localStorage.removeItem(KEY);renderUpload(null);};}
+}
+function handleFile(file){const r=new FileReader();
+  r.onload=()=>{try{initFromCSV(r.result,file.name);persist();renderMain();}catch(err){toast('שגיאה: '+err.message);}};
+  r.onerror=()=>toast('שגיאה בקריאת הקובץ');r.readAsText(file,'UTF-8');}
+
+/* ===== main ===== */
+function renderMain(){
+  if(S.pos>=S.order.length){renderDone();return;}
+  const c=counts();
+  app.innerHTML=`
+    <div class="topbar">
+      <div class="brand" id="brandBox"><span class="logo">Sweep<span class="logo-app">App</span></span><small>${escapeHtml(S.fileName)}</small></div>
+      <div class="searchwrap" id="searchWrap"><input id="searchInput" class="topsearch" type="text" placeholder="חיפוש שם, מייל או טלפון..."/></div>
+      <button class="menu-btn" id="searchBtn" style="margin-inline-start:auto" aria-label="חיפוש">${ICON.search}</button>
+      <button class="menu-btn" id="searchClose" aria-label="סגירת חיפוש">${ICON.chevR}</button>
+    </div>
+    <div class="stats">
+      <div class="stat left"><b id="s-left">${c.left}</b><span>נשארו</span></div>
+      <div class="stat keep"><b id="s-keep">${c.keep}</b><span>נשמרו</span></div>
+      <div class="stat del"><b id="s-del">${c.del}</b><span>נמחקו</span></div>
+      <div class="stat maybe"><b id="s-maybe">${c.maybe}</b><span>לבדיקה</span></div>
+    </div>
+    ${S.filterLabel?`<div class="filter-bar">${ICON.filter}<span>מציג רק: <b>${escapeHtml(S.filterLabel)}</b></span><button id="exitFilter">כל אנשי הקשר</button></div>`:''}
+    <div class="deck" id="deck"></div>
+    <button class="float-back" id="floatBack" aria-label="ביטול">${ICON.back}</button>
+    <div class="actions">
+      <button class="act keep" id="actKeep" aria-label="להשאיר">${ICON.check}</button>
+      <button class="act maybe" id="actMaybe" aria-label="לבדיקה">${ICON.clock}</button>
+      <button class="act del" id="actDel" aria-label="מחיקה">${ICON.trash}</button>
+    </div>
+    <div class="search-results" id="searchResults"></div>`;
+  showFab(true);
+  document.getElementById('actDel').onclick=()=>decide('delete');
+  document.getElementById('actKeep').onclick=()=>decide('keep');
+  document.getElementById('actMaybe').onclick=()=>decide('maybe');
+  document.getElementById('floatBack').onclick=undo;
+  const ef=document.getElementById('exitFilter');if(ef)ef.onclick=clearFilter;
+  setupSearch();
+  renderDeck();
+}
+function setupSearch(){
+  const brandBox=document.getElementById('brandBox');
+  const searchWrap=document.getElementById('searchWrap');
+  const searchInput=document.getElementById('searchInput');
+  const searchBtn=document.getElementById('searchBtn');
+  const searchClose=document.getElementById('searchClose');
+  const statsEl=app.querySelector('.stats');
+  const deckEl=document.getElementById('deck');
+  const actionsEl=app.querySelector('.actions');
+  const filterEl=app.querySelector('.filter-bar');
+  const floatEl=document.getElementById('floatBack');
+  const results=document.getElementById('searchResults');
+  function open(){
+    brandBox.style.display='none';searchBtn.style.display='none';
+    searchWrap.classList.add('show');searchClose.style.display='flex';
+    statsEl.style.display='none';deckEl.style.display='none';actionsEl.style.display='none';
+    if(filterEl)filterEl.style.display='none';if(floatEl)floatEl.style.display='none';showFab(false);
+    results.classList.add('show');run();setTimeout(()=>searchInput.focus(),60);
+  }
+  function close(){
+    searchInput.value='';results.classList.remove('show');results.innerHTML='';
+    searchWrap.classList.remove('show');searchClose.style.display='none';
+    brandBox.style.display='';searchBtn.style.display='';
+    statsEl.style.display='';deckEl.style.display='';actionsEl.style.display='';
+    if(filterEl)filterEl.style.display='';showFab(true);
+  }
+  function run(){
+    const q=searchInput.value.trim().toLowerCase();const qd=q.replace(/\D/g,'');
+    if(!q){results.innerHTML=`<div class="search-empty">הקלידו כדי לחפש בין אנשי הקשר</div>`;return;}
+    const res=S.records.filter(r=>S.decisions[r.id]!=='delete'&&(
+      (r.name&&r.name.toLowerCase().includes(q))||
+      (r.org&&r.org.toLowerCase().includes(q))||
+      (r.emails||[]).some(e=>e.toLowerCase().includes(q))||
+      (qd.length>=2&&(r.phones||[]).some(p=>p.replace(/\D/g,'').includes(qd)))
+    ));
+    if(!res.length){results.innerHTML=`<div class="search-empty">לא נמצאו תוצאות</div>`;return;}
+    const cap=res.slice(0,300);
+    const hint=`<div class="swipe-hint"><span class="sh-side del"><span class="sa-arrow">${ICON.chevL}</span>${ICON.trash}<span class="sh-lbl">מחיקה</span></span><span class="sh-side keep"><span class="sh-lbl">שמירה</span>${ICON.check}<span class="sa-arrow">${ICON.chevR}</span></span></div>`;
+    results.innerHTML=hint+cap.map(r=>{
+      const sub=[...new Set([...(r.emails||[]),...(r.phones||[])])].join(' · ');
+      const d=S.decisions[r.id];
+      const tag=d==='keep'?'<span class="li-tag keep">נשמר</span>':d==='maybe'?'<span class="li-tag maybe">לבדיקה</span>':'';
+      return `<div class="swipe-row" data-id="${r.id}"><div class="swipe-bg"></div><div class="list-item swipe-fg">${initialBadge(r,'li-av')}<div class="li-txt"><div class="n">${r.name?escapeHtml(r.name):'(אין שם)'}</div>${sub?`<div class="s">${escapeHtml(sub)}</div>`:''}</div>${tag}<span class="li-chev">${ICON.chevL}</span></div></div>`;
+    }).join('')+(res.length>cap.length?`<div class="search-empty">מוצגות ${cap.length} מתוך ${res.length}</div>`:'');
+    const openDetail=(id)=>renderContactDetail(id,(rid,dir)=>{ if(dir)run(); });
+    results.querySelectorAll('.swipe-row').forEach(rw=>attachRowSwipe(rw,null,run,openDetail));
+  }
+  searchBtn.onclick=open;searchClose.onclick=close;
+  searchInput.addEventListener('input',run);
+  searchInput.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+}
+function cardInner(rec){
+  let h=`<div class="tint"></div><div class="stamp keep">${ICON.check}</div><div class="stamp del">${ICON.trash}</div><div class="stamp maybe">${ICON.clock}</div>`;
+  h+= rec.name?`<div class="name">${escapeHtml(rec.name)}</div>`:`<div class="name empty">(אין שם)</div>`;
+  if(rec.org)h+=`<div class="org">${escapeHtml(rec.org)}</div>`;
+  if(rec.email)h+=`<div class="email">${escapeHtml(rec.email)}</div>`;
+  if(rec.phone)h+=`<div class="phone">${escapeHtml(rec.phone)}</div>`;
+  if(!rec.name&&!rec.email&&!rec.phone&&!rec.org)h+=`<div class="extra">איש קשר ללא פרטים</div>`;
+  return h;
+}
+function introInner(dupCount){
+  return `<div class="tint"></div>
+    <h2>איך זה עובד</h2>
+    <div class="lead">החליקו את הכרטיס לכיוון המתאים כדי להתחיל</div>
+    <div class="mb-card3"><svg viewBox="0 0 300 180" aria-hidden="true"><path d="M150 90 L150 0 L300 0 L300 180 Z" fill="var(--keep)"/><path d="M150 90 L150 0 L0 0 L0 180 Z" fill="var(--del)"/><path d="M150 90 L0 180 L300 180 Z" fill="var(--maybe)"/><path d="M150 90 L150 0 M150 90 L0 180 M150 90 L300 180" stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none"/><path d="M212 58 L226 73 L248 46" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><text x="230" y="104" fill="#fff" font-size="18" font-weight="700" text-anchor="middle" font-family="inherit">שמור</text><g transform="translate(34,36) scale(1.4)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4 11 13"/><path d="M11 13l3.2 3.2"/><path d="M14.2 16.2l-4.4 4.4L3 19l3.8-6z"/><path d="M6.6 17.8l1.7 1.7M9 16.2l1.7 1.7"/></g><text x="64" y="104" fill="#fff" font-size="18" font-weight="700" text-anchor="middle" font-family="inherit">מחיקה</text><g transform="translate(150,134)" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><circle cx="0" cy="0" r="12"/><path d="M0 0 L0 -6"/><path d="M0 0 L5 3"/></g><text x="150" y="166" fill="#fff" font-size="14.5" font-weight="700" text-anchor="middle" font-family="inherit">לבדיקה</text></svg></div>
+    <div class="cta-row">
+      <button class="cta2" id="filtCta">${ICON.filter}<span>סינון מהיר</span></button>
+      ${dupCount>0?`<button class="cta2" id="dupCta">${ICON.merge}<span>מיזוג ${dupCount}</span></button>`:''}
+    </div>`;
+}
+function renderDeck(){
+  const deck=document.getElementById('deck');deck.innerHTML='';
+  const showIntro=!S.introDone;
+  for(let k=2;k>=0;k--){
+    if(k===0&&showIntro){const card=document.createElement('div');card.className='card intro';
+      const dupCount=computeDuplicateGroups().length;card.innerHTML=introInner(dupCount);
+      deck.appendChild(card);
+      const dc=card.querySelector('#dupCta');if(dc)dc.onclick=renderDuplicates;
+      const fc=card.querySelector('#filtCta');if(fc)fc.onclick=renderFilters;
+      attachDrag(card,true);continue;}
+    const idx=S.pos+(showIntro?k-1:k);
+    if(idx<S.pos||idx>=S.order.length)continue;
+    const depth=showIntro?k-1:k; if(depth<0)continue;
+    const rec=recById(S.order[idx]);const card=document.createElement('div');
+    card.className='card'+(depth===1?' behind1':depth===2?' behind2':'');
+    card.innerHTML=cardInner(rec);deck.appendChild(card);
+    if(!showIntro&&k===0)attachDrag(card,false);
+  }
+}
+function dismissIntro(){S.introDone=true;persist();renderDeck();}
+
+/* ===== drag ===== */
+function attachDrag(card,isIntro){
+  let sx=0,sy=0,dx=0,dy=0,active=false;
+  const tint=card.querySelector('.tint');
+  const sKeep=card.querySelector('.stamp.keep'),sDel=card.querySelector('.stamp.del'),sMaybe=card.querySelector('.stamp.maybe');
+  function setTint(col,op){if(!tint)return;tint.style.background=col;tint.style.opacity=op;}
+  function down(e){if(isIntro&&e.target.closest('button'))return;active=true;const p=pt(e);sx=p.x;sy=p.y;card.style.transition='none';try{card.setPointerCapture(e.pointerId);}catch(_){}}
+  function move(e){
+    if(!active)return;const p=pt(e);dx=p.x-sx;dy=p.y-sy;
+    card.style.transform=`translate(${dx}px,${dy}px) rotate(${dx/20}deg)`;
+    const ax=Math.abs(dx),ay=Math.abs(dy);
+    if(sKeep){
+      if(ax>ay){sKeep.style.opacity=dx>0?Math.min(1,dx/85):0;sDel.style.opacity=dx<0?Math.min(1,-dx/85):0;sMaybe.style.opacity=0;
+        setTint(dx>0?'var(--keep)':'var(--del)',Math.min(.1,ax/700));}
+      else{sMaybe.style.opacity=Math.min(1,ay/85);sKeep.style.opacity=0;sDel.style.opacity=0;setTint('var(--maybe)',Math.min(.1,ay/700));}
+    }
+  }
+  function up(){
+    if(!active)return;active=false;
+    const ax=Math.abs(dx),ay=Math.abs(dy),TH=86;let dir=null;
+    if(ax>ay&&ax>TH)dir=dx>0?'keep':'delete';else if(ay>=ax&&ay>TH)dir='maybe';
+    if(dir){flyOut(card,dir);if(isIntro)setTimeout(dismissIntro,180);else decide(dir,true);}
+    else{card.style.transition='transform .25s';card.style.transform='';if(sKeep)sKeep.style.opacity=sDel.style.opacity=sMaybe.style.opacity=0;setTint('transparent',0);}
+    dx=dy=0;
+  }
+  function pt(e){return e.touches?{x:e.touches[0].clientX,y:e.touches[0].clientY}:{x:e.clientX,y:e.clientY};}
+  card.addEventListener('pointerdown',down);card.addEventListener('pointermove',move);
+  card.addEventListener('pointerup',up);card.addEventListener('pointercancel',up);
+}
+function flyOut(card,dir){card.style.transition='transform .35s ease-out, opacity .35s';
+  let tx=0,ty=0;if(dir==='keep')tx=640;else if(dir==='delete')tx=-640;else ty=680;
+  card.style.transform=`translate(${tx}px,${ty}px) rotate(${tx/14}deg)`;card.style.opacity='0';}
+
+/* ===== decisions ===== */
+function decide(dir,fromDrag){
+  if(S.pos>=S.order.length)return;
+  const id=S.order[S.pos];
+  S.decisions[id]=dir;S.history.push({id,dir});S.pos++;persist();
+  const go=()=>{if(S.pos>=S.order.length){if(S.filterLabel){toast('סיימת את הסינון');renderFilters();}else renderDone();}else{refreshCounts();renderDeck();showFloatBack(dir);}};
+  if(fromDrag)setTimeout(go,180);else go();
+}
+function undo(){
+  if(S.history.length===0)return;
+  const last=S.history.pop();delete S.decisions[last.id];S.pos--;persist();
+  hideFloatBack();
+  if(document.getElementById('deck')){
+    refreshCounts();renderDeck();
+    const deck=document.getElementById('deck');const live=deck.lastElementChild;
+    if(live&&!live.classList.contains('intro'))animateInFrom(live,last.dir);
+  }else renderMain();
+}
+let floatT;
+function showFloatBack(dir){
+  const fb=document.getElementById('floatBack');if(!fb)return;
+  fb.classList.remove('fb-left','fb-right','fb-down');
+  if(dir==='delete'){fb.classList.add('fb-left');fb.innerHTML=ICON.backRight;}      // עף שמאלה → פרסה חזרה ימינה
+  else if(dir==='keep'){fb.classList.add('fb-right');fb.innerHTML=ICON.backLeft;}    // עף ימינה → פרסה חזרה שמאלה
+  else {fb.classList.add('fb-down');fb.innerHTML=ICON.backUp;}                       // עף למטה → יו־טרן חזרה למעלה
+  fb.style.transition='opacity .25s, transform .25s';fb.classList.add('show');
+  clearTimeout(floatT);
+  floatT=setTimeout(()=>{fb.style.transition='opacity .8s, transform .8s';fb.classList.remove('show');},2400);
+}
+function hideFloatBack(){const fb=document.getElementById('floatBack');if(!fb)return;clearTimeout(floatT);fb.style.transition='opacity .15s';fb.classList.remove('show');}
+function animateInFrom(card,dir){
+  let tx=0,ty=0,rot=0;const W=window.innerWidth,H=window.innerHeight;
+  if(dir==='delete'){tx=-W;rot=-16;}        // הוחלק שמאלה → חוזר משמאל
+  else if(dir==='keep'){tx=W;rot=16;}        // הוחלק ימינה → חוזר מימין
+  else {ty=H;}                               // הוחלק למטה → חוזר מלמטה
+  card.style.transition='none';
+  card.style.transform=`translate(${tx}px,${ty}px) rotate(${rot}deg)`;
+  card.getBoundingClientRect(); // force reflow
+  requestAnimationFrame(()=>{
+    card.style.transition='transform .55s cubic-bezier(0.34,1.5,0.5,1)'; // קפיצי כמו גומי
+    card.style.transform='';
+  });
+}
+function refreshCounts(){const c=counts();const set=(i,v)=>{const e=document.getElementById(i);if(e)e.textContent=v;};set('s-left',c.left);set('s-keep',c.keep);set('s-del',c.del);set('s-maybe',c.maybe);}
+
+/* ===== menu & lists ===== */
+function goHome(){ if(!S)return; if(S.filterLabel){clearFilter();return;} if(S.pos>=S.order.length)renderDone(); else renderMain(); }
+function resetApp(){try{localStorage.removeItem(KEY);}catch(e){}S=null;renderUpload(null);}
+function uiConfirm(msg,onYes){
+  const ov=document.createElement('div');ov.className='confirm-backdrop';
+  ov.innerHTML=`<div class="confirm-box"><div class="confirm-msg">${escapeHtml(msg)}</div>
+    <div class="confirm-actions"><button class="btn ghost" id="cNo">ביטול</button><button class="btn keepc" id="cYes">אישור</button></div></div>`;
+  app.appendChild(ov);
+  requestAnimationFrame(()=>ov.classList.add('show'));
+  const close=cb=>{ov.classList.remove('show');setTimeout(()=>{ov.remove();cb&&cb();},200);};
+  ov.addEventListener('click',e=>{if(e.target===ov)close();});
+  ov.querySelector('#cNo').onclick=()=>close();
+  ov.querySelector('#cYes').onclick=()=>close(onYes);
+}
+function renderMenu(){
+  const c=counts();const dups=computeDuplicateGroups().length;
+  const bd=document.createElement('div');bd.className='drawer-backdrop';
+  bd.innerHTML=`<div class="drawer">
+      <div class="drawer-strip" id="dStrip">${ICON.chevR}</div>
+      <div class="drawer-scroll" id="dScroll">
+      <div class="dhead"><div class="dt">תפריט</div></div>
+      <div class="menu-list">
+        <button class="i-home" id="m-home">${ICON.home} מסך המיון</button>
+        <button class="i-filt" id="m-filter">${ICON.filter} סינון מהיר</button>
+        <button class="i-dup" id="m-dup">${ICON.merge} מיזוג כפילויות (${dups})</button>
+        <button class="i-del" id="m-del">${ICON.trash} נמחקו (${c.del})</button>
+        <button class="i-maybe" id="m-maybe">${ICON.clock} לבדיקה מאוחרת (${c.maybe})</button>
+        <button class="i-keep" id="m-keep">${ICON.check} נשמרו (${c.keep})</button>
+        <button class="i-export" id="m-export">${ICON.down} ייצוא רשימה נקייה</button>
+        <button class="danger" id="m-reset">↺ התחל מחדש</button>
+      </div></div></div>`;
+  app.appendChild(bd);
+  const drawer=bd.querySelector('.drawer');
+  requestAnimationFrame(()=>{bd.classList.add('show');drawer.classList.add('show');});
+  const close=cb=>{bd.classList.remove('show');drawer.classList.remove('show');setTimeout(()=>{bd.remove();cb&&cb();},340);};
+  bd.addEventListener('click',e=>{if(e.target===bd)close();});
+  drawer.querySelector('#dStrip').onclick=()=>close();
+  // drag the menu vertically — allow pulling it down so top items reach the thumb
+  const scroll=drawer.querySelector('#dScroll');
+  let curY=0,startY=0,startCur=0,moved=false,downing=false,lastY=0,lastT=0,vel=0,raf=0;
+  const bounds=()=>{const vh=window.innerHeight,ch=scroll.offsetHeight;return [Math.min(0,vh-ch-24),Math.round(vh*0.5)];};
+  const clampY=y=>{const[mn,mx]=bounds();return Math.max(mn,Math.min(mx,y));};
+  const setY=()=>{scroll.style.transform=curY?`translateY(${curY}px)`:'';};
+  const momentum=()=>{vel*=0.94;curY+=vel*16;const[mn,mx]=bounds();
+    if(curY<mn){curY=mn;vel=0;}if(curY>mx){curY=mx;vel=0;}setY();
+    if(Math.abs(vel)>0.02)raf=requestAnimationFrame(momentum);};
+  scroll.addEventListener('pointerdown',e=>{cancelAnimationFrame(raf);downing=true;moved=false;startY=e.clientY;startCur=curY;lastY=e.clientY;lastT=performance.now();vel=0;scroll.style.transition='none';});
+  scroll.addEventListener('pointermove',e=>{if(!downing)return;const d=e.clientY-startY;if(!moved&&Math.abs(d)>6){moved=true;try{scroll.setPointerCapture(e.pointerId);}catch(_){}}if(moved){curY=clampY(startCur+d);setY();const now=performance.now(),dt=now-lastT;if(dt>0){vel=(e.clientY-lastY)/dt;lastY=e.clientY;lastT=now;}}});
+  const upDrag=()=>{if(!downing)return;downing=false;if(moved&&Math.abs(vel)>0.05)raf=requestAnimationFrame(momentum);};
+  scroll.addEventListener('pointerup',upDrag);scroll.addEventListener('pointercancel',upDrag);
+  scroll.addEventListener('click',e=>{if(moved){e.stopPropagation();e.preventDefault();moved=false;}},true);
+  drawer.querySelector('#m-home').onclick=()=>close(goHome);
+  drawer.querySelector('#m-filter').onclick=()=>close(renderFilters);
+  drawer.querySelector('#m-dup').onclick=()=>close(renderDuplicates);
+  drawer.querySelector('#m-del').onclick=()=>close(()=>renderList('delete','נמחקו'));
+  drawer.querySelector('#m-maybe').onclick=()=>close(()=>renderList('maybe','לבדיקה מאוחרת'));
+  drawer.querySelector('#m-keep').onclick=()=>close(()=>renderList('keep','נשמרו'));
+  drawer.querySelector('#m-export').onclick=()=>close(()=>renderDone());
+  drawer.querySelector('#m-reset').onclick=()=>close(()=>uiConfirm('לאפס? כל המיון יימחק ותחזור למסך ההעלאה.',resetApp));
+}
+function closeScreen(ov,cb){ov.style.animation='screenOut .22s forwards';setTimeout(()=>{ov.remove();cb&&cb();},210);}
+function applyFilter(pred,label){
+  S.order=S.records.filter(r=>S.decisions[r.id]===undefined&&pred(r)).map(r=>r.id);
+  S.pos=0;S.history=[];S.filterLabel=label;S.introDone=true;persist();
+  if(S.order.length===0){toast('אין אנשי קשר בקטגוריה הזו');renderFilters();return;}
+  renderMain();
+}
+function clearFilter(){
+  S.order=S.records.filter(r=>S.decisions[r.id]===undefined).map(r=>r.id);
+  S.pos=0;S.history=[];S.filterLabel=null;S.introDone=true;persist();renderMain();
+}
+function renderFilters(){
+  const und=S.records.filter(r=>S.decisions[r.id]===undefined);
+  const noPhone=und.filter(r=>!(r.phones&&r.phones.length)).length;
+  const noEmail=und.filter(r=>!(r.emails&&r.emails.length)).length;
+  const noName=und.filter(r=>!r.name).length;
+  const ov=document.createElement('div');ov.className='screen';
+  ov.innerHTML=`<div class="screen-head"><h2>סינון מהיר</h2><button class="hbtn" id="goHome">${ICON.home}</button><button class="close">✕</button></div>
+    <div class="screen-body">
+      <div class="sub2">בחר קבוצה למיון ממוקד — תראה בערימה רק אותם, ותוכל להעיף במהירות בלי לגעת באחרים.</div>
+      <div class="menu-list">
+        <button class="i-filt" id="f-nophone">${ICON.phoneOff} בלי טלפון (${noPhone})</button>
+        <button class="i-filt" id="f-noemail">${ICON.mailOff} בלי מייל (${noEmail})</button>
+        <button class="i-filt" id="f-noname">${ICON.person} בלי שם (${noName})</button>
+        <button class="i-filt-all" id="f-all">${ICON.check} מיון כל אנשי הקשר (${und.length})</button>
+      </div>
+    </div>`;
+  app.appendChild(ov);
+  ov.querySelector('#goHome').onclick=()=>closeScreen(ov,goHome);
+  ov.querySelector('.close').onclick=()=>closeScreen(ov,goHome);
+  ov.querySelector('#f-nophone').onclick=()=>closeScreen(ov,()=>applyFilter(r=>!(r.phones&&r.phones.length),'בלי טלפון'));
+  ov.querySelector('#f-noemail').onclick=()=>closeScreen(ov,()=>applyFilter(r=>!(r.emails&&r.emails.length),'בלי מייל'));
+  ov.querySelector('#f-noname').onclick=()=>closeScreen(ov,()=>applyFilter(r=>!r.name,'בלי שם'));
+  ov.querySelector('#f-all').onclick=()=>closeScreen(ov,clearFilter);
+}
+function renderDuplicates(){
+  const groups=computeDuplicateGroups();
+  const sel={};groups.forEach((g,i)=>{sel[i]=g.slice().sort((a,b)=>recScore(recById(b))-recScore(recById(a)))[0];});
+  const ov=document.createElement('div');ov.className='screen';
+  const groupHTML=(g,i)=>`<div class="dup-group" data-gid="${i}">
+      <div class="dup-title">${g.length} כפילויות — בחר את הכרטיס שיישמר</div>
+      ${g.map(id=>{const r=recById(id);const sub=[...new Set([...(r.emails||[]),...(r.phones||[])])].join(' · ');
+        return `<div class="dup-member${id===sel[i]?' selected':''}" data-gid="${i}" data-id="${id}">
+          <div class="dot"></div>
+          <div class="li-txt"><div class="n">${r.name?escapeHtml(r.name):'(אין שם)'}</div>${sub?`<div class="s">${escapeHtml(sub)}</div>`:''}</div>
+          <div class="kept-badge">יישמר</div></div>`;}).join('')}
+      <div class="dup-actions">
+        <button class="btn keepc dup-merge" data-gid="${i}">מזג</button>
+        <button class="btn ghost dup-skip" data-gid="${i}">לא כפילויות</button>
+      </div></div>`;
+  const body=groups.length===0?`<div class="empty-note">לא נמצאו כפילויות 🎉</div>`:groups.map(groupHTML).join('');
+  ov.innerHTML=`<div class="screen-head"><h2>מיזוג כפילויות (${groups.length})</h2><button class="hbtn" id="goHome">${ICON.home}</button><button class="close">✕</button></div><div class="screen-body" id="dupBody">${body}</div>`;
+  app.appendChild(ov);
+  ov.querySelector('#goHome').onclick=()=>closeScreen(ov,goHome);
+  ov.querySelector('.close').onclick=()=>closeScreen(ov,()=>{if(document.getElementById('s-left'))refreshCounts();});
+  const updateHead=()=>{const left=ov.querySelectorAll('.dup-group').length;const hh=ov.querySelector('h2');if(hh)hh.textContent=`מיזוג כפילויות (${left})`;
+    if(left===0){ov.querySelector('#dupBody').innerHTML=`<div class="empty-note">סיימת עם הכפילויות 🎉</div>`;}};
+  ov.querySelectorAll('.dup-member').forEach(m=>{m.onclick=()=>{const gid=m.dataset.gid;sel[gid]=m.dataset.id;
+    ov.querySelectorAll(`.dup-member[data-gid="${gid}"]`).forEach(x=>x.classList.toggle('selected',x.dataset.id===sel[gid]));};});
+  ov.querySelectorAll('.dup-merge').forEach(b=>{b.onclick=()=>{const gid=b.dataset.gid;const grp=groups[gid];
+    const finish=()=>{const el=ov.querySelector(`.dup-group[data-gid="${gid}"]`);if(!el)return;el.style.transition='opacity .25s, transform .25s';el.style.opacity='0';el.style.transform='translateY(-8px)';
+      setTimeout(()=>{el.remove();updateHead();},260);
+      if(document.getElementById('s-left'))refreshCounts();toast('מוזג');};
+    const f=collectMergeFields(grp);
+    openMergePicker(grp,sel[gid],f,finish);};});
+  ov.querySelectorAll('.dup-skip').forEach(b=>{b.onclick=()=>{const gid=b.dataset.gid;
+    const el=ov.querySelector(`.dup-group[data-gid="${gid}"]`);el.style.transition='opacity .2s';el.style.opacity='0';
+    setTimeout(()=>{el.remove();updateHead();},210);};});
+}
+function attachRowSwipe(row,type,afterRemove,onTap){
+  const fg=row.querySelector('.swipe-fg');const bg=row.querySelector('.swipe-bg');const id=row.dataset.id;
+  let sx=0,dx=0,drag=false,dir=0,moved=false;
+  const KEEP_HTML=`${ICON.check}<span class="sa-arrow">${ICON.chevR}</span>`;
+  const DEL_HTML=`<span class="sa-arrow">${ICON.chevL}</span>${ICON.trash}`;
+  function setDir(d){if(d===dir)return;dir=d;
+    if(d>0){bg.className='swipe-bg keepbg';bg.innerHTML=KEEP_HTML;}
+    else if(d<0){bg.className='swipe-bg delbg';bg.innerHTML=DEL_HTML;}}
+  function snap(){fg.style.transition='transform .22s';fg.style.transform='';dx=0;}
+  function commit(decision,sgn){
+    if(decision===type){snap();return;}
+    S.decisions[id]=decision;persist();
+    fg.style.transition='transform .25s ease-out';fg.style.transform=`translateX(${sgn*420}px)`;
+    row.style.transition='opacity .25s';row.style.opacity='0';
+    setTimeout(()=>{row.remove();afterRemove&&afterRemove();},240);
+    toast(decision==='delete'?'נמחק':(type==='delete'?'הוחזר':'נשמר'));}
+  fg.addEventListener('pointerdown',e=>{drag=true;moved=false;sx=e.clientX;dx=0;try{fg.setPointerCapture(e.pointerId);}catch(_){}fg.style.transition='none';});
+  fg.addEventListener('pointermove',e=>{if(!drag)return;dx=e.clientX-sx;if(Math.abs(dx)>6)moved=true;setDir(Math.sign(dx));fg.style.transform=`translateX(${dx}px)`;});
+  const end=()=>{if(!drag)return;drag=false;const TH=88;
+    if(dx<=-TH)commit('delete',-1);else if(dx>=TH)commit('keep',1);
+    else{snap();if(!moved&&onTap)onTap(id);}};
+  fg.addEventListener('pointerup',end);fg.addEventListener('pointercancel',end);
+}
+/* ===== full contact detail card (tap a result) ===== */
+function detailCardInner(rec){
+  const emails=[...new Set(rec.emails||[])];
+  const phones=[...new Set(rec.phones||[])];
+  let title='',notes='',labels='';
+  if(rec.raw&&typeof rec.raw==='object'){
+    for(const k in rec.raw){const v=(rec.raw[k]==null?'':String(rec.raw[k])).trim();if(!v)continue;
+      if(/title/i.test(k)&&!title)title=v;
+      else if(/note/i.test(k)&&!notes)notes=v;
+      else if(/label/i.test(k)&&!labels)labels=v;}
+  }else if(typeof rec.raw==='string'){
+    try{const re=parseVBlock(rec.raw);title=re.title||'';}catch(e){}
+    rec.raw.split(/\r\n|\n/).forEach(l=>{if(/^NOTE[;:]/i.test(l)&&!notes)notes=l.slice(l.indexOf(':')+1).trim();});
+  }
+  labels=labels.replace(/\*?\s*myContacts/gi,'').replace(/[;:]+/g,' ').replace(/\s+/g,' ').trim();
+  const field=(lbl,val,ltr)=>`<div class="cd-field"><div class="lbl">${escapeHtml(lbl)}</div><div class="val${ltr?' ltr':''}">${escapeHtml(val)}</div></div>`;
+  const orgline=[rec.org,title].filter(Boolean).join(' · ');
+  let h=`<div class="tint"></div><div class="stamp keep">${ICON.check}</div><div class="stamp del">${ICON.trash}</div>`;
+  h+=`<div class="cd-top">${rec.photo?avatarHTML(rec,'cd-av'):initialBadge(rec,'cd-av')}`;
+  h+= rec.name?`<div class="cd-name">${escapeHtml(rec.name)}</div>`:`<div class="cd-name empty">(אין שם)</div>`;
+  if(orgline)h+=`<div class="cd-org">${escapeHtml(orgline)}</div>`;
+  h+=`</div><div class="cd-fields">`;
+  if(emails.length)h+=emails.map((e,i)=>field(emails.length>1?`אימייל ${i+1}`:'אימייל',e,true)).join('');
+  if(phones.length)h+=phones.map((p,i)=>field(phones.length>1?`טלפון ${i+1}`:'טלפון',p,true)).join('');
+  if(notes)h+=field('הערות',notes,false);
+  if(labels)h+=field('תוויות',labels,false);
+  if(!emails.length&&!phones.length&&!notes&&!labels&&!orgline)h+=`<div class="cd-empty">אין פרטים נוספים</div>`;
+  h+=`</div>`;
+  return h;
+}
+function attachDetailSwipe(card,id,onDone){
+  const tint=card.querySelector('.tint');
+  const sKeep=card.querySelector('.stamp.keep'),sDel=card.querySelector('.stamp.del');
+  let sx=0,dx=0,active=false;
+  function down(e){active=true;sx=e.clientX;dx=0;card.style.transition='none';try{card.setPointerCapture(e.pointerId);}catch(_){}}
+  function move(e){if(!active)return;dx=e.clientX-sx;card.style.transform=`translateX(${dx}px) rotate(${dx/26}deg)`;
+    const a=Math.abs(dx);sKeep.style.opacity=dx>0?Math.min(1,a/85):0;sDel.style.opacity=dx<0?Math.min(1,a/85):0;
+    if(tint){tint.style.background=dx>0?'var(--keep)':'var(--del)';tint.style.opacity=Math.min(.12,a/600);}}
+  function up(){if(!active)return;active=false;const TH=90;
+    if(dx>=TH)fly('keep');else if(dx<=-TH)fly('delete');
+    else{card.style.transition='transform .25s';card.style.transform='';sKeep.style.opacity=sDel.style.opacity=0;if(tint)tint.style.opacity=0;}
+    dx=0;}
+  function fly(decision){S.decisions[id]=decision;persist();
+    card.style.transition='transform .35s ease-out, opacity .35s';
+    card.style.transform=`translateX(${decision==='keep'?660:-660}px) rotate(${decision==='keep'?20:-20}deg)`;card.style.opacity='0';
+    toast(decision==='keep'?'נשמר':'נמחק');
+    setTimeout(()=>onDone&&onDone(id,decision),300);}
+  card.addEventListener('pointerdown',down);card.addEventListener('pointermove',move);
+  card.addEventListener('pointerup',up);card.addEventListener('pointercancel',up);
+}
+function renderContactDetail(id,afterDecide){
+  const rec=recById(id);if(!rec)return;
+  const ov=document.createElement('div');ov.className='screen';
+  ov.innerHTML=`<div class="screen-head"><h2>פרטי איש קשר</h2><button class="hbtn" id="cdHome">${ICON.home}</button><button class="close">✕</button></div>
+    <div class="screen-body cd-body">
+      <div class="swipe-hint">
+        <span class="sh-side del"><span class="sa-arrow">${ICON.chevL}</span>${ICON.trash}<span class="sh-lbl">מחיקה</span></span>
+        <span class="sh-side keep"><span class="sh-lbl">שמירה</span>${ICON.check}<span class="sa-arrow">${ICON.chevR}</span></span>
+      </div>
+      <div class="cd-deck"><div class="card cd-card" id="cdCard">${detailCardInner(rec)}</div></div>
+    </div>`;
+  app.appendChild(ov);
+  ov.querySelector('#cdHome').onclick=()=>closeScreen(ov,()=>afterDecide&&afterDecide(null));
+  ov.querySelector('.close').onclick=()=>closeScreen(ov,()=>afterDecide&&afterDecide(null));
+  attachDetailSwipe(ov.querySelector('#cdCard'),id,(rid,dir)=>closeScreen(ov,()=>afterDecide&&afterDecide(rid,dir)));
+}
+function renderList(type,title){
+  const ids=S.records.filter(r=>S.decisions[r.id]===type).map(r=>r.id);
+  const ov=document.createElement('div');ov.className='screen';
+  const rowHTML=(id)=>{const r=recById(id);const sub=r.email||r.phone||r.org||'';
+    return `<div class="swipe-row" data-id="${id}"><div class="swipe-bg"></div><div class="list-item swipe-fg">${initialBadge(r,'li-av')}<div class="li-txt"><div class="n">${r.name?escapeHtml(r.name):'(אין שם)'}</div>${sub?`<div class="s">${escapeHtml(sub)}</div>`:''}</div></div></div>`;};
+  let body=ids.length===0?`<div class="empty-note">אין כאן אף אחד עדיין.</div>`:
+    `<div class="swipe-hint"><span class="sh-side del"><span class="sa-arrow">${ICON.chevL}</span>${ICON.trash}</span><span class="sh-side keep">${ICON.check}<span class="sa-arrow">${ICON.chevR}</span></span></div>`+ids.map(rowHTML).join('');
+  ov.innerHTML=`<div class="screen-head"><h2>${title} (${ids.length})</h2><button class="hbtn" id="goHome">${ICON.home}</button><button class="close">✕</button></div><div class="screen-body">${body}</div>`;
+  app.appendChild(ov);
+  ov.querySelector('#goHome').onclick=()=>closeScreen(ov,goHome);
+  ov.querySelector('.close').onclick=()=>closeScreen(ov,()=>{if(document.getElementById('s-left'))refreshCounts();});
+  const afterRemove=()=>{const remaining=S.records.filter(r=>S.decisions[r.id]===type).length;
+    const hh=ov.querySelector('h2');if(hh)hh.textContent=`${title} (${remaining})`;
+    if(remaining===0){const sb=ov.querySelector('.screen-body');if(sb)sb.innerHTML=`<div class="empty-note">אין כאן אף אחד עדיין.</div>`;}
+    if(document.getElementById('s-left'))refreshCounts();};
+  const openDetail=(id)=>renderContactDetail(id,(rid,dir)=>{
+    if(dir&&dir!==type){const rw=ov.querySelector(`.swipe-row[data-id="${rid}"]`);
+      if(rw){rw.style.transition='opacity .2s';rw.style.opacity='0';setTimeout(()=>{rw.remove();afterRemove();},200);}}});
+  ov.querySelectorAll('.swipe-row').forEach(rw=>attachRowSwipe(rw,type,afterRemove,openDetail));
+}
+
+/* ===== done ===== */
+function renderDone(){
+  const c=counts();const clean=S.records.filter(r=>S.decisions[r.id]!=='delete').length;
+  app.innerHTML=`<div class="topbar"><div class="brand"><span class="logo">Sweep<span class="logo-app">App</span></span><small>סיכום · ${escapeHtml(S.fileName)}</small></div></div>
+    <div class="center">
+      <div class="done-emoji">${c.left>0?'📂':'🎉'}</div>
+      <div class="title-xl">${c.left>0?'אפשר לייצא בכל שלב':'סיימת לעבור על הכל'}</div>
+      <div class="sub">${clean} אנשי קשר ייוצאו${c.left>0?` (כולל ${c.left} שעדיין לא מוינו)`:''} · ${c.del} סומנו למחיקה</div>
+      <div class="warn">קובץ הייצוא כולל את <b>כל מי שלא נמחק</b> — גם אנשי קשר שעדיין לא מוינו וגם "לבדיקה" — כדי שלא תאבד אף אחד בטעות.</div>
+      <button class="btn keepc" id="exportClean" style="min-width:290px;">ייצוא רשימה נקייה (${clean})</button>
+      <button class="btn ghost" id="exportDel" style="min-width:290px;">ייצוא רשימת הנמחקים (${c.del})</button>
+      ${c.left>0?`<button class="btn primary" id="continue" style="min-width:290px;">המשך מיון</button>`:''}
+      <button class="small-link" id="reset">התחל מחדש</button>
+    </div>
+    <div class="screen-foot">לאחר ההורדה: ב-Google Contacts מחק את כל אנשי הקשר ואז ייבא את הקובץ הנקי. לגוגל יש שחזור עד 30 יום.</div>`;
+  showFab(true);
+  document.getElementById('exportClean').onclick=()=>exportCSV('keep');
+  document.getElementById('exportDel').onclick=()=>exportCSV('deleted');
+  const cont=document.getElementById('continue');if(cont)cont.onclick=renderMain;
+  document.getElementById('reset').onclick=()=>uiConfirm('לאפס? כל המיון יימחק ותחזור למסך ההעלאה.',resetApp);
+}
+function exportCSV(which){
+  let recs=which==='deleted'?S.records.filter(r=>S.decisions[r.id]==='delete'):S.records.filter(r=>S.decisions[r.id]!=='delete');
+  if(recs.length===0){toast('אין רשומות לייצוא');return;}
+  const base=S.fileName.replace(/\.(csv|vcf)$/i,'');
+  if(S.format==='vcard'){
+    const text=recs.map(r=>r.raw.replace(/\r?\n$/,'')).join('\r\n')+'\r\n';
+    download(text,which==='deleted'?base+'_נמחקו.vcf':base+'_נקי.vcf','text/vcard;charset=utf-8;');
+  } else {
+    const csv=toCSV(S.headers,recs.map(r=>r.raw));
+    download(csv,which==='deleted'?base+'_נמחקו.csv':base+'_נקי.csv','text/csv;charset=utf-8;');
+  }
+}
+function buildSaveModal(blob,text,name,type){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:absolute;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:26px;background:rgba(20,40,42,.55);';
+  ov.innerHTML=`<div style="background:#fff;border-radius:22px;max-width:340px;width:100%;padding:22px;box-shadow:0 24px 60px -20px rgba(0,0,0,.5);text-align:right;color:#234a4e;">
+    <div style="font-weight:800;font-size:17px;margin-bottom:8px;">שמירת הקובץ</div>
+    <div style="font-size:13.5px;line-height:1.55;color:#4a6c6e;margin-bottom:16px;">פתחת את האפליקציה ישירות מקובץ בהורדות, ולכן הדפדפן חוסם הורדה אוטומטית. בחר דרך לשמור:</div>
+    <button id="sv-share" style="width:100%;border:none;border-radius:14px;padding:13px;font-size:15px;font-weight:700;background:#179a93;color:#fff;margin-bottom:10px;">שתף / שמור קובץ</button>
+    <button id="sv-open" style="width:100%;border:none;border-radius:14px;padding:13px;font-size:15px;font-weight:700;background:#eaf4f3;color:#234a4e;margin-bottom:10px;">פתח בכרטיסייה ושמור משם</button>
+    <button id="sv-copy" style="width:100%;border:none;border-radius:14px;padding:13px;font-size:15px;font-weight:700;background:#eaf4f3;color:#234a4e;margin-bottom:10px;">העתק את כל הנתונים</button>
+    <button id="sv-close" style="width:100%;border:none;background:none;color:#7a9a9c;font-size:14px;padding:6px;">סגור</button>
+    <div style="font-size:11.5px;color:#9fb6b7;margin-top:8px;line-height:1.5;">הכי אמין: להעלות את הקובץ לאתר (כתובת https) ולפתוח משם — אז ההורדה עובדת רגיל.</div>
+  </div>`;
+  app.appendChild(ov);
+  ov.querySelector('#sv-close').onclick=()=>ov.remove();
+  ov.querySelector('#sv-share').onclick=async()=>{
+    try{ if(navigator.canShare&&typeof File!=='undefined'){const f=new File([blob],name,{type});if(navigator.canShare({files:[f]})){await navigator.share({files:[f],title:name});return;}} toast('שיתוף לא נתמך כאן'); }
+    catch(e){ if(!(e&&e.name==='AbortError'))toast('שיתוף נכשל'); }
+  };
+  ov.querySelector('#sv-open').onclick=()=>{ try{ const u=URL.createObjectURL(blob); window.open(u,'_blank'); }catch(e){ toast('לא ניתן לפתוח'); } };
+  ov.querySelector('#sv-copy').onclick=async()=>{
+    try{ await navigator.clipboard.writeText(text); toast('הועתק ✓'); }
+    catch(e){ const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;left:-9999px;';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('הועתק ✓');}catch(_){toast('העתקה נכשלה');}document.body.removeChild(ta); }
+  };
+}
+async function download(text,name,mime){
+  const type=mime||'text/csv;charset=utf-8;';
+  const blob=new Blob([text],{type});
+  try{
+    if(navigator.canShare&&typeof File!=='undefined'){
+      const f=new File([blob],name,{type});
+      if(navigator.canShare({files:[f]})){ await navigator.share({files:[f],title:name}); toast('הקובץ נשמר / שותף ✓'); return; }
+    }
+  }catch(e){ if(e&&e.name==='AbortError') return; }
+  try{
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=name;
+    document.body.appendChild(a);a.click();
+    setTimeout(()=>{try{document.body.removeChild(a);}catch(_){}URL.revokeObjectURL(url);},2000);
+  }catch(e){}
+  if(!/^https?:$/.test(location.protocol)){ buildSaveModal(blob,text,name,type); }
+  else { toast('הקובץ הורד ✓'); }
+}
+
+/* ===== toast & keyboard ===== */
+let tT;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),1800);}
+document.addEventListener('keydown',e=>{
+  if(!S||!document.getElementById('deck'))return;
+  if(!S.introDone){if(['ArrowRight','ArrowLeft','ArrowUp','ArrowDown','Enter',' '].includes(e.key)){e.preventDefault();dismissIntro();}return;}
+  if(S.pos>=S.order.length){if(e.key==='Backspace'){e.preventDefault();undo();}return;}
+  if(e.key==='ArrowRight'){e.preventDefault();decide('keep');}
+  else if(e.key==='ArrowLeft'){e.preventDefault();decide('delete');}
+  else if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();decide('maybe');}
+  else if(e.key==='Backspace'){e.preventDefault();undo();}
+});
+
+renderUpload(loadPersisted());
+</script>
+</body>
+</html>
