@@ -382,6 +382,13 @@
   .cd-field .val.ltr{direction:ltr;text-align:right;}
   .cd-empty{text-align:center;color:var(--muted);padding:14px;}
   .sh-side .sh-lbl{font-size:13px;font-weight:700;}
+  /* ===== drag-to-merge ===== */
+  .merge-tip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.92);color:#0c7f82;border-radius:13px;padding:9px 13px;font-size:12.5px;font-weight:600;margin-bottom:12px;line-height:1.45;}
+  .merge-tip svg{width:18px;height:18px;flex:0 0 auto;}
+  .swipe-fg.dragging{z-index:60;box-shadow:0 20px 44px -12px rgba(8,50,50,.6);opacity:.97;cursor:grabbing;}
+  .swipe-row.merge-target .swipe-fg{outline:3px solid var(--keep);outline-offset:-2px;background:var(--keep-soft);}
+  .swipe-row.merge-target{position:relative;}
+  .swipe-row.merge-target::after{content:"מיזוג";position:absolute;top:50%;inset-inline-start:14px;transform:translateY(-50%);background:var(--keep);color:#fff;font-size:12px;font-weight:800;padding:3px 10px;border-radius:9px;z-index:5;pointer-events:none;}
   /* ===== export / download screen ===== */
   .exp-card{background:#fff;border-radius:20px;padding:22px 18px;text-align:center;box-shadow:0 12px 28px -18px rgba(10,60,60,.6);margin-bottom:16px;}
   .exp-emoji{font-size:40px;line-height:1;margin-bottom:8px;}
@@ -425,7 +432,8 @@ const ICON={
   chevR:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
   chevL:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>',
   grid:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg>',
-  dots:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2.1"/><circle cx="12" cy="12" r="2.1"/><circle cx="19" cy="12" r="2.1"/></svg>'
+  dots:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2.1"/><circle cx="12" cy="12" r="2.1"/><circle cx="19" cy="12" r="2.1"/></svg>',
+  list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>'
 };
 
 const DEMO_CSV=`First Name,Middle Name,Last Name,Organization Name,Organization Title,E-mail 1 - Value,Phone 1 - Value,Notes,Labels
@@ -770,6 +778,7 @@ function openHbar(){
   if(document.querySelector('.hbar-backdrop'))return;
   const items=[
     {ic:ICON.home,label:'בית',fn:goHome},
+    {ic:ICON.list,label:'רשימה',fn:renderAllContacts},
     {ic:ICON.filter,label:'סינון',fn:renderFilters},
     {ic:ICON.merge,label:'מיזוג',fn:renderDuplicates},
     {ic:ICON.trash,label:'נמחקו',fn:()=>renderList('delete','נמחקו')},
@@ -819,6 +828,7 @@ function renderUpload(p){
         <div class="di">📇</div><div class="dt">או העלה קובץ CSV / vCard משלך</div><div class="file-name" id="fname"></div></label>
       ${MY_CONTACTS_COUNT>0?`<div class="warn">בגרסה המוטמעת כאן התמונות הוסרו לשמירה על מהירות. כדי לשמר תמונות בייצוא, פתח את הקובץ עצמאית בדפדפן והעלה את ה-vCard המקורי.</div>`:`<div class="warn">איך מייצאים מ-Google: היכנס ל-contacts.google.com ← "ייצוא" ← בחר vCard או CSV. טען את הקובץ כאן, מיין, וייצא חזרה.</div>`}
     </div>`;
+  {const _b=document.querySelector('.broom'); if(_b) _b.src='broom-glyph.png';}
   const mb=document.getElementById('mineBtn');if(mb)mb.onclick=()=>{initFromCSV(MY_CONTACTS_VCF,'אנשי הקשר שלי.vcf');persist();renderMain();};
   document.getElementById('demoBtn').onclick=()=>{initFromCSV(DEMO_CSV,'רשימת הדגמה.csv');persist();renderMain();};
   const fi=document.getElementById('file'),drop=document.getElementById('drop');
@@ -905,7 +915,7 @@ function setupSearch(){
     ));
     if(!res.length){results.innerHTML=`<div class="search-empty">לא נמצאו תוצאות</div>`;return;}
     const cap=res.slice(0,300);
-    const hint=`<div class="swipe-hint"><span class="sh-side del"><span class="sa-arrow">${ICON.chevL}</span>${ICON.trash}<span class="sh-lbl">מחיקה</span></span><span class="sh-side keep"><span class="sh-lbl">שמירה</span>${ICON.check}<span class="sa-arrow">${ICON.chevR}</span></span></div>`;
+    const hint=`<div class="swipe-hint"><span class="sh-side del"><span class="sa-arrow">${ICON.chevL}</span>${ICON.trash}<span class="sh-lbl">מחיקה</span></span><span class="sh-side keep"><span class="sh-lbl">שמירה</span>${ICON.check}<span class="sa-arrow">${ICON.chevR}</span></span></div><div class="merge-tip">${ICON.merge}<span>לחיצה ארוכה על תוצאה וגרירה על תוצאה אחרת = מיזוג שתיהן</span></div>`;
     results.innerHTML=hint+cap.map(r=>{
       const sub=[...new Set([...(r.emails||[]),...(r.phones||[])])].join(' · ');
       const d=S.decisions[r.id];
@@ -913,7 +923,7 @@ function setupSearch(){
       return `<div class="swipe-row" data-id="${r.id}"><div class="swipe-bg"></div><div class="list-item swipe-fg">${initialBadge(r,'li-av')}<div class="li-txt"><div class="n">${r.name?escapeHtml(r.name):'(אין שם)'}</div>${sub?`<div class="s">${escapeHtml(sub)}</div>`:''}</div>${tag}<span class="li-chev">${ICON.chevL}</span></div></div>`;
     }).join('')+(res.length>cap.length?`<div class="search-empty">מוצגות ${cap.length} מתוך ${res.length}</div>`:'');
     const openDetail=(id)=>renderContactDetail(id,(rid,dir)=>{ if(dir)run(); });
-    results.querySelectorAll('.swipe-row').forEach(rw=>attachRowSwipe(rw,null,run,openDetail));
+    results.querySelectorAll('.swipe-row').forEach(rw=>attachContactRow(rw,{type:null,afterRemove:run,onTap:openDetail,onMerge:(a,b)=>doMerge(a,b,run)}));
   }
   searchBtn.onclick=open;searchClose.onclick=close;
   searchInput.addEventListener('input',run);
@@ -1060,6 +1070,7 @@ function renderMenu(){
       <div class="dhead"><div class="dt">תפריט</div></div>
       <div class="menu-list">
         <button class="i-home" id="m-home">${ICON.home} מסך המיון</button>
+        <button class="i-dup" id="m-all">${ICON.list} כל אנשי הקשר (רשימה)</button>
         <button class="i-filt" id="m-filter">${ICON.filter} סינון מהיר</button>
         <button class="i-dup" id="m-dup">${ICON.merge} מיזוג כפילויות (${dups})</button>
         <button class="i-del" id="m-del">${ICON.trash} נמחקו (${c.del})</button>
@@ -1089,6 +1100,7 @@ function renderMenu(){
   scroll.addEventListener('pointerup',upDrag);scroll.addEventListener('pointercancel',upDrag);
   scroll.addEventListener('click',e=>{if(moved){e.stopPropagation();e.preventDefault();moved=false;}},true);
   drawer.querySelector('#m-home').onclick=()=>close(goHome);
+  drawer.querySelector('#m-all').onclick=()=>close(renderAllContacts);
   drawer.querySelector('#m-filter').onclick=()=>close(renderFilters);
   drawer.querySelector('#m-dup').onclick=()=>close(renderDuplicates);
   drawer.querySelector('#m-del').onclick=()=>close(()=>renderList('delete','נמחקו'));
@@ -1186,6 +1198,85 @@ function attachRowSwipe(row,type,afterRemove,onTap){
     if(dx<=-TH)commit('delete',-1);else if(dx>=TH)commit('keep',1);
     else{snap();if(!moved&&onTap)onTap(id);}};
   fg.addEventListener('pointerup',end);fg.addEventListener('pointercancel',end);
+}
+/* ===== unified contact row: swipe keep/delete + tap detail + long-press drag-to-merge ===== */
+function attachContactRow(row,opts){
+  const fg=row.querySelector('.swipe-fg');const bg=row.querySelector('.swipe-bg');const id=row.dataset.id;
+  const KEEP_HTML=`${ICON.check}<span class="sa-arrow">${ICON.chevR}</span>`;
+  const DEL_HTML=`<span class="sa-arrow">${ICON.chevL}</span>${ICON.trash}`;
+  const TH=88, MOVE=8, LP=420;
+  let sx=0,sy=0,dx=0,dy=0,mode='',dir=0,downT=0,lpTimer=0,target=null;
+  function setDir(d){if(d===dir)return;dir=d;if(d>0){bg.className='swipe-bg keepbg';bg.innerHTML=KEEP_HTML;}else if(d<0){bg.className='swipe-bg delbg';bg.innerHTML=DEL_HTML;}}
+  function snap(){fg.style.transition='transform .22s';fg.style.transform='';}
+  function clearLP(){if(lpTimer){clearTimeout(lpTimer);lpTimer=0;}}
+  function clearTarget(){if(target){target.classList.remove('merge-target');target=null;}}
+  function commit(decision,sgn){if(decision===opts.type){snap();return;}
+    S.decisions[id]=decision;persist();
+    fg.style.transition='transform .25s ease-out';fg.style.transform=`translateX(${sgn*420}px)`;
+    row.style.transition='opacity .25s';row.style.opacity='0';
+    setTimeout(()=>{row.remove();opts.afterRemove&&opts.afterRemove();},240);
+    toast(decision==='delete'?'נמחק':(opts.type==='delete'?'הוחזר':'נשמר'));}
+  function enterDrag(){mode='drag';try{navigator.vibrate&&navigator.vibrate(15);}catch(_){}fg.classList.add('dragging');fg.style.transition='transform .08s';}
+  function updateTarget(cx,cy){
+    fg.style.pointerEvents='none';const el=document.elementFromPoint(cx,cy);fg.style.pointerEvents='';
+    const tr=el&&el.closest?el.closest('.swipe-row'):null;
+    const nt=(tr&&tr!==row&&tr.dataset.id)?tr:null;
+    if(nt!==target){if(target)target.classList.remove('merge-target');target=nt;if(target)target.classList.add('merge-target');}}
+  function down(e){if(e.pointerType==='mouse'&&e.button!==0)return;
+    sx=e.clientX;sy=e.clientY;dx=dy=0;mode='';downT=Date.now();
+    try{fg.setPointerCapture(e.pointerId);}catch(_){}
+    fg.style.transition='none';clearLP();lpTimer=setTimeout(()=>{if(mode==='')enterDrag();},LP);}
+  function move(e){dx=e.clientX-sx;dy=e.clientY-sy;
+    if(mode===''){
+      if(Math.abs(dx)>MOVE||Math.abs(dy)>MOVE){clearLP();
+        if(Math.abs(dx)>=Math.abs(dy)){mode='swipe';}
+        else{mode='scroll';try{fg.releasePointerCapture(e.pointerId);}catch(_){}return;}}
+      else return;}
+    if(mode==='swipe'){setDir(Math.sign(dx));fg.style.transform=`translateX(${dx}px)`;}
+    else if(mode==='drag'){if(e.cancelable&&e.preventDefault)e.preventDefault();
+      fg.style.transform=`translate(${dx}px,${dy}px) scale(1.04)`;updateTarget(e.clientX,e.clientY);}}
+  function up(){clearLP();
+    if(mode==='swipe'){if(dx<=-TH)commit('delete',-1);else if(dx>=TH)commit('keep',1);else snap();}
+    else if(mode==='drag'){fg.classList.remove('dragging');const tgt=target;clearTarget();
+      fg.style.transition='transform .2s';fg.style.transform='';
+      if(tgt&&tgt.dataset.id&&tgt.dataset.id!==id)opts.onMerge&&opts.onMerge(id,tgt.dataset.id);}
+    else if(mode===''){snap();if(Date.now()-downT<LP&&opts.onTap)opts.onTap(id);}
+    else snap();
+    mode='';}
+  function cancel(){clearLP();if(mode==='drag'){fg.classList.remove('dragging');clearTarget();fg.style.transition='transform .2s';fg.style.transform='';}else if(mode==='swipe')snap();mode='';}
+  fg.addEventListener('pointerdown',down);
+  fg.addEventListener('pointermove',move);
+  fg.addEventListener('pointerup',up);
+  fg.addEventListener('pointercancel',cancel);
+  fg.addEventListener('touchmove',e=>{if(mode==='drag'&&e.cancelable)e.preventDefault();},{passive:false});
+}
+function doMerge(id1,id2,refresh){
+  const a=recById(id1),b=recById(id2);if(!a||!b)return;
+  const ids=[id1,id2];
+  const keepId=recScore(a)>=recScore(b)?id1:id2;
+  const f=collectMergeFields(ids);
+  openMergePicker(ids,keepId,f,()=>{toast('מוזג');refresh&&refresh();});
+}
+function renderAllContacts(){
+  const ov=document.createElement('div');ov.className='screen';
+  ov.innerHTML=`<div class="screen-head"><h2 id="allTitle">כל אנשי הקשר</h2><button class="close">✕</button></div><div class="screen-body" id="allBody"></div>`;
+  app.appendChild(ov);
+  ov.querySelector('.close').onclick=()=>closeScreen(ov,()=>{if(document.getElementById('s-left'))refreshCounts();});
+  function rowHTML(r){const sub=[...new Set([...(r.emails||[]),...(r.phones||[])])].join(' · ');
+    const d=S.decisions[r.id];const tag=d==='keep'?'<span class="li-tag keep">נשמר</span>':d==='maybe'?'<span class="li-tag maybe">לבדיקה</span>':'';
+    return `<div class="swipe-row" data-id="${r.id}"><div class="swipe-bg"></div><div class="list-item swipe-fg">${initialBadge(r,'li-av')}<div class="li-txt"><div class="n">${r.name?escapeHtml(r.name):'(אין שם)'}</div>${sub?`<div class="s">${escapeHtml(sub)}</div>`:''}</div>${tag}<span class="li-chev">${ICON.chevL}</span></div></div>`;}
+  function build(){
+    const recs=S.records.filter(r=>S.decisions[r.id]!=='delete');
+    const t=ov.querySelector('#allTitle');if(t)t.textContent=`כל אנשי הקשר (${recs.length})`;
+    const body=ov.querySelector('#allBody');if(!body)return;
+    if(!recs.length){body.innerHTML=`<div class="empty-note">אין אנשי קשר.</div>`;return;}
+    const hint=`<div class="merge-tip">${ICON.merge}<span>החלקה ימינה לשמירה · שמאלה למחיקה · לחיצה ארוכה וגרירה על איש קשר אחר = מיזוג</span></div>`;
+    body.innerHTML=hint+recs.map(rowHTML).join('');
+    body.querySelectorAll('.swipe-row').forEach(rw=>attachContactRow(rw,{type:null,
+      afterRemove:build,
+      onTap:(rid)=>renderContactDetail(rid,(x,dir)=>{if(dir)build();}),
+      onMerge:(x,y)=>doMerge(x,y,build)}));}
+  build();
 }
 /* ===== full contact detail card (tap a result) ===== */
 function detailCardInner(rec){

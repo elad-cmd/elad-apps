@@ -1,5 +1,5 @@
 /* SweepApp service worker — network-first, offline fallback for the app shell */
-const CACHE = 'sweepapp-v3';
+const CACHE = 'sweepapp-v4';
 const ASSETS = [
   'SweepApp.html',
   'sweepapp.webmanifest',
