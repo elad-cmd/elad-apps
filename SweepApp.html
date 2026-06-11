@@ -382,6 +382,17 @@
   .cd-field .val.ltr{direction:ltr;text-align:right;}
   .cd-empty{text-align:center;color:var(--muted);padding:14px;}
   .sh-side .sh-lbl{font-size:13px;font-weight:700;}
+  /* ===== export / download screen ===== */
+  .exp-card{background:#fff;border-radius:20px;padding:22px 18px;text-align:center;box-shadow:0 12px 28px -18px rgba(10,60,60,.6);margin-bottom:16px;}
+  .exp-emoji{font-size:40px;line-height:1;margin-bottom:8px;}
+  .exp-title{font-size:20px;font-weight:800;color:var(--ink);}
+  .exp-sub{font-size:14px;color:var(--muted);margin:5px 0 16px;}
+  .exp-note{background:rgba(255,255,255,.97);border-radius:18px;padding:18px;color:#234a4e;box-shadow:0 12px 28px -18px rgba(10,60,60,.6);}
+  .exp-note-h{font-weight:800;font-size:15.5px;color:#9a6c12;margin-bottom:10px;line-height:1.4;}
+  .exp-note p{font-size:14px;line-height:1.65;margin:0 0 10px;}
+  .exp-steps{margin:8px 20px 12px;padding:0;font-size:14px;line-height:1.7;}
+  .exp-steps li{margin-bottom:4px;}
+  .exp-tip{font-size:12.5px;color:#0c7f82;background:var(--teal-soft);border-radius:12px;padding:10px 12px;}
 </style>
 </head>
 <body>
@@ -1277,10 +1288,38 @@ function renderDone(){
     </div>
     <div class="screen-foot">לאחר ההורדה: ב-Google Contacts מחק את כל אנשי הקשר ואז ייבא את הקובץ הנקי. לגוגל יש שחזור עד 30 יום.</div>`;
   showFab(true);
-  document.getElementById('exportClean').onclick=()=>exportCSV('keep');
-  document.getElementById('exportDel').onclick=()=>exportCSV('deleted');
+  document.getElementById('exportClean').onclick=()=>renderExportScreen('keep');
+  document.getElementById('exportDel').onclick=()=>renderExportScreen('deleted');
   const cont=document.getElementById('continue');if(cont)cont.onclick=renderMain;
   document.getElementById('reset').onclick=()=>uiConfirm('לאפס? כל המיון יימחק ותחזור למסך ההעלאה.',resetApp);
+}
+function renderExportScreen(which){
+  const c=counts();const clean=S.records.filter(r=>S.decisions[r.id]!=='delete').length;
+  const isDel=which==='deleted';const cnt=isDel?c.del:clean;
+  const ov=document.createElement('div');ov.className='screen';
+  ov.innerHTML=`<div class="screen-head"><h2>הורדת הרשימה</h2><button class="close">✕</button></div>
+    <div class="screen-body">
+      <div class="exp-card">
+        <div class="exp-emoji">${isDel?'🗑️':'📥'}</div>
+        <div class="exp-title">${isDel?'רשימת הנמחקים מוכנה':'הרשימה הנקייה מוכנה'}</div>
+        <div class="exp-sub">${cnt} אנשי קשר יישמרו בקובץ ${S.format==='vcard'?'vCard':'CSV'}.</div>
+        <button class="btn keepc" id="doDownload" style="width:100%;">הורדת הרשימה (${cnt})</button>
+      </div>
+      ${isDel?'':`<div class="exp-note">
+        <div class="exp-note-h">⚠️ חשוב לפני העלאה ל-Gmail / Google Contacts</div>
+        <p>כדי שהרשימה <b>תחליף</b> את אנשי הקשר הקיימים ולא רק תתווסף אליהם — צריך קודם <b>למחוק את כל אנשי הקשר הקיימים</b> ב-Gmail, ורק אז לייבא את הקובץ החדש.</p>
+        <p>אם לא תמחק קודם, השמות פשוט <b>יתווספו</b> לרשימה הקיימת ותקבל כפילויות.</p>
+        <ol class="exp-steps">
+          <li>היכנס ל-<b>contacts.google.com</b></li>
+          <li>סמן הכול ← מחק את כל אנשי הקשר</li>
+          <li>ייבוא ← בחר את הקובץ שהורדת כאן</li>
+        </ol>
+        <div class="exp-tip">לגוגל יש שחזור אנשי קשר עד 30 יום, אז אפשר לחזור אחורה אם משהו השתבש.</div>
+      </div>`}
+    </div>`;
+  app.appendChild(ov);
+  ov.querySelector('.close').onclick=()=>closeScreen(ov);
+  ov.querySelector('#doDownload').onclick=()=>exportCSV(which);
 }
 function exportCSV(which){
   let recs=which==='deleted'?S.records.filter(r=>S.decisions[r.id]==='delete'):S.records.filter(r=>S.decisions[r.id]!=='delete');
