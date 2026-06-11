@@ -1,3 +1,9 @@
 
 # גיבויים מקומיים
 *.bak-*
+
+# חומר פנימי של אתר הרפואה — לא לפרסום ציבורי
+med-knowledge-exam/_ארכיון-ומחקר/
+**/*.backup
+**/.fuse_hidden*
+_sizetest.txt

@@ -1094,7 +1094,7 @@ function renderFilters(){
   const noEmail=und.filter(r=>!(r.emails&&r.emails.length)).length;
   const noName=und.filter(r=>!r.name).length;
   const ov=document.createElement('div');ov.className='screen';
-  ov.innerHTML=`<div class="screen-head"><h2>סינון מהיר</h2><button class="hbtn" id="goHome">${ICON.home}</button><button class="close">✕</button></div>
+  ov.innerHTML=`<div class="screen-head"><h2>סינון מהיר</h2><button class="close">✕</button></div>
     <div class="screen-body">
       <div class="sub2">בחר קבוצה למיון ממוקד — תראה בערימה רק אותם, ותוכל להעיף במהירות בלי לגעת באחרים.</div>
       <div class="menu-list">
@@ -1105,7 +1105,6 @@ function renderFilters(){
       </div>
     </div>`;
   app.appendChild(ov);
-  ov.querySelector('#goHome').onclick=()=>closeScreen(ov,goHome);
   ov.querySelector('.close').onclick=()=>closeScreen(ov,goHome);
   ov.querySelector('#f-nophone').onclick=()=>closeScreen(ov,()=>applyFilter(r=>!(r.phones&&r.phones.length),'בלי טלפון'));
   ov.querySelector('#f-noemail').onclick=()=>closeScreen(ov,()=>applyFilter(r=>!(r.emails&&r.emails.length),'בלי מייל'));
@@ -1128,9 +1127,8 @@ function renderDuplicates(){
         <button class="btn ghost dup-skip" data-gid="${i}">לא כפילויות</button>
       </div></div>`;
   const body=groups.length===0?`<div class="empty-note">לא נמצאו כפילויות 🎉</div>`:groups.map(groupHTML).join('');
-  ov.innerHTML=`<div class="screen-head"><h2>מיזוג כפילויות (${groups.length})</h2><button class="hbtn" id="goHome">${ICON.home}</button><button class="close">✕</button></div><div class="screen-body" id="dupBody">${body}</div>`;
+  ov.innerHTML=`<div class="screen-head"><h2>מיזוג כפילויות (${groups.length})</h2><button class="close">✕</button></div><div class="screen-body" id="dupBody">${body}</div>`;
   app.appendChild(ov);
-  ov.querySelector('#goHome').onclick=()=>closeScreen(ov,goHome);
   ov.querySelector('.close').onclick=()=>closeScreen(ov,()=>{if(document.getElementById('s-left'))refreshCounts();});
   const updateHead=()=>{const left=ov.querySelectorAll('.dup-group').length;const hh=ov.querySelector('h2');if(hh)hh.textContent=`מיזוג כפילויות (${left})`;
     if(left===0){ov.querySelector('#dupBody').innerHTML=`<div class="empty-note">סיימת עם הכפילויות 🎉</div>`;}};
@@ -1222,7 +1220,7 @@ function attachDetailSwipe(card,id,onDone){
 function renderContactDetail(id,afterDecide){
   const rec=recById(id);if(!rec)return;
   const ov=document.createElement('div');ov.className='screen';
-  ov.innerHTML=`<div class="screen-head"><h2>פרטי איש קשר</h2><button class="hbtn" id="cdHome">${ICON.home}</button><button class="close">✕</button></div>
+  ov.innerHTML=`<div class="screen-head"><h2>פרטי איש קשר</h2><button class="close">✕</button></div>
     <div class="screen-body cd-body">
       <div class="swipe-hint">
         <span class="sh-side del"><span class="sa-arrow">${ICON.chevL}</span>${ICON.trash}<span class="sh-lbl">מחיקה</span></span>
@@ -1231,7 +1229,6 @@ function renderContactDetail(id,afterDecide){
       <div class="cd-deck"><div class="card cd-card" id="cdCard">${detailCardInner(rec)}</div></div>
     </div>`;
   app.appendChild(ov);
-  ov.querySelector('#cdHome').onclick=()=>closeScreen(ov,()=>afterDecide&&afterDecide(null));
   ov.querySelector('.close').onclick=()=>closeScreen(ov,()=>afterDecide&&afterDecide(null));
   attachDetailSwipe(ov.querySelector('#cdCard'),id,(rid,dir)=>closeScreen(ov,()=>afterDecide&&afterDecide(rid,dir)));
 }
@@ -1242,9 +1239,8 @@ function renderList(type,title){
     return `<div class="swipe-row" data-id="${id}"><div class="swipe-bg"></div><div class="list-item swipe-fg">${initialBadge(r,'li-av')}<div class="li-txt"><div class="n">${r.name?escapeHtml(r.name):'(אין שם)'}</div>${sub?`<div class="s">${escapeHtml(sub)}</div>`:''}</div></div></div>`;};
   let body=ids.length===0?`<div class="empty-note">אין כאן אף אחד עדיין.</div>`:
     `<div class="swipe-hint"><span class="sh-side del"><span class="sa-arrow">${ICON.chevL}</span>${ICON.trash}</span><span class="sh-side keep">${ICON.check}<span class="sa-arrow">${ICON.chevR}</span></span></div>`+ids.map(rowHTML).join('');
-  ov.innerHTML=`<div class="screen-head"><h2>${title} (${ids.length})</h2><button class="hbtn" id="goHome">${ICON.home}</button><button class="close">✕</button></div><div class="screen-body">${body}</div>`;
+  ov.innerHTML=`<div class="screen-head"><h2>${title} (${ids.length})</h2><button class="close">✕</button></div><div class="screen-body">${body}</div>`;
   app.appendChild(ov);
-  ov.querySelector('#goHome').onclick=()=>closeScreen(ov,goHome);
   ov.querySelector('.close').onclick=()=>closeScreen(ov,()=>{if(document.getElementById('s-left'))refreshCounts();});
   const afterRemove=()=>{const remaining=S.records.filter(r=>S.decisions[r.id]===type).length;
     const hh=ov.querySelector('h2');if(hh)hh.textContent=`${title} (${remaining})`;
