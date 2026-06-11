@@ -1,0 +1,13 @@
+{
+ "batch": "biochem new2026 (27 questions)",
+ "date": "2026-06-08",
+ "method": "3 independent web-searching subagents; sources: NCBI Bookshelf/StatPearls, Lehninger, university/scientific sites",
+ "summary": {"OK": 26, "WRONG_ANSWER": 0, "EXPLANATION_ISSUE": 1, "UNVERIFIED": 0},
+ "flagged": [
+   {"id": 2, "topic": "תפקוד חלבונים (קולגן)", "verdict": "EXPLANATION_ISSUE",
+    "issue": "ההסבר ייחס את ייצוב הסליל ע'י הידרוקסיפרולין לקשרי מימן; המנגנון המדויק הוא בעיקר אפקט סטריאו-אלקטרוני (העדפת תצורת הטבעת/איזומר trans).",
+    "action": "ההסבר תוקן ב-questions.js וב-biochem.html.",
+    "sources": ["https://en.wikipedia.org/wiki/Collagen_helix", "https://onlinelibrary.wiley.com/doi/10.1002/bip.20958"]}
+ ],
+ "note": "0 תשובות שגויות. כל יתר 26 השאלות אומתו כתקינות (תשובה + הסבר) מול מקורות סמכותיים."
+}
