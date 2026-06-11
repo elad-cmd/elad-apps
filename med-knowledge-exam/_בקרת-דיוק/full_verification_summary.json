@@ -1,0 +1,16 @@
+{
+ "title": "בדיקת דיוק עצמאית — כל 235 השאלות החדשות (new2026)",
+ "date": "2026-06-08",
+ "method": "תת-סוכנים בלתי-תלויים עם חיפוש ברשת בלבד; מקורות: NCBI Bookshelf/StatPearls, Lehninger, Alberts (MBoC), Berne & Levy, מאמרי PMC/Nature/Cell ואתרי אוניברסיטאות.",
+ "results_by_subject": {
+   "biochem": {"total": 27, "OK": 26, "EXPLANATION_ISSUE": 1, "WRONG_ANSWER": 0, "UNVERIFIED": 0},
+   "mol":     {"total": 126, "OK": 126, "EXPLANATION_ISSUE": 0, "WRONG_ANSWER": 0, "UNVERIFIED": 0},
+   "cell":    {"total": 50, "OK": 50, "EXPLANATION_ISSUE": 0, "WRONG_ANSWER": 0, "UNVERIFIED": 0},
+   "physio":  {"total": 32, "OK": 32, "EXPLANATION_ISSUE": 0, "WRONG_ANSWER": 0, "UNVERIFIED": 0}
+ },
+ "total": {"questions": 235, "OK": 234, "EXPLANATION_ISSUE": 1, "WRONG_ANSWER": 0, "UNVERIFIED": 0},
+ "fixed": [
+   {"subject": "biochem", "topic": "תפקוד חלבונים (קולגן)", "fix": "ייצוב ע'י הידרוקסיפרולין נוסח מחדש כאפקט סטריאו-אלקטרוני (ולא קשרי מימן); תוקן ב-questions.js וב-biochem.html."}
+ ],
+ "conclusion": "0 תשובות שגויות מתוך 235. פריט הסבר אחד דויק ותוקן. רמת דיוק גבוהה מאוד באימות חיצוני."
+}
