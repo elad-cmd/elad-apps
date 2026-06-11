@@ -1,8 +1,9 @@
 /* SweepApp service worker — network-first, offline fallback for the app shell */
-const CACHE = 'sweepapp-v2';
+const CACHE = 'sweepapp-v3';
 const ASSETS = [
   'SweepApp.html',
   'sweepapp.webmanifest',
+  'broom-glyph.png',
   'icon-any-192.png',
   'icon-any-512.png',
   'icon-maskable-512.png',
