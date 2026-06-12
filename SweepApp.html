@@ -382,6 +382,11 @@
   .cd-field .val.ltr{direction:ltr;text-align:right;}
   .cd-empty{text-align:center;color:var(--muted);padding:14px;}
   .sh-side .sh-lbl{font-size:13px;font-weight:700;}
+  /* ===== search display filter chips ===== */
+  .search-chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
+  .search-chip{border:none;font-family:inherit;font-size:13px;font-weight:700;padding:7px 13px;border-radius:999px;cursor:pointer;background:rgba(255,255,255,.85);color:#0c7f82;transition:transform .12s;}
+  .search-chip.on{background:#0c7f82;color:#fff;}
+  .search-chip:active{transform:scale(.95);}
   /* ===== drag-to-merge ===== */
   .merge-tip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.92);color:#0c7f82;border-radius:13px;padding:9px 13px;font-size:12.5px;font-weight:600;margin-bottom:12px;line-height:1.45;}
   .merge-tip svg{width:18px;height:18px;flex:0 0 auto;}
@@ -760,7 +765,9 @@ function openMergePicker(ids,keepId,fields,onConfirm){
     closeScreen(ov,onConfirm);
   };
 }
-function counts(){let k=0,d=0,m=0;for(const r of S.records){const v=S.decisions[r.id];if(v==='keep')k++;else if(v==='delete')d++;else if(v==='maybe')m++;}return {keep:k,del:d,maybe:m,left:S.order.length-S.pos,total:S.order.length};}
+function counts(){let k=0,d=0,m=0;for(const r of S.records){const v=S.decisions[r.id];if(v==='keep')k++;else if(v==='delete')d++;else if(v==='maybe')m++;}let left=0;for(const id of S.order)if(S.decisions[id]===undefined)left++;return {keep:k,del:d,maybe:m,left,total:S.order.length};}
+function currentIndex(){for(let i=S.pos;i<S.order.length;i++){if(S.decisions[S.order[i]]===undefined)return i;}return -1;}
+function upcomingIds(n){const out=[];for(let i=S.pos;i<S.order.length&&out.length<n;i++){const id=S.order[i];if(S.decisions[id]===undefined)out.push(id);}return out;}
 
 const app=document.getElementById('app');
 const menuFab=document.createElement('button');
@@ -845,7 +852,7 @@ function handleFile(file){const r=new FileReader();
 
 /* ===== main ===== */
 function renderMain(){
-  if(S.pos>=S.order.length){renderDone();return;}
+  if(currentIndex()<0){renderDone();return;}
   const c=counts();
   app.innerHTML=`
     <div class="topbar">
@@ -890,7 +897,9 @@ function setupSearch(){
   const filterEl=app.querySelector('.filter-bar');
   const floatEl=document.getElementById('floatBack');
   const results=document.getElementById('searchResults');
+  let searchFilter='undecided';
   function open(){
+    searchFilter='undecided';
     brandBox.style.display='none';searchBtn.style.display='none';
     searchWrap.classList.add('show');searchClose.style.display='flex';
     statsEl.style.display='none';deckEl.style.display='none';actionsEl.style.display='none';
@@ -906,22 +915,27 @@ function setupSearch(){
   }
   function run(){
     const q=searchInput.value.trim().toLowerCase();const qd=q.replace(/\D/g,'');
-    if(!q){results.innerHTML=`<div class="search-empty">הקלידו כדי לחפש בין אנשי הקשר</div>`;return;}
-    const res=S.records.filter(r=>S.decisions[r.id]!=='delete'&&(
+    const filters=[['undecided','לא סומנו'],['keep','נשמרו'],['maybe','לבדיקה'],['all','הכול']];
+    const chips=`<div class="search-chips">`+filters.map(([k,l])=>`<button class="search-chip${searchFilter===k?' on':''}" data-f="${k}">${l}</button>`).join('')+`</div>`;
+    const matchF=r=>{const d=S.decisions[r.id];if(searchFilter==='undecided')return d===undefined;if(searchFilter==='all')return d!=='delete';return d===searchFilter;};
+    const attachChips=()=>results.querySelectorAll('.search-chip').forEach(c=>c.onclick=()=>{searchFilter=c.dataset.f;run();});
+    if(!q){results.innerHTML=chips+`<div class="search-empty">הקלידו כדי לחפש בין אנשי הקשר</div>`;attachChips();return;}
+    const res=S.records.filter(r=>matchF(r)&&(
       (r.name&&r.name.toLowerCase().includes(q))||
       (r.org&&r.org.toLowerCase().includes(q))||
       (r.emails||[]).some(e=>e.toLowerCase().includes(q))||
       (qd.length>=2&&(r.phones||[]).some(p=>p.replace(/\D/g,'').includes(qd)))
     ));
-    if(!res.length){results.innerHTML=`<div class="search-empty">לא נמצאו תוצאות</div>`;return;}
+    if(!res.length){results.innerHTML=chips+`<div class="search-empty">לא נמצאו תוצאות בקטגוריה הזו</div>`;attachChips();return;}
     const cap=res.slice(0,300);
     const hint=`<div class="swipe-hint"><span class="sh-side del"><span class="sa-arrow">${ICON.chevL}</span>${ICON.trash}<span class="sh-lbl">מחיקה</span></span><span class="sh-side keep"><span class="sh-lbl">שמירה</span>${ICON.check}<span class="sa-arrow">${ICON.chevR}</span></span></div><div class="merge-tip">${ICON.merge}<span>לחיצה ארוכה על תוצאה וגרירה על תוצאה אחרת = מיזוג שתיהן</span></div>`;
-    results.innerHTML=hint+cap.map(r=>{
+    results.innerHTML=chips+hint+cap.map(r=>{
       const sub=[...new Set([...(r.emails||[]),...(r.phones||[])])].join(' · ');
       const d=S.decisions[r.id];
       const tag=d==='keep'?'<span class="li-tag keep">נשמר</span>':d==='maybe'?'<span class="li-tag maybe">לבדיקה</span>':'';
       return `<div class="swipe-row" data-id="${r.id}"><div class="swipe-bg"></div><div class="list-item swipe-fg">${initialBadge(r,'li-av')}<div class="li-txt"><div class="n">${r.name?escapeHtml(r.name):'(אין שם)'}</div>${sub?`<div class="s">${escapeHtml(sub)}</div>`:''}</div>${tag}<span class="li-chev">${ICON.chevL}</span></div></div>`;
     }).join('')+(res.length>cap.length?`<div class="search-empty">מוצגות ${cap.length} מתוך ${res.length}</div>`:'');
+    attachChips();
     const openDetail=(id)=>renderContactDetail(id,(rid,dir)=>{ if(dir)run(); });
     results.querySelectorAll('.swipe-row').forEach(rw=>attachContactRow(rw,{type:null,afterRemove:run,onTap:openDetail,onMerge:(a,b)=>doMerge(a,b,run)}));
   }
@@ -951,20 +965,25 @@ function introInner(dupCount){
 function renderDeck(){
   const deck=document.getElementById('deck');deck.innerHTML='';
   const showIntro=!S.introDone;
-  for(let k=2;k>=0;k--){
-    if(k===0&&showIntro){const card=document.createElement('div');card.className='card intro';
-      const dupCount=computeDuplicateGroups().length;card.innerHTML=introInner(dupCount);
-      deck.appendChild(card);
-      const dc=card.querySelector('#dupCta');if(dc)dc.onclick=renderDuplicates;
-      const fc=card.querySelector('#filtCta');if(fc)fc.onclick=renderFilters;
-      attachDrag(card,true);continue;}
-    const idx=S.pos+(showIntro?k-1:k);
-    if(idx<S.pos||idx>=S.order.length)continue;
-    const depth=showIntro?k-1:k; if(depth<0)continue;
-    const rec=recById(S.order[idx]);const card=document.createElement('div');
-    card.className='card'+(depth===1?' behind1':depth===2?' behind2':'');
+  const up=upcomingIds(3);
+  if(showIntro){
+    for(let d=2;d>=1;d--){const id=up[d-1];if(id===undefined)continue;
+      const rec=recById(id);const card=document.createElement('div');
+      card.className='card '+(d===1?'behind1':'behind2');
+      card.innerHTML=cardInner(rec);deck.appendChild(card);}
+    const card=document.createElement('div');card.className='card intro';
+    const dupCount=computeDuplicateGroups().length;card.innerHTML=introInner(dupCount);
+    deck.appendChild(card);
+    const dc=card.querySelector('#dupCta');if(dc)dc.onclick=renderDuplicates;
+    const fc=card.querySelector('#filtCta');if(fc)fc.onclick=renderFilters;
+    attachDrag(card,true);
+    return;
+  }
+  for(let d=2;d>=0;d--){const id=up[d];if(id===undefined)continue;
+    const rec=recById(id);const card=document.createElement('div');
+    card.className='card'+(d===1?' behind1':d===2?' behind2':'');
     card.innerHTML=cardInner(rec);deck.appendChild(card);
-    if(!showIntro&&k===0)attachDrag(card,false);
+    if(d===0)attachDrag(card,false);
   }
 }
 function dismissIntro(){S.introDone=true;persist();renderDeck();}
@@ -1004,15 +1023,15 @@ function flyOut(card,dir){card.style.transition='transform .35s ease-out, opacit
 
 /* ===== decisions ===== */
 function decide(dir,fromDrag){
-  if(S.pos>=S.order.length)return;
-  const id=S.order[S.pos];
-  S.decisions[id]=dir;S.history.push({id,dir});S.pos++;persist();
-  const go=()=>{if(S.pos>=S.order.length){if(S.filterLabel){toast('סיימת את הסינון');renderFilters();}else renderDone();}else{refreshCounts();renderDeck();showFloatBack(dir);}};
+  const idx=currentIndex();if(idx<0)return;
+  const id=S.order[idx];
+  S.decisions[id]=dir;S.history.push({id,dir,idx});S.pos=idx+1;persist();
+  const go=()=>{if(currentIndex()<0){if(S.filterLabel){toast('סיימת את הסינון');renderFilters();}else renderDone();}else{refreshCounts();renderDeck();showFloatBack(dir);}};
   if(fromDrag)setTimeout(go,180);else go();
 }
 function undo(){
   if(S.history.length===0)return;
-  const last=S.history.pop();delete S.decisions[last.id];S.pos--;persist();
+  const last=S.history.pop();delete S.decisions[last.id];S.pos=(last.idx!==undefined)?last.idx:Math.max(0,S.pos-1);persist();
   hideFloatBack();
   if(document.getElementById('deck')){
     refreshCounts();renderDeck();
@@ -1048,7 +1067,7 @@ function animateInFrom(card,dir){
 function refreshCounts(){const c=counts();const set=(i,v)=>{const e=document.getElementById(i);if(e)e.textContent=v;};set('s-left',c.left);set('s-keep',c.keep);set('s-del',c.del);set('s-maybe',c.maybe);}
 
 /* ===== menu & lists ===== */
-function goHome(){ if(!S)return; if(S.filterLabel){clearFilter();return;} if(S.pos>=S.order.length)renderDone(); else renderMain(); }
+function goHome(){ if(!S)return; if(S.filterLabel){clearFilter();return;} if(currentIndex()<0)renderDone(); else renderMain(); }
 function resetApp(){try{localStorage.removeItem(KEY);}catch(e){}S=null;renderUpload(null);}
 function uiConfirm(msg,onYes){
   const ov=document.createElement('div');ov.className='confirm-backdrop';
@@ -1472,7 +1491,7 @@ let tT;function toast(m){const t=document.getElementById('toast');t.textContent=
 document.addEventListener('keydown',e=>{
   if(!S||!document.getElementById('deck'))return;
   if(!S.introDone){if(['ArrowRight','ArrowLeft','ArrowUp','ArrowDown','Enter',' '].includes(e.key)){e.preventDefault();dismissIntro();}return;}
-  if(S.pos>=S.order.length){if(e.key==='Backspace'){e.preventDefault();undo();}return;}
+  if(currentIndex()<0){if(e.key==='Backspace'){e.preventDefault();undo();}return;}
   if(e.key==='ArrowRight'){e.preventDefault();decide('keep');}
   else if(e.key==='ArrowLeft'){e.preventDefault();decide('delete');}
   else if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();decide('maybe');}
