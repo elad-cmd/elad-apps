@@ -884,6 +884,7 @@ function renderMain(){
   const ef=document.getElementById('exitFilter');if(ef)ef.onclick=clearFilter;
   setupSearch();
   renderDeck();
+  if(S.history&&S.history.length>0)showFloatBack(S.history[S.history.length-1].dir);
 }
 function setupSearch(){
   const brandBox=document.getElementById('brandBox');
@@ -911,7 +912,7 @@ function setupSearch(){
     searchWrap.classList.remove('show');searchClose.style.display='none';
     brandBox.style.display='';searchBtn.style.display='';
     statsEl.style.display='';deckEl.style.display='';actionsEl.style.display='';
-    if(filterEl)filterEl.style.display='';showFab(true);
+    if(filterEl)filterEl.style.display='';if(floatEl)floatEl.style.display='';showFab(true);
   }
   function run(){
     const q=searchInput.value.trim().toLowerCase();const qd=q.replace(/\D/g,'');
@@ -1032,11 +1033,11 @@ function decide(dir,fromDrag){
 function undo(){
   if(S.history.length===0)return;
   const last=S.history.pop();delete S.decisions[last.id];S.pos=(last.idx!==undefined)?last.idx:Math.max(0,S.pos-1);persist();
-  hideFloatBack();
   if(document.getElementById('deck')){
     refreshCounts();renderDeck();
     const deck=document.getElementById('deck');const live=deck.lastElementChild;
     if(live&&!live.classList.contains('intro'))animateInFrom(live,last.dir);
+    if(S.history.length>0)showFloatBack(S.history[S.history.length-1].dir);else hideFloatBack();
   }else renderMain();
 }
 let floatT;
@@ -1046,9 +1047,8 @@ function showFloatBack(dir){
   if(dir==='delete'){fb.classList.add('fb-left');fb.innerHTML=ICON.backRight;}      // עף שמאלה → פרסה חזרה ימינה
   else if(dir==='keep'){fb.classList.add('fb-right');fb.innerHTML=ICON.backLeft;}    // עף ימינה → פרסה חזרה שמאלה
   else {fb.classList.add('fb-down');fb.innerHTML=ICON.backUp;}                       // עף למטה → יו־טרן חזרה למעלה
-  fb.style.transition='opacity .25s, transform .25s';fb.classList.add('show');
+  fb.style.display='';fb.style.transition='opacity .25s, transform .25s';fb.classList.add('show');
   clearTimeout(floatT);
-  floatT=setTimeout(()=>{fb.style.transition='opacity .8s, transform .8s';fb.classList.remove('show');},2400);
 }
 function hideFloatBack(){const fb=document.getElementById('floatBack');if(!fb)return;clearTimeout(floatT);fb.style.transition='opacity .15s';fb.classList.remove('show');}
 function animateInFrom(card,dir){
