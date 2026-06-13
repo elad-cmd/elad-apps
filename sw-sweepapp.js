@@ -1,5 +1,5 @@
 /* SweepApp service worker — network-first, offline fallback for the app shell */
-const CACHE = 'sweepapp-v4';
+const CACHE = 'sweepapp-v5';
 const ASSETS = [
   'SweepApp.html',
   'sweepapp.webmanifest',
@@ -31,7 +31,7 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   e.respondWith(
-    fetch(e.request)
+    fetch(e.request, { cache: 'no-cache' })
       .then(r => {
         if (r && r.ok && e.request.url.startsWith(self.registration.scope)) {
           const cp = r.clone();
