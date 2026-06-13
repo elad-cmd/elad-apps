@@ -315,6 +315,7 @@
   .li-tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:8px;flex:0 0 auto;}
   .li-tag.keep{background:var(--keep-soft);color:var(--keep);}
   .li-tag.maybe{background:var(--maybe-soft);color:#9a6c12;}
+  .li-tag.del{background:var(--del-soft);color:var(--del);}
   .swipe-row{position:relative;margin-bottom:10px;border-radius:18px;overflow:hidden;}
   .swipe-bg{position:absolute;inset:0;display:flex;align-items:center;padding:0 24px;color:#fff;}
   .swipe-bg.keepbg{background:var(--keep);justify-content:flex-start;}
@@ -387,6 +388,18 @@
   .search-chip{border:none;font-family:inherit;font-size:13px;font-weight:700;padding:7px 13px;border-radius:999px;cursor:pointer;background:rgba(255,255,255,.85);color:#0c7f82;transition:transform .12s;}
   .search-chip.on{background:#0c7f82;color:#fff;}
   .search-chip:active{transform:scale(.95);}
+  /* ===== unified main: filter tabs + view area ===== */
+  .vtabs{flex:0 0 auto;display:flex;gap:7px;padding:4px 14px 10px;}
+  .vtab{flex:1;background:rgba(255,255,255,.2);border:none;border-radius:14px;padding:8px 3px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;color:#fff;font-family:inherit;transition:transform .12s;}
+  .vtab b{font-size:17px;font-weight:800;line-height:1;}
+  .vtab span{font-size:10.5px;font-weight:600;opacity:.92;white-space:nowrap;}
+  .vtab.on{background:#fff;color:var(--ink);box-shadow:0 6px 16px -8px rgba(10,60,60,.5);}
+  .vtab.on b{color:var(--ink);}
+  .vtab:active{transform:scale(.94);}
+  .viewarea{flex:1 1 auto;display:flex;flex-direction:column;min-height:0;position:relative;}
+  .viewarea .deck{flex:1 1 auto;}
+  .list-wrap{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 16px 22px;min-height:0;}
+  .deck-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:600;opacity:.92;padding:30px;text-align:center;}
   /* ===== drag-to-merge ===== */
   .merge-tip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.92);color:#0c7f82;border-radius:13px;padding:9px 13px;font-size:12.5px;font-weight:600;margin-bottom:12px;line-height:1.45;}
   .merge-tip svg{width:18px;height:18px;flex:0 0 auto;}
@@ -629,12 +642,14 @@ function buildCSV(csvText){
 /* ===== state ===== */
 const KEY='contacts_swipe_v8';
 let S=null;
-function persist(){try{localStorage.setItem(KEY,JSON.stringify({csv:S._csv,decisions:S.decisions,pos:S.pos,fileName:S.fileName,introDone:S.introDone,order:S.order,filterLabel:S.filterLabel}));}catch(e){}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify({csv:S._csv,decisions:S.decisions,pos:S.pos,fileName:S.fileName,introDone:S.introDone,order:S.order,filterLabel:S.filterLabel,viewFilter:S.viewFilter,viewMode:S.viewMode}));}catch(e){}}
 function loadPersisted(){try{const raw=localStorage.getItem(KEY);return raw?JSON.parse(raw):null;}catch(e){return null;}}
 function initFromCSV(text,fileName){const d=buildData(text);
-  S={...d,_csv:text,fileName:fileName||'contacts.csv',order:d.records.map(r=>r.id),pos:0,decisions:{},history:[],introDone:false,filterLabel:null};}
+  S={...d,_csv:text,fileName:fileName||'contacts.csv',order:d.records.map(r=>r.id),pos:0,decisions:{},history:[],introDone:false,filterLabel:null,viewFilter:'undecided',viewMode:'cards'};}
 function resumeFromCSV(p){const d=buildData(p.csv);
-  S={...d,_csv:p.csv,fileName:p.fileName||'contacts.csv',order:(p.order&&p.order.length)?p.order:d.records.map(r=>r.id),pos:p.pos||0,decisions:p.decisions||{},history:[],introDone:p.introDone||((p.pos||0)>0),filterLabel:p.filterLabel||null};}
+  S={...d,_csv:p.csv,fileName:p.fileName||'contacts.csv',order:(p.order&&p.order.length)?p.order:d.records.map(r=>r.id),pos:p.pos||0,decisions:p.decisions||{},history:[],introDone:p.introDone||((p.pos||0)>0),filterLabel:p.filterLabel||null,viewFilter:p.viewFilter||'undecided',viewMode:p.viewMode||'cards'};}
+function viewIds(){if(!S.viewFilter||S.viewFilter==='undecided')return S.order.filter(id=>S.decisions[id]===undefined);return S.records.filter(r=>S.decisions[r.id]===S.viewFilter).map(r=>r.id);}
+function emptyMsg(){return S.viewFilter==='keep'?'אין נשמרים עדיין':S.viewFilter==='delete'?'אין נמחקים':S.viewFilter==='maybe'?'אין אנשי קשר לבדיקה':'עברת על כל אנשי הקשר 🎉';}
 function recById(id){return S.records.find(r=>r.id===id);}
 function normEmail(e){return (e||'').trim().toLowerCase();}
 function normPhone(p){const d=(p||'').replace(/\D/g,'');return d.length>=7?d.slice(-9):'';}
@@ -785,12 +800,8 @@ function openHbar(){
   if(document.querySelector('.hbar-backdrop'))return;
   const items=[
     {ic:ICON.home,label:'בית',fn:goHome},
-    {ic:ICON.list,label:'רשימה',fn:renderAllContacts},
     {ic:ICON.filter,label:'סינון',fn:renderFilters},
     {ic:ICON.merge,label:'מיזוג',fn:renderDuplicates},
-    {ic:ICON.trash,label:'נמחקו',fn:()=>renderList('delete','נמחקו')},
-    {ic:ICON.clock,label:'לבדיקה',fn:()=>renderList('maybe','לבדיקה מאוחרת')},
-    {ic:ICON.check,label:'נשמרו',fn:()=>renderList('keep','נשמרו')},
     {ic:ICON.down,label:'ייצוא',fn:renderDone},
     {ic:ICON.reset,label:'איפוס',fn:()=>uiConfirm('לאפס? כל המיון יימחק ותחזור למסך ההעלאה.',resetApp)}
   ];
@@ -852,67 +863,90 @@ function handleFile(file){const r=new FileReader();
 
 /* ===== main ===== */
 function renderMain(){
-  if(currentIndex()<0){renderDone();return;}
+  if(!S.viewFilter)S.viewFilter='undecided';
+  if(!S.viewMode)S.viewMode='cards';
   const c=counts();
+  const tab=(key,label,n,cls)=>`<button class="vtab ${cls}${S.viewFilter===key?' on':''}" data-f="${key}"><b>${n}</b><span>${label}</span></button>`;
   app.innerHTML=`
     <div class="topbar">
       <div class="brand" id="brandBox"><span class="logo">Sweep<span class="logo-app">App</span></span><small>${escapeHtml(S.fileName)}</small></div>
       <div class="searchwrap" id="searchWrap"><input id="searchInput" class="topsearch" type="text" placeholder="חיפוש שם, מייל או טלפון..."/></div>
-      <button class="menu-btn" id="searchBtn" style="margin-inline-start:auto" aria-label="חיפוש">${ICON.search}</button>
+      <button class="menu-btn" id="viewToggle" style="margin-inline-start:auto" aria-label="תצוגה">${S.viewMode==='cards'?ICON.list:ICON.grid}</button>
+      <button class="menu-btn" id="searchBtn" aria-label="חיפוש">${ICON.search}</button>
       <button class="menu-btn" id="searchClose" aria-label="סגירת חיפוש">${ICON.chevR}</button>
     </div>
-    <div class="stats">
-      <div class="stat left"><b id="s-left">${c.left}</b><span>נשארו</span></div>
-      <div class="stat keep"><b id="s-keep">${c.keep}</b><span>נשמרו</span></div>
-      <div class="stat del"><b id="s-del">${c.del}</b><span>נמחקו</span></div>
-      <div class="stat maybe"><b id="s-maybe">${c.maybe}</b><span>לבדיקה</span></div>
+    <div class="vtabs">
+      ${tab('undecided','לא נבדקו',c.left,'t-left')}
+      ${tab('keep','נשמרו',c.keep,'t-keep')}
+      ${tab('delete','נמחקו',c.del,'t-del')}
+      ${tab('maybe','לבדיקה',c.maybe,'t-maybe')}
     </div>
-    ${S.filterLabel?`<div class="filter-bar">${ICON.filter}<span>מציג רק: <b>${escapeHtml(S.filterLabel)}</b></span><button id="exitFilter">כל אנשי הקשר</button></div>`:''}
-    <div class="deck" id="deck"></div>
+    <div class="viewarea" id="viewarea"></div>
     <button class="float-back" id="floatBack" aria-label="ביטול">${ICON.back}</button>
+    <div class="search-results" id="searchResults"></div>`;
+  showFab(true);
+  app.querySelectorAll('.vtab').forEach(t=>{t.onclick=()=>{S.viewFilter=t.dataset.f;persist();renderMain();};});
+  document.getElementById('viewToggle').onclick=()=>{S.viewMode=(S.viewMode==='cards')?'list':'cards';persist();renderMain();};
+  document.getElementById('floatBack').onclick=undo;
+  setupSearch();
+  renderView();
+  if(S.history&&S.history.length>0)showFloatBack(S.history[S.history.length-1].dir);
+}
+function renderView(){
+  const area=document.getElementById('viewarea');if(!area)return;
+  if(S.viewMode==='list')renderListView(area);else renderCardsView(area);
+}
+function renderCardsView(area){
+  area.innerHTML=`<div class="deck" id="deck"></div>
     <div class="actions">
       <button class="act keep" id="actKeep" aria-label="להשאיר">${ICON.check}</button>
       <button class="act maybe" id="actMaybe" aria-label="לבדיקה">${ICON.clock}</button>
       <button class="act del" id="actDel" aria-label="מחיקה">${ICON.trash}</button>
-    </div>
-    <div class="search-results" id="searchResults"></div>`;
-  showFab(true);
+    </div>`;
   document.getElementById('actDel').onclick=()=>decide('delete');
   document.getElementById('actKeep').onclick=()=>decide('keep');
   document.getElementById('actMaybe').onclick=()=>decide('maybe');
-  document.getElementById('floatBack').onclick=undo;
-  const ef=document.getElementById('exitFilter');if(ef)ef.onclick=clearFilter;
-  setupSearch();
   renderDeck();
-  if(S.history&&S.history.length>0)showFloatBack(S.history[S.history.length-1].dir);
 }
+function renderListView(area){
+  const ids=viewIds();
+  if(!ids.length){area.innerHTML=`<div class="deck-empty">${emptyMsg()}</div>`;return;}
+  const hint=`<div class="merge-tip">${ICON.merge}<span>ימינה=שמירה · שמאלה=מחיקה · לחיצה ארוכה וגרירה=מיזוג</span></div>`;
+  const rowHTML=(id)=>{const r=recById(id);const sub=[...new Set([...(r.emails||[]),...(r.phones||[])])].join(' · ');
+    const d=S.decisions[r.id];const tag=d==='keep'?'<span class="li-tag keep">נשמר</span>':d==='maybe'?'<span class="li-tag maybe">לבדיקה</span>':d==='delete'?'<span class="li-tag del">נמחק</span>':'';
+    return `<div class="swipe-row" data-id="${id}"><div class="swipe-bg"></div><div class="list-item swipe-fg">${initialBadge(r,'li-av')}<div class="li-txt"><div class="n">${r.name?escapeHtml(r.name):'(אין שם)'}</div>${sub?`<div class="s">${escapeHtml(sub)}</div>`:''}</div>${tag}<span class="li-chev">${ICON.chevL}</span></div></div>`;};
+  area.innerHTML=`<div class="list-wrap" id="listWrap">${hint+ids.map(rowHTML).join('')}</div>`;
+  const type=(S.viewFilter==='undecided')?null:S.viewFilter;
+  const refresh=()=>{refreshTabs();renderListView(area);};
+  document.getElementById('listWrap').querySelectorAll('.swipe-row').forEach(rw=>attachContactRow(rw,{type,afterRemove:refresh,onTap:(id)=>renderContactDetail(id,(x,dir)=>{if(dir)refresh();}),onMerge:(a,b)=>doMerge(a,b,refresh)}));
+}
+function refreshTabs(){const c=counts();const upd=(sel,v)=>{const e=app&&app.querySelector(sel+' b');if(e)e.textContent=v;};upd('.t-left',c.left);upd('.t-keep',c.keep);upd('.t-del',c.del);upd('.t-maybe',c.maybe);}
 function setupSearch(){
   const brandBox=document.getElementById('brandBox');
   const searchWrap=document.getElementById('searchWrap');
   const searchInput=document.getElementById('searchInput');
   const searchBtn=document.getElementById('searchBtn');
   const searchClose=document.getElementById('searchClose');
-  const statsEl=app.querySelector('.stats');
-  const deckEl=document.getElementById('deck');
-  const actionsEl=app.querySelector('.actions');
-  const filterEl=app.querySelector('.filter-bar');
+  const tabsEl=app.querySelector('.vtabs');
+  const viewEl=document.getElementById('viewarea');
+  const toggleEl=document.getElementById('viewToggle');
   const floatEl=document.getElementById('floatBack');
   const results=document.getElementById('searchResults');
   let searchFilter='undecided';
   function open(){
     searchFilter='undecided';
-    brandBox.style.display='none';searchBtn.style.display='none';
+    brandBox.style.display='none';searchBtn.style.display='none';if(toggleEl)toggleEl.style.display='none';
     searchWrap.classList.add('show');searchClose.style.display='flex';
-    statsEl.style.display='none';deckEl.style.display='none';actionsEl.style.display='none';
-    if(filterEl)filterEl.style.display='none';if(floatEl)floatEl.style.display='none';showFab(false);
+    if(tabsEl)tabsEl.style.display='none';if(viewEl)viewEl.style.display='none';
+    if(floatEl)floatEl.style.display='none';showFab(false);
     results.classList.add('show');run();setTimeout(()=>searchInput.focus(),60);
   }
   function close(){
     searchInput.value='';results.classList.remove('show');results.innerHTML='';
     searchWrap.classList.remove('show');searchClose.style.display='none';
-    brandBox.style.display='';searchBtn.style.display='';
-    statsEl.style.display='';deckEl.style.display='';actionsEl.style.display='';
-    if(filterEl)filterEl.style.display='';if(floatEl)floatEl.style.display='';showFab(true);
+    brandBox.style.display='';searchBtn.style.display='';if(toggleEl)toggleEl.style.display='';
+    if(tabsEl)tabsEl.style.display='';if(viewEl)viewEl.style.display='';
+    if(floatEl)floatEl.style.display='';showFab(true);
   }
   function run(){
     const q=searchInput.value.trim().toLowerCase();const qd=q.replace(/\D/g,'');
@@ -964,11 +998,11 @@ function introInner(dupCount){
     </div>`;
 }
 function renderDeck(){
-  const deck=document.getElementById('deck');deck.innerHTML='';
-  const showIntro=!S.introDone;
-  const up=upcomingIds(3);
+  const deck=document.getElementById('deck');if(!deck)return;deck.innerHTML='';
+  const ids=viewIds();
+  const showIntro=(S.viewFilter==='undecided'&&!S.introDone);
   if(showIntro){
-    for(let d=2;d>=1;d--){const id=up[d-1];if(id===undefined)continue;
+    for(let d=2;d>=1;d--){const id=ids[d-1];if(id===undefined)continue;
       const rec=recById(id);const card=document.createElement('div');
       card.className='card '+(d===1?'behind1':'behind2');
       card.innerHTML=cardInner(rec);deck.appendChild(card);}
@@ -980,7 +1014,8 @@ function renderDeck(){
     attachDrag(card,true);
     return;
   }
-  for(let d=2;d>=0;d--){const id=up[d];if(id===undefined)continue;
+  if(!ids.length){const e=document.createElement('div');e.className='deck-empty';e.textContent=emptyMsg();deck.appendChild(e);return;}
+  for(let d=2;d>=0;d--){const id=ids[d];if(id===undefined)continue;
     const rec=recById(id);const card=document.createElement('div');
     card.className='card'+(d===1?' behind1':d===2?' behind2':'');
     card.innerHTML=cardInner(rec);deck.appendChild(card);
@@ -1010,7 +1045,9 @@ function attachDrag(card,isIntro){
     if(!active)return;active=false;
     const ax=Math.abs(dx),ay=Math.abs(dy),TH=86;let dir=null;
     if(ax>ay&&ax>TH)dir=dx>0?'keep':'delete';else if(ay>=ax&&ay>TH)dir='maybe';
-    if(dir){flyOut(card,dir);if(isIntro)setTimeout(dismissIntro,180);else decide(dir,true);}
+    if(dir&&!isIntro&&dir===S.viewFilter){
+      card.style.transition='transform .3s';card.style.transform='';if(sKeep)sKeep.style.opacity=sDel.style.opacity=sMaybe.style.opacity=0;setTint('transparent',0);
+    } else if(dir){flyOut(card,dir);if(isIntro)setTimeout(dismissIntro,180);else decide(dir,true);}
     else{card.style.transition='transform .25s';card.style.transform='';if(sKeep)sKeep.style.opacity=sDel.style.opacity=sMaybe.style.opacity=0;setTint('transparent',0);}
     dx=dy=0;
   }
@@ -1024,21 +1061,24 @@ function flyOut(card,dir){card.style.transition='transform .35s ease-out, opacit
 
 /* ===== decisions ===== */
 function decide(dir,fromDrag){
-  const idx=currentIndex();if(idx<0)return;
-  const id=S.order[idx];
-  S.decisions[id]=dir;S.history.push({id,dir,idx});S.pos=idx+1;persist();
-  const go=()=>{if(currentIndex()<0){if(S.filterLabel){toast('סיימת את הסינון');renderFilters();}else renderDone();}else{refreshCounts();renderDeck();showFloatBack(dir);}};
+  const ids=viewIds();const id=ids[0];if(id===undefined)return;
+  if(dir===S.viewFilter){if(fromDrag)renderDeck();return;}
+  const prev=S.decisions[id];
+  S.decisions[id]=dir;S.history.push({id,prev,dir});persist();
+  const go=()=>{refreshTabs();renderDeck();showFloatBack(dir);};
   if(fromDrag)setTimeout(go,180);else go();
 }
 function undo(){
   if(S.history.length===0)return;
-  const last=S.history.pop();delete S.decisions[last.id];S.pos=(last.idx!==undefined)?last.idx:Math.max(0,S.pos-1);persist();
+  const last=S.history.pop();
+  if(last.prev===undefined)delete S.decisions[last.id];else S.decisions[last.id]=last.prev;
+  persist();
   if(document.getElementById('deck')){
-    refreshCounts();renderDeck();
+    refreshTabs();renderDeck();
     const deck=document.getElementById('deck');const live=deck.lastElementChild;
-    if(live&&!live.classList.contains('intro'))animateInFrom(live,last.dir);
+    if(live&&live.classList.contains('card')&&!live.classList.contains('intro'))animateInFrom(live,last.dir);
     if(S.history.length>0)showFloatBack(S.history[S.history.length-1].dir);else hideFloatBack();
-  }else renderMain();
+  }else{refreshTabs();renderView();if(S.history.length>0)showFloatBack(S.history[S.history.length-1].dir);else hideFloatBack();}
 }
 let floatT;
 function showFloatBack(dir){
@@ -1064,10 +1104,10 @@ function animateInFrom(card,dir){
     card.style.transform='';
   });
 }
-function refreshCounts(){const c=counts();const set=(i,v)=>{const e=document.getElementById(i);if(e)e.textContent=v;};set('s-left',c.left);set('s-keep',c.keep);set('s-del',c.del);set('s-maybe',c.maybe);}
+function refreshCounts(){refreshTabs();}
 
 /* ===== menu & lists ===== */
-function goHome(){ if(!S)return; if(S.filterLabel){clearFilter();return;} if(currentIndex()<0)renderDone(); else renderMain(); }
+function goHome(){ if(!S)return; if(S.filterLabel){clearFilter();return;} renderMain(); }
 function resetApp(){try{localStorage.removeItem(KEY);}catch(e){}S=null;renderUpload(null);}
 function uiConfirm(msg,onYes){
   const ov=document.createElement('div');ov.className='confirm-backdrop';
@@ -1088,13 +1128,9 @@ function renderMenu(){
       <div class="drawer-scroll" id="dScroll">
       <div class="dhead"><div class="dt">תפריט</div></div>
       <div class="menu-list">
-        <button class="i-home" id="m-home">${ICON.home} מסך המיון</button>
-        <button class="i-dup" id="m-all">${ICON.list} כל אנשי הקשר (רשימה)</button>
+        <button class="i-home" id="m-home">${ICON.home} מסך הבית</button>
         <button class="i-filt" id="m-filter">${ICON.filter} סינון מהיר</button>
         <button class="i-dup" id="m-dup">${ICON.merge} מיזוג כפילויות (${dups})</button>
-        <button class="i-del" id="m-del">${ICON.trash} נמחקו (${c.del})</button>
-        <button class="i-maybe" id="m-maybe">${ICON.clock} לבדיקה מאוחרת (${c.maybe})</button>
-        <button class="i-keep" id="m-keep">${ICON.check} נשמרו (${c.keep})</button>
         <button class="i-export" id="m-export">${ICON.down} ייצוא רשימה נקייה</button>
         <button class="danger" id="m-reset">↺ התחל מחדש</button>
       </div></div></div>`;
@@ -1119,12 +1155,8 @@ function renderMenu(){
   scroll.addEventListener('pointerup',upDrag);scroll.addEventListener('pointercancel',upDrag);
   scroll.addEventListener('click',e=>{if(moved){e.stopPropagation();e.preventDefault();moved=false;}},true);
   drawer.querySelector('#m-home').onclick=()=>close(goHome);
-  drawer.querySelector('#m-all').onclick=()=>close(renderAllContacts);
   drawer.querySelector('#m-filter').onclick=()=>close(renderFilters);
   drawer.querySelector('#m-dup').onclick=()=>close(renderDuplicates);
-  drawer.querySelector('#m-del').onclick=()=>close(()=>renderList('delete','נמחקו'));
-  drawer.querySelector('#m-maybe').onclick=()=>close(()=>renderList('maybe','לבדיקה מאוחרת'));
-  drawer.querySelector('#m-keep').onclick=()=>close(()=>renderList('keep','נשמרו'));
   drawer.querySelector('#m-export').onclick=()=>close(()=>renderDone());
   drawer.querySelector('#m-reset').onclick=()=>close(()=>uiConfirm('לאפס? כל המיון יימחק ותחזור למסך ההעלאה.',resetApp));
 }
@@ -1180,7 +1212,7 @@ function renderDuplicates(){
   const body=groups.length===0?`<div class="empty-note">לא נמצאו כפילויות 🎉</div>`:groups.map(groupHTML).join('');
   ov.innerHTML=`<div class="screen-head"><h2>מיזוג כפילויות (${groups.length})</h2><button class="close">✕</button></div><div class="screen-body" id="dupBody">${body}</div>`;
   app.appendChild(ov);
-  ov.querySelector('.close').onclick=()=>closeScreen(ov,()=>{if(document.getElementById('s-left'))refreshCounts();});
+  ov.querySelector('.close').onclick=()=>closeScreen(ov,()=>{refreshTabs();});
   const updateHead=()=>{const left=ov.querySelectorAll('.dup-group').length;const hh=ov.querySelector('h2');if(hh)hh.textContent=`מיזוג כפילויות (${left})`;
     if(left===0){ov.querySelector('#dupBody').innerHTML=`<div class="empty-note">סיימת עם הכפילויות 🎉</div>`;}};
   ov.querySelectorAll('.dup-member').forEach(m=>{m.onclick=()=>{const gid=m.dataset.gid;sel[gid]=m.dataset.id;
@@ -1188,7 +1220,7 @@ function renderDuplicates(){
   ov.querySelectorAll('.dup-merge').forEach(b=>{b.onclick=()=>{const gid=b.dataset.gid;const grp=groups[gid];
     const finish=()=>{const el=ov.querySelector(`.dup-group[data-gid="${gid}"]`);if(!el)return;el.style.transition='opacity .25s, transform .25s';el.style.opacity='0';el.style.transform='translateY(-8px)';
       setTimeout(()=>{el.remove();updateHead();},260);
-      if(document.getElementById('s-left'))refreshCounts();toast('מוזג');};
+      refreshTabs();toast('מוזג');};
     const f=collectMergeFields(grp);
     openMergePicker(grp,sel[gid],f,finish);};});
   ov.querySelectorAll('.dup-skip').forEach(b=>{b.onclick=()=>{const gid=b.dataset.gid;
@@ -1280,7 +1312,7 @@ function renderAllContacts(){
   const ov=document.createElement('div');ov.className='screen';
   ov.innerHTML=`<div class="screen-head"><h2 id="allTitle">כל אנשי הקשר</h2><button class="close">✕</button></div><div class="screen-body" id="allBody"></div>`;
   app.appendChild(ov);
-  ov.querySelector('.close').onclick=()=>closeScreen(ov,()=>{if(document.getElementById('s-left'))refreshCounts();});
+  ov.querySelector('.close').onclick=()=>closeScreen(ov,()=>{refreshTabs();});
   function rowHTML(r){const sub=[...new Set([...(r.emails||[]),...(r.phones||[])])].join(' · ');
     const d=S.decisions[r.id];const tag=d==='keep'?'<span class="li-tag keep">נשמר</span>':d==='maybe'?'<span class="li-tag maybe">לבדיקה</span>':'';
     return `<div class="swipe-row" data-id="${r.id}"><div class="swipe-bg"></div><div class="list-item swipe-fg">${initialBadge(r,'li-av')}<div class="li-txt"><div class="n">${r.name?escapeHtml(r.name):'(אין שם)'}</div>${sub?`<div class="s">${escapeHtml(sub)}</div>`:''}</div>${tag}<span class="li-chev">${ICON.chevL}</span></div></div>`;}
@@ -1371,11 +1403,11 @@ function renderList(type,title){
     `<div class="swipe-hint"><span class="sh-side del"><span class="sa-arrow">${ICON.chevL}</span>${ICON.trash}</span><span class="sh-side keep">${ICON.check}<span class="sa-arrow">${ICON.chevR}</span></span></div>`+ids.map(rowHTML).join('');
   ov.innerHTML=`<div class="screen-head"><h2>${title} (${ids.length})</h2><button class="close">✕</button></div><div class="screen-body">${body}</div>`;
   app.appendChild(ov);
-  ov.querySelector('.close').onclick=()=>closeScreen(ov,()=>{if(document.getElementById('s-left'))refreshCounts();});
+  ov.querySelector('.close').onclick=()=>closeScreen(ov,()=>{refreshTabs();});
   const afterRemove=()=>{const remaining=S.records.filter(r=>S.decisions[r.id]===type).length;
     const hh=ov.querySelector('h2');if(hh)hh.textContent=`${title} (${remaining})`;
     if(remaining===0){const sb=ov.querySelector('.screen-body');if(sb)sb.innerHTML=`<div class="empty-note">אין כאן אף אחד עדיין.</div>`;}
-    if(document.getElementById('s-left'))refreshCounts();};
+    refreshTabs();};
   const openDetail=(id)=>renderContactDetail(id,(rid,dir)=>{
     if(dir&&dir!==type){const rw=ov.querySelector(`.swipe-row[data-id="${rid}"]`);
       if(rw){rw.style.transition='opacity .2s';rw.style.opacity='0';setTimeout(()=>{rw.remove();afterRemove();},200);}}});
