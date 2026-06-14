@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>SweepApp — ניקוי אנשי קשר</title>
+<title>Sweep — ניקוי אנשי קשר</title>
 <meta name="description" content="ניקוי, מיזוג וסידור אנשי קשר — CSV ו-vCard">
 <meta name="theme-color" content="#179a93">
 <link rel="manifest" href="sweepapp.webmanifest">
@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="SweepApp">
+<meta name="apple-mobile-web-app-title" content="Sweep">
 <style>
   :root{
     --surface:#ffffff;
@@ -390,12 +390,15 @@
   .search-chip:active{transform:scale(.95);}
   /* ===== unified main: filter tabs + view area ===== */
   .vtabs{flex:0 0 auto;display:flex;gap:7px;padding:4px 14px 10px;}
-  .vtab{flex:1;background:rgba(255,255,255,.2);border:none;border-radius:14px;padding:8px 3px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;color:#fff;font-family:inherit;transition:transform .12s;}
-  .vtab b{font-size:17px;font-weight:800;line-height:1;}
-  .vtab span{font-size:10.5px;font-weight:600;opacity:.92;white-space:nowrap;}
+  .vtab{flex:1;min-width:0;background:rgba(255,255,255,.2);border:none;border-radius:13px;padding:7px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;color:#fff;font-family:inherit;transition:transform .12s;}
+  .vtab b{font-size:16px;font-weight:800;line-height:1;}
+  .vtab span{font-size:9.5px;font-weight:600;opacity:.92;white-space:nowrap;}
   .vtab.on{background:#fff;color:var(--ink);box-shadow:0 6px 16px -8px rgba(10,60,60,.5);}
   .vtab.on b{color:var(--ink);}
   .vtab:active{transform:scale(.94);}
+  .vtab-toggle{flex:0 0 auto;width:44px;background:rgba(255,255,255,.2);border:none;border-radius:13px;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .12s;}
+  .vtab-toggle svg{width:22px;height:22px;}
+  .vtab-toggle:active{transform:scale(.92);}
   .viewarea{flex:1 1 auto;display:flex;flex-direction:column;min-height:0;position:relative;}
   .viewarea .deck{flex:1 1 auto;}
   .list-wrap{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 16px 22px;min-height:0;}
@@ -835,7 +838,7 @@ function renderUpload(p){
       <button class="btn primary" id="resumeBtn" style="width:100%;margin-bottom:8px;">המשך מאיפה שהפסקתי</button>
       <button class="small-link" id="discardBtn">התחל מחדש</button></div>`:'';
   app.innerHTML=`
-    <div class="topbar"><div class="brand"><span class="logo">Sweep<span class="logo-app">App</span></span><small>swipe · sweep · done</small></div></div>
+    <div class="topbar"><div class="brand"><span class="logo">Sweep</span><small>swipe · sweep · done</small></div></div>
     <div class="broomrow"><img class="broom" src="data:image/png;base64,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" alt="SweepApp"></div>
     <div class="center">
       <div class="sub">${MY_CONTACTS_COUNT>0?'טען את אנשי הקשר שהעלית, נסה רשימת הדגמה, או העלה קובץ ':'נסה רשימת הדגמה, או העלה קובץ '}<b>CSV</b> / <b>vCard</b> משלך.</div>
@@ -869,10 +872,9 @@ function renderMain(){
   const tab=(key,label,n,cls)=>`<button class="vtab ${cls}${S.viewFilter===key?' on':''}" data-f="${key}"><b>${n}</b><span>${label}</span></button>`;
   app.innerHTML=`
     <div class="topbar">
-      <div class="brand" id="brandBox"><span class="logo">Sweep<span class="logo-app">App</span></span><small>${escapeHtml(S.fileName)}</small></div>
+      <div class="brand" id="brandBox"><span class="logo">Sweep</span><small>${escapeHtml(S.fileName)}</small></div>
       <div class="searchwrap" id="searchWrap"><input id="searchInput" class="topsearch" type="text" placeholder="חיפוש שם, מייל או טלפון..."/></div>
-      <button class="menu-btn" id="viewToggle" style="margin-inline-start:auto" aria-label="תצוגה">${S.viewMode==='cards'?ICON.list:ICON.grid}</button>
-      <button class="menu-btn" id="searchBtn" aria-label="חיפוש">${ICON.search}</button>
+      <button class="menu-btn" id="searchBtn" style="margin-inline-start:auto" aria-label="חיפוש">${ICON.search}</button>
       <button class="menu-btn" id="searchClose" aria-label="סגירת חיפוש">${ICON.chevR}</button>
     </div>
     <div class="vtabs">
@@ -880,6 +882,7 @@ function renderMain(){
       ${tab('keep','נשמרו',c.keep,'t-keep')}
       ${tab('delete','נמחקו',c.del,'t-del')}
       ${tab('maybe','לבדיקה',c.maybe,'t-maybe')}
+      <button class="vtab-toggle" id="viewToggle" aria-label="החלפת תצוגה">${S.viewMode==='cards'?ICON.list:ICON.grid}</button>
     </div>
     <div class="viewarea" id="viewarea"></div>
     <button class="float-back" id="floatBack" aria-label="ביטול">${ICON.back}</button>
@@ -1276,7 +1279,8 @@ function attachContactRow(row,opts){
   function down(e){if(e.pointerType==='mouse'&&e.button!==0)return;
     sx=e.clientX;sy=e.clientY;dx=dy=0;mode='';downT=Date.now();
     try{fg.setPointerCapture(e.pointerId);}catch(_){}
-    fg.style.transition='none';clearLP();lpTimer=setTimeout(()=>{if(mode==='')enterDrag();},LP);}
+    fg.style.transition='none';clearLP();
+    if(opts.onMerge&&e.pointerType!=='mouse')lpTimer=setTimeout(()=>{if(mode==='')enterDrag();},LP);}
   function move(e){dx=e.clientX-sx;dy=e.clientY-sy;
     if(mode===''){
       if(Math.abs(dx)>MOVE||Math.abs(dy)>MOVE){clearLP();
@@ -1291,7 +1295,7 @@ function attachContactRow(row,opts){
     else if(mode==='drag'){fg.classList.remove('dragging');const tgt=target;clearTarget();
       fg.style.transition='transform .2s';fg.style.transform='';
       if(tgt&&tgt.dataset.id&&tgt.dataset.id!==id)opts.onMerge&&opts.onMerge(id,tgt.dataset.id);}
-    else if(mode===''){snap();if(Date.now()-downT<LP&&opts.onTap)opts.onTap(id);}
+    else if(mode===''){snap();if(opts.onTap)opts.onTap(id);}
     else snap();
     mode='';}
   function cancel(){clearLP();if(mode==='drag'){fg.classList.remove('dragging');clearTarget();fg.style.transition='transform .2s';fg.style.transform='';}else if(mode==='swipe')snap();mode='';}
@@ -1417,7 +1421,7 @@ function renderList(type,title){
 /* ===== done ===== */
 function renderDone(){
   const c=counts();const clean=S.records.filter(r=>S.decisions[r.id]!=='delete').length;
-  app.innerHTML=`<div class="topbar"><div class="brand"><span class="logo">Sweep<span class="logo-app">App</span></span><small>סיכום · ${escapeHtml(S.fileName)}</small></div></div>
+  app.innerHTML=`<div class="topbar"><div class="brand"><span class="logo">Sweep</span><small>סיכום · ${escapeHtml(S.fileName)}</small></div></div>
     <div class="center">
       <div class="done-emoji">${c.left>0?'📂':'🎉'}</div>
       <div class="title-xl">${c.left>0?'אפשר לייצא בכל שלב':'סיימת לעבור על הכל'}</div>
