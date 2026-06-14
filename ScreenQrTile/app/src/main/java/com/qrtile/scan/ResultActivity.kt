@@ -27,7 +27,7 @@ class ResultActivity : Activity() {
         }
 
         val label = TextView(this).apply {
-            text = getString(R.string.decoded_content)
+            this.text = getString(R.string.decoded_content)
             textSize = 13f
             alpha = 0.6f
         }
@@ -38,7 +38,7 @@ class ResultActivity : Activity() {
             setPadding(0, pad / 2, 0, pad)
         }
         val copy = Button(this).apply {
-            text = getString(R.string.copy)
+            this.text = getString(R.string.copy)
             setOnClickListener {
                 val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 cm.setPrimaryClip(ClipData.newPlainText("QR", text))
