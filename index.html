@@ -48,8 +48,8 @@
       letter-spacing:.5px}
 
   /* ===== Cards grid ===== */
-  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:13px}
-  @media(max-width:760px){.grid{grid-template-columns:repeat(2,1fr)}}
+  .grid{display:grid;grid-template-columns:repeat(4,250px);justify-content:center;gap:13px;margin-top:13px}
+  @media(max-width:1080px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
   .app-card{position:relative;display:flex;flex-direction:column;background:#fff;border:1px solid var(--border);
       border-radius:var(--radius-lg);padding:16px 16px 14px;box-shadow:var(--shadow-sm);overflow:hidden;
       transition:transform .25s ease,box-shadow .25s ease}
@@ -176,13 +176,7 @@
       <span class="app-card__go">להורדה <i class="fa-solid fa-arrow-left"></i></span>
     </a>
 
-  </div>
-
-  <h2 class="section__title">רעיונות לאפליקציות</h2>
-  <p class="ideas__sub">כל הרעיונות שלי במקום אחד — מה שבבנייה ומה שעוד מחכה לתורו. שום רעיון לא נמחק.</p>
-  <div class="grid">
-
-    <div class="app-card app-card--blue">
+    <div class="app-card app-card--mint">
       <div class="app-card__icon"><i class="fa-solid fa-broom"></i></div>
       <span class="app-card__tag app-card__tag--building">בבנייה</span>
       <h3 class="app-card__title">Sweep</h3>
@@ -196,6 +190,12 @@
         <div class="app-card__tech-row"><i class="fa-brands fa-github"></i><span><b>פריסה:</b> GitHub Actions ל-<code>APK</code> (תג <code>sweep-latest</code>)</span></div>
       </div>
     </div>
+
+  </div>
+
+  <h2 class="section__title">רעיונות לאפליקציות</h2>
+  <p class="ideas__sub">כל הרעיונות שלי במקום אחד — מה שבבנייה ומה שעוד מחכה לתורו. שום רעיון לא נמחק.</p>
+  <div class="grid">
 
     <div class="app-card app-card--blue app-card--idea">
       <div class="app-card__icon"><i class="fa-solid fa-square-parking"></i></div>

@@ -303,7 +303,9 @@ function openPaletteSheet(){
   sheet.querySelectorAll('.sw').forEach(b=>b.onclick=()=>{cfg.palette=+b.dataset.i;applyPalette(cfg.palette);saveCfg();sheet.querySelectorAll('.sw').forEach(x=>x.classList.toggle('on',x===b));});
 }
 
-function positionFab(){const f=document.getElementById('menuFab');if(!f)return;const lh=cfg.hand==='left';f.classList.toggle('left',lh);f.innerHTML=lh?ICON.dotsDiagL:ICON.dotsDiag;}
+let dotRot=0;
+function positionFab(){const f=document.getElementById('menuFab');if(!f)return;f.classList.toggle('left',cfg.hand==='left');}
+function applyDot(animate){const f=document.getElementById('menuFab');if(!f)return;const svg=f.querySelector('svg');if(!svg)return;svg.style.transformOrigin='50% 50%';svg.style.transition=animate?'transform .42s cubic-bezier(.34,1.5,.5,1)':'none';svg.style.transform='rotate('+dotRot+'deg)';}
 function toggleHand(){
   const f=document.getElementById('menuFab');
   const newHand=(cfg.hand==='left')?'right':'left';
@@ -314,16 +316,18 @@ function toggleHand(){
   f.style.setProperty('--dx',(tgt-cur)+'px');
   f.style.animation='none'; void f.offsetWidth;
   f.style.animation='fabHop .78s linear forwards';
-  const done=()=>{f.removeEventListener('animationend',done);f.style.animation='';f.style.transform='';f.style.removeProperty('--dx');positionFab();};
+  const done=()=>{f.removeEventListener('animationend',done);f.style.animation='';f.style.transform='';f.style.removeProperty('--dx');positionFab();dotRot-=90;applyDot(true);};
   f.addEventListener('animationend',done);
   toast(newHand==='left'?'יד שמאל':'יד ימין');
 }
 
 const menuFab=document.createElement('button');
 menuFab.className='fab-menu';menuFab.id='menuFab';menuFab.setAttribute('aria-label','תפריט');
+menuFab.innerHTML=ICON.dotsDiag;
 menuFab.onclick=()=>openHbar();
 document.body.appendChild(menuFab);
-positionFab();
+dotRot=(cfg.hand==='left')?-90:0;
+positionFab();applyDot(false);
 
 function openHbar(){
   if(document.querySelector('.hbar-backdrop'))return;
