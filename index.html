@@ -329,6 +329,12 @@
 
     
     
+    <div class="app-card app-card--purple app-card--idea">
+      <div class="app-card__icon"><i class="fa-solid fa-file-lines"></i></div>
+      <span class="app-card__tag app-card__tag--soon">בקרוב</span>
+      <h3 class="app-card__title">All Text</h3>
+    </div>
+
     <div class="app-card app-card--soon">
       <div class="app-card__icon"><i class="fa-solid fa-plus"></i></div>
       <h3 class="app-card__title">הוסף רעיון</h3>
@@ -338,76 +344,5 @@
 </main>
 
 <footer>אפליקציות אלעד · אזור אישי</footer>
-
-<script>
-(function(){
-  var LS_R='eladApps.renames', LS_D='eladApps.deleted';
-  var renames={}, deleted=[];
-  try{ renames=JSON.parse(localStorage.getItem(LS_R)||'{}'); }catch(e){}
-  try{ deleted=JSON.parse(localStorage.getItem(LS_D)||'[]'); }catch(e){}
-  var delSet=new Set(deleted);
-  function save(){ try{ localStorage.setItem(LS_R,JSON.stringify(renames)); localStorage.setItem(LS_D,JSON.stringify([].concat(Array.from(delSet)))); }catch(e){} }
-
-  var css=''
-   +'.ec-edit{position:absolute;top:10px;left:10px;z-index:5;width:28px;height:28px;border-radius:50%;'
-   +'border:1px solid var(--border);background:#fff;color:var(--text-light);cursor:pointer;display:grid;'
-   +'place-items:center;font-size:.78rem;opacity:0;transition:opacity .15s;box-shadow:var(--shadow-sm)}'
-   +'.app-card:hover .ec-edit{opacity:1}'
-   +'@media (hover:none){.ec-edit{opacity:.55}}'
-   +'.ec-panel{position:absolute;inset:0;z-index:6;background:rgba(255,255,255,.97);border-radius:var(--radius-lg);'
-   +'display:flex;flex-direction:column;gap:9px;padding:14px;justify-content:center}'
-   +'.ec-panel input{font:inherit;font-size:.95rem;padding:8px 10px;border:1px solid var(--border);border-radius:10px;width:100%;text-align:right;box-sizing:border-box}'
-   +'.ec-row{display:flex;gap:8px}'
-   +'.ec-btn{flex:1;padding:8px;border-radius:10px;border:1px solid var(--border);background:#fff;cursor:pointer;font:inherit;font-size:.82rem;font-weight:700}'
-   +'.ec-save{background:var(--teal);border-color:var(--teal-dark);color:#0c3a40}'
-   +'.ec-del{color:#b03a4e;border-color:#f0c0cb}'
-   +'.ec-del.confirm{background:#f7a5b8;border-color:#e87f97;color:#5a1322}'
-   +'.ec-cancel{color:var(--text-light)}';
-  var st=document.createElement('style'); st.textContent=css; document.head.appendChild(st);
-
-  function stop(e){ e.preventDefault(); e.stopPropagation(); }
-
-  function openPanel(card,titleEl,key){
-    if(card.querySelector('.ec-panel')) return;
-    var panel=document.createElement('div'); panel.className='ec-panel'; panel.addEventListener('click',stop);
-    var input=document.createElement('input'); input.value=titleEl.textContent.trim(); input.setAttribute('aria-label','שם האפליקציה');
-    var row=document.createElement('div'); row.className='ec-row';
-    var saveb=document.createElement('button'); saveb.className='ec-btn ec-save'; saveb.textContent='שמור';
-    var cancel=document.createElement('button'); cancel.className='ec-btn ec-cancel'; cancel.textContent='ביטול';
-    var delb=document.createElement('button'); delb.className='ec-btn ec-del'; delb.textContent='מחק';
-    row.appendChild(saveb); row.appendChild(cancel);
-    panel.appendChild(input); panel.appendChild(row); panel.appendChild(delb);
-    card.appendChild(panel); input.focus(); input.select();
-    function close(){ panel.remove(); }
-    saveb.addEventListener('click',function(e){ stop(e); var v=input.value.trim(); if(v){ titleEl.textContent=v; renames[key]=v; save(); } close(); });
-    input.addEventListener('keydown',function(e){ if(e.key==='Enter'){ saveb.click(); } if(e.key==='Escape'){ close(); } });
-    cancel.addEventListener('click',function(e){ stop(e); close(); });
-    var armed=false, t;
-    delb.addEventListener('click',function(e){ stop(e);
-      if(!armed){ armed=true; delb.classList.add('confirm'); delb.textContent='למחוק? לחצו שוב'; t=setTimeout(function(){ armed=false; delb.classList.remove('confirm'); delb.textContent='מחק'; },3000); return; }
-      clearTimeout(t); delSet.add(key); save(); card.remove();
-    });
-  }
-
-  var cards=document.querySelectorAll('.app-card');
-  for(var i=0;i<cards.length;i++){
-    (function(card){
-      if(card.classList.contains('app-card--soon')) return;
-      var titleEl=card.querySelector('.app-card__title');
-      if(!titleEl) return;
-      var key=titleEl.textContent.trim();
-      card.setAttribute('data-key',key);
-      if(delSet.has(key)){ card.remove(); return; }
-      if(renames[key]){ titleEl.textContent=renames[key]; }
-      var btn=document.createElement('button');
-      btn.className='ec-edit'; btn.title='עריכה'; btn.setAttribute('aria-label','עריכת '+key);
-      btn.innerHTML='<i class="fa-solid fa-pen" aria-hidden="true"></i>';
-      btn.addEventListener('click',function(e){ stop(e); openPanel(card,titleEl,key); });
-      card.appendChild(btn);
-    })(cards[i]);
-  }
-})();
-</script>
-
 </body>
 </html>
