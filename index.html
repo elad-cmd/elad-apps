@@ -48,7 +48,8 @@
       letter-spacing:.5px}
 
   /* ===== Cards grid ===== */
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:13px;margin-top:13px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:13px}
+  @media(max-width:760px){.grid{grid-template-columns:repeat(2,1fr)}}
   .app-card{position:relative;display:flex;flex-direction:column;background:#fff;border:1px solid var(--border);
       border-radius:var(--radius-lg);padding:16px 16px 14px;box-shadow:var(--shadow-sm);overflow:hidden;
       transition:transform .25s ease,box-shadow .25s ease}
@@ -327,18 +328,8 @@
       <h3 class="app-card__title">מונה ניקוד לקלפים</h3>
     </div>
 
-    <div class="app-card app-card--gray app-card--idea app-card--dropped">
-      <div class="app-card__icon"><i class="fa-solid fa-qrcode"></i></div>
-      <span class="app-card__tag app-card__tag--dropped">ירד</span>
-      <h3 class="app-card__title">מחולל QR לאורחים</h3>
-    </div>
-
-    <div class="app-card app-card--gray app-card--idea app-card--dropped">
-      <div class="app-card__icon"><i class="fa-solid fa-font"></i></div>
-      <span class="app-card__tag app-card__tag--dropped">ירד</span>
-      <h3 class="app-card__title">מנקה טקסט</h3>
-    </div>
-
+    
+    
     <div class="app-card app-card--soon">
       <div class="app-card__icon"><i class="fa-solid fa-plus"></i></div>
       <h3 class="app-card__title">הוסף רעיון</h3>
