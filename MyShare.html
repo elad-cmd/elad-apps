@@ -58,14 +58,15 @@
   .hbar-backdrop{position:fixed;inset:0;z-index:44;background:rgba(8,40,42,0);transition:background .22s;}
   .hbar-backdrop.show{background:rgba(8,40,42,.4);}
   .hbar{position:fixed;inset:0;z-index:45;pointer-events:none;}
-  .hm-item{position:absolute;pointer-events:auto;background:none;border:none;cursor:pointer;display:flex;direction:rtl;align-items:center;gap:9px;padding:0;opacity:0;}
+  .hm-item{position:absolute;pointer-events:auto;background:none;border:none;cursor:pointer;width:50px;height:50px;padding:0;opacity:0;}
   .hbar.run .hm-item{animation:hmIn var(--dur,.5s) cubic-bezier(.22,.82,.4,1) both;}
   .hbar.closing .hm-item{animation:hmOut var(--cdur,.4s) cubic-bezier(.5,.04,.7,.32) both;animation-delay:calc(var(--r,0)*.04s);}
   @keyframes hmIn{0%{opacity:0;transform:translate(var(--sx,0),var(--sy,0)) scale(.35);}30%{opacity:1;}100%{opacity:1;transform:translate(0,0) scale(1);}}
   @keyframes hmOut{0%{opacity:1;transform:translate(0,0) scale(1);}60%{opacity:.85;}100%{opacity:0;transform:translate(var(--sx,0),var(--sy,0)) scale(.35);}}
-  .hm-label{white-space:nowrap;font-size:13px;font-weight:700;color:#fff;background:rgba(8,40,42,.74);padding:7px 13px;border-radius:999px;}
-  .hm-ic{width:50px;height:50px;border-radius:50%;background:var(--white);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px -8px rgba(8,50,50,.6);flex:0 0 auto;color:var(--tq-ink);}
+  .hm-ic{width:50px;height:50px;border-radius:50%;background:var(--white);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px -8px rgba(8,50,50,.6);color:var(--tq-ink);}
   .hm-ic svg{width:23px;height:23px;}
+  .hm-label{position:absolute;top:50%;right:58px;transform:translateY(-50%);white-space:nowrap;font-size:13px;font-weight:700;color:#fff;background:rgba(8,40,42,.74);padding:7px 13px;border-radius:999px;}
+  .hbar.hand-left .hm-label{right:auto;left:58px;}
 
   .toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:var(--tq-ink);color:#fff;padding:11px 20px;border-radius:14px;font-weight:600;font-size:14px;z-index:99;opacity:0;transition:opacity .2s;pointer-events:none;box-shadow:0 12px 28px -10px rgba(0,0,0,.4);}
   .toast.show{opacity:1;}
@@ -124,6 +125,7 @@ const ICON={
   refresh:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>',
   shareapp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>',
   dotsDiag:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="19" r="2.1"/><circle cx="12" cy="12" r="2.1"/><circle cx="19" cy="5" r="2.1"/></svg>',
+  dotsDiagL:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5" r="2.1"/><circle cx="12" cy="12" r="2.1"/><circle cx="19" cy="19" r="2.1"/></svg>',
   link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>'
 };
 
@@ -290,12 +292,12 @@ function openPaletteSheet(){
   sheet.querySelectorAll('.sw').forEach(b=>b.onclick=()=>{cfg.palette=+b.dataset.i;applyPalette(cfg.palette);saveCfg();sheet.querySelectorAll('.sw').forEach(x=>x.classList.toggle('on',x===b));});
 }
 
-function positionFab(){const f=document.getElementById('menuFab');if(!f)return;f.classList.toggle('left',cfg.hand==='left');}
+function positionFab(){const f=document.getElementById('menuFab');if(!f)return;const lh=cfg.hand==='left';f.classList.toggle('left',lh);f.innerHTML=lh?ICON.dotsDiagL:ICON.dotsDiag;}
 function toggleHand(){cfg.hand=(cfg.hand==='left')?'right':'left';saveCfg();positionFab();toast(cfg.hand==='left'?'יד שמאל':'יד ימין');}
 
 const menuFab=document.createElement('button');
 menuFab.className='fab-menu';menuFab.id='menuFab';menuFab.setAttribute('aria-label','תפריט');
-menuFab.innerHTML=ICON.dotsDiag;menuFab.onclick=()=>openHbar();
+menuFab.onclick=()=>openHbar();
 document.body.appendChild(menuFab);
 positionFab();
 
@@ -311,9 +313,10 @@ function openHbar(){
   const n=items.length;
   const STEP=Math.max(44,Math.min(56,(window.innerWidth-130)/(n-1)));
   const BX=window.innerWidth-110, BY=98;
-  const posProp = (cfg.hand==='left') ? 'left' : 'right';
+  const lh = (cfg.hand==='left');
+  const posProp = lh ? 'left' : 'right';
   const bd=document.createElement('div');bd.className='hbar-backdrop';
-  const bar=document.createElement('div');bar.className='hbar';
+  const bar=document.createElement('div');bar.className='hbar'+(lh?' hand-left':'');
   bar.innerHTML=items.map((it,i)=>{
     const off=Math.round(BX-i*STEP), bottom=Math.round(BY+i*STEP);
     const dur=(0.32+i*0.05).toFixed(2), cdur=(0.26+i*0.03).toFixed(2);
