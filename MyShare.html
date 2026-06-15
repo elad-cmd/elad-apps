@@ -117,8 +117,8 @@
   .hm-ic{width:50px;height:50px;border-radius:50%;background:var(--white);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px -8px rgba(8,50,50,.6);color:var(--tq-ink);transition:transform .16s cubic-bezier(.34,1.56,.64,1), background .16s ease, color .16s ease;}
   .hm-item.tapped .hm-ic{transform:scale(1.22);background:var(--tq-deep);color:#fff;box-shadow:0 16px 34px -8px rgba(8,50,50,.75);}
   .hm-ic svg{width:23px;height:23px;}
-  .hm-label{position:absolute;top:2px;right:52px;white-space:nowrap;font-size:13px;font-weight:700;color:var(--tq-ink);background:#fff;padding:7px 13px;border-radius:999px;box-shadow:0 6px 16px -6px rgba(0,0,0,.55);}
-  .hbar.hand-left .hm-label{right:auto;left:52px;}
+  .hm-label{position:absolute;top:50%;right:56px;transform:translateY(-50%);white-space:nowrap;font-size:13.5px;font-weight:700;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.8),0 0 2px rgba(0,0,0,.5);}
+  .hbar.hand-left .hm-label{right:auto;left:56px;}
 
   .toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:var(--tq-ink);color:#fff;padding:11px 20px;border-radius:14px;font-weight:600;font-size:14px;z-index:99;opacity:0;transition:opacity .2s;pointer-events:none;box-shadow:0 12px 28px -10px rgba(0,0,0,.4);}
   .toast.show{opacity:1;}
