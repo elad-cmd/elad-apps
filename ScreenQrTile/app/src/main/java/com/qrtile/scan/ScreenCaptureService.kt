@@ -99,17 +99,9 @@ class ScreenCaptureService : Service() {
         if (text.isNullOrBlank()) {
             Toast.makeText(this, R.string.no_qr_found, Toast.LENGTH_LONG).show()
         } else {
-            val open = QrDecoder.asOpenableIntent(text)
-            if (open != null) {
-                open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                try {
-                    startActivity(open)
-                } catch (e: Exception) {
-                    showResultScreen(text)
-                }
-            } else {
-                showResultScreen(text)
-            }
+            // Never open automatically — always show the content and let the
+            // user choose to open, copy or share it.
+            showResultScreen(text)
         }
         stopEverything()
     }
