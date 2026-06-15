@@ -90,10 +90,10 @@
   .hbar-backdrop.show{background:rgba(8,40,42,.4);}
   .hbar{position:fixed;inset:0;z-index:45;pointer-events:none;}
   .hm-item{position:absolute;pointer-events:auto;background:none;border:none;cursor:pointer;width:50px;height:50px;padding:0;opacity:0;}
-  .hbar.run .hm-item{animation:hmIn var(--dur,.5s) cubic-bezier(.22,.82,.4,1) both;}
+  .hbar.run .hm-item{animation:hmIn var(--dur,.5s) cubic-bezier(.34,1.8,.5,1) both;}
   .hbar.closing .hm-item{animation:hmOut var(--cdur,.4s) cubic-bezier(.5,.04,.7,.32) both;animation-delay:calc(var(--r,0)*.04s);}
-  @keyframes hmIn{0%{opacity:0;transform:translate(var(--sx,0),var(--sy,0)) scale(.35);}55%{opacity:1;}72%{opacity:1;transform:translate(0,0) scale(1.14);}86%{transform:translate(0,0) scale(.95);}100%{opacity:1;transform:translate(0,0) scale(1);}}
-  @keyframes hmOut{0%{opacity:1;transform:translate(0,0) scale(1);}16%{transform:translate(0,0) scale(1.09);}60%{opacity:.85;}100%{opacity:0;transform:translate(var(--sx,0),var(--sy,0)) scale(.35);}}
+  @keyframes hmIn{0%{opacity:0;transform:translate(var(--sx,0),var(--sy,0)) scale(.4);}40%{opacity:1;}100%{opacity:1;transform:translate(0,0) scale(1);}}
+  @keyframes hmOut{0%{opacity:1;transform:translate(0,0) scale(1);}18%{transform:translate(0,0) scale(1.08);}100%{opacity:0;transform:translate(var(--sx,0),var(--sy,0)) scale(.4);}}
   .hm-ic{width:50px;height:50px;border-radius:50%;background:var(--white);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px -8px rgba(8,50,50,.6);color:var(--tq-ink);}
   .hm-ic svg{width:23px;height:23px;}
   .hm-label{position:absolute;top:2px;right:52px;white-space:nowrap;font-size:13px;font-weight:700;color:#fff;background:rgba(8,40,42,.74);padding:7px 13px;border-radius:999px;}
