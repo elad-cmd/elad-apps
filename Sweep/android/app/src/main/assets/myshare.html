@@ -21,9 +21,9 @@
   .chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .chip svg{width:15px;height:15px;flex:0 0 auto;}
 
-  .list{position:absolute;inset:84px 0 0 0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;align-items:stretch;gap:14px;padding:18px 0 120px;}
-  .row{position:relative;width:100%;height:58px;cursor:pointer;touch-action:none;transition:opacity .22s ease;}
-  .row .av{position:absolute;left:65%;top:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:var(--white);color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;box-shadow:0 8px 18px -10px rgba(8,50,50,.5);}
+  .list{position:absolute;inset:84px 0 0 0;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;display:flex;flex-direction:column;align-items:stretch;gap:14px;padding:18px 0 120px;}
+  .row{position:relative;width:100%;height:58px;touch-action:pan-y;transition:opacity .22s ease;}
+  .row .av{position:absolute;left:65%;top:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:var(--white);color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;box-shadow:0 8px 18px -10px rgba(8,50,50,.5);touch-action:none;cursor:pointer;}
   .row .meta{position:absolute;right:calc(35% + 38px);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:2px;max-width:44%;text-align:right;}
   .row .nm{font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .row .sub{font-size:12.5px;font-weight:400;color:rgba(255,255,255,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -94,23 +94,23 @@
   .hbar.closing .hm-item{animation:hmOut var(--cdur,.4s) cubic-bezier(.5,.04,.7,.32) both;animation-delay:calc(var(--r,0)*.04s);}
   @keyframes hmIn{
     0%{opacity:0;transform:translate(var(--sx,0px),var(--sy,0px)) scale(0.4);}
-    5.6%{opacity:0.19;transform:translate(calc(var(--sx,0px) * 0.635),calc(var(--sy,0px) * 0.635)) scale(0.619);}
-    11.1%{opacity:0.37;transform:translate(calc(var(--sx,0px) * 0.22),calc(var(--sy,0px) * 0.22)) scale(0.868);}
-    16.7%{opacity:0.56;transform:translate(calc(var(--sx,0px) * -0.093),calc(var(--sy,0px) * -0.093)) scale(1.056);}
-    22.2%{opacity:0.74;transform:translate(calc(var(--sx,0px) * -0.248),calc(var(--sy,0px) * -0.248)) scale(1.149);}
-    27.8%{opacity:0.93;transform:translate(calc(var(--sx,0px) * -0.26),calc(var(--sy,0px) * -0.26)) scale(1.156);}
-    33.3%{opacity:1.0;transform:translate(calc(var(--sx,0px) * -0.184),calc(var(--sy,0px) * -0.184)) scale(1.111);}
-    38.9%{opacity:1.0;transform:translate(calc(var(--sx,0px) * -0.082),calc(var(--sy,0px) * -0.082)) scale(1.049);}
-    44.4%{opacity:1.0;transform:translate(calc(var(--sx,0px) * 0.004),calc(var(--sy,0px) * 0.004)) scale(0.998);}
-    50%{opacity:1.0;transform:translate(calc(var(--sx,0px) * 0.053),calc(var(--sy,0px) * 0.053)) scale(0.968);}
-    55.6%{opacity:1.0;transform:translate(calc(var(--sx,0px) * 0.065),calc(var(--sy,0px) * 0.065)) scale(0.961);}
-    61.1%{opacity:1.0;transform:translate(calc(var(--sx,0px) * 0.052),calc(var(--sy,0px) * 0.052)) scale(0.969);}
-    66.7%{opacity:1.0;transform:translate(calc(var(--sx,0px) * 0.027),calc(var(--sy,0px) * 0.027)) scale(0.984);}
-    72.2%{opacity:1.0;transform:translate(calc(var(--sx,0px) * 0.004),calc(var(--sy,0px) * 0.004)) scale(0.997);}
-    77.8%{opacity:1.0;transform:translate(calc(var(--sx,0px) * -0.01),calc(var(--sy,0px) * -0.01)) scale(1.006);}
-    83.3%{opacity:1.0;transform:translate(calc(var(--sx,0px) * -0.016),calc(var(--sy,0px) * -0.016)) scale(1.01);}
-    88.9%{opacity:1.0;transform:translate(calc(var(--sx,0px) * -0.014),calc(var(--sy,0px) * -0.014)) scale(1.008);}
-    94.4%{opacity:1.0;transform:translate(calc(var(--sx,0px) * -0.008),calc(var(--sy,0px) * -0.008)) scale(1.005);}
+    5.6%{opacity:0.19;transform:translate(calc(var(--sx,0px) * 0.587),calc(var(--sy,0px) * 0.587)) scale(0.648);}
+    11.1%{opacity:0.37;transform:translate(calc(var(--sx,0px) * 0.23),calc(var(--sy,0px) * 0.23)) scale(0.862);}
+    16.7%{opacity:0.56;transform:translate(calc(var(--sx,0px) * 0.0),calc(var(--sy,0px) * 0.0)) scale(1.0);}
+    22.2%{opacity:0.74;transform:translate(calc(var(--sx,0px) * -0.106),calc(var(--sy,0px) * -0.106)) scale(1.063);}
+    27.8%{opacity:0.93;transform:translate(calc(var(--sx,0px) * -0.124),calc(var(--sy,0px) * -0.124)) scale(1.074);}
+    33.3%{opacity:1.0;transform:translate(calc(var(--sx,0px) * -0.097),calc(var(--sy,0px) * -0.097)) scale(1.058);}
+    38.9%{opacity:1.0;transform:translate(calc(var(--sx,0px) * -0.057),calc(var(--sy,0px) * -0.057)) scale(1.034);}
+    44.4%{opacity:1.0;transform:translate(calc(var(--sx,0px) * -0.022),calc(var(--sy,0px) * -0.022)) scale(1.013);}
+    50%{opacity:1.0;transform:translate(calc(var(--sx,0px) * 0.0),calc(var(--sy,0px) * 0.0)) scale(1.0);}
+    55.6%{opacity:1.0;transform:translate(calc(var(--sx,0px) * 0.01),calc(var(--sy,0px) * 0.01)) scale(0.994);}
+    61.1%{opacity:1.0;transform:translate(calc(var(--sx,0px) * 0.012),calc(var(--sy,0px) * 0.012)) scale(0.993);}
+    66.7%{opacity:1.0;transform:translate(calc(var(--sx,0px) * 0.009),calc(var(--sy,0px) * 0.009)) scale(0.994);}
+    72.2%{opacity:1.0;transform:translate(calc(var(--sx,0px) * 0.006),calc(var(--sy,0px) * 0.006)) scale(0.997);}
+    77.8%{opacity:1.0;transform:translate(calc(var(--sx,0px) * 0.002),calc(var(--sy,0px) * 0.002)) scale(0.999);}
+    83.3%{opacity:1.0;transform:translate(calc(var(--sx,0px) * 0.0),calc(var(--sy,0px) * 0.0)) scale(1.0);}
+    88.9%{opacity:1.0;transform:translate(calc(var(--sx,0px) * -0.001),calc(var(--sy,0px) * -0.001)) scale(1.001);}
+    94.4%{opacity:1.0;transform:translate(calc(var(--sx,0px) * -0.001),calc(var(--sy,0px) * -0.001)) scale(1.001);}
     100%{opacity:1;transform:translate(0,0) scale(1);}
   }
   @keyframes hmOut{0%{opacity:1;transform:translate(0,0) scale(1);}18%{transform:translate(0,0) scale(1.08);}100%{opacity:0;transform:translate(var(--sx,0),var(--sy,0)) scale(.4);}}
@@ -212,7 +212,17 @@ const CONTACTS=[
   {name:'מיכל חדד', msg:'אני בדרך, עוד 10 דקות'},
   {name:'נועה גולן', msg:'מצוין, סגרנו על זה'},
   {name:'עמית בן חיים', msg:'נדבר בהמשך השבוע'},
-  {name:'הילה כהן', msg:'בסדר גמור, להתראות'}
+  {name:'הילה כהן', msg:'בסדר גמור, להתראות'},
+  {name:'תומר שגיא', msg:'אשלח לך פרטים אחר כך'},
+  {name:'שירה מזרחי', msg:'קיבלתי, תודה!'},
+  {name:'איתי דרור', msg:'מתי נוח לך לדבר?'},
+  {name:'גלית אדרי', msg:'נשמע טוב לי'},
+  {name:'אורן פלד', msg:'אני אבדוק ואחזור אליך'},
+  {name:'ליאת שמש', msg:'תודה על העדכון'},
+  {name:'דוד אביב', msg:'בוא נסגור לשבוע הבא'},
+  {name:'נטע ברק', msg:'מצחיק 😄'},
+  {name:'יעל רום', msg:'אני כבר שם'},
+  {name:'בועז נחום', msg:'אין בעיה, דבר איתי'}
 ];
 function initials(n){const p=String(n||'').trim().split(/\s+/);return ((p[0]||'')[0]||'')+((p[1]||'')[0]||'');}
 
@@ -318,7 +328,7 @@ function fire(appId,person){
   }else{toast(`${app?app.label:appId} ← ${person.name||''}`);}
 }
 
-listEl.addEventListener('pointerdown',e=>{const row=e.target.closest('.row');if(!row)return;e.preventDefault();startPick(row,e.clientX,e.clientY);try{row.setPointerCapture(e.pointerId);}catch(_){}});
+listEl.addEventListener('pointerdown',e=>{const av=e.target.closest('.av');if(!av)return;const row=av.closest('.row');if(!row)return;e.preventDefault();startPick(row,e.clientX,e.clientY);try{av.setPointerCapture(e.pointerId);}catch(_){}});
 listEl.addEventListener('pointermove',e=>{if(picking){e.preventDefault();moveBig(e.clientX,e.clientY);}});
 listEl.addEventListener('pointerup',e=>{if(picking)endPick(e.clientX,e.clientY);});
 listEl.addEventListener('pointercancel',()=>{if(picking)resetPick();});
@@ -428,7 +438,7 @@ function openHbar(){
   requestAnimationFrame(()=>{bd.classList.add('show');bar.classList.add('run');});
   const close=cb=>{if(bar.classList.contains('closing'))return;bar.classList.remove('run');bar.classList.add('closing');bd.classList.remove('show');setTimeout(()=>{bd.remove();cb&&cb();},500);};
   bd.addEventListener('click',e=>{if(e.target===bd||e.target===bar)close();});
-  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);setTimeout(()=>close(it.fn),260);};});
+  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);setTimeout(()=>close(it.fn),130);};});
 }
 </script>
 </body>
