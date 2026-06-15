@@ -9,7 +9,10 @@
     <string name="decoded_content">תוכן הקוד</string>
     <string name="copy">העתק</string>
     <string name="copied">הקוד הועתק</string>
+    <string name="open">פתח</string>
+    <string name="share">שתף</string>
+    <string name="no_app_to_open">אין אפליקציה מתאימה לפתיחה</string>
     <string name="add_tile">הוסף את האריח להגדרות המהירות</string>
     <string name="add_tile_hint">אשר את ההוספה. לאחר מכן גרור מלמעלה ולחץ על \"QR מהמסך\".</string>
-    <string name="info_body">קיבלת קוד QR בוואטסאפ או בכל אפליקציה? פתח את התמונה על המסך, גרור את ההגדרות המהירות מלמעלה ולחץ על האריח \"QR מהמסך\". הקוד יפוענח מהמסך — אם זה קישור הוא ייפתח מיד. הכול קורה במכשיר.</string>
+    <string name="info_body">קיבלת קוד QR בוואטסאפ או בכל אפליקציה? פתח את התמונה על המסך, גרור את ההגדרות המהירות מלמעלה ולחץ על האריח \"QR מהמסך\". הקוד יפוענח ויוצג לך — תוכל לפתוח, להעתיק או לשתף. שום דבר לא נפתח אוטומטית, והכול קורה במכשיר.</string>
 </resources>
