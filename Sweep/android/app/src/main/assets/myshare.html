@@ -161,10 +161,13 @@
   .setrow .ar svg{width:21px;height:21px;}
   .setrow .dr{font-weight:700;}
   .setrow .cur{margin-inline-start:auto;font-size:13px;color:#7a9a9b;font-weight:600;}
-  .swatches{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;padding:6px 0 2px;}
-  .sw{width:46px;height:46px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .12s;}
-  .sw.on{border-color:var(--tq-ink);}
+  .swatches{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;padding:6px 0 2px;}
+  .sw{width:52px;height:52px;border-radius:50%;cursor:pointer;border:2.5px solid rgba(255,255,255,.55);box-shadow:0 6px 16px -6px rgba(0,0,0,.6);transition:transform .12s, border-color .12s;}
+  .sw.on{border-color:#fff;border-width:3.5px;transform:scale(1.06);}
   .sw:active{transform:scale(.92);}
+  .ovl.preview.show{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;}
+  .ovl.preview .sheet{background:transparent;box-shadow:none;color:#fff;}
+  .ovl.preview .sheet h2{color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.7);}
 </style>
 </head>
 <body>
@@ -173,7 +176,6 @@
   </div>
   <div class="list" id="list"></div>
   <div class="stage" id="stage"><div class="veil"></div></div>
-  <div class="hint">לחיצה על איש קשר ⟵ גרירה לכיוון לשיתוף</div>
   <div class="toast" id="toast"></div>
   <div class="ovl" id="ovl"><div class="sheet" id="sheet"></div></div>
 
@@ -357,7 +359,7 @@ function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t
 
 const ovl=document.getElementById('ovl'), sheet=document.getElementById('sheet');
 function showSheet(html){sheet.innerHTML=html;ovl.classList.add('show');}
-function closeSheet(){ovl.classList.remove('show');}
+function closeSheet(){ovl.classList.remove('show');ovl.classList.remove('preview');}
 ovl.addEventListener('click',e=>{if(e.target===ovl)closeSheet();});
 
 function openPicker(target){
@@ -389,8 +391,9 @@ function openSettings(){
 }
 
 function openPaletteSheet(){
-  const sw=PALETTES.map((p,i)=>`<div class="sw${i===cfg.palette?' on':''}" data-i="${i}" style="background:${p.tq}"></div>`).join('');
+  const sw=PALETTES.map((p,i)=>`<div class="sw${i===cfg.palette?' on':''}" data-i="${i}" style="background:linear-gradient(180deg,${p.top},${p.bot})"></div>`).join('');
   showSheet(`<h2>פלטת צבעים</h2><div class="swatches">${sw}</div>`);
+  ovl.classList.add('preview');
   sheet.querySelectorAll('.sw').forEach(b=>b.onclick=()=>{cfg.palette=+b.dataset.i;applyPalette(cfg.palette);saveCfg();sheet.querySelectorAll('.sw').forEach(x=>x.classList.toggle('on',x===b));});
 }
 
