@@ -90,9 +90,29 @@
   .hbar-backdrop.show{background:rgba(8,40,42,.4);}
   .hbar{position:fixed;inset:0;z-index:45;pointer-events:none;}
   .hm-item{position:absolute;pointer-events:auto;background:none;border:none;cursor:pointer;width:50px;height:50px;padding:0;opacity:0;}
-  .hbar.run .hm-item{animation:hmIn var(--dur,.5s) cubic-bezier(.34,1.8,.5,1) both;}
+  .hbar.run .hm-item{animation:hmIn var(--dur,.5s) linear both;}
   .hbar.closing .hm-item{animation:hmOut var(--cdur,.4s) cubic-bezier(.5,.04,.7,.32) both;animation-delay:calc(var(--r,0)*.04s);}
-  @keyframes hmIn{0%{opacity:0;transform:translate(var(--sx,0),var(--sy,0)) scale(.4);}40%{opacity:1;}100%{opacity:1;transform:translate(0,0) scale(1);}}
+  @keyframes hmIn{
+    0%{opacity:0;transform:translate(var(--sx,0px),var(--sy,0px)) scale(0.4);}
+    5.6%{opacity:0.19;transform:translate(calc(var(--sx,0px) * 0.635),calc(var(--sy,0px) * 0.635)) scale(0.619);}
+    11.1%{opacity:0.37;transform:translate(calc(var(--sx,0px) * 0.22),calc(var(--sy,0px) * 0.22)) scale(0.868);}
+    16.7%{opacity:0.56;transform:translate(calc(var(--sx,0px) * -0.093),calc(var(--sy,0px) * -0.093)) scale(1.056);}
+    22.2%{opacity:0.74;transform:translate(calc(var(--sx,0px) * -0.248),calc(var(--sy,0px) * -0.248)) scale(1.149);}
+    27.8%{opacity:0.93;transform:translate(calc(var(--sx,0px) * -0.26),calc(var(--sy,0px) * -0.26)) scale(1.156);}
+    33.3%{opacity:1.0;transform:translate(calc(var(--sx,0px) * -0.184),calc(var(--sy,0px) * -0.184)) scale(1.111);}
+    38.9%{opacity:1.0;transform:translate(calc(var(--sx,0px) * -0.082),calc(var(--sy,0px) * -0.082)) scale(1.049);}
+    44.4%{opacity:1.0;transform:translate(calc(var(--sx,0px) * 0.004),calc(var(--sy,0px) * 0.004)) scale(0.998);}
+    50%{opacity:1.0;transform:translate(calc(var(--sx,0px) * 0.053),calc(var(--sy,0px) * 0.053)) scale(0.968);}
+    55.6%{opacity:1.0;transform:translate(calc(var(--sx,0px) * 0.065),calc(var(--sy,0px) * 0.065)) scale(0.961);}
+    61.1%{opacity:1.0;transform:translate(calc(var(--sx,0px) * 0.052),calc(var(--sy,0px) * 0.052)) scale(0.969);}
+    66.7%{opacity:1.0;transform:translate(calc(var(--sx,0px) * 0.027),calc(var(--sy,0px) * 0.027)) scale(0.984);}
+    72.2%{opacity:1.0;transform:translate(calc(var(--sx,0px) * 0.004),calc(var(--sy,0px) * 0.004)) scale(0.997);}
+    77.8%{opacity:1.0;transform:translate(calc(var(--sx,0px) * -0.01),calc(var(--sy,0px) * -0.01)) scale(1.006);}
+    83.3%{opacity:1.0;transform:translate(calc(var(--sx,0px) * -0.016),calc(var(--sy,0px) * -0.016)) scale(1.01);}
+    88.9%{opacity:1.0;transform:translate(calc(var(--sx,0px) * -0.014),calc(var(--sy,0px) * -0.014)) scale(1.008);}
+    94.4%{opacity:1.0;transform:translate(calc(var(--sx,0px) * -0.008),calc(var(--sy,0px) * -0.008)) scale(1.005);}
+    100%{opacity:1;transform:translate(0,0) scale(1);}
+  }
   @keyframes hmOut{0%{opacity:1;transform:translate(0,0) scale(1);}18%{transform:translate(0,0) scale(1.08);}100%{opacity:0;transform:translate(var(--sx,0),var(--sy,0)) scale(.4);}}
   .hm-ic{width:50px;height:50px;border-radius:50%;background:var(--white);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px -8px rgba(8,50,50,.6);color:var(--tq-ink);}
   .hm-ic svg{width:23px;height:23px;}
