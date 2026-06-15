@@ -343,7 +343,7 @@
   .hbar-backdrop{position:fixed;inset:0;z-index:44;background:rgba(8,40,42,0);transition:background .22s;}
   .hbar-backdrop.show{background:rgba(8,40,42,.4);}
   .hbar{position:fixed;inset:0;z-index:45;pointer-events:none;}
-  .hm-item{position:absolute;pointer-events:auto;background:none;border:none;cursor:pointer;display:flex;direction:rtl;align-items:center;gap:9px;padding:0;transform-origin:center center;animation:hmIn var(--dur,.5s) cubic-bezier(.16,.7,.27,1) both;}
+  .hm-item{position:absolute;pointer-events:auto;background:none;border:none;cursor:pointer;display:flex;direction:rtl;align-items:center;gap:9px;padding:0;transform-origin:center center;animation:hmIn var(--dur,.5s) cubic-bezier(.22,.82,.4,1) both;}
   .hbar.closing .hm-item{animation:hmOut var(--cdur,.4s) cubic-bezier(.5,.04,.7,.32) both;animation-delay:calc(var(--r,0)*.04s);}
   @keyframes hmIn{0%{opacity:0;transform:translate(var(--sx,0),var(--sy,0)) scale(.35);}30%{opacity:1;}100%{opacity:1;transform:translate(0,0) scale(1);}}
   @keyframes hmOut{0%{opacity:1;transform:translate(0,0) scale(1);}60%{opacity:.85;}100%{opacity:0;transform:translate(var(--sx,0),var(--sy,0)) scale(.35);}}
@@ -813,13 +813,13 @@ function openHbar(){
     const right=Math.round(BX-i*STEP), bottom=Math.round(BY+i*STEP);
     const sx=Math.round(FX-(window.innerWidth-right)); // start offset back to the FAB (x)
     const sy=Math.round(bottom-FY);                    // start offset back to the FAB (y, down+)
-    const dur=(0.42+i*0.10).toFixed(2);                // farther item travels longer -> stops later
-    const cdur=(0.34+i*0.05).toFixed(2);
+    const dur=(0.32+i*0.05).toFixed(2);                // farther item travels longer -> stops later
+    const cdur=(0.26+i*0.03).toFixed(2);
     return `<button class="hm-item" style="right:${right}px;bottom:${bottom}px;--sx:${sx}px;--sy:${sy}px;--dur:${dur}s;--cdur:${cdur}s;--i:${i};--r:${n-1-i}" data-i="${i}"><span class="hm-ic">${it.ic}</span><span class="hm-label">${it.label}</span></button>`;
   }).join('');
   bd.appendChild(bar);document.body.appendChild(bd);
   requestAnimationFrame(()=>bd.classList.add('show'));
-  const close=cb=>{if(bar.classList.contains('closing'))return;bar.classList.add('closing');bd.classList.remove('show');setTimeout(()=>{bd.remove();cb&&cb();},680);};
+  const close=cb=>{if(bar.classList.contains('closing'))return;bar.classList.add('closing');bd.classList.remove('show');setTimeout(()=>{bd.remove();cb&&cb();},500);};
   bd.addEventListener('click',e=>{if(e.target===bd||e.target===bar)close();});
   bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{const it=items[+b.dataset.i];close(it.fn);};});
 }
