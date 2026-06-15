@@ -106,7 +106,7 @@
   }
 
   .hbar-backdrop{position:fixed;inset:0;z-index:44;background:rgba(0,0,0,0);transition:background .25s, backdrop-filter .25s;}
-  .hbar-backdrop.show{background:rgba(10,12,14,.7);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
+  .hbar-backdrop.show{background:rgba(0,0,0,.45);}
   .hbar{position:fixed;inset:0;z-index:45;pointer-events:none;}
   .hm-item{position:absolute;pointer-events:auto;background:none;border:none;cursor:pointer;width:50px;height:50px;padding:0;opacity:0;}
   .hbar.run .hm-item{animation:hmIn var(--dur,.5s) linear both;}
@@ -265,6 +265,7 @@ PEOPLE=PEOPLE.slice().sort((a,b)=>(STATS[statKey(b)]||0)-(STATS[statKey(a)]||0))
 
 function applyPalette(i){const p=PALETTES[((i%PALETTES.length)+PALETTES.length)%PALETTES.length];const r=document.documentElement.style;r.setProperty('--tq',p.tq);r.setProperty('--tq-deep',p.deep);r.setProperty('--tq-ink',p.ink);r.setProperty('--soft',p.soft);r.setProperty('--tq-top',p.top);r.setProperty('--tq-bot',p.bot);const m=document.querySelector('meta[name=theme-color]');if(m)m.content=p.top;}
 function cyclePalette(){cfg.palette=(cfg.palette+1)%PALETTES.length;applyPalette(cfg.palette);saveCfg();toast('צבע: '+PALETTES[cfg.palette].name);}
+function paintCycleCoin(ic){if(!ic)return;const p=PALETTES[cfg.palette];ic.style.background=p.tq;ic.style.color='#fff';}
 applyPalette(cfg.palette);
 
 (function(){const snip=SHARED.length>40?SHARED.slice(0,40)+'…':(SHARED||'תוכן');document.getElementById('chip').innerHTML=ICON.link+'<span>'+escapeHtml(snip)+'</span>';})();
@@ -431,7 +432,7 @@ function openHbar(){
   const items=[
     {ic:ICON.search,   label:'חיפוש',            fn:openSearch},
     {ic:ICON.star,     label:'מועדפים',          fn:openSettings},
-    {ic:ICON.palette,  label:'פלטת צבעים',       fn:openPaletteSheet},
+    {ic:ICON.palette,  label:'פלטת צבעים',       fn:cyclePalette, cycle:true},
     {ic:(cfg.hand==='left'?ICON.phoneL:ICON.phoneR), label:(cfg.hand==='left'?'יד ימין':'יד שמאל'), fn:toggleHand},
     {ic:ICON.shareapp, label:'שיתוף האפליקציה',  fn:()=>toast('שיתוף האפליקציה — בקרוב')}
   ];
@@ -445,9 +446,10 @@ function openHbar(){
   bar.innerHTML=items.map((it,i)=>{
     const off=Math.round(BX-i*STEP), bottom=Math.round(BY+i*STEP);
     const dur=(0.62+i*0.09).toFixed(2), cdur=(0.42+i*0.05).toFixed(2);
-    return `<button class="hm-item" style="${posProp}:${off}px;bottom:${bottom}px;--dur:${dur}s;--cdur:${cdur}s;--i:${i};--r:${n-1-i}" data-i="${i}"><span class="hm-ic">${it.ic}</span><span class="hm-label">${escapeHtml(it.label)}</span></button>`;
+    return `<button class="hm-item" style="${posProp}:${off}px;bottom:${bottom}px;--dur:${dur}s;--cdur:${cdur}s;--i:${i};--r:${n-1-i}" data-i="${i}"${it.cycle?' data-cycle="1"':""}><span class="hm-ic">${it.ic}</span><span class="hm-label">${escapeHtml(it.label)}</span></button>`;
   }).join('');
   bd.appendChild(bar);document.body.appendChild(bd);
+  {const cyc=bar.querySelector('.hm-item[data-cycle]');if(cyc)paintCycleCoin(cyc.querySelector('.hm-ic'));}
   const fab=document.getElementById('menuFab');
   const fr=fab.getBoundingClientRect();
   const fcx=fr.left+fr.width/2, fcy=fr.top+fr.height/2;
@@ -462,7 +464,7 @@ function openHbar(){
   requestAnimationFrame(()=>{bd.classList.add('show');bar.classList.add('run');});
   const close=cb=>{if(bar.classList.contains('closing'))return;bar.classList.remove('run');bar.classList.add('closing');bd.classList.remove('show');setTimeout(()=>{bd.remove();cb&&cb();},500);};
   bd.addEventListener('click',e=>{if(e.target===bd||e.target===bar)close();});
-  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);setTimeout(()=>close(it.fn),130);};});
+  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.cycle){it.fn();paintCycleCoin(b.querySelector('.hm-ic'));b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);if(navigator.vibrate)navigator.vibrate(8);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);setTimeout(()=>close(it.fn),130);};});
 }
 </script>
 </body>
