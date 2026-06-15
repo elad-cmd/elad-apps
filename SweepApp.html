@@ -177,22 +177,17 @@
   .drawer-backdrop.show{background:rgba(45,32,66,.42);}
   .drawer{position:absolute;left:0;top:0;bottom:0;width:82%;max-width:322px;background:#f9f7fc;
     box-shadow:12px 0 50px -12px rgba(45,32,66,.55);transform:translateX(-100%);
-    transition:transform .34s cubic-bezier(0.22,1,0.36,1);display:flex;flex-direction:column;padding:22px 16px;overflow-y:auto;}
+    transition:transform .42s cubic-bezier(0.22,1,0.36,1);display:flex;flex-direction:column;padding:22px 16px;overflow-y:auto;}
   .drawer.show{transform:translateX(0);}
   .drawer .dhead{display:flex;align-items:center;margin-bottom:18px;padding-inline:4px;}
   .drawer .dhead .dt{font-size:21px;font-weight:700;
     background:linear-gradient(135deg,var(--flame1),var(--flame2));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;}
   .drawer .dhead .close{margin-inline-start:auto;}
-  .drawer.show .menu-list button{animation:itemIn .42s both;}
-  .drawer.show .menu-list button:nth-child(1){animation-delay:.05s}
-  .drawer.show .menu-list button:nth-child(2){animation-delay:.09s}
-  .drawer.show .menu-list button:nth-child(3){animation-delay:.13s}
-  .drawer.show .menu-list button:nth-child(4){animation-delay:.17s}
-  .drawer.show .menu-list button:nth-child(5){animation-delay:.21s}
-  .drawer.show .menu-list button:nth-child(6){animation-delay:.25s}
-  .drawer.show .menu-list button:nth-child(7){animation-delay:.29s}
-  .drawer.show .menu-list button:nth-child(8){animation-delay:.33s}
-  @keyframes itemIn{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+  .drawer .menu-list button{opacity:0;}
+  .drawer.show .menu-list button{animation:itemIn .5s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(var(--i,0)*.055s);}
+  .drawer.closing .menu-list button{animation:itemOut .26s cubic-bezier(.4,0,.75,.25) both;animation-delay:calc(var(--i,0)*.05s);}
+  @keyframes itemIn{from{opacity:0;transform:translateX(28px) scale(.93)}to{opacity:1;transform:none}}
+  @keyframes itemOut{from{opacity:1;transform:none}to{opacity:0;transform:translateX(28px) scale(.9)}}
   .menu-list .i-dup svg{color:var(--purple);} .menu-list .i-filt svg{color:var(--teal);}
   .menu-list .i-filt-all svg{color:var(--keep);}
   .sub2{color:var(--muted);font-size:14px;margin:0 2px 16px;line-height:1.5;}
@@ -260,7 +255,7 @@
   .screen,.drawer{background:var(--warm);}
   .drawer{right:0;left:auto;transform:translateX(100%);box-shadow:-14px 0 60px -12px rgba(10,60,60,.5);overflow:hidden;}
   .drawer.show{transform:translateX(0);}
-  .drawer-scroll{height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  .drawer-scroll{height:100%;touch-action:none;will-change:transform;}
   .brand{background:none;-webkit-text-fill-color:#fff;color:#fff;}
   .brand small{color:rgba(255,255,255,.85);-webkit-text-fill-color:rgba(255,255,255,.85);}
   .menu-btn{background:rgba(255,255,255,.22);color:#fff;box-shadow:none;}
@@ -1129,16 +1124,20 @@ function renderMenu(){
       <div class="drawer-scroll" id="dScroll">
       <div class="dhead"><div class="dt">תפריט</div></div>
       <div class="menu-list">
-        <button class="i-home" id="m-home">${ICON.home} מסך הבית</button>
-        <button class="i-filt" id="m-filter">${ICON.filter} סינון מהיר</button>
-        <button class="i-dup" id="m-dup">${ICON.merge} מיזוג כפילויות (${dups})</button>
-        <button class="i-export" id="m-export">${ICON.down} ייצוא רשימה נקייה</button>
-        <button class="danger" id="m-reset">↺ התחל מחדש</button>
+        <button class="i-home" id="m-home" style="--i:0">${ICON.home} מסך הבית</button>
+        <button class="i-filt" id="m-filter" style="--i:1">${ICON.filter} סינון מהיר</button>
+        <button class="i-dup" id="m-dup" style="--i:2">${ICON.merge} מיזוג כפילויות (${dups})</button>
+        <button class="i-export" id="m-export" style="--i:3">${ICON.down} ייצוא רשימה נקייה</button>
+        <button class="danger" id="m-reset" style="--i:4">↺ התחל מחדש</button>
       </div></div></div>`;
   app.appendChild(bd);
   const drawer=bd.querySelector('.drawer');
   requestAnimationFrame(()=>{bd.classList.add('show');drawer.classList.add('show');});
-  const close=cb=>{bd.classList.remove('show');drawer.classList.remove('show');setTimeout(()=>{bd.remove();cb&&cb();},340);};
+  const close=cb=>{ if(drawer.classList.contains('closing'))return;
+    drawer.classList.add('closing');
+    setTimeout(()=>{bd.classList.remove('show');drawer.classList.remove('show');},430);
+    setTimeout(()=>{bd.remove();cb&&cb();},760);
+  };
   bd.addEventListener('click',e=>{if(e.target===bd)close();});
   drawer.querySelector('#dStrip').onclick=()=>close();
   drawer.querySelector('#m-home').onclick=()=>close(goHome);
@@ -1146,6 +1145,16 @@ function renderMenu(){
   drawer.querySelector('#m-dup').onclick=()=>close(renderDuplicates);
   drawer.querySelector('#m-export').onclick=()=>close(()=>renderDone());
   drawer.querySelector('#m-reset').onclick=()=>close(()=>uiConfirm('לאפס? כל המיון יימחק ותחזור למסך ההעלאה.',resetApp));
+  // pull the side menu DOWN to bring top items into thumb reach
+  const sc=drawer.querySelector('#dScroll');
+  let dyv=0,sY=0,base=0,drag=false,moved=false;
+  const maxDown=()=>Math.round(window.innerHeight*0.5);
+  const minUp=()=>Math.min(0,(window.innerHeight-40)-sc.scrollHeight);
+  const applyY=()=>{sc.style.transform=dyv?`translateY(${dyv}px)`:'';};
+  const pm=e=>{if(!drag)return;const d=e.clientY-sY;if(Math.abs(d)>5)moved=true;dyv=Math.max(minUp(),Math.min(maxDown(),base+d));applyY();};
+  const pu=()=>{if(!drag)return;drag=false;sc.style.transition='transform .3s cubic-bezier(.34,1.4,.5,1)';window.removeEventListener('pointermove',pm);window.removeEventListener('pointerup',pu);};
+  sc.addEventListener('pointerdown',e=>{drag=true;moved=false;sY=e.clientY;base=dyv;sc.style.transition='none';window.addEventListener('pointermove',pm);window.addEventListener('pointerup',pu);});
+  sc.addEventListener('click',e=>{if(moved){e.stopPropagation();e.preventDefault();moved=false;}},true);
 }
 function closeScreen(ov,cb){ov.style.animation='screenOut .22s forwards';setTimeout(()=>{ov.remove();cb&&cb();},210);}
 function applyFilter(pred,label){
