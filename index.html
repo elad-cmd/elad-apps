@@ -105,7 +105,19 @@
   .ideas__sub{text-align:center;color:var(--text-light);font-size:.95rem;margin-top:2px}
   .app-card__tag--building{background:var(--mint-soft);border-color:var(--mint);color:var(--teal-dark)}
   .app-card__tag--soon{background:var(--yellow-light);border-color:var(--yellow);color:#7a6a00}
+  .app-card__tag--hold{background:var(--blue-light);border-color:var(--blue);color:#2b6b86}
+  .app-card__tag--spec{background:var(--purple-soft);border-color:var(--purple);color:#4a3fb0}
+  .app-card__tag--dropped{background:#f1f1f3;border-color:var(--border);color:#9a9a9a}
   .app-card--idea .app-card__title{margin-bottom:0}
+  .app-card--dropped{opacity:.62}
+  .app-card--dropped .app-card__title{text-decoration:line-through;text-decoration-color:#c0566e}
+  .section__title--sub{margin-top:20px;font-size:.95rem;color:var(--text-light)}
+  .idea-minis{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .idea-mini{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--border);
+      border-radius:var(--radius-pill);padding:5px 12px;font-size:.8rem;color:var(--text-soft);box-shadow:var(--shadow-sm)}
+  .idea-mini i{color:var(--teal-dark);font-size:.82rem}
+  .idea-mini--dropped{opacity:.5}
+  .idea-mini--dropped .idea-mini__name{text-decoration:line-through}
 </style>
 </head>
 <body>
@@ -190,54 +202,161 @@
   </div>
 
   <h2 class="section__title">רעיונות לאפליקציות</h2>
-  <p class="ideas__sub">כל הרעיונות שלי במקום אחד — מה שבבנייה ומה שעוד מחכה לתורו.</p>
+  <p class="ideas__sub">כל הרעיונות שלי במקום אחד — מה שבבנייה ומה שעוד מחכה לתורו. שום רעיון לא נמחק.</p>
   <div class="grid">
 
     <div class="app-card app-card--blue">
       <div class="app-card__icon"><i class="fa-solid fa-broom"></i></div>
       <span class="app-card__tag app-card__tag--building">בבנייה</span>
       <h3 class="app-card__title">Sweep — אנשי קשר</h3>
-      <p class="app-card__desc">אפליקציית אנשי קשר ילידית: בית, סינון בהחלקה, ארכיון ומיזוג — ישירות מול המאגר.</p>
+      <p class="app-card__desc">אפליקציית אנשי קשר ילידית: בית, סינון בהחלקה, ארכיון, מיזוג, ומודול שיתוף ("השיתוף שלי") — ישירות מול המאגר.</p>
       <div class="app-card__tech">
         <div class="app-card__tech-row"><i class="fa-brands fa-react"></i><span><b>בנוי ב:</b> <code>React Native</code> — אנדרואיד</span></div>
         <div class="app-card__tech-row"><i class="fa-brands fa-github"></i><span><b>פריסה:</b> GitHub Actions ל-<code>APK</code> (תג <code>sweep-latest</code>)</span></div>
       </div>
     </div>
 
-    <div class="app-card app-card--yellow app-card--idea">
-      <div class="app-card__icon"><i class="fa-solid fa-plane-departure"></i></div>
+    <div class="app-card app-card--blue app-card--idea">
+      <div class="app-card__icon"><i class="fa-solid fa-square-parking"></i></div>
+      <span class="app-card__tag app-card__tag--hold">בהמתנה</span>
+      <h3 class="app-card__title">ParkSpot — חניה</h3>
+      <p class="app-card__desc">שומר חניה. נבחר ואז נדחה לטובת רעיון אחר.</p>
+    </div>
+
+    <div class="app-card app-card--mint app-card--idea">
+      <div class="app-card__icon"><i class="fa-solid fa-folder-open"></i></div>
       <span class="app-card__tag app-card__tag--soon">בקרוב</span>
-      <h3 class="app-card__title">תקציב חו"ל</h3>
+      <h3 class="app-card__title">Sweep Files — תיקיות</h3>
+      <p class="app-card__desc">סידור וניהול תיקיות וקבצים.</p>
+    </div>
+
+    <div class="app-card app-card--yellow app-card--idea">
+      <div class="app-card__icon"><i class="fa-solid fa-money-bill-transfer"></i></div>
+      <span class="app-card__tag app-card__tag--soon">בקרוב</span>
+      <h3 class="app-card__title">המרת מטבעות + תקציב חו"ל</h3>
     </div>
 
     <div class="app-card app-card--purple app-card--idea">
-      <div class="app-card__icon"><i class="fa-solid fa-file-lines"></i></div>
+      <div class="app-card__icon"><i class="fa-solid fa-image"></i></div>
       <span class="app-card__tag app-card__tag--soon">בקרוב</span>
-      <h3 class="app-card__title">סרוקותי</h3>
+      <h3 class="app-card__title">PicBest — בחירת תמונה</h3>
+      <p class="app-card__desc">בחירת התמונה הטובה ביותר מתוך כמה.</p>
+    </div>
+
+    <div class="app-card app-card--teal app-card--idea">
+      <div class="app-card__icon"><i class="fa-solid fa-restroom"></i></div>
+      <span class="app-card__tag app-card__tag--soon">בקרוב</span>
+      <h3 class="app-card__title">GottaGo — שירותים ציבוריים</h3>
+      <p class="app-card__desc">איתור שירותים ציבוריים בקרבת מקום.</p>
     </div>
 
     <div class="app-card app-card--mint app-card--idea">
       <div class="app-card__icon"><i class="fa-solid fa-box-open"></i></div>
       <span class="app-card__tag app-card__tag--soon">בקרוב</span>
-      <h3 class="app-card__title">לוסט אנד פאונד</h3>
+      <h3 class="app-card__title">Lost &amp; Found — אבדות</h3>
     </div>
 
-    <div class="app-card app-card--teal app-card--idea">
-      <div class="app-card__icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+    <div class="app-card app-card--pink">
+      <div class="app-card__icon"><i class="fa-solid fa-qrcode"></i></div>
+      <span class="app-card__tag app-card__tag--spec">אפיון מוכן</span>
+      <h3 class="app-card__title">סרוק אותי — QR אישי</h3>
+      <p class="app-card__desc">כרטיס ביקור אישי כקוד QR לסריקה. אפיון מלא כבר קיים.</p>
+    </div>
+
+    <div class="app-card app-card--yellow app-card--idea">
+      <div class="app-card__icon"><i class="fa-solid fa-dog"></i></div>
       <span class="app-card__tag app-card__tag--soon">בקרוב</span>
-      <h3 class="app-card__title">לוח מורים פרטיים</h3>
+      <h3 class="app-card__title">Doggy Style — כלבים אבודים</h3>
     </div>
 
     <div class="app-card app-card--blue app-card--idea">
-      <div class="app-card__icon"><i class="fa-solid fa-calendar-check"></i></div>
-      <span class="app-card__tag app-card__tag--soon">בקרוב</span>
-      <h3 class="app-card__title">קביעת שיעורים</h3>
-    </div>
-
-    <div class="app-card app-card--pink app-card--idea">
       <div class="app-card__icon"><i class="fa-brands fa-dropbox"></i></div>
       <span class="app-card__tag app-card__tag--soon">בקרוב</span>
       <h3 class="app-card__title">ארגון דרופבוקס</h3>
+    </div>
+
+    <div class="app-card app-card--pink app-card--idea">
+      <div class="app-card__icon"><i class="fa-solid fa-address-card"></i></div>
+      <span class="app-card__tag app-card__tag--soon">בקרוב</span>
+      <h3 class="app-card__title">כרטיס ביקור כ-QR</h3>
+    </div>
+
+    <div class="app-card app-card--teal app-card--idea">
+      <div class="app-card__icon"><i class="fa-solid fa-clipboard-list"></i></div>
+      <span class="app-card__tag app-card__tag--soon">בקרוב</span>
+      <h3 class="app-card__title">היסטוריית לוח העתקה</h3>
+    </div>
+
+    <div class="app-card app-card--purple app-card--idea">
+      <div class="app-card__icon"><i class="fa-solid fa-images"></i></div>
+      <span class="app-card__tag app-card__tag--soon">בקרוב</span>
+      <h3 class="app-card__title">מאחד תמונות לקובץ</h3>
+    </div>
+
+    <div class="app-card app-card--mint app-card--idea">
+      <div class="app-card__icon"><i class="fa-solid fa-eraser"></i></div>
+      <span class="app-card__tag app-card__tag--soon">בקרוב</span>
+      <h3 class="app-card__title">מנקה מטא-דאטה</h3>
+    </div>
+
+    <div class="app-card app-card--yellow app-card--idea">
+      <div class="app-card__icon"><i class="fa-solid fa-compress"></i></div>
+      <span class="app-card__tag app-card__tag--soon">בקרוב</span>
+      <h3 class="app-card__title">מקטין תמונה</h3>
+    </div>
+
+    <div class="app-card app-card--pink app-card--idea">
+      <div class="app-card__icon"><i class="fa-solid fa-pills"></i></div>
+      <span class="app-card__tag app-card__tag--soon">בקרוב</span>
+      <h3 class="app-card__title">יומן תרופה</h3>
+    </div>
+
+    <div class="app-card app-card--blue app-card--idea">
+      <div class="app-card__icon"><i class="fa-solid fa-hourglass-half"></i></div>
+      <span class="app-card__tag app-card__tag--soon">בקרוב</span>
+      <h3 class="app-card__title">ספירה לאחור לאירועים</h3>
+    </div>
+
+    <div class="app-card app-card--teal app-card--idea">
+      <div class="app-card__icon"><i class="fa-solid fa-arrows-spin"></i></div>
+      <span class="app-card__tag app-card__tag--soon">בקרוב</span>
+      <h3 class="app-card__title">גלגל החלטה</h3>
+    </div>
+
+    <div class="app-card app-card--purple app-card--idea">
+      <div class="app-card__icon"><i class="fa-solid fa-clipboard-check"></i></div>
+      <span class="app-card__tag app-card__tag--soon">בקרוב</span>
+      <h3 class="app-card__title">לוח מטלות</h3>
+    </div>
+
+    <div class="app-card app-card--yellow app-card--idea">
+      <div class="app-card__icon"><i class="fa-solid fa-trophy"></i></div>
+      <span class="app-card__tag app-card__tag--soon">בקרוב</span>
+      <h3 class="app-card__title">צנצנת תגמולים</h3>
+    </div>
+
+    <div class="app-card app-card--mint app-card--idea">
+      <div class="app-card__icon"><i class="fa-solid fa-music"></i></div>
+      <span class="app-card__tag app-card__tag--soon">בקרוב</span>
+      <h3 class="app-card__title">מסדר שירים</h3>
+    </div>
+
+    <div class="app-card app-card--blue app-card--idea">
+      <div class="app-card__icon"><i class="fa-solid fa-calculator"></i></div>
+      <span class="app-card__tag app-card__tag--soon">בקרוב</span>
+      <h3 class="app-card__title">מונה ניקוד לקלפים</h3>
+    </div>
+
+    <div class="app-card app-card--gray app-card--idea app-card--dropped">
+      <div class="app-card__icon"><i class="fa-solid fa-qrcode"></i></div>
+      <span class="app-card__tag app-card__tag--dropped">ירד</span>
+      <h3 class="app-card__title">מחולל QR לאורחים</h3>
+    </div>
+
+    <div class="app-card app-card--gray app-card--idea app-card--dropped">
+      <div class="app-card__icon"><i class="fa-solid fa-font"></i></div>
+      <span class="app-card__tag app-card__tag--dropped">ירד</span>
+      <h3 class="app-card__title">מנקה טקסט</h3>
     </div>
 
     <div class="app-card app-card--soon">
@@ -249,6 +368,76 @@
 </main>
 
 <footer>אפליקציות אלעד · אזור אישי</footer>
+
+<script>
+(function(){
+  var LS_R='eladApps.renames', LS_D='eladApps.deleted';
+  var renames={}, deleted=[];
+  try{ renames=JSON.parse(localStorage.getItem(LS_R)||'{}'); }catch(e){}
+  try{ deleted=JSON.parse(localStorage.getItem(LS_D)||'[]'); }catch(e){}
+  var delSet=new Set(deleted);
+  function save(){ try{ localStorage.setItem(LS_R,JSON.stringify(renames)); localStorage.setItem(LS_D,JSON.stringify([].concat(Array.from(delSet)))); }catch(e){} }
+
+  var css=''
+   +'.ec-edit{position:absolute;top:10px;left:10px;z-index:5;width:28px;height:28px;border-radius:50%;'
+   +'border:1px solid var(--border);background:#fff;color:var(--text-light);cursor:pointer;display:grid;'
+   +'place-items:center;font-size:.78rem;opacity:0;transition:opacity .15s;box-shadow:var(--shadow-sm)}'
+   +'.app-card:hover .ec-edit{opacity:1}'
+   +'@media (hover:none){.ec-edit{opacity:.55}}'
+   +'.ec-panel{position:absolute;inset:0;z-index:6;background:rgba(255,255,255,.97);border-radius:var(--radius-lg);'
+   +'display:flex;flex-direction:column;gap:9px;padding:14px;justify-content:center}'
+   +'.ec-panel input{font:inherit;font-size:.95rem;padding:8px 10px;border:1px solid var(--border);border-radius:10px;width:100%;text-align:right;box-sizing:border-box}'
+   +'.ec-row{display:flex;gap:8px}'
+   +'.ec-btn{flex:1;padding:8px;border-radius:10px;border:1px solid var(--border);background:#fff;cursor:pointer;font:inherit;font-size:.82rem;font-weight:700}'
+   +'.ec-save{background:var(--teal);border-color:var(--teal-dark);color:#0c3a40}'
+   +'.ec-del{color:#b03a4e;border-color:#f0c0cb}'
+   +'.ec-del.confirm{background:#f7a5b8;border-color:#e87f97;color:#5a1322}'
+   +'.ec-cancel{color:var(--text-light)}';
+  var st=document.createElement('style'); st.textContent=css; document.head.appendChild(st);
+
+  function stop(e){ e.preventDefault(); e.stopPropagation(); }
+
+  function openPanel(card,titleEl,key){
+    if(card.querySelector('.ec-panel')) return;
+    var panel=document.createElement('div'); panel.className='ec-panel'; panel.addEventListener('click',stop);
+    var input=document.createElement('input'); input.value=titleEl.textContent.trim(); input.setAttribute('aria-label','שם האפליקציה');
+    var row=document.createElement('div'); row.className='ec-row';
+    var saveb=document.createElement('button'); saveb.className='ec-btn ec-save'; saveb.textContent='שמור';
+    var cancel=document.createElement('button'); cancel.className='ec-btn ec-cancel'; cancel.textContent='ביטול';
+    var delb=document.createElement('button'); delb.className='ec-btn ec-del'; delb.textContent='מחק';
+    row.appendChild(saveb); row.appendChild(cancel);
+    panel.appendChild(input); panel.appendChild(row); panel.appendChild(delb);
+    card.appendChild(panel); input.focus(); input.select();
+    function close(){ panel.remove(); }
+    saveb.addEventListener('click',function(e){ stop(e); var v=input.value.trim(); if(v){ titleEl.textContent=v; renames[key]=v; save(); } close(); });
+    input.addEventListener('keydown',function(e){ if(e.key==='Enter'){ saveb.click(); } if(e.key==='Escape'){ close(); } });
+    cancel.addEventListener('click',function(e){ stop(e); close(); });
+    var armed=false, t;
+    delb.addEventListener('click',function(e){ stop(e);
+      if(!armed){ armed=true; delb.classList.add('confirm'); delb.textContent='למחוק? לחצו שוב'; t=setTimeout(function(){ armed=false; delb.classList.remove('confirm'); delb.textContent='מחק'; },3000); return; }
+      clearTimeout(t); delSet.add(key); save(); card.remove();
+    });
+  }
+
+  var cards=document.querySelectorAll('.app-card');
+  for(var i=0;i<cards.length;i++){
+    (function(card){
+      if(card.classList.contains('app-card--soon')) return;
+      var titleEl=card.querySelector('.app-card__title');
+      if(!titleEl) return;
+      var key=titleEl.textContent.trim();
+      card.setAttribute('data-key',key);
+      if(delSet.has(key)){ card.remove(); return; }
+      if(renames[key]){ titleEl.textContent=renames[key]; }
+      var btn=document.createElement('button');
+      btn.className='ec-edit'; btn.title='עריכה'; btn.setAttribute('aria-label','עריכת '+key);
+      btn.innerHTML='<i class="fa-solid fa-pen" aria-hidden="true"></i>';
+      btn.addEventListener('click',function(e){ stop(e); openPanel(card,titleEl,key); });
+      card.appendChild(btn);
+    })(cards[i]);
+  }
+})();
+</script>
 
 </body>
 </html>

@@ -8,6 +8,7 @@ on:
   push:
     paths:
       - 'Sweep/**'
+      - 'MyShare.html'
       - '.github/workflows/build-sweep.yml'
   workflow_dispatch:
 
@@ -43,6 +44,11 @@ jobs:
       - name: Install JS dependencies
         working-directory: Sweep
         run: npm install
+
+      - name: Sync MyShare.html into app assets
+        run: |
+          mkdir -p Sweep/android/app/src/main/assets
+          cp MyShare.html Sweep/android/app/src/main/assets/myshare.html
 
       - name: Build release APK
         working-directory: Sweep/android
