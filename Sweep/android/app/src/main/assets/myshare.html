@@ -50,10 +50,20 @@
   .rail .rlbl{position:absolute;left:48px;top:50%;transform:translate(-8px,-50%);white-space:nowrap;font-size:12px;font-weight:700;color:#fff;background:rgba(8,40,42,.74);padding:5px 11px;border-radius:999px;opacity:0;transition:opacity .14s, transform .14s;pointer-events:none;}
   .rail .ritem.hot .rlbl{opacity:1;transform:translate(0,-50%);}
 
-  .fab-menu{position:fixed;bottom:26px;left:16px;right:auto;z-index:35;width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;background:var(--white);color:var(--tq-ink);box-shadow:0 12px 28px -10px rgba(8,50,50,.6);transition:transform .12s;}
+  .fab-menu{position:fixed;bottom:26px;left:16px;right:auto;z-index:35;width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;background:var(--white);color:var(--tq-ink);box-shadow:0 12px 28px -10px rgba(8,50,50,.6);transition:transform .12s;transform-origin:50% 80%;}
   .fab-menu.left{left:auto;right:16px;}
   .fab-menu:active{transform:scale(.9);}
   .fab-menu svg{width:24px;height:24px;color:var(--tq-ink);}
+  @keyframes fabHop{
+    0%{transform:translate(0,0) scale(1,1);}
+    8%{transform:translate(calc(var(--dx)*0.04),5px) scale(1.18,0.84);}
+    26%{transform:translate(calc(var(--dx)*0.30),-32px) scale(0.86,1.16);}
+    42%{transform:translate(calc(var(--dx)*0.52),3px) scale(1.18,0.84);}
+    58%{transform:translate(calc(var(--dx)*0.70),-20px) scale(0.9,1.12);}
+    72%{transform:translate(calc(var(--dx)*0.85),3px) scale(1.14,0.88);}
+    87%{transform:translate(calc(var(--dx)*0.96),-9px) scale(0.96,1.05);}
+    100%{transform:translate(var(--dx),0) scale(1,1);}
+  }
 
   .hbar-backdrop{position:fixed;inset:0;z-index:44;background:rgba(8,40,42,0);transition:background .22s;}
   .hbar-backdrop.show{background:rgba(8,40,42,.4);}
@@ -300,10 +310,12 @@ function toggleHand(){
   const w=window.innerWidth, m=16, sz=54;
   const cur=(cfg.hand==='left')?(w-m-sz):m;
   const tgt=(newHand==='left')?(w-m-sz):m;
-  f.style.transition='transform .55s cubic-bezier(.34,1.25,.5,1)';
-  f.style.transform='translateX('+(tgt-cur)+'px)';
   cfg.hand=newHand;saveCfg();
-  setTimeout(()=>{f.style.transition='none';f.style.transform='';positionFab();requestAnimationFrame(()=>{f.style.transition='';});},560);
+  f.style.setProperty('--dx',(tgt-cur)+'px');
+  f.style.animation='none'; void f.offsetWidth;
+  f.style.animation='fabHop .78s linear forwards';
+  const done=()=>{f.removeEventListener('animationend',done);f.style.animation='';f.style.transform='';f.style.removeProperty('--dx');positionFab();};
+  f.addEventListener('animationend',done);
   toast(newHand==='left'?'יד שמאל':'יד ימין');
 }
 
