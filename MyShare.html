@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>השיתוף שלי</title>
-<meta name="theme-color" content="#7BBFC0">
+<meta name="theme-color" content="#0C2A2B">
 <style>
   :root{
-    --tq:#7BBFC0; --tq-deep:#00C2A8; --tq-ink:#1E5A64; --white:#ffffff; --tq-top:#4F999B; --tq-bot:#A6D6D5;
+    --tq:#7BBFC0; --tq-deep:#00C2A8; --tq-ink:#1E5A64; --white:#ffffff; --tq-top:#0C2A2B; --tq-bot:#1C4B4D;
     --soft:#EAF5F4; --line:#e7f0ef; --dim:rgba(8,40,42,.42);
     font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
   }
@@ -114,7 +114,8 @@
     100%{opacity:1;transform:translate(0,0) scale(1);}
   }
   @keyframes hmOut{0%{opacity:1;transform:translate(0,0) scale(1);}18%{transform:translate(0,0) scale(1.08);}100%{opacity:0;transform:translate(var(--sx,0),var(--sy,0)) scale(.4);}}
-  .hm-ic{width:50px;height:50px;border-radius:50%;background:var(--white);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px -8px rgba(8,50,50,.6);color:var(--tq-ink);}
+  .hm-ic{width:50px;height:50px;border-radius:50%;background:var(--white);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px -8px rgba(8,50,50,.6);color:var(--tq-ink);transition:transform .16s cubic-bezier(.34,1.56,.64,1), background .16s ease, color .16s ease;}
+  .hm-item.tapped .hm-ic{transform:scale(1.22);background:var(--tq-deep);color:#fff;box-shadow:0 16px 34px -8px rgba(8,50,50,.75);}
   .hm-ic svg{width:23px;height:23px;}
   .hm-label{position:absolute;top:2px;right:52px;white-space:nowrap;font-size:13px;font-weight:700;color:#fff;background:rgba(8,40,42,.74);padding:7px 13px;border-radius:999px;}
   .hbar.hand-left .hm-label{right:auto;left:52px;}
@@ -171,6 +172,7 @@ const ICON={
   copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>',
   more:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
   star:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.8 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.2-4.2"/></svg>',
   palette:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1 0 1.6-.8 1.6-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.1 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-4.4-4-7.4-9-7.4z"/><circle cx="7.5" cy="11.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="8.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="16.5" cy="11.5" r="1.1" fill="currentColor" stroke="none"/></svg>',
   phoneR:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><circle cx="14.6" cy="18" r="1.7" fill="currentColor" stroke="none"/></svg>',
   phoneL:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><circle cx="9.4" cy="18" r="1.7" fill="currentColor" stroke="none"/></svg>',
@@ -194,11 +196,12 @@ const CATALOG=[
 const byId=id=>CATALOG.find(a=>a.id===id)||null;
 
 const PALETTES=[
-  {name:'טורקיז', tq:'#7BBFC0', deep:'#00C2A8', ink:'#1E5A64', soft:'#EAF5F4', top:'#4F999B', bot:'#A6D6D5'},
-  {name:'סגול',   tq:'#9D8DF1', deep:'#7B61FF', ink:'#352B73', soft:'#ECE9FB', top:'#6E58D0', bot:'#BBAEFA'},
-  {name:'ורוד',   tq:'#F58CB8', deep:'#F0408A', ink:'#7A2247', soft:'#FCE9F1', top:'#E04E8E', bot:'#FAB8D2'},
-  {name:'כתום',   tq:'#F2A766', deep:'#F07A28', ink:'#7A3F12', soft:'#FCEFE2', top:'#E07B2E', bot:'#F8C99C'},
-  {name:'כחול',   tq:'#6FA8DC', deep:'#2F74D0', ink:'#1C4677', soft:'#E7F0FB', top:'#2F74C8', bot:'#93C0EA'}
+  {name:'טורקיז', tq:'#7BBFC0', deep:'#00C2A8', ink:'#1E5A64', soft:'#EAF5F4', top:'#0C2A2B', bot:'#1C4B4D'},
+  {name:'סגול',   tq:'#9D8DF1', deep:'#7B61FF', ink:'#352B73', soft:'#ECE9FB', top:'#16112E', bot:'#33265E'},
+  {name:'ורוד',   tq:'#F58CB8', deep:'#F0408A', ink:'#7A2247', soft:'#FCE9F1', top:'#280E1C', bot:'#4C1B36'},
+  {name:'כתום',   tq:'#F2A766', deep:'#F07A28', ink:'#7A3F12', soft:'#FCEFE2', top:'#271405', bot:'#492810'},
+  {name:'כחול',   tq:'#6FA8DC', deep:'#2F74D0', ink:'#1C4677', soft:'#E7F0FB', top:'#0B1D31', bot:'#1B3A5C'},
+  {name:'גרפיט',  tq:'#9AA3AD', deep:'#5B6675', ink:'#222831', soft:'#EEF0F3', top:'#141821', bot:'#2B313C'}
 ];
 
 const CONTACTS=[
@@ -223,6 +226,11 @@ const DEF={left:'whatsapp',right:'mail',up:'sms',down:'',rail:['telegram','insta
 function loadCfg(){const c={left:DEF.left,right:DEF.right,up:DEF.up,down:DEF.down,rail:DEF.rail.slice(),hand:DEF.hand,palette:DEF.palette};try{const s=JSON.parse(localStorage.getItem('myshare_cfg')||'{}');['left','right','up','down'].forEach(k=>{if(k in s)c[k]=s[k];});if(Array.isArray(s.rail))c.rail=s.rail;if(s.hand==='left'||s.hand==='right')c.hand=s.hand;if(typeof s.palette==='number')c.palette=s.palette;}catch(e){}return c;}
 function saveCfg(){try{localStorage.setItem('myshare_cfg',JSON.stringify(cfg));}catch(e){}}
 let cfg=loadCfg();
+function statKey(p){return (p&&(p.phone||p.name))||'';}
+function loadStats(){try{return JSON.parse(localStorage.getItem('myshare_stats')||'{}')||{};}catch(e){return {};}}
+const STATS=loadStats();
+function saveStats(){try{localStorage.setItem('myshare_stats',JSON.stringify(STATS));}catch(e){}}
+PEOPLE=PEOPLE.slice().sort((a,b)=>(STATS[statKey(b)]||0)-(STATS[statKey(a)]||0));
 
 function applyPalette(i){const p=PALETTES[((i%PALETTES.length)+PALETTES.length)%PALETTES.length];const r=document.documentElement.style;r.setProperty('--tq',p.tq);r.setProperty('--tq-deep',p.deep);r.setProperty('--tq-ink',p.ink);r.setProperty('--soft',p.soft);r.setProperty('--tq-top',p.top);r.setProperty('--tq-bot',p.bot);const m=document.querySelector('meta[name=theme-color]');if(m)m.content=p.top;}
 function cyclePalette(){cfg.palette=(cfg.palette+1)%PALETTES.length;applyPalette(cfg.palette);saveCfg();toast('צבע: '+PALETTES[cfg.palette].name);}
@@ -303,6 +311,7 @@ function endPick(px,py){
   fire(appId,person);
 }
 function fire(appId,person){
+  const k=statKey(person);if(k){STATS[k]=(STATS[k]||0)+1;saveStats();}
   const app=byId(appId);
   if(BRIDGE&&BRIDGE.shareTo){
     try{BRIDGE.shareTo(appId,JSON.stringify({name:person.name||'',phone:person.phone||'',email:person.email||''}),SHARED);}catch(e){}
@@ -335,6 +344,12 @@ function openPicker(target){
   });
 }
 
+function openSearch(){
+  showSheet('<h2>חיפוש</h2><input id="searchInput" type="text" placeholder="הקלד שם…" style="width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:12px;font-size:15px;font-family:inherit;text-align:right;color:var(--tq-ink);background:#fff;outline:none;">');
+  const inp=sheet.querySelector('#searchInput');
+  inp.oninput=()=>{const q=inp.value.trim();[...document.querySelectorAll('.row')].forEach(r=>{const nm=r.querySelector('.nm').textContent;r.style.display=(!q||nm.indexOf(q)>=0)?'':'none';});};
+  setTimeout(()=>inp.focus(),80);
+}
 function openSettings(){
   const rows=DIRPOS.map(d=>{
     const app=byId(cfg[d.key]);
@@ -380,10 +395,10 @@ positionFab();applyDot(false);
 function openHbar(){
   if(document.querySelector('.hbar-backdrop'))return;
   const items=[
+    {ic:ICON.search,   label:'חיפוש',            fn:openSearch},
     {ic:ICON.star,     label:'מועדפים',          fn:openSettings},
     {ic:ICON.palette,  label:'פלטת צבעים',       fn:openPaletteSheet},
     {ic:(cfg.hand==='left'?ICON.phoneL:ICON.phoneR), label:(cfg.hand==='left'?'יד ימין':'יד שמאל'), fn:toggleHand},
-    {ic:ICON.refresh,  label:'עדכון רשימות',     fn:()=>toast('עדכון רשימות — בקרוב')},
     {ic:ICON.shareapp, label:'שיתוף האפליקציה',  fn:()=>toast('שיתוף האפליקציה — בקרוב')}
   ];
   const n=items.length;
@@ -395,7 +410,7 @@ function openHbar(){
   const bar=document.createElement('div');bar.className='hbar'+(lh?' hand-left':'');
   bar.innerHTML=items.map((it,i)=>{
     const off=Math.round(BX-i*STEP), bottom=Math.round(BY+i*STEP);
-    const dur=(0.32+i*0.05).toFixed(2), cdur=(0.26+i*0.03).toFixed(2);
+    const dur=(0.62+i*0.09).toFixed(2), cdur=(0.42+i*0.05).toFixed(2);
     return `<button class="hm-item" style="${posProp}:${off}px;bottom:${bottom}px;--dur:${dur}s;--cdur:${cdur}s;--i:${i};--r:${n-1-i}" data-i="${i}"><span class="hm-ic">${it.ic}</span><span class="hm-label">${escapeHtml(it.label)}</span></button>`;
   }).join('');
   bd.appendChild(bar);document.body.appendChild(bd);
@@ -413,7 +428,7 @@ function openHbar(){
   requestAnimationFrame(()=>{bd.classList.add('show');bar.classList.add('run');});
   const close=cb=>{if(bar.classList.contains('closing'))return;bar.classList.remove('run');bar.classList.add('closing');bd.classList.remove('show');setTimeout(()=>{bd.remove();cb&&cb();},500);};
   bd.addEventListener('click',e=>{if(e.target===bd||e.target===bar)close();});
-  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{const it=items[+b.dataset.i];close(it.fn);};});
+  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);setTimeout(()=>close(it.fn),260);};});
 }
 </script>
 </body>
