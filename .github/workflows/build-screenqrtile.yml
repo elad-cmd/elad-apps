@@ -40,16 +40,20 @@ jobs:
         working-directory: ScreenQrTile
         run: gradle assembleDebug --no-daemon --stacktrace
 
+      - name: Rename APK to QR_Screen.apk
+        working-directory: ScreenQrTile
+        run: cp app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/QR_Screen.apk
+
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ScreenQrTile-debug-apk
-          path: ScreenQrTile/app/build/outputs/apk/debug/app-debug.apk
+          name: QR_Screen-apk
+          path: ScreenQrTile/app/build/outputs/apk/debug/QR_Screen.apk
           if-no-files-found: error
 
       - name: Publish APK as a downloadable Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: apk-latest
-          name: ScreenQrTile APK (latest)
-          files: ScreenQrTile/app/build/outputs/apk/debug/app-debug.apk
+          name: QR מהמסך — אפליקציה
+          files: ScreenQrTile/app/build/outputs/apk/debug/QR_Screen.apk
