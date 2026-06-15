@@ -52,11 +52,11 @@
   .rail .rlbl{position:absolute;left:48px;top:50%;transform:translate(-8px,-50%);white-space:nowrap;font-size:12px;font-weight:700;color:#fff;background:rgba(8,40,42,.74);padding:5px 11px;border-radius:999px;opacity:0;transition:opacity .14s, transform .14s;pointer-events:none;}
   .rail .ritem.hot .rlbl{opacity:1;transform:translate(0,-50%);}
 
-  .fab-menu{position:fixed;bottom:26px;left:16px;right:auto;z-index:35;width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;background:var(--white);color:var(--tq-ink);box-shadow:0 12px 28px -10px rgba(8,50,50,.6);transition:transform .12s;transform-origin:50% 80%;}
+  .fab-menu{position:fixed;bottom:26px;left:16px;right:auto;z-index:35;width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;background:var(--white);color:var(--tq-ink);box-shadow:0 14px 28px rgba(0,0,0,.5), 0 5px 12px rgba(0,0,0,.4);transition:transform .12s;transform-origin:50% 80%;}
   .fab-menu.left{left:auto;right:16px;}
   .fab-menu:active{transform:scale(.9);}
   .fab-menu svg{width:24px;height:24px;color:var(--tq-ink);}
-  @keyframes dotSpin{
+  @keyframes dotSpinCCW{
     0%{transform:rotate(calc(var(--r1) + 90.0deg));}
     6.2%{transform:rotate(calc(var(--r1) + 46.9deg));}
     12.5%{transform:rotate(calc(var(--r1) + 1.8deg));}
@@ -73,6 +73,25 @@
     81.2%{transform:rotate(calc(var(--r1) - 1.1deg));}
     87.5%{transform:rotate(calc(var(--r1) - 0.3deg));}
     93.8%{transform:rotate(calc(var(--r1) + 0.3deg));}
+    100%{transform:rotate(var(--r1));}
+  }
+  @keyframes dotSpinCW{
+    0%{transform:rotate(calc(var(--r1) - 90.0deg));}
+    6.2%{transform:rotate(calc(var(--r1) - 46.9deg));}
+    12.5%{transform:rotate(calc(var(--r1) - 1.8deg));}
+    18.8%{transform:rotate(calc(var(--r1) + 22.5deg));}
+    25%{transform:rotate(calc(var(--r1) + 24.5deg));}
+    31.2%{transform:rotate(calc(var(--r1) + 13.7deg));}
+    37.5%{transform:rotate(calc(var(--r1) + 1.5deg));}
+    43.8%{transform:rotate(calc(var(--r1) - 5.6deg));}
+    50%{transform:rotate(calc(var(--r1) - 6.6deg));}
+    56.2%{transform:rotate(calc(var(--r1) - 4.0deg));}
+    62.5%{transform:rotate(calc(var(--r1) - 0.7deg));}
+    68.8%{transform:rotate(calc(var(--r1) + 1.4deg));}
+    75%{transform:rotate(calc(var(--r1) + 1.8deg));}
+    81.2%{transform:rotate(calc(var(--r1) + 1.1deg));}
+    87.5%{transform:rotate(calc(var(--r1) + 0.3deg));}
+    93.8%{transform:rotate(calc(var(--r1) - 0.3deg));}
     100%{transform:rotate(var(--r1));}
   }
   @keyframes fabHop{
@@ -378,7 +397,7 @@ function openPaletteSheet(){
 let dotRot=0;
 function positionFab(){const f=document.getElementById('menuFab');if(!f)return;f.classList.toggle('left',cfg.hand==='left');}
 function applyDot(){const f=document.getElementById('menuFab');if(!f)return;const svg=f.querySelector('svg');if(!svg)return;svg.style.transformOrigin='50% 50%';svg.style.transition='none';svg.style.animation='none';svg.style.transform='rotate('+dotRot+'deg)';}
-function spinDot(){const f=document.getElementById('menuFab');const svg=f&&f.querySelector('svg');if(!svg)return;const r0=dotRot,r1=dotRot-90;dotRot=r1;svg.style.transformOrigin='50% 50%';svg.style.setProperty('--r0',r0+'deg');svg.style.setProperty('--r1',r1+'deg');svg.style.transition='none';svg.style.animation='none';void svg.offsetWidth;svg.style.animation='dotSpin .68s linear forwards';const e=()=>{svg.removeEventListener('animationend',e);svg.style.animation='';svg.style.transform='rotate('+r1+'deg)';};svg.addEventListener('animationend',e);}
+function spinDot(){const f=document.getElementById('menuFab');const svg=f&&f.querySelector('svg');if(!svg)return;const cw=(cfg.hand!=='left');const dir=cw?90:-90;const r0=dotRot,r1=dotRot+dir;dotRot=r1;svg.style.transformOrigin='50% 50%';svg.style.setProperty('--r0',r0+'deg');svg.style.setProperty('--r1',r1+'deg');svg.style.transition='none';svg.style.animation='none';void svg.offsetWidth;svg.style.animation=(cw?'dotSpinCW':'dotSpinCCW')+' .68s linear forwards';const e=()=>{svg.removeEventListener('animationend',e);svg.style.animation='';svg.style.transform='rotate('+r1+'deg)';};svg.addEventListener('animationend',e);}
 function toggleHand(){
   setTimeout(()=>{
     const f=document.getElementById('menuFab');
