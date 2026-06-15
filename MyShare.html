@@ -7,13 +7,13 @@
 <meta name="theme-color" content="#7BBFC0">
 <style>
   :root{
-    --tq:#7BBFC0; --tq-deep:#00C2A8; --tq-ink:#1E5A64; --white:#ffffff;
+    --tq:#7BBFC0; --tq-deep:#00C2A8; --tq-ink:#1E5A64; --white:#ffffff; --tq-top:#9AD0D0; --tq-bot:#5FA6A8;
     --soft:#EAF5F4; --line:#e7f0ef; --dim:rgba(8,40,42,.42);
     font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
   html,body{height:100%;}
-  body{background:var(--tq);color:var(--white);overflow:hidden;-webkit-user-select:none;user-select:none;touch-action:none;transition:background .35s ease;}
+  body{background:linear-gradient(180deg,var(--tq-top),var(--tq-bot)) fixed;color:var(--white);overflow:hidden;-webkit-user-select:none;user-select:none;touch-action:none;}
 
   .top{padding:16px 18px 6px;}
   .top h1{font-size:18px;font-weight:700;letter-spacing:-.2px;}
@@ -55,10 +55,22 @@
   .fab-menu:active{transform:scale(.9);}
   .fab-menu svg{width:24px;height:24px;color:var(--tq-ink);}
   @keyframes dotSpin{
-    0%{transform:rotate(var(--r0));}
-    50%{transform:rotate(calc(var(--r1) - 20deg));}
-    71%{transform:rotate(calc(var(--r1) + 9deg));}
-    86%{transform:rotate(calc(var(--r1) - 4deg));}
+    0%{transform:rotate(calc(var(--r1) + 90.0deg));}
+    6.2%{transform:rotate(calc(var(--r1) + 46.9deg));}
+    12.5%{transform:rotate(calc(var(--r1) + 1.8deg));}
+    18.8%{transform:rotate(calc(var(--r1) - 22.5deg));}
+    25%{transform:rotate(calc(var(--r1) - 24.5deg));}
+    31.2%{transform:rotate(calc(var(--r1) - 13.7deg));}
+    37.5%{transform:rotate(calc(var(--r1) - 1.5deg));}
+    43.8%{transform:rotate(calc(var(--r1) + 5.6deg));}
+    50%{transform:rotate(calc(var(--r1) + 6.6deg));}
+    56.2%{transform:rotate(calc(var(--r1) + 4.0deg));}
+    62.5%{transform:rotate(calc(var(--r1) + 0.7deg));}
+    68.8%{transform:rotate(calc(var(--r1) - 1.4deg));}
+    75%{transform:rotate(calc(var(--r1) - 1.8deg));}
+    81.2%{transform:rotate(calc(var(--r1) - 1.1deg));}
+    87.5%{transform:rotate(calc(var(--r1) - 0.3deg));}
+    93.8%{transform:rotate(calc(var(--r1) + 0.3deg));}
     100%{transform:rotate(var(--r1));}
   }
   @keyframes fabHop{
@@ -160,11 +172,11 @@ const CATALOG=[
 const byId=id=>CATALOG.find(a=>a.id===id)||null;
 
 const PALETTES=[
-  {name:'טורקיז', tq:'#7BBFC0', deep:'#00C2A8', ink:'#1E5A64', soft:'#EAF5F4'},
-  {name:'סגול',   tq:'#9D8DF1', deep:'#7B61FF', ink:'#352B73', soft:'#ECE9FB'},
-  {name:'ורוד',   tq:'#F58CB8', deep:'#F0408A', ink:'#7A2247', soft:'#FCE9F1'},
-  {name:'כתום',   tq:'#F2A766', deep:'#F07A28', ink:'#7A3F12', soft:'#FCEFE2'},
-  {name:'כחול',   tq:'#6FA8DC', deep:'#2F74D0', ink:'#1C4677', soft:'#E7F0FB'}
+  {name:'טורקיז', tq:'#7BBFC0', deep:'#00C2A8', ink:'#1E5A64', soft:'#EAF5F4', top:'#9AD0D0', bot:'#5FA6A8'},
+  {name:'סגול',   tq:'#9D8DF1', deep:'#7B61FF', ink:'#352B73', soft:'#ECE9FB', top:'#B4A6F8', bot:'#7E6BD8'},
+  {name:'ורוד',   tq:'#F58CB8', deep:'#F0408A', ink:'#7A2247', soft:'#FCE9F1', top:'#F9A9CB', bot:'#E96BA0'},
+  {name:'כתום',   tq:'#F2A766', deep:'#F07A28', ink:'#7A3F12', soft:'#FCEFE2', top:'#F7BE8A', bot:'#E98B45'},
+  {name:'כחול',   tq:'#6FA8DC', deep:'#2F74D0', ink:'#1C4677', soft:'#E7F0FB', top:'#8FBEE8', bot:'#4E8BC8'}
 ];
 
 const CONTACTS=[
@@ -184,7 +196,7 @@ function loadCfg(){const c={left:DEF.left,right:DEF.right,up:DEF.up,down:DEF.dow
 function saveCfg(){try{localStorage.setItem('myshare_cfg',JSON.stringify(cfg));}catch(e){}}
 let cfg=loadCfg();
 
-function applyPalette(i){const p=PALETTES[((i%PALETTES.length)+PALETTES.length)%PALETTES.length];const r=document.documentElement.style;r.setProperty('--tq',p.tq);r.setProperty('--tq-deep',p.deep);r.setProperty('--tq-ink',p.ink);r.setProperty('--soft',p.soft);const m=document.querySelector('meta[name=theme-color]');if(m)m.content=p.tq;}
+function applyPalette(i){const p=PALETTES[((i%PALETTES.length)+PALETTES.length)%PALETTES.length];const r=document.documentElement.style;r.setProperty('--tq',p.tq);r.setProperty('--tq-deep',p.deep);r.setProperty('--tq-ink',p.ink);r.setProperty('--soft',p.soft);r.setProperty('--tq-top',p.top);r.setProperty('--tq-bot',p.bot);const m=document.querySelector('meta[name=theme-color]');if(m)m.content=p.top;}
 function cyclePalette(){cfg.palette=(cfg.palette+1)%PALETTES.length;applyPalette(cfg.palette);saveCfg();toast('צבע: '+PALETTES[cfg.palette].name);}
 applyPalette(cfg.palette);
 
@@ -313,7 +325,7 @@ function openPaletteSheet(){
 let dotRot=0;
 function positionFab(){const f=document.getElementById('menuFab');if(!f)return;f.classList.toggle('left',cfg.hand==='left');}
 function applyDot(){const f=document.getElementById('menuFab');if(!f)return;const svg=f.querySelector('svg');if(!svg)return;svg.style.transformOrigin='50% 50%';svg.style.transition='none';svg.style.animation='none';svg.style.transform='rotate('+dotRot+'deg)';}
-function spinDot(){const f=document.getElementById('menuFab');const svg=f&&f.querySelector('svg');if(!svg)return;const r0=dotRot,r1=dotRot-90;dotRot=r1;svg.style.transformOrigin='50% 50%';svg.style.setProperty('--r0',r0+'deg');svg.style.setProperty('--r1',r1+'deg');svg.style.transition='none';svg.style.animation='none';void svg.offsetWidth;svg.style.animation='dotSpin .55s cubic-bezier(.4,0,.25,1) forwards';const e=()=>{svg.removeEventListener('animationend',e);svg.style.animation='';svg.style.transform='rotate('+r1+'deg)';};svg.addEventListener('animationend',e);}
+function spinDot(){const f=document.getElementById('menuFab');const svg=f&&f.querySelector('svg');if(!svg)return;const r0=dotRot,r1=dotRot-90;dotRot=r1;svg.style.transformOrigin='50% 50%';svg.style.setProperty('--r0',r0+'deg');svg.style.setProperty('--r1',r1+'deg');svg.style.transition='none';svg.style.animation='none';void svg.offsetWidth;svg.style.animation='dotSpin .68s linear forwards';const e=()=>{svg.removeEventListener('animationend',e);svg.style.animation='';svg.style.transform='rotate('+r1+'deg)';};svg.addEventListener('animationend',e);}
 function toggleHand(){
   const f=document.getElementById('menuFab');
   const newHand=(cfg.hand==='left')?'right':'left';
