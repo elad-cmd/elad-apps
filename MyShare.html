@@ -22,7 +22,7 @@
   .chip svg{width:15px;height:15px;flex:0 0 auto;}
 
   .list{position:absolute;inset:84px 0 0 0;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;display:flex;flex-direction:column;align-items:stretch;gap:14px;padding:18px 0 120px;}
-  .row{position:relative;width:100%;height:58px;touch-action:pan-y;transition:opacity .22s ease;}
+  .row{position:relative;flex:0 0 auto;width:100%;height:58px;touch-action:pan-y;transition:opacity .22s ease;}
   .row .av{position:absolute;left:65%;top:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:var(--white);color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;box-shadow:0 8px 18px -10px rgba(8,50,50,.5);touch-action:none;cursor:pointer;}
   .row .meta{position:absolute;right:calc(35% + 38px);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:2px;max-width:44%;text-align:right;}
   .row .nm{font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -86,8 +86,8 @@
     100%{transform:translate(var(--dx),0) scale(1,1);}
   }
 
-  .hbar-backdrop{position:fixed;inset:0;z-index:44;background:rgba(8,40,42,0);transition:background .22s;}
-  .hbar-backdrop.show{background:rgba(8,40,42,.4);}
+  .hbar-backdrop{position:fixed;inset:0;z-index:44;background:rgba(0,0,0,0);transition:background .25s, backdrop-filter .25s;}
+  .hbar-backdrop.show{background:rgba(0,0,0,.6);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);}
   .hbar{position:fixed;inset:0;z-index:45;pointer-events:none;}
   .hm-item{position:absolute;pointer-events:auto;background:none;border:none;cursor:pointer;width:50px;height:50px;padding:0;opacity:0;}
   .hbar.run .hm-item{animation:hmIn var(--dur,.5s) linear both;}
@@ -380,18 +380,20 @@ function positionFab(){const f=document.getElementById('menuFab');if(!f)return;f
 function applyDot(){const f=document.getElementById('menuFab');if(!f)return;const svg=f.querySelector('svg');if(!svg)return;svg.style.transformOrigin='50% 50%';svg.style.transition='none';svg.style.animation='none';svg.style.transform='rotate('+dotRot+'deg)';}
 function spinDot(){const f=document.getElementById('menuFab');const svg=f&&f.querySelector('svg');if(!svg)return;const r0=dotRot,r1=dotRot-90;dotRot=r1;svg.style.transformOrigin='50% 50%';svg.style.setProperty('--r0',r0+'deg');svg.style.setProperty('--r1',r1+'deg');svg.style.transition='none';svg.style.animation='none';void svg.offsetWidth;svg.style.animation='dotSpin .68s linear forwards';const e=()=>{svg.removeEventListener('animationend',e);svg.style.animation='';svg.style.transform='rotate('+r1+'deg)';};svg.addEventListener('animationend',e);}
 function toggleHand(){
-  const f=document.getElementById('menuFab');
-  const newHand=(cfg.hand==='left')?'right':'left';
-  const w=window.innerWidth, m=16, sz=54;
-  const cur=(cfg.hand==='left')?(w-m-sz):m;
-  const tgt=(newHand==='left')?(w-m-sz):m;
-  cfg.hand=newHand;saveCfg();
-  f.style.setProperty('--dx',(tgt-cur)+'px');
-  f.style.animation='none'; void f.offsetWidth;
-  f.style.animation='fabHop .78s linear forwards';
-  const done=()=>{f.removeEventListener('animationend',done);f.style.animation='';f.style.transform='';f.style.removeProperty('--dx');positionFab();spinDot();};
-  f.addEventListener('animationend',done);
-  toast(newHand==='left'?'יד שמאל':'יד ימין');
+  setTimeout(()=>{
+    const f=document.getElementById('menuFab');
+    const newHand=(cfg.hand==='left')?'right':'left';
+    const w=window.innerWidth, m=16, sz=54;
+    const cur=(cfg.hand==='left')?(w-m-sz):m;
+    const tgt=(newHand==='left')?(w-m-sz):m;
+    cfg.hand=newHand;saveCfg();
+    f.style.setProperty('--dx',(tgt-cur)+'px');
+    f.style.animation='none'; void f.offsetWidth;
+    f.style.animation='fabHop .78s linear forwards';
+    const done=()=>{f.removeEventListener('animationend',done);f.style.animation='';f.style.transform='';f.style.removeProperty('--dx');positionFab();spinDot();};
+    f.addEventListener('animationend',done);
+    toast(newHand==='left'?'יד שמאל':'יד ימין');
+  },180);
 }
 
 const menuFab=document.createElement('button');
