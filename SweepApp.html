@@ -260,8 +260,7 @@
   .screen,.drawer{background:var(--warm);}
   .drawer{right:0;left:auto;transform:translateX(100%);box-shadow:-14px 0 60px -12px rgba(10,60,60,.5);overflow:hidden;}
   .drawer.show{transform:translateX(0);}
-  .drawer-scroll{will-change:transform;touch-action:none;}
-  .drawer-scroll *{touch-action:none;}
+  .drawer-scroll{height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;}
   .brand{background:none;-webkit-text-fill-color:#fff;color:#fff;}
   .brand small{color:rgba(255,255,255,.85);-webkit-text-fill-color:rgba(255,255,255,.85);}
   .menu-btn{background:rgba(255,255,255,.22);color:#fff;box-shadow:none;}
@@ -348,13 +347,11 @@
   .fab-menu svg{width:23px;height:23px;color:var(--ink);}
   .hbar-backdrop{position:fixed;inset:0;z-index:44;background:rgba(8,40,42,0);transition:background .22s;}
   .hbar-backdrop.show{background:rgba(8,40,42,.4);}
-  .hbar{position:fixed;bottom:30px;left:80px;right:12px;z-index:45;display:flex;direction:ltr;flex-direction:row;justify-content:flex-start;align-items:flex-end;gap:6px;overflow-x:auto;overflow-y:visible;padding-bottom:2px;}
-  .hbar::-webkit-scrollbar{display:none;}
-  .hm-item{pointer-events:auto;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;padding:0;flex:0 0 auto;animation:hmIn .32s cubic-bezier(.22,1,.36,1) both;}
-  @keyframes hmIn{from{opacity:0;transform:translateX(-34px) scale(.7);}to{opacity:1;transform:none;}}
-  .hm-labwrap{display:flex;align-items:center;justify-content:center;min-height:16px;}
-  .hm-label{white-space:nowrap;font-size:12px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.4);}
-  .hm-ic{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.96);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px -8px rgba(8,50,50,.6);transition:transform .12s;}
+  .hbar{position:fixed;inset:0;z-index:45;pointer-events:none;}
+  .hm-item{position:absolute;pointer-events:auto;background:none;border:none;cursor:pointer;display:flex;direction:rtl;align-items:center;gap:9px;padding:0;animation:hmIn .3s cubic-bezier(.22,1,.36,1) both;}
+  @keyframes hmIn{from{opacity:0;transform:translate(16px,16px) scale(.7);}to{opacity:1;transform:none;}}
+  .hm-label{white-space:nowrap;font-size:13px;font-weight:700;color:#fff;background:rgba(8,40,42,.74);padding:7px 13px;border-radius:999px;box-shadow:0 6px 14px -6px rgba(0,0,0,.45);}
+  .hm-ic{width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.97);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px -8px rgba(8,50,50,.6);transition:transform .12s;flex:0 0 auto;}
   .hm-item:active .hm-ic{transform:scale(.88);}
   .hm-ic svg{width:23px;height:23px;color:var(--ink);}
   .mp-hint{color:rgba(255,255,255,.92);font-size:13.5px;line-height:1.5;margin-bottom:14px;font-weight:600;}
@@ -803,14 +800,18 @@ function openHbar(){
   if(document.querySelector('.hbar-backdrop'))return;
   const items=[
     {ic:ICON.home,label:'בית',fn:goHome},
-    {ic:ICON.filter,label:'סינון',fn:renderFilters},
-    {ic:ICON.merge,label:'מיזוג',fn:renderDuplicates},
-    {ic:ICON.down,label:'ייצוא',fn:renderDone},
-    {ic:ICON.reset,label:'איפוס',fn:()=>uiConfirm('לאפס? כל המיון יימחק ותחזור למסך ההעלאה.',resetApp)}
+    {ic:ICON.search,label:'חיפוש',fn:()=>{if(!document.getElementById('searchBtn'))renderMain();setTimeout(()=>{const b=document.getElementById('searchBtn');if(b)b.click();},60);}},
+    {ic:ICON.filter,label:'סינון מהיר',fn:renderFilters},
+    {ic:ICON.merge,label:'מיזוג כפילויות',fn:renderDuplicates},
+    {ic:ICON.down,label:'ייצוא רשימה',fn:renderDone},
+    {ic:ICON.reset,label:'התחל מחדש',fn:()=>uiConfirm('לאפס? כל המיון יימחק ותחזור למסך ההעלאה.',resetApp)}
   ];
+  const n=items.length;
+  const STEP=Math.max(44,Math.min(56,(window.innerWidth-130)/(n-1)));
+  const BX=window.innerWidth-110, BY=98;
   const bd=document.createElement('div');bd.className='hbar-backdrop';
   const bar=document.createElement('div');bar.className='hbar';
-  bar.innerHTML=items.map((it,i)=>`<button class="hm-item" style="animation-delay:${(i*0.035).toFixed(3)}s" data-i="${i}"><span class="hm-labwrap"><span class="hm-label">${it.label}</span></span><span class="hm-ic">${it.ic}</span></button>`).join('');
+  bar.innerHTML=items.map((it,i)=>`<button class="hm-item" style="right:${Math.round(BX-i*STEP)}px;bottom:${Math.round(BY+i*STEP)}px;animation-delay:${(i*0.04).toFixed(3)}s" data-i="${i}"><span class="hm-ic">${it.ic}</span><span class="hm-label">${it.label}</span></button>`).join('');
   bd.appendChild(bar);document.body.appendChild(bd);
   requestAnimationFrame(()=>bd.classList.add('show'));
   const close=cb=>{bd.classList.remove('show');setTimeout(()=>{bd.remove();cb&&cb();},220);};
@@ -953,29 +954,26 @@ function setupSearch(){
   }
   function run(){
     const q=searchInput.value.trim().toLowerCase();const qd=q.replace(/\D/g,'');
-    const filters=[['undecided','לא סומנו'],['keep','נשמרו'],['maybe','לבדיקה'],['all','הכול']];
-    const chips=`<div class="search-chips">`+filters.map(([k,l])=>`<button class="search-chip${searchFilter===k?' on':''}" data-f="${k}">${l}</button>`).join('')+`</div>`;
-    const matchF=r=>{const d=S.decisions[r.id];if(searchFilter==='undecided')return d===undefined;if(searchFilter==='all')return d!=='delete';return d===searchFilter;};
+    const filters=[['undecided','לא סומנו'],['keep','נשמרו'],['maybe','לבדיקה'],['delete','נמחקו'],['all','הכול']];
+    const catMatch=(r,k)=>{const d=S.decisions[r.id];if(k==='undecided')return d===undefined;if(k==='all')return true;return d===k;};
+    const matchQ=r=>(r.name&&r.name.toLowerCase().includes(q))||(r.org&&r.org.toLowerCase().includes(q))||(r.emails||[]).some(e=>e.toLowerCase().includes(q))||(qd.length>=2&&(r.phones||[]).some(p=>p.replace(/\D/g,'').includes(qd)));
+    const chips=`<div class="search-chips">`+filters.map(([k,l])=>{const n=S.records.filter(r=>catMatch(r,k)&&(!q||matchQ(r))).length;return `<button class="search-chip${searchFilter===k?' on':''}" data-f="${k}">${l} <b>${n}</b></button>`;}).join('')+`</div>`;
     const attachChips=()=>results.querySelectorAll('.search-chip').forEach(c=>c.onclick=()=>{searchFilter=c.dataset.f;run();});
     if(!q){results.innerHTML=chips+`<div class="search-empty">הקלידו כדי לחפש בין אנשי הקשר</div>`;attachChips();return;}
-    const res=S.records.filter(r=>matchF(r)&&(
-      (r.name&&r.name.toLowerCase().includes(q))||
-      (r.org&&r.org.toLowerCase().includes(q))||
-      (r.emails||[]).some(e=>e.toLowerCase().includes(q))||
-      (qd.length>=2&&(r.phones||[]).some(p=>p.replace(/\D/g,'').includes(qd)))
-    ));
+    const res=S.records.filter(r=>catMatch(r,searchFilter)&&matchQ(r));
     if(!res.length){results.innerHTML=chips+`<div class="search-empty">לא נמצאו תוצאות בקטגוריה הזו</div>`;attachChips();return;}
     const cap=res.slice(0,300);
     const hint=`<div class="swipe-hint"><span class="sh-side del"><span class="sa-arrow">${ICON.chevL}</span>${ICON.trash}<span class="sh-lbl">מחיקה</span></span><span class="sh-side keep"><span class="sh-lbl">שמירה</span>${ICON.check}<span class="sa-arrow">${ICON.chevR}</span></span></div><div class="merge-tip">${ICON.merge}<span>לחיצה ארוכה על תוצאה וגרירה על תוצאה אחרת = מיזוג שתיהן</span></div>`;
     results.innerHTML=chips+hint+cap.map(r=>{
       const sub=[...new Set([...(r.emails||[]),...(r.phones||[])])].join(' · ');
       const d=S.decisions[r.id];
-      const tag=d==='keep'?'<span class="li-tag keep">נשמר</span>':d==='maybe'?'<span class="li-tag maybe">לבדיקה</span>':'';
+      const tag=d==='keep'?'<span class="li-tag keep">נשמר</span>':d==='maybe'?'<span class="li-tag maybe">לבדיקה</span>':d==='delete'?'<span class="li-tag del">נמחק</span>':'';
       return `<div class="swipe-row" data-id="${r.id}"><div class="swipe-bg"></div><div class="list-item swipe-fg">${initialBadge(r,'li-av')}<div class="li-txt"><div class="n">${r.name?escapeHtml(r.name):'(אין שם)'}</div>${sub?`<div class="s">${escapeHtml(sub)}</div>`:''}</div>${tag}<span class="li-chev">${ICON.chevL}</span></div></div>`;
     }).join('')+(res.length>cap.length?`<div class="search-empty">מוצגות ${cap.length} מתוך ${res.length}</div>`:'');
     attachChips();
+    const type=(searchFilter==='undecided'||searchFilter==='all')?null:searchFilter;
     const openDetail=(id)=>renderContactDetail(id,(rid,dir)=>{ if(dir)run(); });
-    results.querySelectorAll('.swipe-row').forEach(rw=>attachContactRow(rw,{type:null,afterRemove:run,onTap:openDetail,onMerge:(a,b)=>doMerge(a,b,run)}));
+    results.querySelectorAll('.swipe-row').forEach(rw=>attachContactRow(rw,{type:type,afterRemove:run,onTap:openDetail,onMerge:(a,b)=>doMerge(a,b,run)}));
   }
   searchBtn.onclick=open;searchClose.onclick=close;
   searchInput.addEventListener('input',run);
@@ -1143,20 +1141,6 @@ function renderMenu(){
   const close=cb=>{bd.classList.remove('show');drawer.classList.remove('show');setTimeout(()=>{bd.remove();cb&&cb();},340);};
   bd.addEventListener('click',e=>{if(e.target===bd)close();});
   drawer.querySelector('#dStrip').onclick=()=>close();
-  // drag the menu vertically — allow pulling it down so top items reach the thumb
-  const scroll=drawer.querySelector('#dScroll');
-  let curY=0,startY=0,startCur=0,moved=false,downing=false,lastY=0,lastT=0,vel=0,raf=0;
-  const bounds=()=>{const vh=window.innerHeight,ch=scroll.offsetHeight;return [Math.min(0,vh-ch-24),Math.round(vh*0.5)];};
-  const clampY=y=>{const[mn,mx]=bounds();return Math.max(mn,Math.min(mx,y));};
-  const setY=()=>{scroll.style.transform=curY?`translateY(${curY}px)`:'';};
-  const momentum=()=>{vel*=0.94;curY+=vel*16;const[mn,mx]=bounds();
-    if(curY<mn){curY=mn;vel=0;}if(curY>mx){curY=mx;vel=0;}setY();
-    if(Math.abs(vel)>0.02)raf=requestAnimationFrame(momentum);};
-  scroll.addEventListener('pointerdown',e=>{cancelAnimationFrame(raf);downing=true;moved=false;startY=e.clientY;startCur=curY;lastY=e.clientY;lastT=performance.now();vel=0;scroll.style.transition='none';});
-  scroll.addEventListener('pointermove',e=>{if(!downing)return;const d=e.clientY-startY;if(!moved&&Math.abs(d)>6){moved=true;try{scroll.setPointerCapture(e.pointerId);}catch(_){}}if(moved){curY=clampY(startCur+d);setY();const now=performance.now(),dt=now-lastT;if(dt>0){vel=(e.clientY-lastY)/dt;lastY=e.clientY;lastT=now;}}});
-  const upDrag=()=>{if(!downing)return;downing=false;if(moved&&Math.abs(vel)>0.05)raf=requestAnimationFrame(momentum);};
-  scroll.addEventListener('pointerup',upDrag);scroll.addEventListener('pointercancel',upDrag);
-  scroll.addEventListener('click',e=>{if(moved){e.stopPropagation();e.preventDefault();moved=false;}},true);
   drawer.querySelector('#m-home').onclick=()=>close(goHome);
   drawer.querySelector('#m-filter').onclick=()=>close(renderFilters);
   drawer.querySelector('#m-dup').onclick=()=>close(renderDuplicates);
