@@ -177,15 +177,15 @@
   .drawer-backdrop.show{background:rgba(45,32,66,.42);}
   .drawer{position:absolute;left:0;top:0;bottom:0;width:82%;max-width:322px;background:#f9f7fc;
     box-shadow:12px 0 50px -12px rgba(45,32,66,.55);transform:translateX(-100%);
-    transition:transform .42s cubic-bezier(0.22,1,0.36,1);display:flex;flex-direction:column;padding:22px 16px;overflow-y:auto;}
+    transition:transform .62s cubic-bezier(0.22,1,0.36,1);display:flex;flex-direction:column;padding:22px 16px;overflow-y:auto;}
   .drawer.show{transform:translateX(0);}
   .drawer .dhead{display:flex;align-items:center;margin-bottom:18px;padding-inline:4px;}
   .drawer .dhead .dt{font-size:21px;font-weight:700;
     background:linear-gradient(135deg,var(--flame1),var(--flame2));-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;}
   .drawer .dhead .close{margin-inline-start:auto;}
   .drawer .menu-list button{opacity:0;}
-  .drawer.show .menu-list button{animation:itemIn .5s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(var(--i,0)*.055s);}
-  .drawer.closing .menu-list button{animation:itemOut .26s cubic-bezier(.4,0,.75,.25) both;animation-delay:calc(var(--i,0)*.05s);}
+  .drawer.show .menu-list button{animation:itemIn .62s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(var(--i,0)*.08s);}
+  .drawer.closing .menu-list button{animation:itemOut .34s cubic-bezier(.4,0,.75,.25) both;animation-delay:calc(var(--i,0)*.06s);}
   @keyframes itemIn{from{opacity:0;transform:translateX(28px) scale(.93)}to{opacity:1;transform:none}}
   @keyframes itemOut{from{opacity:1;transform:none}to{opacity:0;transform:translateX(28px) scale(.9)}}
   .menu-list .i-dup svg{color:var(--purple);} .menu-list .i-filt svg{color:var(--teal);}
@@ -343,10 +343,10 @@
   .hbar-backdrop{position:fixed;inset:0;z-index:44;background:rgba(8,40,42,0);transition:background .22s;}
   .hbar-backdrop.show{background:rgba(8,40,42,.4);}
   .hbar{position:fixed;inset:0;z-index:45;pointer-events:none;}
-  .hm-item{position:absolute;pointer-events:auto;background:none;border:none;cursor:pointer;display:flex;direction:rtl;align-items:center;gap:9px;padding:0;animation:hmIn .46s cubic-bezier(.34,1.56,.64,1) both;}
-  .hbar.closing .hm-item{animation:hmOut .26s cubic-bezier(.4,0,.72,.2) both;}
-  @keyframes hmIn{from{opacity:0;transform:translate(18px,18px) scale(.6);}to{opacity:1;transform:none;}}
-  @keyframes hmOut{from{opacity:1;transform:none;}to{opacity:0;transform:translate(14px,14px) scale(.6);}}
+  .hm-item{position:absolute;pointer-events:auto;background:none;border:none;cursor:pointer;display:flex;direction:rtl;align-items:center;gap:9px;padding:0;transform-origin:top center;animation:hmIn .58s cubic-bezier(.34,1.5,.62,1) both;animation-delay:calc(var(--i,0)*.075s);}
+  .hbar.closing .hm-item{animation:hmOut .36s cubic-bezier(.5,0,.75,.2) both;animation-delay:calc(var(--r,0)*.065s);}
+  @keyframes hmIn{from{opacity:0;transform:translateY(-26px) rotate(-9deg) scale(.9);}to{opacity:1;transform:none;}}
+  @keyframes hmOut{from{opacity:1;transform:none;}to{opacity:0;transform:translateY(-20px) rotate(-6deg) scale(.85);}}
   .hm-label{white-space:nowrap;font-size:13px;font-weight:700;color:#fff;background:rgba(8,40,42,.74);padding:7px 13px;border-radius:999px;box-shadow:0 6px 14px -6px rgba(0,0,0,.45);}
   .hm-ic{width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.97);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px -8px rgba(8,50,50,.6);transition:transform .12s;flex:0 0 auto;}
   .hm-item:active .hm-ic{transform:scale(.88);}
@@ -808,7 +808,7 @@ function openHbar(){
   const BX=window.innerWidth-110, BY=98;
   const bd=document.createElement('div');bd.className='hbar-backdrop';
   const bar=document.createElement('div');bar.className='hbar';
-  bar.innerHTML=items.map((it,i)=>`<button class="hm-item" style="right:${Math.round(BX-i*STEP)}px;bottom:${Math.round(BY+i*STEP)}px;animation-delay:${(i*0.04).toFixed(3)}s" data-i="${i}"><span class="hm-ic">${it.ic}</span><span class="hm-label">${it.label}</span></button>`).join('');
+  bar.innerHTML=items.map((it,i)=>`<button class="hm-item" style="right:${Math.round(BX-i*STEP)}px;bottom:${Math.round(BY+i*STEP)}px;--i:${i};--r:${n-1-i}" data-i="${i}"><span class="hm-ic">${it.ic}</span><span class="hm-label">${it.label}</span></button>`).join('');
   bd.appendChild(bar);document.body.appendChild(bd);
   requestAnimationFrame(()=>bd.classList.add('show'));
   const close=cb=>{if(bar.classList.contains('closing'))return;bar.classList.add('closing');bd.classList.remove('show');setTimeout(()=>{bd.remove();cb&&cb();},260+(items.length-1)*40);};
@@ -1141,7 +1141,7 @@ function renderMenu(){
     drawer.classList.add('closing');
     drawer.classList.remove('show');
     bd.classList.remove('show');
-    setTimeout(()=>{bd.remove();cb&&cb();},520);
+    setTimeout(()=>{bd.remove();cb&&cb();},760);
   };
   bd.addEventListener('click',e=>{if(e.target===bd)close();});
   drawer.querySelector('#dStrip').onclick=()=>close();

@@ -89,6 +89,15 @@
   .app-card--soon .app-card__icon{background:#fff;border:1px dashed var(--border);box-shadow:none}
 
   footer{text-align:center;color:var(--text-light);font-size:.9rem;padding:28px 22px 40px}
+
+  /* ===== Technical strip ===== */
+  .app-card__tech{margin-top:16px;border-top:1px dashed var(--border);padding-top:12px}
+  .app-card__tech-row{display:flex;gap:8px;align-items:flex-start;font-size:.8rem;color:var(--text-light);line-height:1.5}
+  .app-card__tech-row+.app-card__tech-row{margin-top:5px}
+  .app-card__tech-row i{color:var(--teal-dark);width:15px;text-align:center;margin-top:3px;flex:none}
+  .app-card__tech-row b{color:var(--text-soft);font-weight:700}
+  .app-card__tech code{font-family:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;font-size:.76rem;
+      background:var(--bg-soft);border:1px solid var(--border);border-radius:6px;padding:1px 6px}
 </style>
 </head>
 <body>
@@ -113,6 +122,10 @@
       <span class="app-card__tag">פסיכו · אינדקס</span>
       <h3 class="app-card__title">מערכות לימוד</h3>
       <p class="app-card__desc">עמוד האינדקס של מערכות הלימוד של פסיכו — שער לכל מערכות הלימוד.</p>
+      <div class="app-card__tech">
+        <div class="app-card__tech-row"><i class="fa-solid fa-code"></i><span><b>בנוי ב:</b> אתר סטטי — <code>HTML</code> · <code>CSS</code> · <code>JavaScript</code></span></div>
+        <div class="app-card__tech-row"><i class="fa-solid fa-cloud-arrow-up"></i><span><b>פריסה:</b> Vercel (אינדקס נפרד למערכות הלימוד)</span></div>
+      </div>
       <span class="app-card__go">למעבר לאינדקס <i class="fa-solid fa-arrow-left"></i></span>
     </a>
 
@@ -121,6 +134,10 @@
       <span class="app-card__tag">היסטוריה</span>
       <h3 class="app-card__title">ציר הזמן</h3>
       <p class="app-card__desc">ציר הזמן של ההיסטוריה — אירועים ודמויות לאורך הזמן בקו אחד ברור ואינטראקטיבי.</p>
+      <div class="app-card__tech">
+        <div class="app-card__tech-row"><i class="fa-solid fa-code"></i><span><b>בנוי ב:</b> קובץ יחיד — <code>HTML</code> · <code>CSS</code> · <code>JavaScript</code></span></div>
+        <div class="app-card__tech-row"><i class="fa-brands fa-github"></i><span><b>פריסה:</b> GitHub Pages (ריפו <code>elad-apps</code>)</span></div>
+      </div>
       <span class="app-card__go">פתיחה <i class="fa-solid fa-arrow-left"></i></span>
     </a>
 
@@ -129,6 +146,10 @@
       <span class="app-card__tag">פרודוקטיביות</span>
       <h3 class="app-card__title">משימות</h3>
       <p class="app-card__desc">דשבורד המשימות בסגנון Clear, עם מחוות החלקה. אפליקציה להתקנה בטלפון (PWA).</p>
+      <div class="app-card__tech">
+        <div class="app-card__tech-row"><i class="fa-brands fa-react"></i><span><b>בנוי ב:</b> <code>React</code> · <code>Vite</code> · <code>Tailwind</code> · PWA</span></div>
+        <div class="app-card__tech-row"><i class="fa-brands fa-github"></i><span><b>פריסה:</b> נבנה ל-<code>dist</code> ומועלה ל-GitHub Pages</span></div>
+      </div>
       <span class="app-card__go">פתיחה <i class="fa-solid fa-arrow-left"></i></span>
     </a>
 
@@ -138,6 +159,10 @@
       <span class="app-card__tag">אנדרואיד</span>
       <h3 class="app-card__title">QR מהמסך</h3>
       <p class="app-card__desc">אריח להגדרות המהירות שמפענח קוד QR ישירות מהמסך — קיבלת QR בוואטסאפ? סרוק אותו מהתמונה. אפליקציית אנדרואיד להורדה.</p>
+      <div class="app-card__tech">
+        <div class="app-card__tech-row"><i class="fa-solid fa-code"></i><span><b>בנוי ב:</b> <code>Kotlin</code> — אנדרואיד ילידי</span></div>
+        <div class="app-card__tech-row"><i class="fa-brands fa-github"></i><span><b>פריסה:</b> נבנה ב-GitHub Actions ל-<code>APK</code>, התקנה ישירה (Release)</span></div>
+      </div>
       <span class="app-card__go">להורדה <i class="fa-solid fa-arrow-left"></i></span>
     </a>
 
