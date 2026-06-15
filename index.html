@@ -48,8 +48,7 @@
       letter-spacing:.5px}
 
   /* ===== Cards grid ===== */
-  .grid{display:grid;grid-template-columns:repeat(4,250px);justify-content:center;gap:13px;margin-top:13px}
-  @media(max-width:1080px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),250px));justify-content:center;gap:13px;margin-top:13px}
   .app-card{position:relative;display:flex;flex-direction:column;background:#fff;border:1px solid var(--border);
       border-radius:var(--radius-lg);padding:16px 16px 14px;box-shadow:var(--shadow-sm);overflow:hidden;
       transition:transform .25s ease,box-shadow .25s ease}
