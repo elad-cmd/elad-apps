@@ -34,21 +34,23 @@
   .hero__blob--1{width:260px;height:260px;background:var(--teal-light);top:-70px;left:-60px}
   .hero__blob--2{width:200px;height:200px;background:var(--yellow-light);top:30px;right:8%}
   .hero__blob--3{width:230px;height:230px;background:var(--purple-soft);bottom:-90px;left:35%}
-  .hero__inner{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:72px 22px 60px;text-align:center}
+  .hero__inner{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:14px 22px 12px;text-align:center}
   .hero__kicker{display:inline-block;background:#fff;border:1px solid var(--border);color:var(--teal-dark);
       font-weight:700;font-size:.9rem;padding:7px 16px;border-radius:var(--radius-pill);box-shadow:var(--shadow-sm)}
-  .hero__title{font-size:clamp(2.1rem,5vw,3.4rem);font-weight:800;letter-spacing:-.5px;margin:18px 0 12px}
-  .hero__sub{font-size:1.12rem;color:var(--text-soft);max-width:620px;margin:0 auto}
+  .hero__title{font-size:clamp(1.3rem,3vw,1.7rem);font-weight:800;letter-spacing:-.5px;margin:0}
+  .hero__sub{display:none}
+  .hero__kicker{display:none}
+  .hero__blob{display:none}
 
   /* ===== Section ===== */
-  main{max-width:1100px;margin:0 auto;padding:8px 22px 70px}
-  .section__title{font-size:1.05rem;font-weight:700;color:var(--text-light);text-align:center;margin:46px 0 6px;
+  main{max-width:1100px;margin:0 auto;padding:6px 22px 28px}
+  .section__title{font-size:1.05rem;font-weight:700;color:var(--text-light);text-align:center;margin:16px 0 2px;
       letter-spacing:.5px}
 
   /* ===== Cards grid ===== */
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:22px;margin-top:24px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:13px;margin-top:13px}
   .app-card{position:relative;display:flex;flex-direction:column;background:#fff;border:1px solid var(--border);
-      border-radius:var(--radius-lg);padding:28px 26px 24px;box-shadow:var(--shadow-sm);overflow:hidden;
+      border-radius:var(--radius-lg);padding:16px 16px 14px;box-shadow:var(--shadow-sm);overflow:hidden;
       transition:transform .25s ease,box-shadow .25s ease}
   .app-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg)}
   .app-card::after{content:"";position:absolute;width:150px;height:150px;border-radius:var(--blob);
@@ -61,8 +63,8 @@
   .app-card--blue::after{background:var(--blue-light)}
   .app-card--pink::after{background:#fcdce3}
   .app-card>*{position:relative;z-index:1}
-  .app-card__icon{width:62px;height:62px;display:grid;place-items:center;border-radius:var(--blob);
-      font-size:1.6rem;color:var(--text);margin-bottom:16px;box-shadow:var(--shadow-sm)}
+  .app-card__icon{width:44px;height:44px;display:grid;place-items:center;border-radius:var(--blob);
+      font-size:1.15rem;color:var(--text);margin-bottom:9px;box-shadow:var(--shadow-sm)}
   .app-card--teal .app-card__icon{background:var(--teal)}
   .app-card--yellow .app-card__icon{background:var(--yellow)}
   .app-card--purple .app-card__icon{background:var(--purple)}
@@ -72,9 +74,9 @@
   .app-card__tag{display:inline-block;font-size:.78rem;font-weight:700;color:var(--text-light);
       background:var(--bg-soft);border:1px solid var(--border);padding:3px 11px;border-radius:var(--radius-pill);
       align-self:flex-start;margin-bottom:10px}
-  .app-card__title{font-size:1.4rem;font-weight:800;margin-bottom:8px}
-  .app-card__desc{color:var(--text-soft);font-size:1rem;flex:1}
-  .app-card__go{display:inline-flex;align-items:center;gap:8px;margin-top:18px;font-weight:700;color:var(--teal-dark)}
+  .app-card__title{font-size:1.12rem;font-weight:800;margin-bottom:4px}
+  .app-card__desc{color:var(--text-soft);font-size:.86rem;flex:1}
+  .app-card__go{display:inline-flex;align-items:center;gap:8px;margin-top:11px;font-weight:700;color:var(--teal-dark);font-size:.9rem}
   .app-card__go i{transition:transform .25s ease}
   .app-card:hover .app-card__go i{transform:translateX(-5px)}
 
@@ -91,13 +93,17 @@
   footer{text-align:center;color:var(--text-light);font-size:.9rem;padding:28px 22px 40px}
 
   /* ===== Technical strip ===== */
-  .app-card__tech{margin-top:16px;border-top:1px dashed var(--border);padding-top:12px}
-  .app-card__tech-row{display:flex;gap:8px;align-items:flex-start;font-size:.8rem;color:var(--text-light);line-height:1.5}
+  .app-card__tech{margin-top:11px;border-top:1px dashed var(--border);padding-top:9px}
+  .app-card__tech-row{display:flex;gap:7px;align-items:flex-start;font-size:.76rem;color:var(--text-light);line-height:1.45}
   .app-card__tech-row+.app-card__tech-row{margin-top:5px}
   .app-card__tech-row i{color:var(--teal-dark);width:15px;text-align:center;margin-top:3px;flex:none}
   .app-card__tech-row b{color:var(--text-soft);font-weight:700}
   .app-card__tech code{font-family:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;font-size:.76rem;
       background:var(--bg-soft);border:1px solid var(--border);border-radius:6px;padding:1px 6px}
+
+  /* ===== Ideas section ===== */
+  .ideas__sub{text-align:center;color:var(--text-light);font-size:.95rem;margin-top:2px}
+  .app-card__tag--building{background:var(--mint-soft);border-color:var(--mint);color:var(--teal-dark)}
 </style>
 </head>
 <body>
@@ -170,4 +176,42 @@
       <div class="app-card__icon" style="background:none;box-shadow:none;padding:0;overflow:hidden;border-radius:16px;"><img src="https://elad-cmd.github.io/elad-apps/icon-any-512.png" alt="SweepApp" style="width:100%;height:100%;object-fit:cover;"></div>
       <span class="app-card__tag">כלים</span>
       <h3 class="app-card__title">ניקוי אנשי קשר</h3>
-      <p class="app-card__desc">SweepAp
+      <p class="app-card__desc">SweepApp — כלי לניקוי וסידור אנשי קשר במחוות החלקה. גרסת הדפדפן (PWA).</p>
+      <div class="app-card__tech">
+        <div class="app-card__tech-row"><i class="fa-solid fa-code"></i><span><b>בנוי ב:</b> קובץ יחיד — <code>HTML</code> · <code>CSS</code> · <code>JavaScript</code> · PWA</span></div>
+        <div class="app-card__tech-row"><i class="fa-brands fa-github"></i><span><b>פריסה:</b> GitHub Pages (ריפו <code>elad-apps</code>)</span></div>
+        <div class="app-card__tech-row"><i class="fa-solid fa-arrows-rotate"></i><span><b>סטטוס:</b> מוחלף באפליקציה ילידית חדשה (<code>Sweep</code>, React Native)</span></div>
+      </div>
+      <span class="app-card__go">פתיחה <i class="fa-solid fa-arrow-left"></i></span>
+    </a>
+
+  </div>
+
+  <h2 class="section__title">רעיונות לאפליקציות</h2>
+  <p class="ideas__sub">כל הרעיונות שלי במקום אחד — מה שבבנייה ומה שעוד מחכה לתורו.</p>
+  <div class="grid">
+
+    <div class="app-card app-card--blue">
+      <div class="app-card__icon"><i class="fa-solid fa-broom"></i></div>
+      <span class="app-card__tag app-card__tag--building">בבנייה</span>
+      <h3 class="app-card__title">Sweep — אנשי קשר</h3>
+      <p class="app-card__desc">אפליקציית אנשי קשר ילידית: בית, סינון בהחלקה, ארכיון ומיזוג — ישירות מול המאגר.</p>
+      <div class="app-card__tech">
+        <div class="app-card__tech-row"><i class="fa-brands fa-react"></i><span><b>בנוי ב:</b> <code>React Native</code> — אנדרואיד</span></div>
+        <div class="app-card__tech-row"><i class="fa-brands fa-github"></i><span><b>פריסה:</b> GitHub Actions ל-<code>APK</code> (תג <code>sweep-latest</code>)</span></div>
+      </div>
+    </div>
+
+    <div class="app-card app-card--soon">
+      <div class="app-card__icon"><i class="fa-solid fa-lightbulb"></i></div>
+      <h3 class="app-card__title">הוסף רעיון</h3>
+      <span class="app-card__tag">בקרוב</span>
+    </div>
+
+  </div>
+</main>
+
+<footer>אפליקציות אלעד · אזור אישי</footer>
+
+</body>
+</html>
