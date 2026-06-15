@@ -28,6 +28,8 @@
       <activity
         android:name=".ShareActivity"
         android:label="@string/share_label"
+        android:icon="@mipmap/ic_share"
+        android:roundIcon="@mipmap/ic_share_round"
         android:theme="@style/AppTheme"
         android:excludeFromRecents="true"
         android:exported="true">
