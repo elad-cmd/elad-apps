@@ -121,7 +121,8 @@ const ICON={
   more:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
   star:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.8 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z"/></svg>',
   palette:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1 0 1.6-.8 1.6-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.1 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-4.4-4-7.4-9-7.4z"/><circle cx="7.5" cy="11.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="8.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="16.5" cy="11.5" r="1.1" fill="currentColor" stroke="none"/></svg>',
-  hand:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11V6a1.5 1.5 0 0 1 3 0v4M10 10V4.5a1.5 1.5 0 0 1 3 0V10M13 10V6a1.5 1.5 0 0 1 3 0v6"/><path d="M16 8.5a1.5 1.5 0 0 1 3 0V14a6 6 0 0 1-6 6h-1a6 6 0 0 1-5.2-3L4 13.5a1.5 1.5 0 0 1 2.6-1.5l.9 1"/></svg>',
+  phoneR:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><circle cx="14.6" cy="18" r="1.7" fill="currentColor" stroke="none"/></svg>',
+  phoneL:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><circle cx="9.4" cy="18" r="1.7" fill="currentColor" stroke="none"/></svg>',
   refresh:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>',
   shareapp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>',
   dotsDiag:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="19" r="2.1"/><circle cx="12" cy="12" r="2.1"/><circle cx="19" cy="5" r="2.1"/></svg>',
@@ -293,7 +294,18 @@ function openPaletteSheet(){
 }
 
 function positionFab(){const f=document.getElementById('menuFab');if(!f)return;const lh=cfg.hand==='left';f.classList.toggle('left',lh);f.innerHTML=lh?ICON.dotsDiagL:ICON.dotsDiag;}
-function toggleHand(){cfg.hand=(cfg.hand==='left')?'right':'left';saveCfg();positionFab();toast(cfg.hand==='left'?'יד שמאל':'יד ימין');}
+function toggleHand(){
+  const f=document.getElementById('menuFab');
+  const newHand=(cfg.hand==='left')?'right':'left';
+  const w=window.innerWidth, m=16, sz=54;
+  const cur=(cfg.hand==='left')?(w-m-sz):m;
+  const tgt=(newHand==='left')?(w-m-sz):m;
+  f.style.transition='transform .55s cubic-bezier(.34,1.25,.5,1)';
+  f.style.transform='translateX('+(tgt-cur)+'px)';
+  cfg.hand=newHand;saveCfg();
+  setTimeout(()=>{f.style.transition='none';f.style.transform='';positionFab();requestAnimationFrame(()=>{f.style.transition='';});},560);
+  toast(newHand==='left'?'יד שמאל':'יד ימין');
+}
 
 const menuFab=document.createElement('button');
 menuFab.className='fab-menu';menuFab.id='menuFab';menuFab.setAttribute('aria-label','תפריט');
@@ -306,7 +318,7 @@ function openHbar(){
   const items=[
     {ic:ICON.star,     label:'מועדפים',          fn:openSettings},
     {ic:ICON.palette,  label:'פלטת צבעים',       fn:openPaletteSheet},
-    {ic:ICON.hand,     label:(cfg.hand==='left'?'יד ימין':'יד שמאל'), fn:toggleHand},
+    {ic:(cfg.hand==='left'?ICON.phoneL:ICON.phoneR), label:(cfg.hand==='left'?'יד ימין':'יד שמאל'), fn:toggleHand},
     {ic:ICON.refresh,  label:'עדכון רשימות',     fn:()=>toast('עדכון רשימות — בקרוב')},
     {ic:ICON.shareapp, label:'שיתוף האפליקציה',  fn:()=>toast('שיתוף האפליקציה — בקרוב')}
   ];
