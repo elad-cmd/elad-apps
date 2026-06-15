@@ -343,7 +343,8 @@
   .hbar-backdrop{position:fixed;inset:0;z-index:44;background:rgba(8,40,42,0);transition:background .22s;}
   .hbar-backdrop.show{background:rgba(8,40,42,.4);}
   .hbar{position:fixed;inset:0;z-index:45;pointer-events:none;}
-  .hm-item{position:absolute;pointer-events:auto;background:none;border:none;cursor:pointer;display:flex;direction:rtl;align-items:center;gap:9px;padding:0;transform-origin:right center;animation:hmIn var(--dur,.5s) cubic-bezier(.22,.82,.4,1) both;}
+  .hm-item{position:absolute;pointer-events:auto;background:none;border:none;cursor:pointer;display:flex;direction:rtl;align-items:center;gap:9px;padding:0;opacity:0;}
+  .hbar.run .hm-item{animation:hmIn var(--dur,.5s) cubic-bezier(.22,.82,.4,1) both;}
   .hbar.closing .hm-item{animation:hmOut var(--cdur,.4s) cubic-bezier(.5,.04,.7,.32) both;animation-delay:calc(var(--r,0)*.04s);}
   @keyframes hmIn{0%{opacity:0;transform:translate(var(--sx,0),var(--sy,0)) scale(.35);}30%{opacity:1;}100%{opacity:1;transform:translate(0,0) scale(1);}}
   @keyframes hmOut{0%{opacity:1;transform:translate(0,0) scale(1);}60%{opacity:.85;}100%{opacity:0;transform:translate(var(--sx,0),var(--sy,0)) scale(.35);}}
@@ -808,18 +809,27 @@ function openHbar(){
   const BX=window.innerWidth-110, BY=98;
   const bd=document.createElement('div');bd.className='hbar-backdrop';
   const bar=document.createElement('div');bar.className='hbar';
-  const FX=43, FY=55; // mark center of the bottom-left dots FAB (left16+27, bottom28+27)
   bar.innerHTML=items.map((it,i)=>{
     const right=Math.round(BX-i*STEP), bottom=Math.round(BY+i*STEP);
-    const sx=Math.round(FX-(window.innerWidth-right)+8); // bring the COIN (right-center origin) onto the FAB (x)
-    const sy=Math.round(bottom-30);                       // +25 (half coin) so coin center sits on the FAB (y, down+)
     const dur=(0.32+i*0.05).toFixed(2);                // farther item travels longer -> stops later
     const cdur=(0.26+i*0.03).toFixed(2);
-    return `<button class="hm-item" style="right:${right}px;bottom:${bottom}px;--sx:${sx}px;--sy:${sy}px;--dur:${dur}s;--cdur:${cdur}s;--i:${i};--r:${n-1-i}" data-i="${i}"><span class="hm-ic">${it.ic}</span><span class="hm-label">${it.label}</span></button>`;
+    return `<button class="hm-item" style="right:${right}px;bottom:${bottom}px;--dur:${dur}s;--cdur:${cdur}s;--i:${i};--r:${n-1-i}" data-i="${i}"><span class="hm-ic">${it.ic}</span><span class="hm-label">${it.label}</span></button>`;
   }).join('');
   bd.appendChild(bar);document.body.appendChild(bd);
-  requestAnimationFrame(()=>bd.classList.add('show'));
-  const close=cb=>{if(bar.classList.contains('closing'))return;bar.classList.add('closing');bd.classList.remove('show');setTimeout(()=>{bd.remove();cb&&cb();},500);};
+  // FLIP: measure the real FAB + each coin, start every coin from the FAB center
+  const fab=document.getElementById('menuFab2');
+  const fr=fab?fab.getBoundingClientRect():{left:16,top:window.innerHeight-82,width:54,height:54};
+  const fcx=fr.left+fr.width/2, fcy=fr.top+fr.height/2;
+  bar.querySelectorAll('.hm-item').forEach(el=>{
+    const ic=el.querySelector('.hm-ic');
+    const ir=ic.getBoundingClientRect(), er=el.getBoundingClientRect();
+    const icx=ir.left+ir.width/2, icy=ir.top+ir.height/2;
+    el.style.setProperty('--sx',Math.round(fcx-icx)+'px');
+    el.style.setProperty('--sy',Math.round(fcy-icy)+'px');
+    el.style.transformOrigin=Math.round(icx-er.left)+'px '+Math.round(icy-er.top)+'px';
+  });
+  requestAnimationFrame(()=>{bd.classList.add('show');bar.classList.add('run');});
+  const close=cb=>{if(bar.classList.contains('closing'))return;bar.classList.remove('run');bar.classList.add('closing');bd.classList.remove('show');setTimeout(()=>{bd.remove();cb&&cb();},500);};
   bd.addEventListener('click',e=>{if(e.target===bd||e.target===bar)close();});
   bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{const it=items[+b.dataset.i];close(it.fn);};});
 }
