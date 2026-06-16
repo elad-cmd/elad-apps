@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>השיתוף שלי</title>
+<title>אנשי הקשר</title>
 <meta name="theme-color" content="#0C2A2B">
 <style>
   :root{
@@ -20,6 +20,9 @@
   .chip{margin-top:8px;display:inline-flex;align-items:center;gap:7px;background:var(--white);color:var(--tq-ink);font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:10px;max-width:100%;}
   .chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .chip svg{width:15px;height:15px;flex:0 0 auto;}
+  .seg{margin-top:10px;display:inline-flex;background:rgba(255,255,255,.12);border-radius:12px;padding:3px;gap:2px;}
+  .seg-btn{border:none;background:transparent;color:rgba(255,255,255,.82);font-family:inherit;font-size:12.5px;font-weight:700;padding:6px 13px;border-radius:9px;cursor:pointer;transition:background .15s,color .15s;}
+  .seg-btn.on{background:#fff;color:var(--tq-ink);}
 
   .list{position:absolute;inset:84px 0 0 0;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;display:flex;flex-direction:column;align-items:stretch;gap:14px;padding:18px 0 120px;}
   .row{position:relative;flex:0 0 auto;width:100%;height:58px;touch-action:pan-y;transition:opacity .22s ease;}
@@ -173,7 +176,8 @@
 </head>
 <body>
   <div class="top">
-    <h1>השיתוף שלי</h1><div class="chip" id="chip"></div>
+    <h1>אנשי הקשר</h1>
+    <div class="seg" id="seg"></div>
   </div>
   <div class="list" id="list"></div>
   <div class="stage" id="stage"><div class="veil"></div></div>
@@ -213,7 +217,9 @@ const CATALOG=[
   {id:'messenger',label:'מסנג׳ר',     ic:ICON.messenger},
   {id:'instagram',label:'אינסטגרם',   ic:ICON.instagram},
   {id:'copy',     label:'העתק קישור', ic:ICON.copy},
-  {id:'more',     label:'עוד…',       ic:ICON.more}
+  {id:'more',     label:'עוד…',       ic:ICON.more},
+  {id:'call',     label:'חיוג',       ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.5 2.1L8.1 9.6a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg>'},
+  {id:'details',  label:'פרטים',      ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>'}
 ];
 const byId=id=>CATALOG.find(a=>a.id===id)||null;
 
