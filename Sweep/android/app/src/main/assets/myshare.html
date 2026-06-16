@@ -17,6 +17,25 @@
 
   .top{padding:16px 18px 6px;}
   .top h1{font-size:18px;font-weight:700;letter-spacing:-.2px;}
+  .seg{margin-top:10px;display:flex;width:100%;gap:8px;}
+  .seg-btn{flex:1;display:flex;align-items:center;justify-content:center;border:none;background:rgba(255,255,255,.12);color:rgba(255,255,255,.85);padding:9px 0;border-radius:12px;cursor:pointer;transition:background .15s,color .15s;}
+  .seg-btn svg{width:20px;height:20px;}
+  .seg-btn.on{background:#fff;color:var(--tq-ink);}
+  .scr{position:fixed;inset:0;z-index:70;background:linear-gradient(180deg,var(--tq-top),var(--tq-bot));color:#fff;transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column;}
+  .scr.show{transform:none;}
+  .scr-head{display:flex;align-items:center;gap:10px;padding:16px 18px 8px;}
+  .scr-head h2{font-size:18px;font-weight:700;flex:1;}
+  .scr-back{width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.14);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .scr-back svg{width:20px;height:20px;}
+  .scr-body{flex:1;overflow-y:auto;padding:6px 18px 24px;}
+  .seder-intro{color:rgba(255,255,255,.85);font-size:14px;line-height:1.6;margin:4px 0 18px;}
+  .opt{display:flex;align-items:center;gap:14px;width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:16px;margin-bottom:12px;cursor:pointer;color:#fff;font-family:inherit;text-align:right;transition:transform .12s, background .15s;}
+  .opt:active{transform:scale(.98);background:rgba(255,255,255,.13);}
+  .opt .oic{width:46px;height:46px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .opt .oic svg{width:24px;height:24px;}
+  .opt .otitle{font-size:16px;font-weight:700;display:block;}
+  .opt .odesc{font-size:12.5px;color:rgba(255,255,255,.78);margin-top:2px;display:block;}
+  .opt .ostep{margin-inline-start:auto;font-size:12px;font-weight:700;color:var(--tq-ink);background:#fff;border-radius:999px;padding:3px 9px;flex:0 0 auto;}
   .chip{margin-top:8px;display:inline-flex;align-items:center;gap:7px;background:var(--white);color:var(--tq-ink);font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:10px;max-width:100%;}
   .chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .chip svg{width:15px;height:15px;flex:0 0 auto;}
@@ -173,7 +192,9 @@
 </head>
 <body>
   <div class="top">
-    <h1>השיתוף שלי</h1><div class="chip" id="chip"></div>
+    <h1>אנשי הקשר</h1>
+    <div class="seg" id="seg"></div>
+    <div class="chip" id="chip" style="display:none"></div>
   </div>
   <div class="list" id="list"></div>
   <div class="stage" id="stage"><div class="veil"></div></div>
@@ -227,30 +248,33 @@ const PALETTES=[
 ];
 
 const CONTACTS=[
-  {name:'דנה לוי', msg:'מעולה, נדבר מחר'},
-  {name:'אבי בר', msg:'תודה רבה על העזרה'},
-  {name:'יוסי כהן', msg:'שלחתי לך את הקובץ'},
-  {name:'רוני כץ', msg:'איפה נפגשים?'},
-  {name:'מיכל חדד', msg:'אני בדרך, עוד 10 דקות'},
-  {name:'נועה גולן', msg:'מצוין, סגרנו על זה'},
-  {name:'עמית בן חיים', msg:'נדבר בהמשך השבוע'},
-  {name:'הילה כהן', msg:'בסדר גמור, להתראות'},
-  {name:'תומר שגיא', msg:'אשלח לך פרטים אחר כך'},
-  {name:'שירה מזרחי', msg:'קיבלתי, תודה!'},
-  {name:'איתי דרור', msg:'מתי נוח לך לדבר?'},
-  {name:'גלית אדרי', msg:'נשמע טוב לי'},
-  {name:'אורן פלד', msg:'אני אבדוק ואחזור אליך'},
-  {name:'ליאת שמש', msg:'תודה על העדכון'},
-  {name:'דוד אביב', msg:'בוא נסגור לשבוע הבא'},
-  {name:'נטע ברק', msg:'מצחיק 😄'},
-  {name:'יעל רום', msg:'אני כבר שם'},
-  {name:'בועז נחום', msg:'אין בעיה, דבר איתי'}
+  {name:'דנה לוי', msg:'מעולה, נדבר מחר', fav:true, last:18},
+  {name:'אבי בר', msg:'תודה רבה על העזרה', fav:false, last:5},
+  {name:'יוסי כהן', msg:'שלחתי לך את הקובץ', fav:true, last:17},
+  {name:'רוני כץ', msg:'איפה נפגשים?', fav:false, last:12},
+  {name:'מיכל חדד', msg:'אני בדרך, עוד 10 דקות', fav:true, last:16},
+  {name:'נועה גולן', msg:'מצוין, סגרנו על זה', fav:false, last:3},
+  {name:'עמית בן חיים', msg:'נדבר בהמשך השבוע', fav:false, last:9},
+  {name:'הילה כהן', msg:'בסדר גמור, להתראות', fav:true, last:14},
+  {name:'תומר שגיא', msg:'אשלח לך פרטים אחר כך', fav:false, last:7},
+  {name:'שירה מזרחי', msg:'קיבלתי, תודה!', fav:true, last:15},
+  {name:'איתי דרור', msg:'מתי נוח לך לדבר?', fav:false, last:2},
+  {name:'גלית אדרי', msg:'נשמע טוב לי', fav:false, last:11},
+  {name:'אורן פלד', msg:'אני אבדוק ואחזור אליך', fav:false, last:6},
+  {name:'ליאת שמש', msg:'תודה על העדכון', fav:true, last:13},
+  {name:'דוד אביב', msg:'בוא נסגור לשבוע הבא', fav:false, last:4},
+  {name:'נטע ברק', msg:'מצחיק', fav:false, last:10},
+  {name:'יעל רום', msg:'אני כבר שם', fav:false, last:8},
+  {name:'בועז נחום', msg:'אין בעיה, דבר איתי', fav:false, last:1}
 ];
 function initials(n){const p=String(n||'').trim().split(/\s+/);return ((p[0]||'')[0]||'')+((p[1]||'')[0]||'');}
 
 const BRIDGE = window.AndroidShare || null;
 function bGet(fn,def){try{return (BRIDGE && BRIDGE[fn]) ? BRIDGE[fn]() : def;}catch(e){return def;}}
-let SHARED = BRIDGE ? (bGet('getSharedText','')||'') : 'https://example.com/demo';
+const _params=new URLSearchParams(location.search);
+const _shared = BRIDGE ? (bGet('getSharedText','')||'') : '';
+const MODE = (_shared || _params.get('share')==='1') ? 'share' : 'home';
+let SHARED = _shared || (MODE==='share' ? 'https://example.com/demo' : '');
 let PEOPLE = CONTACTS;
 if(BRIDGE){try{const arr=JSON.parse(bGet('getContacts','[]')||'[]');if(arr&&arr.length)PEOPLE=arr;}catch(e){}}
 
@@ -269,14 +293,19 @@ function cyclePalette(){cfg.palette=(cfg.palette+1)%PALETTES.length;applyPalette
 function paintCycleCoin(ic){if(!ic)return;const p=PALETTES[cfg.palette];ic.style.background=p.tq;ic.style.color='#fff';}
 applyPalette(cfg.palette);
 
-(function(){const snip=SHARED.length>40?SHARED.slice(0,40)+'…':(SHARED||'תוכן');document.getElementById('chip').innerHTML=ICON.link+'<span>'+escapeHtml(snip)+'</span>';})();
+if(MODE==='share'){const snip=SHARED.length>40?SHARED.slice(0,40)+'…':(SHARED||'תוכן');const ch=document.getElementById('chip');ch.innerHTML=ICON.link+'<span>'+escapeHtml(snip)+'</span>';ch.style.display='';}
 
 const listEl=document.getElementById('list');
-PEOPLE.forEach((c,i)=>{
-  const row=document.createElement('div');row.className='row';row.dataset.i=i;
-  row.innerHTML=`<span class="av">${escapeHtml(initials(c.name))}</span><div class="meta"><span class="nm">${escapeHtml(c.name)}</span>${c.msg?`<span class="sub">${escapeHtml(c.msg)}</span>`:""}</div>`;
-  listEl.appendChild(row);
-});
+const VIEWS=[{id:'fav',label:'מועדפים',ic:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.8 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z"/></svg>'},{id:'abc',label:'לפי א״ב',ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>'},{id:'recent',label:'שימוש אחרון',ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'}];
+let VIEW=localStorage.getItem('contacts_view')||'recent';
+let CURRENT=PEOPLE.slice();
+function byName(a,b){return String(a.name).localeCompare(String(b.name),'he');}
+function peopleFor(v){let a=PEOPLE.slice();if(v==='fav')a=a.filter(p=>p.fav).sort(byName);else if(v==='abc')a.sort(byName);else a.sort((x,y)=>(STATS[statKey(y)]||0)-(STATS[statKey(x)]||0)||(y.last||0)-(x.last||0));return a;}
+function renderList(){CURRENT=peopleFor(VIEW);listEl.innerHTML='';CURRENT.forEach((c,i)=>{const row=document.createElement('div');row.className='row';row.dataset.i=i;row.innerHTML=`<span class="av">${escapeHtml(initials(c.name))}</span><div class="meta"><span class="nm">${escapeHtml(c.name)}</span>${c.msg?`<span class="sub">${escapeHtml(c.msg)}</span>`:""}</div>`;listEl.appendChild(row);});}
+function renderSeg(){const seg=document.getElementById('seg');seg.innerHTML=VIEWS.map(v=>`<button class="seg-btn${v.id===VIEW?' on':''}" data-v="${v.id}" aria-label="${escapeHtml(v.label)}" title="${escapeHtml(v.label)}">${v.ic}</button>`).join('');seg.querySelectorAll('.seg-btn').forEach(b=>b.onclick=()=>{VIEW=b.dataset.v;try{localStorage.setItem('contacts_view',VIEW);}catch(e){}renderSeg();renderList();layoutList();});}
+function layoutList(){const t=document.querySelector('.top');if(t)listEl.style.top=(t.offsetHeight+6)+'px';}
+renderSeg();renderList();layoutList();
+window.addEventListener('resize',layoutList);
 
 const RADIUS=86, TRIGGER=30, INF=140, MAXB=0.62, SELECT=80;
 const DIRPOS=[{key:'left',dx:-1,dy:0},{key:'right',dx:1,dy:0},{key:'up',dx:0,dy:-1},{key:'down',dx:0,dy:1}];
@@ -334,7 +363,7 @@ function resetPick(){stage.classList.remove('show');document.body.classList.remo
 function endPick(px,py){
   if(!picking)return;
   const sel=applyProximity(px,py);
-  const person=curRow?(PEOPLE[+curRow.dataset.i]||{}):{};
+  const person=curRow?(CURRENT[+curRow.dataset.i]||{}):{};
   resetPick();
   if(!sel)return;
   if(navigator.vibrate)navigator.vibrate(8);
@@ -428,6 +457,17 @@ document.body.appendChild(menuFab);
 dotRot=(cfg.hand==='left')?-90:0;
 positionFab();applyDot(false);
 
+const ICN_BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+function openScreen(html){const sc=document.createElement('div');sc.className='scr';sc.innerHTML=html;document.body.appendChild(sc);requestAnimationFrame(()=>sc.classList.add('show'));const b=sc.querySelector('.scr-back');if(b)b.onclick=()=>{sc.classList.remove('show');setTimeout(()=>sc.remove(),320);};return sc;}
+function openSeder(){
+  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>סדר פסח — ניקוי הרשימה</h2></div>'+
+    '<div class="scr-body"><div class="seder-intro">ננקה את אנשי הקשר בשני שלבים: קודם מאחדים כפילויות, ואז עוברים אחד-אחד ומסננים. אפשר לעשות רק את מה שצריך.</div>'+
+    '<button class="opt" id="optMerge"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 7h3a4 4 0 0 1 0 8H8M16 17h-3a4 4 0 0 1 0-8h3\"/></svg></span><span><span class="otitle">מיזוג כפילויות</span><span class="odesc">איחוד אנשי קשר שמופיעים פעמיים</span></span><span class="ostep">שלב 1</span></button>'+
+    '<button class="opt" id="optFilter"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 5h16l-6 8v5l-4 2v-7z\"/></svg></span><span><span class="otitle">סינון רשימה</span><span class="odesc">החלקה: שומר / ארכיון / לבדיקה</span></span><span class="ostep">שלב 2</span></button>'+
+    '</div>');
+  sc.querySelector('#optMerge').onclick=()=>toast('מיזוג כפילויות — נבנה בשלב הבא');
+  sc.querySelector('#optFilter').onclick=()=>toast('סינון — נבנה בשלב הבא');
+}
 function openHbar(){
   if(document.querySelector('.hbar-backdrop'))return;
   const items=[
@@ -435,7 +475,7 @@ function openHbar(){
     {ic:ICON.star,     label:'מועדפים',          fn:openSettings},
     {ic:ICON.palette,  label:'פלטת צבעים',       fn:cyclePalette, cycle:true},
     {ic:(cfg.hand==='left'?ICON.phoneL:ICON.phoneR), label:(cfg.hand==='left'?'יד ימין':'יד שמאל'), fn:toggleHand},
-    {ic:ICON.shareapp, label:'שיתוף האפליקציה',  fn:()=>toast('שיתוף האפליקציה — בקרוב')}
+    {ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 4l-9 9"/><path d="M6.5 21C4 21 3 19 3 17l6-6 4 4-6 6z"/><path d="M13 6l5 5"/></svg>', label:'סדר פסח', fn:openSeder}
   ];
   const n=items.length;
   const STEP=Math.max(44,Math.min(56,(window.innerWidth-130)/(n-1)));

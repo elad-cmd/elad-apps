@@ -20,8 +20,9 @@
   .chip{margin-top:8px;display:inline-flex;align-items:center;gap:7px;background:var(--white);color:var(--tq-ink);font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:10px;max-width:100%;}
   .chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .chip svg{width:15px;height:15px;flex:0 0 auto;}
-  .seg{margin-top:10px;display:inline-flex;background:rgba(255,255,255,.12);border-radius:12px;padding:3px;gap:2px;}
-  .seg-btn{border:none;background:transparent;color:rgba(255,255,255,.82);font-family:inherit;font-size:12.5px;font-weight:700;padding:6px 13px;border-radius:9px;cursor:pointer;transition:background .15s,color .15s;}
+  .seg{margin-top:10px;display:flex;width:100%;gap:8px;}
+  .seg-btn{flex:1;display:flex;align-items:center;justify-content:center;border:none;background:rgba(255,255,255,.12);color:rgba(255,255,255,.85);padding:9px 0;border-radius:12px;cursor:pointer;transition:background .15s,color .15s;}
+  .seg-btn svg{width:20px;height:20px;}
   .seg-btn.on{background:#fff;color:var(--tq-ink);}
 
   .list{position:absolute;inset:84px 0 0 0;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;display:flex;flex-direction:column;align-items:stretch;gap:14px;padding:18px 0 120px;}
@@ -290,13 +291,13 @@ function paintCycleCoin(ic){if(!ic)return;const p=PALETTES[cfg.palette];ic.style
 applyPalette(cfg.palette);
 
 const listEl=document.getElementById('list');
-const VIEWS=[{id:'fav',label:'מועדפים'},{id:'abc',label:'א״ב'},{id:'recent',label:'שימוש אחרון'}];
+const VIEWS=[{id:'fav',label:'מועדפים',ic:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.8 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z"/></svg>'},{id:'abc',label:'לפי א′′ב',ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>'},{id:'recent',label:'שימוש אחרון',ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'}];
 let VIEW=localStorage.getItem('contacts_view')||'abc';
 let CURRENT=[];
 function byName(a,b){return String(a.name).localeCompare(String(b.name),'he');}
 function peopleFor(v){let a=PEOPLE.slice();if(v==='fav')a=a.filter(p=>p.fav).sort(byName);else if(v==='recent')a.sort((x,y)=>(y.last||0)-(x.last||0));else a.sort(byName);return a;}
 function renderList(){CURRENT=peopleFor(VIEW);listEl.innerHTML='';CURRENT.forEach((c,i)=>{const row=document.createElement('div');row.className='row';row.dataset.i=i;row.innerHTML=`<span class="av">${escapeHtml(initials(c.name))}</span><div class="meta"><span class="nm">${escapeHtml(c.name)}</span>${c.msg?`<span class="sub">${escapeHtml(c.msg)}</span>`:""}</div>`;listEl.appendChild(row);});}
-function renderSeg(){const seg=document.getElementById('seg');seg.innerHTML=VIEWS.map(v=>`<button class="seg-btn${v.id===VIEW?' on':''}" data-v="${v.id}">${escapeHtml(v.label)}</button>`).join('');seg.querySelectorAll('.seg-btn').forEach(b=>b.onclick=()=>{VIEW=b.dataset.v;try{localStorage.setItem('contacts_view',VIEW);}catch(e){}renderSeg();renderList();});}
+function renderSeg(){const seg=document.getElementById('seg');seg.innerHTML=VIEWS.map(v=>`<button class="seg-btn${v.id===VIEW?' on':''}" data-v="${v.id}" aria-label="${escapeHtml(v.label)}" title="${escapeHtml(v.label)}">${v.ic}</button>`).join('');seg.querySelectorAll('.seg-btn').forEach(b=>b.onclick=()=>{VIEW=b.dataset.v;try{localStorage.setItem('contacts_view',VIEW);}catch(e){}renderSeg();renderList();});}
 renderSeg();renderList();
 
 const RADIUS=86, TRIGGER=30, INF=140, MAXB=0.62, SELECT=80;
