@@ -141,7 +141,7 @@
   }
 
   .hbar-backdrop{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,0);transition:background .45s ease, backdrop-filter .45s ease;}
-  .hbar-backdrop.show{background:rgba(0,0,0,.82);}
+  .hbar-backdrop.show{background:rgba(0,0,0,.90);}
   .hbar-backdrop.show.reveal{background:rgba(0,0,0,.22);}
   .hbar{position:fixed;inset:0;z-index:91;pointer-events:none;}
   .hm-item{position:absolute;pointer-events:auto;background:none;border:none;cursor:pointer;width:50px;height:50px;padding:0;opacity:0;}
@@ -172,6 +172,7 @@
   .hm-ic{width:50px;height:50px;border-radius:50%;background:var(--white);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px -8px rgba(8,50,50,.6);color:var(--tq-ink);transition:transform .16s cubic-bezier(.34,1.56,.64,1), background .16s ease, color .16s ease;}
   .hm-item.tapped .hm-ic{transform:scale(1.22);background:var(--tq-deep);color:#fff;box-shadow:0 16px 34px -8px rgba(8,50,50,.75);}
   .hm-ic svg{width:23px;height:23px;}
+  .hm-ic.big svg{width:34px;height:34px;}
   .hm-label{position:absolute;top:50%;right:56px;transform:translateY(-50%);line-height:1;white-space:nowrap;font-size:13.5px;font-weight:700;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.8),0 0 2px rgba(0,0,0,.5);}
   .hbar.hand-left .hm-label{right:auto;left:56px;}
 
@@ -544,7 +545,7 @@ function closeHbar(cb){
 function openHbar(){
   if(document.querySelector('.hbar-backdrop'))return;
   const items=[
-    {ic:ICON.houseDots,label:'בית',              fn:goHome},
+    {ic:ICON.houseDots,label:'בית',              fn:goHome, big:1},
     {ic:ICON.search,   label:'חיפוש',            fn:openSearch},
     {ic:ICON.star,     label:'מועדפים',          fn:openSettings},
     {ic:ICON.palette,  label:'פלטת צבעים',       fn:cyclePalette, cycle:true},
@@ -558,9 +559,9 @@ function openHbar(){
   const cxFab = lh ? (window.innerWidth-43) : 43;
   const cyFab = 53;
   const ang = 57*Math.PI/180;
-  let vStep = (window.innerHeight - 72 - cyFab)/n;
-  vStep = Math.max(54, Math.min(98, vStep));
-  const hStep = vStep/Math.tan(ang);
+  const L = 70;
+  const vStep = L*Math.sin(ang);
+  const hStep = L*Math.cos(ang);
   const bd=document.createElement('div');bd.className='hbar-backdrop';
   const bar=document.createElement('div');bar.className='hbar'+(lh?' hand-left':'');
   bar.innerHTML=items.map((it,i)=>{
@@ -569,7 +570,7 @@ function openHbar(){
     const off=Math.round(lh ? (cx-25) : (window.innerWidth-cx-25));
     const bottom=Math.round(cy-25);
     const dur=(0.62+i*0.09).toFixed(2), cdur=(0.42+i*0.05).toFixed(2);
-    return `<button class="hm-item" style="${posProp}:${off}px;bottom:${bottom}px;--dur:${dur}s;--cdur:${cdur}s;--i:${i};--r:${n-1-i}" data-i="${i}"${it.cycle?' data-cycle="1"':""}><span class="hm-ic">${it.ic}</span><span class="hm-label">${escapeHtml(it.label)}</span></button>`;
+    return `<button class="hm-item" style="${posProp}:${off}px;bottom:${bottom}px;--dur:${dur}s;--cdur:${cdur}s;--i:${i};--r:${n-1-i}" data-i="${i}"${it.cycle?' data-cycle="1"':""}><span class="hm-ic${it.big?' big':''}">${it.ic}</span><span class="hm-label">${escapeHtml(it.label)}</span></button>`;
   }).join('');
   bd.appendChild(bar);document.body.appendChild(bd);
   menuFab.classList.add('open');setFab(true);
