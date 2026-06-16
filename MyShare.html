@@ -215,6 +215,9 @@
   .cr-left{left:8%;top:50%;}
   .cr-right{left:92%;top:50%;}
   .cr-hint{font-size:12.5px;color:#7a9a9b;text-align:center;margin-top:8px;}
+  .sheet-head{display:flex;align-items:center;gap:8px;margin:2px 0 12px;}
+  .sheet-x{width:32px;height:32px;flex:0 0 auto;border:none;background:rgba(8,40,42,.08);border-radius:50%;color:var(--tq-ink);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .sheet-x svg{width:16px;height:16px;}
   .swatches{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;padding:6px 0 2px;}
   .sw{width:52px;height:52px;border-radius:50%;cursor:pointer;border:2.5px solid rgba(255,255,255,.55);box-shadow:0 6px 16px -6px rgba(0,0,0,.6);transition:transform .12s, border-color .12s;}
   .sw.on{border-color:#fff;border-width:3.5px;transform:scale(1.06);}
@@ -473,7 +476,8 @@ function openSettings(){
     const app=byId(cfg[d.key]);
     return `<button class="cr-dir cr-${d.key}" data-dir="${d.key}"><span class="cr-coin${app?'':' add'}">${app?app.ic:ICON.plus}</span><span class="cr-lbl">${app?escapeHtml(app.label):'ריק'}</span></button>`;
   }).join('');
-  showSheet(`<h2>מועדפי הכיוונים</h2><div class="compass"><div class="cr-center">${ICON.user}</div>${dirs}</div><p class="cr-hint">לוחצים על כיוון כדי לשבץ אפליקציה. נשמר במכשיר.</p>`);
+  showSheet(`<div class="sheet-head"><button class="sheet-x" aria-label="סגור"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><h2 style="flex:1;margin:0;text-align:center;">מועדפי הכיוונים</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="compass"><div class="cr-center">${ICON.user}</div>${dirs}</div><p class="cr-hint">לוחצים על כיוון כדי לשבץ אפליקציה. נשמר במכשיר.</p>`);
+  const xb=sheet.querySelector('.sheet-x');if(xb)xb.onclick=closeSheet;
   sheet.querySelectorAll('.cr-dir').forEach(b=>b.onclick=()=>openPicker(b.dataset.dir));
 }
 
@@ -545,7 +549,7 @@ function closeHbar(cb){
 function openHbar(){
   if(document.querySelector('.hbar-backdrop'))return;
   const items=[
-    {ic:ICON.houseDots,label:'בית',              fn:goHome, big:1},
+    {ic:ICON.home,     label:'בית',              fn:goHome},
     {ic:ICON.search,   label:'חיפוש',            fn:openSearch},
     {ic:ICON.star,     label:'מועדפים',          fn:openSettings},
     {ic:ICON.palette,  label:'פלטת צבעים',       fn:cyclePalette, cycle:true},
