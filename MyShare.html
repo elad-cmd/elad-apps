@@ -42,7 +42,7 @@
   .opt{display:flex;align-items:center;gap:14px;width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:16px;margin-bottom:12px;cursor:pointer;color:#fff;font-family:inherit;text-align:right;transition:transform .12s, background .15s;}
   .opt:active{transform:scale(.98);background:rgba(255,255,255,.13);}
   .opt .oic{width:46px;height:46px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
-  .opt .oic svg{width:24px;height:24px;}
+  .opt .oic svg{width:30px;height:30px;}
   .opt .otitle{font-size:16px;font-weight:700;display:block;}
   .opt .odesc{font-size:12.5px;color:rgba(255,255,255,.78);margin-top:2px;display:block;}
   .opt .ostep{margin-inline-start:auto;font-size:12px;font-weight:700;color:var(--tq-ink);background:#fff;border-radius:999px;padding:3px 9px;flex:0 0 auto;}
@@ -86,8 +86,8 @@
   .rail .ritem.hot .rlbl{opacity:1;transform:translate(0,-50%);}
 
   .fab-menu{position:fixed;bottom:26px;left:16px;right:auto;z-index:95;width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;background:var(--white);color:var(--tq-ink);box-shadow:0 20px 44px 2px rgba(0,0,0,.72), 0 8px 18px rgba(0,0,0,.6);transition:transform .12s;transform-origin:50% 80%;}
-  .fab-menu.open{background:var(--tq-deep);color:#fff;}
-  .fab-menu.open svg{color:#fff;}
+  .dotmorph{position:absolute;inset:0;}
+  .dm{position:absolute;left:0;top:0;width:5px;height:5px;border-radius:50%;background:var(--tq-ink);transition:transform .5s cubic-bezier(.34,1.4,.5,1);will-change:transform;}
   .fab-menu.left{left:auto;right:16px;}
   .fab-menu:active{transform:scale(.9);}
   .fab-menu svg{width:24px;height:24px;color:var(--tq-ink);}
@@ -140,8 +140,8 @@
     100%{transform:translate(var(--dx),0) scale(1,1);}
   }
 
-  .hbar-backdrop{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,0);transition:background .25s, backdrop-filter .25s;}
-  .hbar-backdrop.show{background:rgba(0,0,0,.93);}
+  .hbar-backdrop{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,0);transition:background .45s ease, backdrop-filter .45s ease;}
+  .hbar-backdrop.show{background:rgba(0,0,0,.55);}
   .hbar-backdrop.show.reveal{background:rgba(0,0,0,.22);}
   .hbar{position:fixed;inset:0;z-index:91;pointer-events:none;}
   .hm-item{position:absolute;pointer-events:auto;background:none;border:none;cursor:pointer;width:50px;height:50px;padding:0;opacity:0;}
@@ -172,7 +172,7 @@
   .hm-ic{width:50px;height:50px;border-radius:50%;background:var(--white);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px -8px rgba(8,50,50,.6);color:var(--tq-ink);transition:transform .16s cubic-bezier(.34,1.56,.64,1), background .16s ease, color .16s ease;}
   .hm-item.tapped .hm-ic{transform:scale(1.22);background:var(--tq-deep);color:#fff;box-shadow:0 16px 34px -8px rgba(8,50,50,.75);}
   .hm-ic svg{width:23px;height:23px;}
-  .hm-label{position:absolute;top:50%;right:56px;transform:translateY(-50%);white-space:nowrap;font-size:13.5px;font-weight:700;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.8),0 0 2px rgba(0,0,0,.5);}
+  .hm-label{position:absolute;top:50%;right:56px;transform:translateY(-50%);line-height:1;white-space:nowrap;font-size:13.5px;font-weight:700;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.8),0 0 2px rgba(0,0,0,.5);}
   .hbar.hand-left .hm-label{right:auto;left:56px;}
 
   .toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:var(--tq-ink);color:#fff;padding:11px 20px;border-radius:14px;font-weight:600;font-size:14px;z-index:99;opacity:0;transition:opacity .2s;pointer-events:none;box-shadow:0 12px 28px -10px rgba(0,0,0,.4);}
@@ -506,11 +506,14 @@ function toggleHand(){
 
 const menuFab=document.createElement('button');
 menuFab.className='fab-menu';menuFab.id='menuFab';menuFab.setAttribute('aria-label','תפריט');
-menuFab.innerHTML=ICON.dotsDiag;
-menuFab.onclick=()=>{if(document.querySelector('.hbar-backdrop'))closeHbar();else openHbar();};
+const DM_OPEN=[[17.8,23.3],[36.2,23.3],[17.8,32.5],[36.2,32.5],[17.8,41.7],[27.0,41.7],[36.2,41.7],[27.0,14.2],[21.5,19.7],[16.0,25.2],[32.5,19.7],[38.0,25.2]];
+const DM_CLOSED=[[27,27],[39.8,14.2],[14.2,39.8],[39.8,14.2],[14.2,39.8],[14.2,39.8],[27,27],[27,27],[27,27],[14.2,39.8],[39.8,14.2],[39.8,14.2]];
+function buildFabDots(){menuFab.innerHTML='<span class="dotmorph">'+DM_OPEN.map((o,i)=>`<i class="dm" data-ox="${o[0]}" data-oy="${o[1]}" data-cx="${DM_CLOSED[i][0]}" data-cy="${DM_CLOSED[i][1]}" style="transform:translate(${DM_CLOSED[i][0]}px,${DM_CLOSED[i][1]}px)"></i>`).join('')+'</span>';}
+function setFab(open){menuFab.querySelectorAll('.dm').forEach(d=>{const x=open?d.dataset.ox:d.dataset.cx,y=open?d.dataset.oy:d.dataset.cy;d.style.transform='translate('+x+'px,'+y+'px)';});}
+buildFabDots();
+menuFab.onclick=()=>{if(document.querySelector('.hbar-backdrop'))closeHbar(goHome);else openHbar();};
 document.body.appendChild(menuFab);
-dotRot=(cfg.hand==='left')?-90:0;
-positionFab();applyDot(false);
+positionFab();
 
 const ICN_BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
 function openScreen(html){const sc=document.createElement('div');sc.className='scr';sc.innerHTML=html;document.body.appendChild(sc);requestAnimationFrame(()=>sc.classList.add('show'));const b=sc.querySelector('.scr-back');if(b)b.onclick=()=>{sc.classList.remove('show');setTimeout(()=>sc.remove(),320);};return sc;}
@@ -531,19 +534,19 @@ function closeHbar(cb){
   const bd=document.querySelector('.hbar-backdrop');if(!bd)return;
   const bar=bd.querySelector('.hbar');if(bar&&bar.classList.contains('closing'))return;
   if(bar){bar.classList.remove('run');bar.classList.add('closing');}
+  bd.style.transition='background .5s ease .1s';
   bd.classList.remove('show');
-  menuFab.classList.remove('open');menuFab.innerHTML=ICON.dotsDiag;applyDot();
-  setTimeout(()=>{bd.remove();if(typeof cb==='function')cb();},500);
+  menuFab.classList.remove('open');setFab(false);
+  setTimeout(()=>{bd.remove();if(typeof cb==='function')cb();},650);
 }
 function openHbar(){
   if(document.querySelector('.hbar-backdrop'))return;
   const items=[
-    {ic:ICON.home,     label:'בית',              fn:goHome},
     {ic:ICON.search,   label:'חיפוש',            fn:openSearch},
     {ic:ICON.star,     label:'מועדפים',          fn:openSettings},
     {ic:ICON.palette,  label:'פלטת צבעים',       fn:cyclePalette, cycle:true},
     {ic:(cfg.hand==='left'?ICON.phoneL:ICON.phoneR), label:(cfg.hand==='left'?'יד ימין':'יד שמאל'), fn:toggleHand},
-    {ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 4l-9 9"/><path d="M6.5 21C4 21 3 19 3 17l6-6 4 4-6 6z"/><path d="M13 6l5 5"/></svg>', label:'סדר פסח', fn:openSeder}
+    {ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4 L10 12"/><path d="M7.5 9.5 L12.5 14.5"/><path d="M10 12 L5 21 L15 18 Z"/><path d="M8 16 L6.5 20.5 M10.5 15 L10 20 M13 16 L13.5 19"/></svg>', label:'סדר פסח', fn:openSeder}
   ];
   const n=items.length;
   const STEP=Math.max(44,Math.min(56,(window.innerWidth-130)/(n-1)));
@@ -558,7 +561,7 @@ function openHbar(){
     return `<button class="hm-item" style="${posProp}:${off}px;bottom:${bottom}px;--dur:${dur}s;--cdur:${cdur}s;--i:${i};--r:${n-1-i}" data-i="${i}"${it.cycle?' data-cycle="1"':""}><span class="hm-ic">${it.ic}</span><span class="hm-label">${escapeHtml(it.label)}</span></button>`;
   }).join('');
   bd.appendChild(bar);document.body.appendChild(bd);
-  menuFab.innerHTML=ICON.houseDots;menuFab.classList.add('open');
+  menuFab.classList.add('open');setFab(true);
   const fab=document.getElementById('menuFab');
   const fr=fab.getBoundingClientRect();
   const fcx=fr.left+fr.width/2, fcy=fr.top+fr.height/2;
