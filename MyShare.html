@@ -507,9 +507,9 @@ function toggleHand(){
 const menuFab=document.createElement('button');
 menuFab.className='fab-menu';menuFab.id='menuFab';menuFab.setAttribute('aria-label','תפריט');
 const DM_HALF=2.5;
-const DM_OPEN=[[18,26],[36,26],[18,33],[36,33],[18,40],[27,40],[36,40],[27,12],[22,17],[17,22],[32,17],[37,22]];
+const DM_OPEN=[[19,26],[35,26],[19,34],[35,34],[19,42],[27,42],[35,42],[27,12],[19,18],[11,24],[35,18],[43,24]];
 const DM_CLOSED=[[27,27],[34,20],[20,34],[34,20],[20,34],[20,34],[27,27],[27,27],[27,27],[20,34],[34,20],[34,20]];
-function dmTr(p){return 'translate('+(p[0]-DM_HALF)+'px,'+(p[1]-DM_HALF)+'px)';}
+function dmTr(p){return 'translate('+Math.round(p[0]-DM_HALF)+'px,'+Math.round(p[1]-DM_HALF)+'px)';}
 function buildFabDots(){menuFab.innerHTML='<span class="dotmorph">'+DM_OPEN.map((o,i)=>`<i class="dm" data-i="${i}" style="transform:${dmTr(DM_CLOSED[i])}"></i>`).join('')+'</span>';}
 function setFab(open){menuFab.querySelectorAll('.dm').forEach(d=>{const i=+d.dataset.i;d.style.transform=dmTr(open?DM_OPEN[i]:DM_CLOSED[i]);});}
 buildFabDots();
