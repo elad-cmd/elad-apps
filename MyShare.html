@@ -258,7 +258,7 @@ const ICON={
   dotsDiag:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="19" r="2.1"/><circle cx="12" cy="12" r="2.1"/><circle cx="19" cy="5" r="2.1"/></svg>',
   dotsDiagL:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5" r="2.1"/><circle cx="12" cy="12" r="2.1"/><circle cx="19" cy="19" r="2.1"/></svg>',
   home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>',
-  houseDots:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="4" r="1.7"/><circle cx="7.5" cy="8" r="1.7"/><circle cx="16.5" cy="8" r="1.7"/><circle cx="6" cy="12" r="1.7"/><circle cx="18" cy="12" r="1.7"/><circle cx="6" cy="19" r="1.7"/><circle cx="12" cy="19" r="1.7"/><circle cx="18" cy="19" r="1.7"/></svg>',
+  houseDots:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="7" r="1.8"/><circle cx="8.4" cy="9.7" r="1.8"/><circle cx="15.6" cy="9.7" r="1.8"/><circle cx="4.9" cy="12.3" r="1.8"/><circle cx="19.1" cy="12.3" r="1.8"/><circle cx="8.4" cy="13.2" r="1.8"/><circle cx="15.6" cy="13.2" r="1.8"/><circle cx="8.4" cy="16.8" r="1.8"/><circle cx="12" cy="16.8" r="1.8"/><circle cx="15.6" cy="16.8" r="1.8"/></svg>',
   user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>',
   link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>'
 };
@@ -507,13 +507,13 @@ function toggleHand(){
 const menuFab=document.createElement('button');
 menuFab.className='fab-menu';menuFab.id='menuFab';menuFab.setAttribute('aria-label','תפריט');
 const DM_HALF=2.5;
-const DM_OPEN=[[27,18],[19,24],[35,24],[11,30],[43,30],[19,32],[35,32],[19,40],[27,40],[35,40]];
-const DM_CLOSED=[[34,20],[27,27],[34,20],[20,34],[34,20],[20,34],[27,27],[20,34],[20,34],[27,27]];
+const DM_OPEN=[[20,34],[27,27],[34,20],[20,20],[27,27],[34,34]];
+const DM_CLOSED=[[20,34],[27,27],[34,20],[20,34],[27,27],[34,20]];
 function dmTr(p){return 'translate('+Math.round(p[0]-DM_HALF)+'px,'+Math.round(p[1]-DM_HALF)+'px)';}
 function buildFabDots(){menuFab.innerHTML='<span class="dotmorph">'+DM_OPEN.map((o,i)=>`<i class="dm" data-i="${i}" style="transform:${dmTr(DM_CLOSED[i])}"></i>`).join('')+'</span>';}
 function setFab(open){menuFab.querySelectorAll('.dm').forEach(d=>{const i=+d.dataset.i;d.style.transform=dmTr(open?DM_OPEN[i]:DM_CLOSED[i]);});}
 buildFabDots();
-menuFab.onclick=()=>{if(document.querySelector('.hbar-backdrop'))closeHbar(goHome);else openHbar();};
+menuFab.onclick=()=>{if(document.querySelector('.hbar-backdrop'))closeHbar();else openHbar();};
 document.body.appendChild(menuFab);
 positionFab();
 
@@ -544,6 +544,7 @@ function closeHbar(cb){
 function openHbar(){
   if(document.querySelector('.hbar-backdrop'))return;
   const items=[
+    {ic:ICON.houseDots,label:'בית',              fn:goHome},
     {ic:ICON.search,   label:'חיפוש',            fn:openSearch},
     {ic:ICON.star,     label:'מועדפים',          fn:openSettings},
     {ic:ICON.palette,  label:'פלטת צבעים',       fn:cyclePalette, cycle:true},
@@ -551,14 +552,22 @@ function openHbar(){
     {ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4 L10 12"/><path d="M7.5 9.5 L12.5 14.5"/><path d="M10 12 L5 21 L15 18 Z"/><path d="M8 16 L6.5 20.5 M10.5 15 L10 20 M13 16 L13.5 19"/></svg>', label:'סדר פסח', fn:openSeder}
   ];
   const n=items.length;
-  const STEP=Math.max(44,Math.min(56,(window.innerWidth-130)/(n-1)));
-  const BX=window.innerWidth-110, BY=98;
   const lh = (cfg.hand==='left');
   const posProp = lh ? 'left' : 'right';
+  const dirX = lh ? -1 : 1;
+  const cxFab = lh ? (window.innerWidth-43) : 43;
+  const cyFab = 53;
+  const ang = 57*Math.PI/180;
+  let vStep = (window.innerHeight - 72 - cyFab)/n;
+  vStep = Math.max(54, Math.min(98, vStep));
+  const hStep = vStep/Math.tan(ang);
   const bd=document.createElement('div');bd.className='hbar-backdrop';
   const bar=document.createElement('div');bar.className='hbar'+(lh?' hand-left':'');
   bar.innerHTML=items.map((it,i)=>{
-    const off=Math.round(BX-i*STEP), bottom=Math.round(BY+i*STEP);
+    const k=i+1;
+    const cx=cxFab+dirX*k*hStep, cy=cyFab+k*vStep;
+    const off=Math.round(lh ? (cx-25) : (window.innerWidth-cx-25));
+    const bottom=Math.round(cy-25);
     const dur=(0.62+i*0.09).toFixed(2), cdur=(0.42+i*0.05).toFixed(2);
     return `<button class="hm-item" style="${posProp}:${off}px;bottom:${bottom}px;--dur:${dur}s;--cdur:${cdur}s;--i:${i};--r:${n-1-i}" data-i="${i}"${it.cycle?' data-cycle="1"':""}><span class="hm-ic">${it.ic}</span><span class="hm-label">${escapeHtml(it.label)}</span></button>`;
   }).join('');
