@@ -230,15 +230,20 @@
   .ovl.preview.show{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;}
   .ovl.preview .sheet{background:transparent;box-shadow:none;color:#fff;}
   .ovl.preview .sheet h2{color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.7);}
+  .home{position:fixed;inset:0;}
+  @keyframes homeEnter{0%{transform:translateY(100%);}100%{transform:translateY(0);}}
+  .home.enter{animation:homeEnter .52s cubic-bezier(.34,1.45,.5,1);}
 </style>
 </head>
 <body>
+  <div id="home" class="home">
   <div class="top">
     <h1 class="brand"><span class="b-s">S</span><span class="b-rest">weep</span></h1>
     <div class="seg" id="seg"></div>
     <div class="chip" id="chip" style="display:none"></div>
   </div>
   <div class="list" id="list"></div>
+  </div>
   <div class="stage" id="stage"><div class="veil"></div></div>
   <div class="toast" id="toast"></div>
   <div class="ovl" id="ovl"><div class="sheet" id="sheet"></div></div>
@@ -528,7 +533,7 @@ document.body.appendChild(menuFab);
 positionFab();
 
 const ICN_BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
-function openScreen(html){const sc=document.createElement('div');sc.className='scr';sc.innerHTML=html;document.body.appendChild(sc);void sc.offsetHeight;requestAnimationFrame(()=>requestAnimationFrame(()=>sc.classList.add('show')));const b=sc.querySelector('.scr-back');if(b)b.onclick=()=>{sc.classList.remove('show');setTimeout(()=>sc.remove(),560);};return sc;}
+function openScreen(html){const sc=document.createElement('div');sc.className='scr';sc.innerHTML=html;document.body.appendChild(sc);void sc.offsetHeight;requestAnimationFrame(()=>requestAnimationFrame(()=>sc.classList.add('show')));const b=sc.querySelector('.scr-back');if(b)b.onclick=()=>closeScreen(sc);return sc;}
 function openSeder(){
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>סדר פסח — ניקוי הרשימה</h2></div>'+
     '<div class="scr-body"><div class="seder-intro">ננקה את אנשי הקשר בשני שלבים: קודם מאחדים כפילויות, ואז עוברים אחד-אחד ומסננים. אפשר לעשות רק את מה שצריך.</div>'+
@@ -538,8 +543,11 @@ function openSeder(){
   sc.querySelector('#optMerge').onclick=()=>toast('מיזוג כפילויות — נבנה בשלב הבא');
   sc.querySelector('#optFilter').onclick=()=>toast('סינון — נבנה בשלב הבא');
 }
+function homeEnter(){const h=document.getElementById('home');if(!h)return;h.style.zIndex='75';h.classList.remove('enter');void h.offsetWidth;h.classList.add('enter');setTimeout(()=>{h.classList.remove('enter');h.style.zIndex='';},560);}
+function closeScreen(sc){if(!sc)return;sc.classList.remove('show');setTimeout(()=>sc.remove(),560);homeEnter();}
 function goHome(){
-  document.querySelectorAll('.scr').forEach(s=>{s.classList.remove('show');setTimeout(()=>s.remove(),560);});
+  const scr=document.querySelectorAll('.scr');
+  if(scr.length){scr.forEach(s=>{s.classList.remove('show');setTimeout(()=>s.remove(),560);});homeEnter();}
   closeSheet();
 }
 function openPaletteRow(itemEl){
