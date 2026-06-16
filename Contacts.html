@@ -169,6 +169,21 @@
   .sw{width:52px;height:52px;border-radius:50%;cursor:pointer;border:2.5px solid rgba(255,255,255,.55);box-shadow:0 6px 16px -6px rgba(0,0,0,.6);transition:transform .12s, border-color .12s;}
   .sw.on{border-color:#fff;border-width:3.5px;transform:scale(1.06);}
   .sw:active{transform:scale(.92);}
+  .scr{position:fixed;inset:0;z-index:70;background:linear-gradient(180deg,var(--tq-top),var(--tq-bot));color:#fff;transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column;}
+  .scr.show{transform:none;}
+  .scr-head{display:flex;align-items:center;gap:10px;padding:16px 18px 8px;}
+  .scr-head h2{font-size:18px;font-weight:700;flex:1;}
+  .scr-back{width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.14);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .scr-back svg{width:20px;height:20px;}
+  .scr-body{flex:1;overflow-y:auto;padding:6px 18px 24px;}
+  .seder-intro{color:rgba(255,255,255,.85);font-size:14px;line-height:1.6;margin:4px 0 18px;}
+  .opt{display:flex;align-items:center;gap:14px;width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:16px;margin-bottom:12px;cursor:pointer;color:#fff;font-family:inherit;text-align:right;transition:transform .12s, background .15s;}
+  .opt:active{transform:scale(.98);background:rgba(255,255,255,.13);}
+  .opt .oic{width:46px;height:46px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .opt .oic svg{width:24px;height:24px;}
+  .opt .otitle{font-size:16px;font-weight:700;display:block;}
+  .opt .odesc{font-size:12.5px;color:rgba(255,255,255,.78);margin-top:2px;display:block;}
+  .opt .ostep{margin-inline-start:auto;font-size:12px;font-weight:700;color:var(--tq-ink);background:#fff;border-radius:999px;padding:3px 9px;flex:0 0 auto;}
   .ovl.preview.show{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;}
   .ovl.preview .sheet{background:transparent;box-shadow:none;color:#fff;}
   .ovl.preview .sheet h2{color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.7);}
@@ -427,13 +442,23 @@ document.body.appendChild(menuFab);
 dotRot=(cfg.hand==='left')?-90:0;
 positionFab();applyDot(false);
 
+function openScreen(html){const sc=document.createElement('div');sc.className='scr';sc.innerHTML=html;document.body.appendChild(sc);requestAnimationFrame(()=>sc.classList.add('show'));const b=sc.querySelector('.scr-back');if(b)b.onclick=()=>{sc.classList.remove('show');setTimeout(()=>sc.remove(),320);};return sc;}
+function openSeder(){
+  const sc=openScreen('<div class="scr-head"><button class="scr-back"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\"><path d=\"M6 6l12 12M18 6L6 18\"/></svg></button><h2>סדר פסח — ניקוי הרשימה</h2></div>'+
+    '<div class="scr-body"><div class="seder-intro">ננקה את אנשי הקשר בשני שלבים: קודם מאחדים כפילויות, ואז עוברים אחד-אחד ומסננים. אפשר לעשות רק את מה שצריך.</div>'+
+    '<button class="opt" id="optMerge"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 7h3a4 4 0 0 1 0 8H8M16 17h-3a4 4 0 0 1 0-8h3\"/></svg></span><span><span class="otitle">מיזוג כפילויות</span><span class="odesc">איחוד אנשי קשר שמופיעים פעמיים</span></span><span class="ostep">שלב 1</span></button>'+
+    '<button class="opt" id="optFilter"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 5h16l-6 8v5l-4 2v-7z\"/></svg></span><span><span class="otitle">סינון רשימה</span><span class="odesc">החלקה: שומר / ארכיון / לבדיקה</span></span><span class="ostep">שלב 2</span></button>'+
+    '</div>');
+  sc.querySelector('#optMerge').onclick=()=>toast('מיזוג כפילויות — נבנה בשלב הבא');
+  sc.querySelector('#optFilter').onclick=()=>toast('סינון — נבנה בשלב הבא');
+}
 function openHbar(){
   if(document.querySelector('.hbar-backdrop'))return;
   const items=[
     {ic:ICON.search,   label:'חיפוש',            fn:openSearch},
     {ic:ICON.palette,  label:'פלטת צבעים',       fn:cyclePalette, cycle:true},
     {ic:(cfg.hand==='left'?ICON.phoneL:ICON.phoneR), label:(cfg.hand==='left'?'יד ימין':'יד שמאל'), fn:toggleHand},
-    {ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 4l-9 9"/><path d="M6.5 21C4 21 3 19 3 17l6-6 4 4-6 6z"/><path d="M13 6l5 5"/></svg>', label:'סדר פסח', fn:()=>toast('סדר פסח — בקרוב')}
+    {ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 4l-9 9"/><path d="M6.5 21C4 21 3 19 3 17l6-6 4 4-6 6z"/><path d="M13 6l5 5"/></svg>', label:'סדר פסח', fn:openSeder}
   ];
   const n=items.length;
   const STEP=Math.max(44,Math.min(56,(window.innerWidth-130)/(n-1)));
