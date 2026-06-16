@@ -31,8 +31,8 @@
   .seg-btn{flex:1;display:flex;align-items:center;justify-content:center;border:none;background:rgba(255,255,255,.12);color:rgba(255,255,255,.85);padding:9px 0;border-radius:12px;cursor:pointer;transition:background .15s,color .15s;}
   .seg-btn svg{width:20px;height:20px;}
   .seg-btn.on{background:#fff;color:var(--tq-ink);}
-  .scr{position:fixed;inset:0;z-index:70;background:linear-gradient(180deg,var(--tq-top),var(--tq-bot));color:#fff;transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column;}
-  .scr.show{transform:none;}
+  .scr{position:fixed;inset:0;z-index:70;background:linear-gradient(180deg,var(--tq-top),var(--tq-bot));color:#fff;transform:translateY(100%);opacity:0;transition:transform .4s cubic-bezier(.22,1,.36,1), opacity .4s ease;display:flex;flex-direction:column;}
+  .scr.show{transform:none;opacity:1;}
   .scr-head{display:flex;align-items:center;gap:10px;padding:16px 18px 8px;}
   .scr-head h2{font-size:18px;font-weight:700;flex:1;}
   .scr-back{width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.14);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
@@ -523,7 +523,7 @@ document.body.appendChild(menuFab);
 positionFab();
 
 const ICN_BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
-function openScreen(html){const sc=document.createElement('div');sc.className='scr';sc.innerHTML=html;document.body.appendChild(sc);requestAnimationFrame(()=>sc.classList.add('show'));const b=sc.querySelector('.scr-back');if(b)b.onclick=()=>{sc.classList.remove('show');setTimeout(()=>sc.remove(),320);};return sc;}
+function openScreen(html){const sc=document.createElement('div');sc.className='scr';sc.innerHTML=html;document.body.appendChild(sc);void sc.offsetHeight;requestAnimationFrame(()=>requestAnimationFrame(()=>sc.classList.add('show')));const b=sc.querySelector('.scr-back');if(b)b.onclick=()=>{sc.classList.remove('show');setTimeout(()=>sc.remove(),360);};return sc;}
 function openSeder(){
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>סדר פסח — ניקוי הרשימה</h2></div>'+
     '<div class="scr-body"><div class="seder-intro">ננקה את אנשי הקשר בשני שלבים: קודם מאחדים כפילויות, ואז עוברים אחד-אחד ומסננים. אפשר לעשות רק את מה שצריך.</div>'+
@@ -592,7 +592,7 @@ function openHbar(){
   requestAnimationFrame(()=>{bd.classList.add('show');bar.classList.add('run');});
   const close=cb=>closeHbar(cb);
   bd.addEventListener('click',e=>{if(e.target===bd||e.target===bar)close();});
-  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.cycle){it.fn();paintCycleCoin(b.querySelector('.hm-ic'));b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);if(navigator.vibrate)navigator.vibrate(8);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);setTimeout(()=>close(it.fn),130);};});
+  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.cycle){it.fn();paintCycleCoin(b.querySelector('.hm-ic'));b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);if(navigator.vibrate)navigator.vibrate(8);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);closeHbar();setTimeout(it.fn,210);};});
 }
 </script>
 </body>
