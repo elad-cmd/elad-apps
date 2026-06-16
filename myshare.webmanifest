@@ -1,0 +1,19 @@
+{
+  "name": "Sweep",
+  "short_name": "Sweep",
+  "description": "אנשי קשר ושיתוף מהיר",
+  "lang": "he",
+  "dir": "rtl",
+  "id": "/elad-apps/MyShare.html",
+  "start_url": "MyShare.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0C2A2B",
+  "theme_color": "#0C2A2B",
+  "icons": [
+    { "src": "myshare-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "myshare-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "myshare-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -3,8 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>השיתוף שלי</title>
+<title>Sweep</title>
 <meta name="theme-color" content="#0C2A2B">
+<link rel="manifest" href="myshare.webmanifest">
+<link rel="icon" type="image/png" sizes="64x64" href="myshare-favicon-64.png">
+<link rel="icon" type="image/png" sizes="192x192" href="myshare-192.png">
+<link rel="apple-touch-icon" href="myshare-apple-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sweep">
 <style>
   :root{
     --tq:#7BBFC0; --tq-deep:#00C2A8; --tq-ink:#1E5A64; --white:#ffffff; --tq-top:#0C2A2B; --tq-bot:#1C4B4D;
@@ -17,6 +24,9 @@
 
   .top{padding:16px 18px 6px;}
   .top h1{font-size:18px;font-weight:700;letter-spacing:-.2px;}
+  .brand{text-align:center;line-height:1;margin:2px 0 2px;text-shadow:0 2px 20px rgba(0,194,168,.4);}
+  .brand .b-s{font-size:34px;font-weight:800;color:#fff;}
+  .brand .b-rest{font-size:25px;font-weight:600;letter-spacing:3px;color:rgba(255,255,255,.9);}
   .seg{margin-top:10px;display:flex;width:100%;gap:8px;}
   .seg-btn{flex:1;display:flex;align-items:center;justify-content:center;border:none;background:rgba(255,255,255,.12);color:rgba(255,255,255,.85);padding:9px 0;border-radius:12px;cursor:pointer;transition:background .15s,color .15s;}
   .seg-btn svg{width:20px;height:20px;}
@@ -194,7 +204,7 @@
 </head>
 <body>
   <div class="top">
-    <h1>אנשי הקשר</h1>
+    <h1 class="brand"><span class="b-s">S</span><span class="b-rest">weep</span></h1>
     <div class="seg" id="seg"></div>
     <div class="chip" id="chip" style="display:none"></div>
   </div>
@@ -389,7 +399,22 @@ function fire(appId,person){
 listEl.addEventListener('pointerdown',e=>{const av=e.target.closest('.av');if(!av)return;const row=av.closest('.row');if(!row)return;e.preventDefault();startPick(row,e.clientX,e.clientY);try{av.setPointerCapture(e.pointerId);}catch(_){}});
 listEl.addEventListener('pointermove',e=>{if(picking){e.preventDefault();moveBig(e.clientX,e.clientY);}});
 listEl.addEventListener('pointerup',e=>{if(picking)endPick(e.clientX,e.clientY);});
-listEl.addEventListener('pointercancel',()=>{if(picking)resetPick();});
+listEl.addEventListener('pointercancel',()=>{if(picking)resetPick();swOn=false;});
+
+function switchTab(delta){
+  const ids=VIEWS.map(v=>v.id);let i=ids.indexOf(VIEW);if(i<0)i=0;
+  i=(i+delta+ids.length)%ids.length;VIEW=ids[i];
+  try{localStorage.setItem('contacts_view',VIEW);}catch(e){}
+  renderSeg();
+  listEl.style.transition='none';
+  listEl.style.transform='translateX('+(delta>0?60:-60)+'px)';
+  listEl.style.opacity='0';
+  renderList();layoutList();
+  requestAnimationFrame(()=>{listEl.style.transition='transform .24s cubic-bezier(.22,1,.36,1), opacity .24s ease';listEl.style.transform='translateX(0)';listEl.style.opacity='1';});
+}
+let swX=0,swY=0,swOn=false;
+listEl.addEventListener('pointerdown',e=>{if(e.target.closest('.av')){swOn=false;return;}swOn=true;swX=e.clientX;swY=e.clientY;});
+listEl.addEventListener('pointerup',e=>{if(!swOn||picking){swOn=false;return;}swOn=false;const dx=e.clientX-swX,dy=e.clientY-swY;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.4){switchTab(dx<0?1:-1);}});
 
 let toastT;
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1700);}
