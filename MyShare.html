@@ -86,7 +86,7 @@
   .rail .ritem.hot .rlbl{opacity:1;transform:translate(0,-50%);}
 
   .fab-menu{position:fixed;bottom:26px;left:16px;right:auto;z-index:95;width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;background:var(--white);color:var(--tq-ink);box-shadow:0 20px 44px 2px rgba(0,0,0,.72), 0 8px 18px rgba(0,0,0,.6);transition:transform .12s;transform-origin:50% 80%;}
-  .dotmorph{position:absolute;inset:0;}
+  .dotmorph{position:absolute;inset:0;transform-origin:50% 50%;transition:transform .55s cubic-bezier(.34,1.4,.5,1);}
   .dm{position:absolute;left:0;top:0;width:5px;height:5px;border-radius:50%;background:var(--tq-ink);transition:transform .5s cubic-bezier(.34,1.4,.5,1);will-change:transform;}
   .fab-menu.left{left:auto;right:16px;}
   .fab-menu:active{transform:scale(.9);}
@@ -174,7 +174,7 @@
   .hm-ic svg{width:23px;height:23px;}
   .hm-ic.big svg{width:34px;height:34px;}
   .hm-label{position:absolute;top:50%;right:56px;transform:translateY(-50%);line-height:1;white-space:nowrap;font-size:13.5px;font-weight:700;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.8),0 0 2px rgba(0,0,0,.5);}
-  .palbar{position:fixed;z-index:92;display:flex;flex-direction:row-reverse;gap:8px;align-items:center;transform-origin:right center;transform:translateY(-50%) scale(.8);opacity:0;transition:opacity .2s ease, transform .26s cubic-bezier(.34,1.45,.5,1);}
+  .palbar{position:fixed;z-index:92;pointer-events:auto;display:flex;flex-direction:row-reverse;gap:8px;align-items:center;transform-origin:right center;transform:translateY(-50%) scale(.8);opacity:0;transition:opacity .2s ease, transform .26s cubic-bezier(.34,1.45,.5,1);}
   .palbar.lh{flex-direction:row;transform-origin:left center;}
   .palbar.show{opacity:1;transform:translateY(-50%) scale(1);}
   .pal-sw{width:34px;height:34px;border-radius:50%;border:2px solid rgba(255,255,255,.6);cursor:pointer;padding:0;box-shadow:0 6px 16px -6px rgba(0,0,0,.55);}
@@ -439,20 +439,33 @@ listEl.addEventListener('pointermove',e=>{if(picking){e.preventDefault();moveBig
 listEl.addEventListener('pointerup',e=>{if(picking)endPick(e.clientX,e.clientY);});
 listEl.addEventListener('pointercancel',()=>{if(picking)resetPick();swOn=false;});
 
-function switchTab(delta){
+let tabAnim=false;
+function switchTab(dx){
+  if(tabAnim)return;tabAnim=true;
+  const fingerLeft=dx<0;
+  const step=fingerLeft?-1:1;
   const ids=VIEWS.map(v=>v.id);let i=ids.indexOf(VIEW);if(i<0)i=0;
-  i=(i+delta+ids.length)%ids.length;VIEW=ids[i];
+  i=(i+step+ids.length)%ids.length;VIEW=ids[i];
   try{localStorage.setItem('contacts_view',VIEW);}catch(e){}
   renderSeg();
-  listEl.style.transition='none';
-  listEl.style.transform='translateX('+(delta>0?60:-60)+'px)';
-  listEl.style.opacity='0';
-  renderList();layoutList();
-  requestAnimationFrame(()=>{listEl.style.transition='transform .24s cubic-bezier(.22,1,.36,1), opacity .24s ease';listEl.style.transform='translateX(0)';listEl.style.opacity='1';});
+  const W=listEl.offsetWidth||window.innerWidth;
+  const outX=fingerLeft?-W:W;
+  listEl.style.transition='transform .2s ease, opacity .2s ease';
+  listEl.style.transform='translateX('+outX+'px)';listEl.style.opacity='0';
+  setTimeout(()=>{
+    renderList();layoutList();
+    listEl.style.transition='none';
+    listEl.style.transform='translateX('+(-outX)+'px)';listEl.style.opacity='0';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      listEl.style.transition='transform .28s cubic-bezier(.22,1,.36,1), opacity .22s ease';
+      listEl.style.transform='translateX(0)';listEl.style.opacity='1';
+      setTimeout(()=>{tabAnim=false;},300);
+    }));
+  },200);
 }
 let swX=0,swY=0,swOn=false;
 listEl.addEventListener('pointerdown',e=>{if(e.target.closest('.av')){swOn=false;return;}swOn=true;swX=e.clientX;swY=e.clientY;});
-listEl.addEventListener('pointerup',e=>{if(!swOn||picking){swOn=false;return;}swOn=false;const dx=e.clientX-swX,dy=e.clientY-swY;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.4){switchTab(dx<0?1:-1);}});
+listEl.addEventListener('pointerup',e=>{if(!swOn||picking){swOn=false;return;}swOn=false;const dx=e.clientX-swX,dy=e.clientY-swY;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.4){switchTab(dx);}});
 
 let toastT;
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1700);}
@@ -522,11 +535,26 @@ function toggleHand(){
 const menuFab=document.createElement('button');
 menuFab.className='fab-menu';menuFab.id='menuFab';menuFab.setAttribute('aria-label','תפריט');
 const DM_HALF=2.5;
+let fabRot=(cfg.hand==='left')?90:0;
 const DM_OPEN=[[20,34],[27,27],[34,20],[20,20],[27,27],[34,34]];
 const DM_CLOSED=[[20,34],[27,27],[34,20],[20,34],[27,27],[34,20]];
 function dmTr(p){return 'translate('+Math.round(p[0]-DM_HALF)+'px,'+Math.round(p[1]-DM_HALF)+'px)';}
-function buildFabDots(){menuFab.innerHTML='<span class="dotmorph">'+DM_OPEN.map((o,i)=>`<i class="dm" data-i="${i}" style="transform:${dmTr(DM_CLOSED[i])}"></i>`).join('')+'</span>';}
+function buildFabDots(){menuFab.innerHTML='<span class="dotmorph" style="transform:rotate('+fabRot+'deg)">'+DM_OPEN.map((o,i)=>`<i class="dm" data-i="${i}" style="transform:${dmTr(DM_CLOSED[i])}"></i>`).join('')+'</span>';}
 function setFab(open){menuFab.querySelectorAll('.dm').forEach(d=>{const i=+d.dataset.i;d.style.transform=dmTr(open?DM_OPEN[i]:DM_CLOSED[i]);});}
+function doHandFlip(){
+  const f=menuFab;
+  const newHand=(cfg.hand==='left')?'right':'left';
+  const w=window.innerWidth,m=16,sz=54;
+  const cur=(cfg.hand==='left')?(w-m-sz):m;
+  const tgt=(newHand==='left')?(w-m-sz):m;
+  cfg.hand=newHand;saveCfg();
+  f.style.setProperty('--dx',(tgt-cur)+'px');
+  f.style.animation='none';void f.offsetWidth;
+  f.style.animation='fabHop .78s linear forwards';
+  const done=()=>{f.removeEventListener('animationend',done);f.style.animation='';f.style.transform='';f.style.removeProperty('--dx');positionFab();fabRot+=(newHand==='left'?-90:90);const dm=f.querySelector('.dotmorph');if(dm)dm.style.transform='rotate('+fabRot+'deg)';};
+  f.addEventListener('animationend',done);
+  toast(newHand==='left'?'יד שמאל':'יד ימין');
+}
 buildFabDots();
 menuFab.onclick=()=>{if(document.querySelector('.hbar-backdrop'))closeHbar();else openHbar();};
 document.body.appendChild(menuFab);
@@ -561,7 +589,7 @@ function openPaletteRow(itemEl){
   pb.innerHTML=PALETTES.map((p,i)=>`<button class="pal-sw${i===cfg.palette?' on':''}" data-i="${i}" style="background:linear-gradient(180deg,${p.top},${p.bot})" aria-label="${escapeHtml(p.name)}"></button>`).join('');
   bar.appendChild(pb);
   requestAnimationFrame(()=>pb.classList.add('show'));
-  pb.querySelectorAll('.pal-sw').forEach(b=>b.onclick=(e)=>{e.stopPropagation();cfg.palette=+b.dataset.i;applyPalette(cfg.palette);saveCfg();pb.querySelectorAll('.pal-sw').forEach(x=>x.classList.toggle('on',x===b));if(navigator.vibrate)navigator.vibrate(6);});
+  pb.querySelectorAll('.pal-sw').forEach(b=>b.onclick=(e)=>{e.stopPropagation();cfg.palette=+b.dataset.i;applyPalette(cfg.palette);saveCfg();if(navigator.vibrate)navigator.vibrate(6);closeHbar();});
 }
 function closeHbar(cb){
   const bd=document.querySelector('.hbar-backdrop');if(!bd)return;
@@ -579,7 +607,7 @@ function openHbar(){
     {ic:ICON.search,   label:'חיפוש',            fn:openSearch},
     {ic:ICON.star,     label:'מועדפים',          fn:openSettings},
     {ic:ICON.palette,  label:'פלטת צבעים',       pal:true},
-    {ic:(cfg.hand==='left'?ICON.phoneL:ICON.phoneR), label:(cfg.hand==='left'?'יד ימין':'יד שמאל'), fn:toggleHand},
+    {ic:(cfg.hand==='left'?ICON.phoneL:ICON.phoneR), label:(cfg.hand==='left'?'יד ימין':'יד שמאל'), hand:1},
     {ic:'<svg viewBox="0 0 200 200" fill="none" stroke="currentColor"><g transform="translate(96 86) rotate(28) scale(0.8)" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><line x1="0" y1="-52" x2="0" y2="-4"/><path d="M-12 4 H12 L22 42 Q0 50 -22 42 Z" stroke-width="6"/><line x1="-4" y1="9" x2="-8" y2="44" stroke-width="4"/><line x1="6" y1="9" x2="10" y2="44" stroke-width="4"/></g><rect x="86.5" y="79" width="18" height="9" rx="4" transform="rotate(28 95 83)" fill="currentColor"/><g fill="currentColor"><circle cx="110" cy="126" r="6"/><circle cx="128" cy="126" r="5"/><circle cx="146" cy="126" r="4"/></g></svg>', label:'סדר פסח', fn:openSeder}
   ];
   const n=items.length;
@@ -588,7 +616,7 @@ function openHbar(){
   const dirX = lh ? -1 : 1;
   const cxFab = lh ? (window.innerWidth-43) : 43;
   const cyFab = 53;
-  const ang = 57*Math.PI/180;
+  const ang = 45*Math.PI/180;
   const L = 70;
   const vStep = L*Math.sin(ang);
   const hStep = L*Math.cos(ang);
@@ -618,7 +646,7 @@ function openHbar(){
   requestAnimationFrame(()=>{bd.classList.add('show');bar.classList.add('run');});
   const close=cb=>closeHbar(cb);
   bd.addEventListener('click',e=>{if(e.target===bd||e.target===bar)close();});
-  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.pal){if(navigator.vibrate)navigator.vibrate(8);b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);openPaletteRow(b);return;}if(it.cycle){it.fn();paintCycleCoin(b.querySelector('.hm-ic'));b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);if(navigator.vibrate)navigator.vibrate(8);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);closeHbar();setTimeout(it.fn,210);};});
+  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.pal){if(navigator.vibrate)navigator.vibrate(8);b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);openPaletteRow(b);return;}if(it.hand){if(navigator.vibrate)navigator.vibrate(10);b.classList.add('tapped');closeHbar();setTimeout(doHandFlip,900);return;}if(it.cycle){it.fn();paintCycleCoin(b.querySelector('.hm-ic'));b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);if(navigator.vibrate)navigator.vibrate(8);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);closeHbar();setTimeout(it.fn,210);};});
 }
 </script>
 </body>
