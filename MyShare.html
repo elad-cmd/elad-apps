@@ -59,14 +59,16 @@
   body.picking .row{opacity:.18;}
   body.picking .row.active{opacity:0;}
 
-  .stage{position:fixed;inset:0;z-index:40;pointer-events:none;opacity:0;transition:opacity .2s;}
+  .stage{position:fixed;inset:0;z-index:40;pointer-events:none;opacity:0;transition:opacity .34s ease;}
   .stage.show{opacity:1;pointer-events:auto;}
   .stage .veil{position:absolute;inset:0;background:var(--dim);}
   .bigav{position:absolute;width:81px;height:81px;border-radius:50%;background:var(--white);border:2.5px solid var(--tq-deep);color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;transform:translate(-50%,-50%);will-change:left,top;box-shadow:0 0 14px 2px rgba(255,255,255,.18), 0 16px 34px -12px rgba(8,50,50,.6);transition:left .05s linear, top .05s linear;}
   .bigav::after{content:"";position:absolute;inset:-22px;border-radius:50%;background:radial-gradient(circle, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 70%);filter:blur(6px);z-index:-1;pointer-events:none;}
   .bigname{position:absolute;transform:translate(-50%,0);font-size:14px;font-weight:700;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.3);white-space:nowrap;}
 
-  .dirc{position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px;transform:translate(-50%,-50%);}
+  .dirc{position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px;transform:translate(-50%,-50%);animation:coinIn .26s cubic-bezier(.22,1,.36,1) both;}
+  @keyframes coinIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.5);}100%{opacity:1;transform:translate(-50%,-50%) scale(1);}}
+  @keyframes railIn{0%{opacity:0;transform:translateX(-16px) scale(.6);}100%{opacity:1;transform:none;}}
   .dirc .coin{width:50px;height:50px;border-radius:50%;background:var(--white);color:var(--tq-ink);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px -8px rgba(8,50,50,.55);transition:transform .13s ease-out, box-shadow .13s ease-out;will-change:transform;}
   .dirc .coin svg{width:24px;height:24px;}
   .dirc .lbl{font-size:11px;font-weight:600;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.35);transition:opacity .13s;}
@@ -75,7 +77,7 @@
   .dirc.hot .coin{box-shadow:0 16px 32px -8px rgba(8,50,50,.75);}
 
   .rail{position:absolute;top:50%;left:10px;transform:translateY(-50%);display:flex;flex-direction:column;align-items:flex-start;gap:24px;}
-  .rail .ritem{position:relative;display:flex;align-items:center;justify-content:center;}
+  .rail .ritem{position:relative;display:flex;align-items:center;justify-content:center;animation:railIn .28s cubic-bezier(.22,1,.36,1) both;}
   .rail .rc{width:38px;height:38px;border-radius:50%;border:1.6px solid rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;color:#fff;background:transparent;transition:transform .13s ease-out, background .13s;will-change:transform;}
   .rail .rc svg{width:18px;height:18px;}
   .rail .rc.add{border-style:dashed;}
@@ -195,6 +197,23 @@
   .setrow .ar svg{width:21px;height:21px;}
   .setrow .dr{font-weight:700;}
   .setrow .cur{margin-inline-start:auto;font-size:13px;color:#7a9a9b;font-weight:600;}
+  .compass{position:relative;width:250px;height:250px;margin:10px auto 16px;}
+  .compass::before,.compass::after{content:"";position:absolute;background:var(--line);}
+  .compass::before{left:50%;top:14%;bottom:14%;width:2px;transform:translateX(-50%);}
+  .compass::after{top:50%;left:14%;right:14%;height:2px;transform:translateY(-50%);}
+  .cr-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:60px;height:60px;border-radius:50%;background:var(--tq-deep);color:#fff;display:flex;align-items:center;justify-content:center;z-index:2;box-shadow:0 8px 20px -8px rgba(8,50,50,.5);}
+  .cr-center svg{width:28px;height:28px;}
+  .cr-dir{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:none;cursor:pointer;font-family:inherit;z-index:3;padding:0;}
+  .cr-coin{width:54px;height:54px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -8px rgba(8,50,50,.45);transition:transform .12s;}
+  .cr-coin svg{width:27px;height:27px;}
+  .cr-coin.add{border:1.7px dashed var(--tq-deep);color:var(--tq-deep);}
+  .cr-dir:active .cr-coin{transform:scale(.9);}
+  .cr-lbl{font-size:12px;font-weight:700;color:var(--tq-ink);max-width:78px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .cr-up{left:50%;top:8%;}
+  .cr-down{left:50%;top:92%;}
+  .cr-left{left:8%;top:50%;}
+  .cr-right{left:92%;top:50%;}
+  .cr-hint{font-size:12.5px;color:#7a9a9b;text-align:center;margin-top:8px;}
   .swatches{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;padding:6px 0 2px;}
   .sw{width:52px;height:52px;border-radius:50%;cursor:pointer;border:2.5px solid rgba(255,255,255,.55);box-shadow:0 6px 16px -6px rgba(0,0,0,.6);transition:transform .12s, border-color .12s;}
   .sw.on{border-color:#fff;border-width:3.5px;transform:scale(1.06);}
@@ -240,6 +259,7 @@ const ICON={
   dotsDiagL:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5" r="2.1"/><circle cx="12" cy="12" r="2.1"/><circle cx="19" cy="19" r="2.1"/></svg>',
   home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>',
   houseDots:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="4" r="1.7"/><circle cx="7.5" cy="8" r="1.7"/><circle cx="16.5" cy="8" r="1.7"/><circle cx="6" cy="12" r="1.7"/><circle cx="18" cy="12" r="1.7"/><circle cx="6" cy="19" r="1.7"/><circle cx="12" cy="19" r="1.7"/><circle cx="18" cy="19" r="1.7"/></svg>',
+  user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>',
   link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>'
 };
 
@@ -448,12 +468,12 @@ function openSearch(){
   setTimeout(()=>inp.focus(),80);
 }
 function openSettings(){
-  const rows=DIRPOS.map(d=>{
+  const dirs=DIRPOS.map(d=>{
     const app=byId(cfg[d.key]);
-    return `<button class="setrow" data-dir="${d.key}"><span class="ar">${app?app.ic:ICON.plus}</span><span class="dr">${DIRSHORT[d.key]}</span><span class="cur">${app?escapeHtml(app.label):'ריק'}</span></button>`;
+    return `<button class="cr-dir cr-${d.key}" data-dir="${d.key}"><span class="cr-coin${app?'':' add'}">${app?app.ic:ICON.plus}</span><span class="cr-lbl">${app?escapeHtml(app.label):'ריק'}</span></button>`;
   }).join('');
-  showSheet(`<h2>מועדפי הכיוונים</h2>${rows}<p style="font-size:12.5px;color:#7a9a9b;text-align:center;margin-top:14px;">לוחצים על כיוון כדי לשבץ אפליקציה. נשמר במכשיר.</p>`);
-  sheet.querySelectorAll('.setrow').forEach(b=>b.onclick=()=>openPicker(b.dataset.dir));
+  showSheet(`<h2>מועדפי הכיוונים</h2><div class="compass"><div class="cr-center">${ICON.user}</div>${dirs}</div><p class="cr-hint">לוחצים על כיוון כדי לשבץ אפליקציה. נשמר במכשיר.</p>`);
+  sheet.querySelectorAll('.cr-dir').forEach(b=>b.onclick=()=>openPicker(b.dataset.dir));
 }
 
 function openPaletteSheet(){
