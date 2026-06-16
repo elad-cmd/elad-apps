@@ -464,7 +464,7 @@ function openHbar(){
   requestAnimationFrame(()=>{bd.classList.add('show');bar.classList.add('run');});
   const close=cb=>{if(bar.classList.contains('closing'))return;bar.classList.remove('run');bar.classList.add('closing');bd.classList.remove('show');setTimeout(()=>{bd.remove();cb&&cb();},500);};
   bd.addEventListener('click',e=>{if(e.target===bd||e.target===bar)close();});
-  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.cycle){bd.classList.add('reveal');it.fn();paintCycleCoin(b.querySelector('.hm-ic'));b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);if(navigator.vibrate)navigator.vibrate(8);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);setTimeout(()=>close(it.fn),130);};});
+  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.cycle){it.fn();paintCycleCoin(b.querySelector('.hm-ic'));b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);if(navigator.vibrate)navigator.vibrate(8);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);setTimeout(()=>close(it.fn),130);};});
 }
 </script>
 </body>
