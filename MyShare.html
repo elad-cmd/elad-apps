@@ -141,7 +141,7 @@
   }
 
   .hbar-backdrop{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,0);transition:background .45s ease, backdrop-filter .45s ease;}
-  .hbar-backdrop.show{background:rgba(0,0,0,.55);}
+  .hbar-backdrop.show{background:rgba(0,0,0,.82);}
   .hbar-backdrop.show.reveal{background:rgba(0,0,0,.22);}
   .hbar{position:fixed;inset:0;z-index:91;pointer-events:none;}
   .hm-item{position:absolute;pointer-events:auto;background:none;border:none;cursor:pointer;width:50px;height:50px;padding:0;opacity:0;}
@@ -506,10 +506,12 @@ function toggleHand(){
 
 const menuFab=document.createElement('button');
 menuFab.className='fab-menu';menuFab.id='menuFab';menuFab.setAttribute('aria-label','תפריט');
-const DM_OPEN=[[17.8,23.3],[36.2,23.3],[17.8,32.5],[36.2,32.5],[17.8,41.7],[27.0,41.7],[36.2,41.7],[27.0,14.2],[21.5,19.7],[16.0,25.2],[32.5,19.7],[38.0,25.2]];
-const DM_CLOSED=[[27,27],[39.8,14.2],[14.2,39.8],[39.8,14.2],[14.2,39.8],[14.2,39.8],[27,27],[27,27],[27,27],[14.2,39.8],[39.8,14.2],[39.8,14.2]];
-function buildFabDots(){menuFab.innerHTML='<span class="dotmorph">'+DM_OPEN.map((o,i)=>`<i class="dm" data-ox="${o[0]}" data-oy="${o[1]}" data-cx="${DM_CLOSED[i][0]}" data-cy="${DM_CLOSED[i][1]}" style="transform:translate(${DM_CLOSED[i][0]}px,${DM_CLOSED[i][1]}px)"></i>`).join('')+'</span>';}
-function setFab(open){menuFab.querySelectorAll('.dm').forEach(d=>{const x=open?d.dataset.ox:d.dataset.cx,y=open?d.dataset.oy:d.dataset.cy;d.style.transform='translate('+x+'px,'+y+'px)';});}
+const DM_HALF=2.5;
+const DM_OPEN=[[18,26],[36,26],[18,33],[36,33],[18,40],[27,40],[36,40],[27,12],[22,17],[17,22],[32,17],[37,22]];
+const DM_CLOSED=[[27,27],[34,20],[20,34],[34,20],[20,34],[20,34],[27,27],[27,27],[27,27],[20,34],[34,20],[34,20]];
+function dmTr(p){return 'translate('+(p[0]-DM_HALF)+'px,'+(p[1]-DM_HALF)+'px)';}
+function buildFabDots(){menuFab.innerHTML='<span class="dotmorph">'+DM_OPEN.map((o,i)=>`<i class="dm" data-i="${i}" style="transform:${dmTr(DM_CLOSED[i])}"></i>`).join('')+'</span>';}
+function setFab(open){menuFab.querySelectorAll('.dm').forEach(d=>{const i=+d.dataset.i;d.style.transform=dmTr(open?DM_OPEN[i]:DM_CLOSED[i]);});}
 buildFabDots();
 menuFab.onclick=()=>{if(document.querySelector('.hbar-backdrop'))closeHbar(goHome);else openHbar();};
 document.body.appendChild(menuFab);
