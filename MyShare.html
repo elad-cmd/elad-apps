@@ -263,26 +263,46 @@
   .home{position:fixed;inset:0;}
   @keyframes homeEnter{0%{transform:translateX(-100%);}100%{transform:translateX(0);}}
   .home.enter{animation:homeEnter .52s cubic-bezier(.34,1.45,.5,1);}
-  .flt-body{display:flex;flex-direction:column;align-items:center;}
-  .flt-count{color:rgba(255,255,255,.82);font-size:13px;font-weight:700;margin:6px 0 14px;}
-  .flt-deck{position:relative;width:100%;max-width:330px;height:360px;margin:0 auto;}
-  .flt-card{position:absolute;inset:0;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:26px;cursor:grab;will-change:transform;touch-action:none;box-shadow:0 18px 40px -18px rgba(0,0,0,.6);}
-  .flt-av{width:108px;height:108px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:800;}
+  .flt-body{display:flex;flex-direction:column;}
+  .flt-tabs{display:flex;gap:6px;margin-bottom:12px;}
+  .vtab{flex:1;display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,.08);border:none;border-radius:12px;padding:7px 0;color:rgba(255,255,255,.82);cursor:pointer;font-family:inherit;}
+  .vtab b{font-size:16px;font-weight:800;}
+  .vtab span{font-size:10.5px;}
+  .vtab.on{background:#fff;color:var(--tq-ink);}
+  .vtab-toggle{flex:0 0 auto;width:42px;border:none;border-radius:12px;background:rgba(255,255,255,.08);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .vtab-toggle svg{width:20px;height:20px;}
+  .flt-deck{position:relative;width:100%;max-width:320px;height:328px;margin:6px auto 0;}
+  .flt-card{position:absolute;inset:0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;padding:24px;cursor:grab;will-change:transform;touch-action:none;box-shadow:0 18px 40px -18px rgba(0,0,0,.6);}
+  .flt-av{width:104px;height:104px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:800;}
   .flt-name{font-size:22px;font-weight:800;color:#fff;text-align:center;}
-  .flt-sub{font-size:15px;color:rgba(255,255,255,.75);direction:ltr;}
+  .flt-sub{font-size:14px;color:rgba(255,255,255,.75);direction:ltr;text-align:center;padding:0 10px;}
   .flt-badge{position:absolute;top:20px;font-size:18px;font-weight:900;padding:5px 13px;border-radius:11px;opacity:0;border:3px solid;pointer-events:none;}
   .flt-badge.keep{right:20px;color:#3ddc97;border-color:#3ddc97;transform:rotate(13deg);}
-  .flt-badge.arch{left:20px;color:#ff6b5e;border-color:#ff6b5e;transform:rotate(-13deg);}
-  .flt-badge.rev{left:50%;transform:translateX(-50%);color:#5bb8ff;border-color:#5bb8ff;}
-  .flt-acts{display:flex;gap:20px;justify-content:center;align-items:center;margin-top:26px;}
-  .flt-btn{width:62px;height:62px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 10px 24px -10px rgba(0,0,0,.55);}
-  .flt-btn svg{width:28px;height:28px;}
-  .flt-btn.arch{background:#ff6b5e;color:#fff;}
-  .flt-btn.rev{background:#5bb8ff;color:#fff;width:52px;height:52px;}
+  .flt-badge.del{left:20px;color:#ff6b5e;border-color:#ff6b5e;transform:rotate(-13deg);}
+  .flt-badge.maybe{bottom:20px;top:auto;left:50%;transform:translateX(-50%);color:#ffb454;border-color:#ffb454;}
+  .flt-acts{display:flex;gap:16px;justify-content:center;align-items:center;margin-top:22px;}
+  .flt-btn{width:60px;height:60px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 10px 24px -10px rgba(0,0,0,.55);}
+  .flt-btn svg{width:27px;height:27px;}
+  .flt-btn.del{background:#ff6b5e;color:#fff;}
+  .flt-btn.maybe{background:#ffb454;color:#fff;width:52px;height:52px;}
   .flt-btn.keep{background:#3ddc97;color:#fff;}
-  .flt-hint{font-size:12.5px;color:rgba(255,255,255,.6);text-align:center;margin-top:16px;line-height:1.6;}
+  .flt-undo{width:44px;height:44px;border-radius:50%;border:none;background:rgba(255,255,255,.14);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .flt-undo svg{width:20px;height:20px;}
   .flt-done{color:#fff;text-align:center;font-size:18px;font-weight:700;padding:46px 20px;line-height:1.8;}
-  .flt-done .sm{font-size:14px;font-weight:600;color:rgba(255,255,255,.8);}
+  .flt-done .sm{font-size:14px;font-weight:600;color:rgba(255,255,255,.8);margin-top:6px;}
+  .flt-done .mg-home{margin:20px auto 0;}
+  .flt-list{display:flex;flex-direction:column;gap:8px;}
+  .flt-row{position:relative;border-radius:12px;overflow:hidden;touch-action:pan-y;}
+  .flt-row-bg{position:absolute;inset:0;background:linear-gradient(90deg,#ff6b5e 50%,#3ddc97 50%);}
+  .flt-row-fg{position:relative;display:flex;align-items:center;gap:11px;background:#143e40;padding:10px 12px;will-change:transform;cursor:pointer;}
+  .li-av{width:42px;height:42px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex:0 0 auto;}
+  .li-txt{flex:1;min-width:0;}
+  .li-txt .n{font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .li-txt .s{font-size:12px;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:right;}
+  .li-tag{font-size:11px;font-weight:800;border-radius:999px;padding:3px 9px;flex:0 0 auto;}
+  .li-tag.keep{background:#3ddc97;color:#06432e;}
+  .li-tag.maybe{background:#ffb454;color:#5a3a06;}
+  .li-tag.del{background:#ff6b5e;color:#4a1410;}
   .set-toggle{display:flex;align-items:center;justify-content:center;gap:12px;width:fit-content;max-width:86%;margin:16px auto 64px;padding:9px 16px;background:rgba(255,255,255,.1);border-radius:14px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;}
   .sw-tog{position:relative;width:46px;height:26px;border-radius:999px;background:rgba(255,255,255,.25);flex:0 0 auto;transition:background .2s;}
   .sw-tog.on{background:var(--tq-deep);}
@@ -342,6 +362,11 @@ const ICON={
   twitter:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23 22h-6.8l-5.3-6.9L4.8 22H1.7l8.1-9.3L1 2h7l4.8 6.3zM17.7 20.1h1.7L7.3 3.8H5.5z"/></svg>',
   linkedin:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM10 9.5h3.8v1.6h.1c.5-1 1.9-2.1 3.8-2.1 4 0 4.8 2.6 4.8 6.1V21h-4v-5.1c0-1.2 0-2.8-1.7-2.8s-2 1.3-2 2.7V21h-4z"/></svg>',
   savecontact:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M18 8v6M15 11h6"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  viewlist:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>',
+  viewcards:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M3 8v8M21 8v8"/></svg>',
+  undo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-4-4 4-4"/><path d="M5 10h11a4 4 0 0 1 0 8h-1"/></svg>',
   link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>'
 };
 
@@ -743,64 +768,75 @@ function openMergePicker(group,keep,onDone){
     renderList();close();if(navigator.vibrate)navigator.vibrate(10);toast('מוזג');if(onDone)onDone();
   };
 }
+function fKey(p){return statKey(p)||(p&&p.name)||'';}
+function loadDec(){try{return JSON.parse(localStorage.getItem('myshare_dec')||'{}')||{};}catch(e){return {};}}
+let FDEC=loadDec();
+function saveDec(){try{localStorage.setItem('myshare_dec',JSON.stringify(FDEC));}catch(e){}}
+function fCounts(){let k=0,d=0,m=0,left=0;PEOPLE.forEach(p=>{const v=FDEC[fKey(p)];if(v==='keep')k++;else if(v==='delete')d++;else if(v==='maybe')m++;else left++;});return{keep:k,del:d,maybe:m,left:left};}
+function fViewIds(vf){if(vf==='undecided')return PEOPLE.filter(p=>!FDEC[fKey(p)]);return PEOPLE.filter(p=>FDEC[fKey(p)]===vf);}
 function openFilter(){
-  const queue=PEOPLE.slice(); const total=queue.length;
-  let idx=0,kept=0,arch=0,rev=0;
+  let vf='undecided',vm='cards',hist=[];
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>סינון רשימה</h2></div><div class="scr-body flt-body" id="fltBody"></div>');
   const body=sc.querySelector('#fltBody');
+  function tabs(){
+    const c=fCounts();
+    const t=(k,l,n)=>'<button class="vtab'+(vf===k?' on':'')+'" data-f="'+k+'"><b>'+n+'</b><span>'+l+'</span></button>';
+    return '<div class="flt-tabs">'+t('undecided','לא נבדקו',c.left)+t('keep','נשמרו',c.keep)+t('delete','נמחקו',c.del)+t('maybe','לבדיקה',c.maybe)+'<button class="vtab-toggle" id="vtog" aria-label="תצוגה">'+(vm==='cards'?ICON.viewlist:ICON.viewcards)+'</button></div>';
+  }
   function render(){
-    if(idx>=queue.length){
-      body.innerHTML='<div class="flt-done">סיימת לסנן 🎉<div class="sm">שומר '+kept+' · ארכיון '+arch+' · לבדיקה '+rev+'</div></div>';
-      return;
-    }
-    const p=queue[idx];
-    const sub=p.phone||p.email||p.msg||'';
-    body.innerHTML=
-      '<div class="flt-count">'+(idx+1)+' / '+total+'</div>'+
-      '<div class="flt-deck"><div class="flt-card" id="fltCard">'+
-        '<div class="flt-badge keep">שומר</div><div class="flt-badge arch">ארכיון</div><div class="flt-badge rev">לבדיקה</div>'+
-        '<div class="flt-av">'+escapeHtml(initials(p.name))+'</div>'+
-        '<div class="flt-name">'+escapeHtml(p.name)+'</div>'+
-        (sub?'<div class="flt-sub">'+escapeHtml(sub)+'</div>':'')+
-      '</div></div>'+
-      '<div class="flt-acts">'+
-        '<button class="flt-btn arch" data-a="arch" aria-label="ארכיון">'+ICON.archive+'</button>'+
-        '<button class="flt-btn rev" data-a="rev" aria-label="לבדיקה">'+ICON.flag+'</button>'+
-        '<button class="flt-btn keep" data-a="keep" aria-label="שומר">'+ICON.check+'</button>'+
-      '</div>'+
-      '<p class="flt-hint">החלקה ימינה — שומר · שמאלה — ארכיון · למעלה — לבדיקה</p>';
-    body.querySelectorAll('.flt-btn').forEach(b=>b.onclick=()=>commit(b.dataset.a));
-    attach();
+    body.innerHTML=tabs()+'<div id="fltView"></div>';
+    body.querySelectorAll('.vtab').forEach(t=>t.onclick=()=>{vf=t.dataset.f;render();});
+    body.querySelector('#vtog').onclick=()=>{vm=(vm==='cards')?'list':'cards';render();};
+    const view=body.querySelector('#fltView');
+    if(vm==='cards')cards(view);else list(view);
   }
-  function commit(a){
-    const card=body.querySelector('#fltCard');
+  function decide(p,d){if(!p)return;FDEC[fKey(p)]=d;saveDec();hist.push(fKey(p));}
+  function undo(){const k=hist.pop();if(k){delete FDEC[k];saveDec();render();}}
+  function cards(view){
+    const q=fViewIds('undecided');
+    if(!q.length){const c=fCounts();view.innerHTML='<div class="flt-done">עברת על כל אנשי הקשר 🎉<div class="sm">נשמרו '+c.keep+' · לבדיקה '+c.maybe+' · נמחקו '+c.del+'</div><button class="mg-home">חזור למסך הבית</button></div>';const hb=view.querySelector('.mg-home');if(hb)hb.onclick=goHome;return;}
+    const p=q[0];const det=personDetails(p);
+    view.innerHTML='<div class="flt-deck"><div class="flt-card" id="fcard"><div class="flt-badge keep">שומר</div><div class="flt-badge del">מחק</div><div class="flt-badge maybe">לבדיקה</div><div class="flt-av">'+escapeHtml(initials(p.name))+'</div><div class="flt-name">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(det.length?'<div class="flt-sub">'+escapeHtml(det.join(' · '))+'</div>':'')+'</div></div><div class="flt-acts"><button class="flt-btn del" data-a="delete" aria-label="מחק">'+ICON.trash+'</button><button class="flt-btn maybe" data-a="maybe" aria-label="לבדיקה">'+ICON.clock+'</button><button class="flt-btn keep" data-a="keep" aria-label="שומר">'+ICON.check+'</button><button class="flt-undo" id="fundo" aria-label="ביטול">'+ICON.undo+'</button></div>';
+    view.querySelectorAll('.flt-btn').forEach(b=>b.onclick=()=>commit(b.dataset.a));
+    const ub=view.querySelector('#fundo');if(ub){ub.style.visibility=hist.length?'visible':'hidden';ub.onclick=undo;}
+    attach(p);
+  }
+  function commit(d){
+    const card=body.querySelector('#fcard');const p=fViewIds('undecided')[0];
     let tx='0',ty='0',rot=0;
-    if(a==='keep'){tx='130%';rot=20;kept++;}
-    else if(a==='arch'){tx='-130%';rot=-20;arch++;}
-    else{ty='-130%';rev++;}
+    if(d==='keep'){tx='130%';rot=18;}else if(d==='delete'){tx='-130%';rot=-18;}else{ty='130%';}
     if(card){card.style.transition='transform .3s ease-out, opacity .3s';card.style.transform='translate('+tx+','+ty+') rotate('+rot+'deg)';card.style.opacity='0';}
-    if(a==='arch'){mgRemovePerson(queue[idx]);renderList();}
-    if(navigator.vibrate)navigator.vibrate(8);
-    idx++; setTimeout(render,300);
+    decide(p,d);if(navigator.vibrate)navigator.vibrate(8);setTimeout(render,300);
   }
-  function attach(){
-    const card=body.querySelector('#fltCard'); if(!card)return;
-    const bk=card.querySelector('.flt-badge.keep'),ba=card.querySelector('.flt-badge.arch'),br=card.querySelector('.flt-badge.rev');
+  function attach(p){
+    const card=body.querySelector('#fcard');if(!card)return;
+    const bk=card.querySelector('.flt-badge.keep'),bd=card.querySelector('.flt-badge.del'),bm=card.querySelector('.flt-badge.maybe');
     let sx=0,sy=0,dx=0,dy=0,drag=false;
     card.addEventListener('pointerdown',e=>{e.stopPropagation();drag=true;sx=e.clientX;sy=e.clientY;dx=dy=0;card.style.transition='none';try{card.setPointerCapture(e.pointerId);}catch(_){}});
-    card.addEventListener('pointermove',e=>{if(!drag)return;dx=e.clientX-sx;dy=e.clientY-sy;card.style.transform='translate('+dx+'px,'+dy+'px) rotate('+(dx/18)+'deg)';
-      const ax=Math.abs(dx),ay=Math.abs(dy);
-      bk.style.opacity=(dx>0&&ax>=ay)?Math.min(1,dx/90):0;
-      ba.style.opacity=(dx<0&&ax>=ay)?Math.min(1,-dx/90):0;
-      br.style.opacity=(dy<0&&ay>ax)?Math.min(1,-dy/90):0;});
-    const end=e=>{if(!drag)return;e.stopPropagation();drag=false;const TH=85,ax=Math.abs(dx),ay=Math.abs(dy);
-      if(dy<-TH&&ay>ax)commit('rev');
-      else if(dx>TH)commit('keep');
-      else if(dx<-TH)commit('arch');
-      else{card.style.transition='transform .2s';card.style.transform='';bk.style.opacity=ba.style.opacity=br.style.opacity=0;}};
+    card.addEventListener('pointermove',e=>{if(!drag)return;dx=e.clientX-sx;dy=e.clientY-sy;card.style.transform='translate('+dx+'px,'+dy+'px) rotate('+(dx/18)+'deg)';const ax=Math.abs(dx),ay=Math.abs(dy);bk.style.opacity=(dx>0&&ax>=ay)?Math.min(1,dx/90):0;bd.style.opacity=(dx<0&&ax>=ay)?Math.min(1,-dx/90):0;bm.style.opacity=(dy>0&&ay>ax)?Math.min(1,dy/90):0;});
+    const end=e=>{if(!drag)return;e.stopPropagation();drag=false;const TH=85,ax=Math.abs(dx),ay=Math.abs(dy);if(dy>TH&&ay>ax)commit('maybe');else if(dx>TH)commit('keep');else if(dx<-TH)commit('delete');else{card.style.transition='transform .2s';card.style.transform='';bk.style.opacity=bd.style.opacity=bm.style.opacity=0;}};
     card.addEventListener('pointerup',end);card.addEventListener('pointercancel',end);
   }
+  function list(view){
+    const ids=fViewIds(vf);
+    if(!ids.length){view.innerHTML='<div class="flt-done">'+(vf==='undecided'?'עברת על כל אנשי הקשר 🎉':vf==='keep'?'אין נשמרים עדיין':vf==='maybe'?'אין אנשי קשר לבדיקה':'אין נמחקים')+'</div>';return;}
+    view.innerHTML='<div class="flt-list">'+ids.map((p,i)=>{
+      const det=personDetails(p);const d=FDEC[fKey(p)];
+      const tag=d==='keep'?'<span class="li-tag keep">נשמר</span>':d==='maybe'?'<span class="li-tag maybe">לבדיקה</span>':d==='delete'?'<span class="li-tag del">נמחק</span>':'';
+      return '<div class="flt-row" data-i="'+i+'"><div class="flt-row-bg"></div><div class="flt-row-fg"><span class="li-av">'+escapeHtml(initials(p.name))+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(det.length?'<div class="s">'+escapeHtml(det.join(' · '))+'</div>':'')+'</div>'+tag+'</div></div>';
+    }).join('')+'</div>';
+    view.querySelectorAll('.flt-row').forEach(rw=>{
+      const fg=rw.querySelector('.flt-row-fg');const p=ids[+rw.dataset.i];
+      let sx=0,dx=0,drag=false,moved=false;
+      fg.addEventListener('pointerdown',e=>{e.stopPropagation();drag=true;moved=false;sx=e.clientX;dx=0;fg.style.transition='none';});
+      fg.addEventListener('pointermove',e=>{if(!drag)return;dx=e.clientX-sx;if(Math.abs(dx)>6)moved=true;fg.style.transform='translateX('+dx+'px)';});
+      const fin=e=>{if(!drag)return;e.stopPropagation();drag=false;if(dx>80){decide(p,'keep');rowOut(rw,1);}else if(dx<-80){decide(p,'delete');rowOut(rw,-1);}else{fg.style.transition='transform .2s';fg.style.transform='';if(!moved)openContact(p);}};
+      fg.addEventListener('pointerup',fin);fg.addEventListener('pointercancel',fin);
+    });
+  }
+  function rowOut(rw,dir){const fg=rw.querySelector('.flt-row-fg');fg.style.transition='transform .25s';fg.style.transform='translateX('+(dir>0?'115%':'-115%')+')';if(navigator.vibrate)navigator.vibrate(8);setTimeout(render,260);}
   render();
+
 }
 function openShareBank(person){
   if(!person)return;

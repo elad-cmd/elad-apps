@@ -14,6 +14,8 @@
     <string name="key_missing">לא הוזן מפתח. הזן מפתח כדי להתחיל.</string>
     <string name="key_empty_error">הדבק מפתח תקין שמתחיל ב-sk</string>
     <string name="ready">מוכן. שתף הקלטה לאפליקציה כדי לתמלל.</string>
+    <string name="help_button">איך משיגים מפתח?</string>
+    <string name="help_title">איך משיגים מפתח אישי</string>
 
     <string name="transcribing">מתמלל… רגע אחד</string>
     <string name="result_title">התמלול</string>

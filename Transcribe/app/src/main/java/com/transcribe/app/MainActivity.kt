@@ -1,6 +1,7 @@
 package com.transcribe.app
 
 import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -104,6 +105,23 @@ class MainActivity : Activity() {
         }
         refreshStatus()
 
+        val helpBtn = Button(this).apply {
+            text = getString(R.string.help_button)
+            textSize = 14f
+            isAllCaps = false
+            setTextColor(accent)
+            stateListAnimator = null
+            minimumHeight = dp(46)
+            background = GradientDrawable().apply {
+                cornerRadius = dp(23).toFloat()
+                setColor(Color.TRANSPARENT)
+                setStroke(dp(1), accent)
+            }
+            setOnClickListener {
+                startActivity(Intent(this@MainActivity, HelpActivity::class.java))
+            }
+        }
+
         val saveBtn = Button(this).apply {
             text = getString(R.string.save)
             textSize = 16f
@@ -133,6 +151,10 @@ class MainActivity : Activity() {
         root.addView(keyInput, ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
         root.addView(keyHelp)
+        root.addView(helpBtn, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+            bottomMargin = dp(10)
+        })
         root.addView(saveBtn, LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
             topMargin = dp(4)

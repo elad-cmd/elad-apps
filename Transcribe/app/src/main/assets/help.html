@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>איך משיגים מפתח</title>
+<style>
+  :root{--ind:#5A40D8;--ink:#1A1830;--mut:#6B6880;--box:#F3F2FA;--brd:#E4E1F5;
+        --oai-btn:#0d0d0d;--oai-brd:#d9d9e3;--oai-mut:#8e8ea0;--oai-ink:#202123}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#fff;color:var(--ink);-webkit-text-size-adjust:100%}
+  .wrap{max-width:560px;margin:0 auto;padding:20px 16px 40px}
+  h1{font-size:22px;font-weight:600;margin:0 0 4px}
+  .sub{font-size:14px;color:var(--mut);margin:0 0 18px}
+  .note{background:var(--box);border:1px solid var(--brd);border-radius:12px;padding:12px 14px;font-size:13.5px;line-height:1.6;color:var(--ink);margin-bottom:22px}
+  .note b{color:var(--ind)}
+  .step{margin-bottom:26px}
+  .head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .num{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--ind);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600}
+  .head h3{font-size:17px;font-weight:600;margin:0}
+  .desc{font-size:14.5px;line-height:1.65;color:var(--ink);margin:0 0 12px}
+  .look{font-size:13px;color:var(--mut);margin:0 0 12px}
+  .look code{direction:ltr;display:inline-block;background:var(--box);border:1px solid var(--brd);border-radius:6px;padding:1px 7px;font-family:inherit;color:var(--ind);font-weight:600}
+
+  .phone{border:1px solid var(--brd);border-radius:16px;overflow:hidden;background:#fff}
+  .bar{display:flex;align-items:center;gap:7px;background:#ECEAF6;padding:8px 11px}
+  .dot{width:8px;height:8px;border-radius:50%;background:#c9c5dd}
+  .url{flex:1;text-align:center;font-size:11px;color:#7a7790;direction:ltr;background:#fff;border-radius:7px;padding:4px 6px;margin-right:6px}
+
+  /* OpenAI-styled screen body */
+  .oai{padding:20px 18px;direction:ltr;text-align:left;font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .oai .logo{text-align:center;font-size:15px;font-weight:600;color:#000;margin-bottom:14px}
+  .oai h2{font-size:18px;font-weight:600;color:#000;text-align:center;margin:0 0 4px}
+  .oai .lead{font-size:12.5px;color:var(--oai-mut);text-align:center;margin:0 0 16px}
+  .oin{width:100%;border:1px solid var(--oai-brd);border-radius:8px;padding:11px 12px;font-size:12.5px;color:#202123;margin-bottom:10px;background:#fff}
+  .oin.ph{color:var(--oai-mut)}
+  .obtn{width:100%;background:var(--oai-btn);color:#fff;text-align:center;font-size:13px;font-weight:500;border-radius:8px;padding:11px;border:none}
+  .osoc{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#fff;border:1px solid var(--oai-brd);border-radius:8px;padding:10px;font-size:12.5px;color:#202123;margin-bottom:9px}
+  .gG{font-weight:700;font-family:Arial}.gG b1{color:#4285F4}.gG b2{color:#EA4335}.gG b3{color:#FBBC05}.gG b4{color:#34A853}
+  .odiv{display:flex;align-items:center;gap:10px;color:var(--oai-mut);font-size:11px;margin:12px 0}
+  .odiv:before,.odiv:after{content:"";flex:1;height:1px;background:var(--oai-brd)}
+  .olink{text-align:center;font-size:12px;color:#202123;margin-top:6px}
+  .olink u{color:#10a37f}
+  .codeboxes{display:flex;gap:7px;justify-content:center;margin:6px 0 16px}
+  .codeboxes span{width:34px;height:42px;border:1px solid var(--oai-brd);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#202123}
+  .row2{display:flex;gap:8px}.row2 .obtn.sec{background:#fff;color:#202123;border:1px solid var(--oai-brd)}
+  .amt{position:relative;margin-bottom:6px}
+  .amtnote{font-size:11px;color:var(--oai-mut);margin-bottom:14px}
+  .keyhead{font-size:13px;color:#202123;margin-bottom:4px}
+  .keysub{font-size:11.5px;color:var(--oai-mut);line-height:1.5;margin-bottom:12px}
+  .keyfield{display:flex;align-items:center;border:1px solid var(--oai-brd);border-radius:8px;overflow:hidden}
+  .keyfield .kk{flex:1;padding:10px 11px;font-size:12px;color:#202123;direction:ltr;overflow:hidden;white-space:nowrap;background:#fff}
+  .keyfield .kc{padding:10px 12px;font-size:12px;color:#10a37f;border-left:1px solid var(--oai-brd);background:#fff;white-space:nowrap}
+  .seckey{display:flex;align-items:center;gap:8px;border:1px solid var(--oai-brd);border-radius:8px;padding:11px 12px;margin-bottom:8px}
+  .seckey .nm{font-size:12.5px;color:#202123}.seckey .tag{margin-right:auto;font-size:11px;color:var(--oai-mut)}
+
+  .warn{font-size:12px;color:#A35C00;background:#FBEEDA;border:1px solid #F3D9A8;border-radius:8px;padding:9px 11px;margin-top:11px;direction:rtl;text-align:right;line-height:1.55}
+  .warn b{color:#A35C00}
+
+  /* my app screen */
+  .aptop{height:6px;background:var(--ind)}
+  .apbody{padding:16px;direction:rtl;text-align:right}
+  .lbl{font-size:11px;color:var(--ind);font-weight:600;margin-bottom:6px}
+  .keyrow{display:flex;gap:6px;align-items:center}
+  .keyrow .k{flex:1;background:var(--box);border:1px solid var(--brd);border-radius:8px;padding:10px 11px;font-size:12px;color:var(--ink);direction:ltr;overflow:hidden;white-space:nowrap}
+  .abtn{background:var(--ind);color:#fff;text-align:center;font-size:13px;font-weight:600;border-radius:8px;padding:10px;margin-top:8px}
+  .ok{font-size:13px;color:#2E7D32;font-weight:600;margin-top:10px}
+
+  .foot{background:var(--box);border-radius:12px;padding:14px;font-size:13.5px;line-height:1.65;color:var(--ink);margin-top:8px}
+  .foot h4{margin:0 0 6px;font-size:15px;color:var(--ind)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>איך משיגים מפתח אישי</h1>
+  <p class="sub">תהליך חד-פעמי של כ-5 דקות. אחריו האפליקציה עובדת לתמיד.</p>
+
+  <div class="note">המפתח הוא <b>פרטי שלך</b>. הוא נשמר רק בטלפון שלך, ואסור לשתף אותו עם אף אחד. כל אחד פותח מפתח משלו ומשלם רק על מה שהוא מתמלל — בערך 2 אגורות לדקת הקלטה.</div>
+
+  <div class="step">
+    <div class="head"><span class="num">1</span><h3>הרשמה</h3></div>
+    <p class="desc">היכנסו לאתר <b>platform.openai.com</b> ופתחו חשבון. הכי מהיר — "Continue with Google" עם חשבון הגוגל שלכם.</p>
+    <p class="look">המסך נקרא: <code>Create your account</code></p>
+    <div class="phone">
+      <div class="bar"><span class="dot"></span><span class="url">auth.openai.com</span></div>
+      <div class="oai">
+        <div class="logo">OpenAI</div>
+        <h2>Create your account</h2>
+        <input class="oin ph" value="Email address" disabled>
+        <div class="obtn">Continue</div>
+        <div class="olink">Already have an account? <u>Log in</u></div>
+        <div class="odiv">OR</div>
+        <div class="osoc"><span class="gG"><b1>G</b1><b2>o</b2><b3>o</b3><b1>g</b1><b4>l</b4><b2>e</b2></span> Continue with Google</div>
+        <div class="osoc">Continue with Microsoft Account</div>
+        <div class="osoc">Continue with Apple</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="head"><span class="num">2</span><h3>אימות</h3></div>
+    <p class="desc">מזינים קוד שמגיע לאימייל, ולעיתים גם מאמתים מספר טלפון. פעם אחת בלבד.</p>
+    <p class="look">המסך נקרא: <code>Verify your email</code></p>
+    <div class="phone">
+      <div class="bar"><span class="dot"></span><span class="url">auth.openai.com</span></div>
+      <div class="oai">
+        <div class="logo">OpenAI</div>
+        <h2>Verify your email</h2>
+        <p class="lead">Enter the code we sent to your email.</p>
+        <div class="codeboxes"><span>5</span><span>2</span><span>9</span><span>1</span><span>0</span><span>3</span></div>
+        <div class="obtn">Continue</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="head"><span class="num">3</span><h3>הוספת תשלום וטעינת קרדיט</h3></div>
+    <p class="desc">בהגדרות, בלשונית החיוב, מוסיפים כרטיס אשראי וטוענים סכום קטן מראש — מספיק 5 דולר. מהסכום הזה יורד התשלום לפי שימוש, בלי הפתעות.</p>
+    <p class="look">היכנסו ל: <code>Settings › Billing</code> ולחצו <code>Add to credit balance</code></p>
+    <div class="phone">
+      <div class="bar"><span class="dot"></span><span class="url">platform.openai.com/settings</span></div>
+      <div class="oai">
+        <h2 style="text-align:left;font-size:16px">Add to credit balance</h2>
+        <p style="font-size:12px;color:var(--oai-mut);margin:2px 0 14px">Amount to add</p>
+        <input class="oin" value="$10.00" disabled style="color:#202123">
+        <p class="amtnote">Enter an amount between $5 and $500</p>
+        <div class="row2"><div class="obtn sec">Cancel</div><div class="obtn">Continue</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="head"><span class="num">4</span><h3>יצירת המפתח</h3></div>
+    <p class="desc">בהגדרות, בלשונית המפתחות, לוחצים על יצירת מפתח חדש. אחרי האישור המפתח מוצג — מעתיקים אותו מיד בלחיצה על Copy.</p>
+    <p class="look">היכנסו ל: <code>Settings › API keys</code> ולחצו <code>Create new secret key</code></p>
+    <div class="phone">
+      <div class="bar"><span class="dot"></span><span class="url">platform.openai.com/api-keys</span></div>
+      <div class="oai">
+        <h2 style="text-align:left;font-size:16px">Save your key</h2>
+        <p class="keysub">Please save your secret key in a safe place. You won't be able to view it again. If you lose it, you'll need to generate a new one.</p>
+        <div class="keyfield"><span class="kk">sk-proj-a8Xk2v9TnQ···7bRzP4</span><span class="kc">Copy</span></div>
+        <div class="warn">שימו לב: המפתח מוצג <b>פעם אחת בלבד</b>. העתיקו אותו עכשיו. אם פספסתם — פשוט צרו מפתח חדש, זה בחינם.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="head"><span class="num">5</span><h3>הדבקה באפליקציה</h3></div>
+    <p class="desc">חוזרים לאפליקציית התמלול, מדביקים את המפתח בשדה ולוחצים "שמור מפתח". הסטטוס נהיה ירוק — וזהו, אפשר להתחיל לתמלל.</p>
+    <div class="phone">
+      <div class="aptop"></div>
+      <div class="apbody">
+        <div class="lbl">מפתח OpenAI</div>
+        <div class="keyrow"><span class="k">sk-proj-a8Xk2v9TnQ···7bRzP4</span></div>
+        <div class="abtn">שמור מפתח</div>
+        <div class="ok">מוכן. שתף הקלטה כדי לתמלל.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <h4>טיפ אחרון</h4>
+    מומלץ להגדיר באתר תקרת חיוב חודשית (Settings › Limits) כדי שלא תהיה הפתעה. בשימוש רגיל מדובר בכמה שקלים בודדים בחודש.
+  </div>
+
+</div>
+</body>
+</html>

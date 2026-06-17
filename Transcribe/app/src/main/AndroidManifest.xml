@@ -23,6 +23,13 @@
             </intent-filter>
         </activity>
 
+        <!-- Bundled Hebrew guide for obtaining an API key -->
+        <activity
+            android:name=".HelpActivity"
+            android:exported="false"
+            android:label="@string/help_title"
+            android:theme="@style/Theme.App" />
+
         <!-- Share target: receives a shared audio file, transcribes, shows the text -->
         <activity
             android:name=".TranscribeActivity"
