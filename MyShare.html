@@ -266,6 +266,7 @@
   @keyframes homeEnter{0%{transform:translateX(-100%);}100%{transform:translateX(0);}}
   .home.enter{animation:homeEnter .52s cubic-bezier(.34,1.45,.5,1);}
   .flt-body{display:flex;flex-direction:column;}
+  .scr-body.flt-body{padding-bottom:40px;}
   .flt-tabs{display:flex;gap:6px;margin-bottom:12px;}
   .vtab{flex:1;display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,.08);border:none;border-radius:12px;padding:7px 0;color:rgba(255,255,255,.82);cursor:pointer;font-family:inherit;}
   .vtab b{font-size:16px;font-weight:800;}
@@ -273,27 +274,34 @@
   .vtab.on{background:#fff;color:var(--tq-ink);}
   .vtab-toggle{flex:0 0 auto;width:42px;border:none;border-radius:12px;background:rgba(255,255,255,.08);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;}
   .vtab-toggle svg{width:20px;height:20px;}
-  .flt-deck{position:relative;width:100%;max-width:320px;height:328px;margin:6px auto 0;}
-  .flt-card{position:absolute;inset:0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;padding:24px;cursor:grab;will-change:transform;touch-action:none;box-shadow:0 18px 40px -18px rgba(0,0,0,.6);}
-  .flt-av{width:104px;height:104px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:800;}
-  .flt-name{font-size:22px;font-weight:800;color:#fff;text-align:center;}
-  .flt-sub{font-size:14px;color:rgba(255,255,255,.75);direction:ltr;text-align:center;padding:0 10px;}
-  .flt-badge{position:absolute;top:20px;font-size:18px;font-weight:900;padding:5px 13px;border-radius:11px;opacity:0;border:3px solid;pointer-events:none;}
-  .flt-badge.keep{right:20px;color:#3ddc97;border-color:#3ddc97;transform:rotate(13deg);}
-  .flt-badge.del{left:20px;color:#ff6b5e;border-color:#ff6b5e;transform:rotate(-13deg);}
-  .flt-badge.maybe{bottom:20px;top:auto;left:50%;transform:translateX(-50%);color:#ffb454;border-color:#ffb454;}
-  .flt-acts{display:flex;gap:16px;justify-content:center;align-items:center;margin-top:22px;}
+  .flt-view{flex:1;display:flex;flex-direction:column;min-height:0;}
+  .flt-stage{flex:1;display:flex;align-items:center;justify-content:center;padding:6px 0;}
+  .flt-deck{position:relative;width:100%;max-width:320px;margin:0 auto;}
+  .flt-card{position:relative;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:24px;display:flex;flex-direction:column;align-items:center;gap:9px;padding:30px 24px;cursor:grab;will-change:transform;touch-action:none;box-shadow:0 18px 40px -18px rgba(0,0,0,.6);}
+  .flt-av{width:96px;height:96px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:800;margin-bottom:4px;}
+  .flt-name{font-size:23px;font-weight:800;color:#fff;text-align:center;}
+  .flt-org{font-size:15px;font-weight:600;color:rgba(255,255,255,.85);text-align:center;}
+  .flt-line{font-size:14px;color:rgba(255,255,255,.72);direction:ltr;text-align:center;}
+  .flt-badge{position:absolute;top:18px;font-size:18px;font-weight:900;padding:5px 13px;border-radius:11px;opacity:0;border:3px solid;pointer-events:none;}
+  .flt-badge.keep{right:18px;color:#3ddc97;border-color:#3ddc97;transform:rotate(13deg);}
+  .flt-badge.del{left:18px;color:#ff6b5e;border-color:#ff6b5e;transform:rotate(-13deg);}
+  .flt-badge.maybe{bottom:18px;top:auto;left:50%;transform:translateX(-50%);color:#ffb454;border-color:#ffb454;}
+  .flt-acts{display:flex;gap:16px;justify-content:center;align-items:center;margin-top:8px;}
   .flt-btn{width:60px;height:60px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 10px 24px -10px rgba(0,0,0,.55);}
   .flt-btn svg{width:27px;height:27px;}
   .flt-btn.del{background:#ff6b5e;color:#fff;}
   .flt-btn.maybe{background:#ffb454;color:#fff;width:52px;height:52px;}
   .flt-btn.keep{background:#3ddc97;color:#fff;}
-  .flt-undo{width:44px;height:44px;border-radius:50%;border:none;background:rgba(255,255,255,.14);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-  .flt-undo svg{width:20px;height:20px;}
+  .flt-undo{position:absolute;z-index:6;width:46px;height:46px;border-radius:50%;border:none;background:rgba(255,255,255,.18);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 20px -8px rgba(0,0,0,.55);}
+  .flt-undo svg{width:22px;height:22px;}
+  .flt-undo.dir-right{right:10px;top:46%;transform:translateY(-50%);}
+  .flt-undo.dir-left{left:10px;top:46%;transform:translateY(-50%);}
+  .flt-undo.dir-down{bottom:118px;left:50%;transform:translateX(-50%);}
+  .flt-undo.dir-right svg{transform:scaleX(-1);}
   .flt-done{color:#fff;text-align:center;font-size:18px;font-weight:700;padding:46px 20px;line-height:1.8;}
   .flt-done .sm{font-size:14px;font-weight:600;color:rgba(255,255,255,.8);margin-top:6px;}
   .flt-done .mg-home{margin:20px auto 0;}
-  .flt-list{display:flex;flex-direction:column;gap:8px;}
+  .flt-list{display:flex;flex-direction:column;gap:8px;padding-bottom:60px;}
   .flt-row{position:relative;border-radius:12px;overflow:hidden;touch-action:pan-y;}
   .flt-row-bg{position:absolute;inset:0;background:linear-gradient(90deg,#ff6b5e 50%,#3ddc97 50%);}
   .flt-row-fg{position:relative;display:flex;align-items:center;gap:11px;background:#143e40;padding:10px 12px;will-change:transform;cursor:pointer;}
@@ -326,7 +334,7 @@
   <div class="ovl" id="ovl"><div class="sheet" id="sheet"></div></div>
   <div class="srch" id="srch"><div class="srch-veil"></div><div class="srch-panel"><div class="srch-results" id="srchResults"></div><input id="searchInput" class="srch-input" type="text" placeholder="הקלד שם…"></div></div>
   <div class="welcome hide" id="welcome"><div class="wel-card">
-    <div class="wel-logo"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="96" height="96" rx="24" fill="#0e7a72"/><circle cx="33" cy="67" r="8.5" fill="#fff"/><circle cx="50" cy="50" r="8.5" fill="#fff"/><circle cx="67" cy="33" r="8.5" fill="#fff"/></svg></div>
+    <div class="wel-logo"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1AB8A9"/><stop offset="1" stop-color="#0E7576"/></linearGradient></defs><rect x="2" y="2" width="96" height="96" rx="24" fill="url(#wg)"/><circle cx="30.14" cy="69.86" r="4.00" fill="#fff" fill-opacity="0.27"/><circle cx="36.00" cy="64.00" r="5.64" fill="#fff"/><circle cx="41.85" cy="58.15" r="7.28" fill="#fff" fill-opacity="0.43"/><circle cx="47.71" cy="52.29" r="8.92" fill="#fff"/><circle cx="55.88" cy="44.12" r="10.56" fill="#fff" fill-opacity="0.59"/><circle cx="64.06" cy="35.94" r="12.20" fill="#fff"/></svg></div>
     <h2 class="wel-title">ברוכים הבאים ל‑Sweep</h2>
     <p class="wel-sub">איך מתחילים? אפשר לסנכרן את אנשי הקשר שלך מ‑Google, או להתנסות עם רשימה לדוגמה.</p>
     <button class="wel-btn wel-google" id="welGoogle">סנכרון מ‑Google</button>
@@ -401,15 +409,15 @@ const PALETTES=[
 ];
 
 const CONTACTS=[
-  {name:'דנה לוי', msg:'מעולה, נדבר מחר', phone:'050-1234567', email:'dana@gmail.com', fav:true, last:18},
+  {name:'דנה לוי', msg:'מעולה, נדבר מחר', phone:'050-1234567', email:'dana@gmail.com', org:'עיריית תל אביב', fav:true, last:18},
   {name:'דנה לוי', msg:'שלחתי לך מייל', phone:'052-7654321', email:'dana.levi@work.co.il', fav:false, last:6},
   {name:'דנה לוי', msg:'', phone:'03-6543210', email:'', fav:false, last:2},
-  {name:'דנה כהן', msg:'נדבר אחר כך', phone:'054-8889990', email:'dk@gmail.com', fav:false, last:9},
+  {name:'דנה כהן', msg:'נדבר אחר כך', phone:'054-8889990', email:'dk@gmail.com', org:'בנק הפועלים', fav:false, last:9},
   {name:'דנה אבני', msg:'תודה רבה!', phone:'050-2223334', email:'', fav:true, last:11},
   {name:'דנה פרץ', msg:'בסדר גמור', phone:'053-4445556', email:'', fav:false, last:5},
-  {name:'יוסי כהן', msg:'שלחתי לך את הקובץ', phone:'050-1112223', email:'yossi@gmail.com', fav:true, last:17},
+  {name:'יוסי כהן', msg:'שלחתי לך את הקובץ', phone:'050-1112223', email:'yossi@gmail.com', org:'גוגל', fav:true, last:17},
   {name:'יוסי כהן', msg:'אחזור אליך בהמשך', phone:'058-9998887', email:'yossi.cohen@work.com', fav:false, last:4},
-  {name:'מיכל חדד', msg:'אני בדרך, עוד 10 דקות', phone:'052-3334445', email:'michal@gmail.com', fav:true, last:16},
+  {name:'מיכל חדד', msg:'אני בדרך, עוד 10 דקות', phone:'052-3334445', email:'michal@gmail.com', org:'מכבי שירותי בריאות', fav:true, last:16},
   {name:'מיכל חדד', msg:'', phone:'054-1239876', email:'', fav:false, last:3},
   {name:'אבי בר', msg:'תודה רבה על העזרה', phone:'050-5556667', fav:false, last:5},
   {name:'רוני כץ', msg:'איפה נפגשים?', phone:'053-7778889', fav:false, last:12},
@@ -787,21 +795,22 @@ function openFilter(){
     return '<div class="flt-tabs">'+t('undecided','לא נבדקו',c.left)+t('keep','נשמרו',c.keep)+t('delete','נמחקו',c.del)+t('maybe','לבדיקה',c.maybe)+'<button class="vtab-toggle" id="vtog" aria-label="תצוגה">'+(vm==='cards'?ICON.viewlist:ICON.viewcards)+'</button></div>';
   }
   function render(){
-    body.innerHTML=tabs()+'<div id="fltView"></div>';
+    const ou=sc.querySelector('.flt-undo');if(ou)ou.remove();body.innerHTML=tabs()+'<div id="fltView" class="flt-view"></div>';
     body.querySelectorAll('.vtab').forEach(t=>t.onclick=()=>{vf=t.dataset.f;render();});
     body.querySelector('#vtog').onclick=()=>{vm=(vm==='cards')?'list':'cards';render();};
     const view=body.querySelector('#fltView');
     if(vm==='cards')cards(view);else list(view);
   }
-  function decide(p,d){if(!p)return;FDEC[fKey(p)]=d;saveDec();hist.push(fKey(p));}
-  function undo(){const k=hist.pop();if(k){delete FDEC[k];saveDec();render();}}
+  function decide(p,d){if(!p)return;FDEC[fKey(p)]=d;saveDec();hist.push({key:fKey(p),dir:(d==='keep'?'right':d==='delete'?'left':'down')});}
+  function undo(){const h=hist.pop();if(h){delete FDEC[h.key];saveDec();render();}}
   function cards(view){
     const q=fViewIds('undecided');
     if(!q.length){const c=fCounts();view.innerHTML='<div class="flt-done">עברת על כל אנשי הקשר 🎉<div class="sm">נשמרו '+c.keep+' · לבדיקה '+c.maybe+' · נמחקו '+c.del+'</div><button class="mg-home">חזור למסך הבית</button></div>';const hb=view.querySelector('.mg-home');if(hb)hb.onclick=goHome;return;}
     const p=q[0];const det=personDetails(p);
-    view.innerHTML='<div class="flt-deck"><div class="flt-card" id="fcard"><div class="flt-badge keep">שומר</div><div class="flt-badge del">מחק</div><div class="flt-badge maybe">לבדיקה</div><div class="flt-av">'+escapeHtml(initials(p.name))+'</div><div class="flt-name">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(det.length?'<div class="flt-sub">'+escapeHtml(det.join(' · '))+'</div>':'')+'</div></div><div class="flt-acts"><button class="flt-btn del" data-a="delete" aria-label="מחק">'+ICON.trash+'</button><button class="flt-btn maybe" data-a="maybe" aria-label="לבדיקה">'+ICON.clock+'</button><button class="flt-btn keep" data-a="keep" aria-label="שומר">'+ICON.check+'</button><button class="flt-undo" id="fundo" aria-label="ביטול">'+ICON.undo+'</button></div>';
+    const ph=p.phone||((p.phones&&p.phones[0])||'');const em=p.email||((p.emails&&p.emails[0])||'');
+    view.innerHTML='<div class="flt-stage"><div class="flt-deck"><div class="flt-card" id="fcard"><div class="flt-badge keep">שומר</div><div class="flt-badge del">מחק</div><div class="flt-badge maybe">לבדיקה</div><div class="flt-av">'+escapeHtml(initials(p.name))+'</div><div class="flt-name">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(p.org?'<div class="flt-org">'+escapeHtml(p.org)+'</div>':'')+(ph?'<div class="flt-line">'+escapeHtml(ph)+'</div>':'')+(em?'<div class="flt-line">'+escapeHtml(em)+'</div>':'')+'</div></div></div><div class="flt-acts"><button class="flt-btn keep" data-a="keep" aria-label="שומר">'+ICON.check+'</button><button class="flt-btn maybe" data-a="maybe" aria-label="לבדיקה">'+ICON.clock+'</button><button class="flt-btn del" data-a="delete" aria-label="מחק">'+ICON.trash+'</button></div>';
     view.querySelectorAll('.flt-btn').forEach(b=>b.onclick=()=>commit(b.dataset.a));
-    const ub=view.querySelector('#fundo');if(ub){ub.style.visibility=hist.length?'visible':'hidden';ub.onclick=undo;}
+    if(hist.length){const last=hist[hist.length-1];const u=document.createElement('button');u.className='flt-undo dir-'+last.dir;u.innerHTML=ICON.undo;u.setAttribute('aria-label','ביטול');u.onclick=undo;sc.appendChild(u);}
     attach(p);
   }
   function commit(d){
