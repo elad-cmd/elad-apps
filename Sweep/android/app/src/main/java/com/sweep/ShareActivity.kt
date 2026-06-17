@@ -133,8 +133,24 @@ class ShareActivity : Activity() {
                             val i = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$email"))
                             i.putExtra(Intent.EXTRA_TEXT, text); startActivity(i)
                         }
+                        "call" -> startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone")))
                         "messenger" -> sendToPackage("com.facebook.orca", text)
                         "instagram" -> sendToPackage("com.instagram.android", text)
+                        "signal" -> sendToPackage("org.thoughtcrime.securesms", text)
+                        "discord" -> sendToPackage("com.discord", text)
+                        "facebook" -> sendToPackage("com.facebook.katana", text)
+                        "twitter" -> sendToPackage("com.twitter.android", text)
+                        "linkedin" -> sendToPackage("com.linkedin.android", text)
+                        "savecontact" -> {
+                            val name = c.optString("name", "")
+                            val i = Intent(Intent.ACTION_INSERT).apply {
+                                type = ContactsContract.Contacts.CONTENT_TYPE
+                                if (name.isNotEmpty()) putExtra(ContactsContract.Intents.Insert.NAME, name)
+                                if (phone.isNotEmpty()) putExtra(ContactsContract.Intents.Insert.PHONE, phone)
+                                if (email.isNotEmpty()) putExtra(ContactsContract.Intents.Insert.EMAIL, email)
+                            }
+                            startActivity(i)
+                        }
                         "copy" -> {
                             val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                             cm.setPrimaryClip(ClipData.newPlainText("שיתוף", text))
