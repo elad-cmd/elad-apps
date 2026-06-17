@@ -312,10 +312,15 @@
   .mp-confirm{width:100%;padding:13px;border:none;border-radius:14px;background:var(--tq-deep);color:#fff;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;margin-top:4px;}
   .ct-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:22px 16px;text-align:center;}
   .ct-av{width:84px;height:84px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;margin:0 auto 12px;}
-  .ct-name{font-size:20px;font-weight:800;color:#fff;margin-bottom:16px;}
-  .ct-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 4px;border-top:1px solid rgba(255,255,255,.12);}
-  .ct-lbl{font-size:13px;color:rgba(255,255,255,.6);flex:0 0 auto;}
-  .ct-val{font-size:15px;font-weight:700;color:#fff;text-align:left;min-width:0;overflow:hidden;text-overflow:ellipsis;}
+  .ct-frow{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid rgba(255,255,255,.12);}
+  .ct-namerow{border-top:none;}
+  .ct-inp{flex:1;min-width:0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:10px 12px;color:#fff;font-family:inherit;font-size:15px;font-weight:600;outline:none;text-align:right;}
+  .ct-inp::placeholder{color:rgba(255,255,255,.4);}
+  .ct-inp:focus{border-color:var(--tq-deep);background:rgba(0,194,168,.12);}
+  .ct-nameinp{font-size:18px;font-weight:800;text-align:center;}
+  .ct-acts{display:flex;gap:6px;flex:0 0 auto;}
+  .ct-act{width:38px;height:38px;border-radius:50%;border:none;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .ct-act svg{width:20px;height:20px;}
   .home{position:fixed;inset:0;}
   @keyframes homeEnter{0%{transform:translateX(-100%);}100%{transform:translateX(0);}}
   .home.enter{animation:homeEnter .52s cubic-bezier(.34,1.45,.5,1);}
@@ -678,17 +683,27 @@ positionFab();
 
 const ICN_BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
 function openScreen(html){closeSearch();const sc=document.createElement('div');sc.className='scr';sc.innerHTML=html;document.body.appendChild(sc);void sc.offsetHeight;requestAnimationFrame(()=>requestAnimationFrame(()=>sc.classList.add('show')));sc._back=()=>closeScreen(sc);const b=sc.querySelector('.scr-back');if(b)b.onclick=()=>sc._back();let bx=0,by=0,bw=false;sc.addEventListener('pointerdown',e=>{bx=e.clientX;by=e.clientY;bw=true;});sc.addEventListener('pointerup',e=>{if(!bw)return;bw=false;const dx=e.clientX-bx,dy=e.clientY-by;if(dx>70&&Math.abs(dx)>Math.abs(dy)*1.4)sc._back();});return sc;}
+function fireAction(act,person){
+  const ph=(person.phone||'').replace(/[^0-9+]/g,'');
+  if(act==='call'){if(ph)location.href='tel:'+ph;}
+  else if(act==='wa'){if(ph){let w=ph.replace(/^\+/,'').replace(/^0/,'972');location.href='https://wa.me/'+w;}}
+  else if(act==='mail'){if(person.email)location.href='mailto:'+person.email;}
+}
 function openContact(person,fromSearch){
   if(!person)return;
   listEl.style.transition='none';setPull(0);
-  const phone=person.phone||'',email=person.email||'';
-  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>'+escapeHtml(person.name||'')+'</h2></div>'+
-    '<div class="scr-body"><div class="ct-card"><div class="ct-av">'+escapeHtml(initials(person.name))+'</div><div class="ct-name">'+escapeHtml(person.name||'')+'</div>'+
-    (phone?'<div class="ct-row"><span class="ct-lbl">טלפון</span><span class="ct-val" dir="ltr">'+escapeHtml(phone)+'</span></div>':'')+
-    (email?'<div class="ct-row"><span class="ct-lbl">מייל</span><span class="ct-val" dir="ltr">'+escapeHtml(email)+'</span></div>':'')+
-    (person.msg?'<div class="ct-row"><span class="ct-lbl">הודעה אחרונה</span><span class="ct-val">'+escapeHtml(person.msg)+'</span></div>':'')+
-    '</div></div>');
+  const html='<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>פרטי איש קשר</h2></div>'+
+    '<div class="scr-body"><div class="ct-card">'+
+    '<div class="ct-av">'+escapeHtml(initials(person.name))+'</div>'+
+    '<div class="ct-frow ct-namerow"><input class="ct-inp ct-nameinp" data-key="name" placeholder="שם"></div>'+
+    '<div class="ct-frow"><div class="ct-acts"><button class="ct-act" data-act="call" aria-label="חיוג">'+ICON.call+'</button><button class="ct-act" data-act="wa" aria-label="וואטסאפ">'+ICON.whatsapp+'</button></div><input class="ct-inp" data-key="phone" placeholder="טלפון" dir="ltr"></div>'+
+    '<div class="ct-frow"><div class="ct-acts"><button class="ct-act" data-act="mail" aria-label="מייל">'+ICON.mail+'</button></div><input class="ct-inp" data-key="email" placeholder="מייל" dir="ltr"></div>'+
+    '</div></div>';
+  const sc=openScreen(html);
   if(fromSearch)sc._back=()=>{closeScreen(sc);resumeSearch();};
+  const card=sc.querySelector('.ct-card');
+  card.querySelectorAll('.ct-inp').forEach(inp=>{const k=inp.dataset.key;inp.value=person[k]||'';const save=()=>{person[k]=inp.value;renderList();};inp.addEventListener('input',save);inp.addEventListener('blur',save);});
+  card.querySelectorAll('.ct-act').forEach(b=>{b.onclick=(e)=>{e.stopPropagation();fireAction(b.dataset.act,person);};});
 }
 function openSeder(){
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>סדר פסח — ניקוי הרשימה</h2></div>'+
