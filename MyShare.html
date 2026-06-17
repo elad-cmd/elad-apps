@@ -318,6 +318,15 @@
   .sw-tog.on{background:var(--tq-deep);}
   .sw-knob{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s;}
   .sw-tog.on .sw-knob{transform:translateX(-20px);}
+  .av .favstar{position:absolute;top:-4px;right:-4px;width:17px;height:17px;}
+  .av .favstar svg{width:17px;height:17px;color:#ffce3d;filter:drop-shadow(0 1px 2px rgba(0,0,0,.45));}
+  .fav-edit{position:fixed;left:14px;top:50%;transform:translateY(-50%);z-index:34;width:46px;height:46px;border-radius:50%;border:none;background:#fff;color:var(--tq-ink);display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 12px 26px -8px rgba(0,0,0,.55);}
+  .fav-edit.show{display:flex;}
+  .fav-edit.on{background:var(--tq-deep);color:#fff;}
+  .fav-edit svg{width:22px;height:22px;}
+  body.editing .row{cursor:grab;}
+  .row.dragging{opacity:.96;}
+  body.editing .row .av{box-shadow:0 10px 22px -8px rgba(0,0,0,.6);}
 </style>
 </head>
 <body>
@@ -377,7 +386,8 @@ const ICON={
   viewlist:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>',
   viewcards:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M3 8v8M21 8v8"/></svg>',
   undo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-4-4 4-4"/><path d="M5 10h11a4 4 0 0 1 0 8h-1"/></svg>',
-  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="6" cy="18" r="4.50" stroke-width="1.5"/><circle cx="18" cy="6" r="4.50" stroke-width="1.5"/><path d="M11.00 7.61 L13.00 7.61 L12.76 8.67 L14.13 9.33 L14.81 8.48 L16.05 10.05 L15.08 10.52 L15.42 12.00 L16.50 12.00 L16.05 13.95 L15.08 13.48 L14.13 14.67 L14.81 15.52 L13.00 16.39 L12.76 15.33 L11.24 15.33 L11.00 16.39 L9.19 15.52 L9.87 14.67 L8.92 13.48 L7.95 13.95 L7.50 12.00 L8.58 12.00 L8.92 10.52 L7.95 10.05 L9.19 8.48 L9.87 9.33 L11.24 8.67 Z" fill="currentColor"/><circle cx="12" cy="12" r="2.34" fill="#fff"/></svg>',
+  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="5.21" cy="18.79" r="3.60" stroke-width="1.5"/><circle cx="18.79" cy="5.21" r="3.60" stroke-width="1.5"/><path d="M10.83 8.17 L11.37 6.64 L12.63 6.64 L13.17 8.17 L14.26 8.70 L15.80 8.16 L16.59 9.15 L15.72 10.53 L15.99 11.71 L17.37 12.58 L17.09 13.81 L15.47 13.99 L14.71 14.94 L14.89 16.56 L13.76 17.10 L12.61 15.95 L11.39 15.95 L10.24 17.10 L9.11 16.56 L9.29 14.94 L8.53 13.99 L6.91 13.81 L6.63 12.58 L8.01 11.71 L8.28 10.53 L7.41 9.15 L8.20 8.16 L9.74 8.70 Z" fill="currentColor"/><circle cx="12" cy="12" r="2.81" fill="#fff"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
   link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>'
 };
 
@@ -466,8 +476,12 @@ const VIEWS=[{id:'fav',label:'מועדפים',ic:'<svg viewBox="0 0 24 24" fill=
 let VIEW=localStorage.getItem('contacts_view')||'recent';
 let CURRENT=PEOPLE.slice();
 function byName(a,b){return String(a.name).localeCompare(String(b.name),'he');}
-function peopleFor(v){let a=PEOPLE.slice();if(v==='fav')a=a.filter(p=>p.fav).sort(byName);else if(v==='abc')a.sort(byName);else a.sort((x,y)=>(STATS[statKey(y)]||0)-(STATS[statKey(x)]||0)||(y.last||0)-(x.last||0));return a;}
-function renderList(){CURRENT=peopleFor(VIEW);listEl.innerHTML='';CURRENT.forEach((c,i)=>{const row=document.createElement('div');row.className='row';row.dataset.i=i;row.innerHTML=`<span class="av">${escapeHtml(initials(c.name))}</span><div class="meta"><div class="ml"><span class="nm">${escapeHtml(c.name)}</span></div>${c.msg?`<div class="ml"><span class="sub">${escapeHtml(c.msg)}</span></div>`:""}</div>`;listEl.appendChild(row);});}
+let editMode=false;
+const STAR='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.8 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z"/></svg>';
+let FAVORDER=(function(){try{return JSON.parse(localStorage.getItem('myshare_favorder')||'[]')||[];}catch(e){return[];}})();
+function saveFavOrder(){try{localStorage.setItem('myshare_favorder',JSON.stringify(FAVORDER));}catch(e){}}
+function peopleFor(v){let a=PEOPLE.slice();if(v==='fav'){a=a.filter(p=>p.fav);a.sort((x,y)=>{const ix=FAVORDER.indexOf(fKey(x)),iy=FAVORDER.indexOf(fKey(y));if(ix<0&&iy<0)return byName(x,y);if(ix<0)return 1;if(iy<0)return -1;return ix-iy;});}else if(v==='abc')a.sort(byName);else a.sort((x,y)=>(STATS[statKey(y)]||0)-(STATS[statKey(x)]||0)||(y.last||0)-(x.last||0));return a;}
+function renderList(){CURRENT=peopleFor(VIEW);listEl.innerHTML='';CURRENT.forEach((c,i)=>{const row=document.createElement('div');row.className='row';row.dataset.i=i;row.innerHTML=`<span class="av">${escapeHtml(initials(c.name))}${c.fav?'<span class="favstar">'+STAR+'</span>':''}</span><div class="meta"><div class="ml"><span class="nm">${escapeHtml(c.name)}</span></div>${c.msg?`<div class="ml"><span class="sub">${escapeHtml(c.msg)}</span></div>`:""}</div>`;listEl.appendChild(row);});updateFavEdit();}
 function renderSeg(){const seg=document.getElementById('seg');seg.innerHTML='<div class="seg-ind" id="segInd"></div>'+VIEWS.map(v=>`<button class="seg-btn${v.id===VIEW?' on':''}" data-v="${v.id}" aria-label="${escapeHtml(v.label)}" title="${escapeHtml(v.label)}">${v.ic}</button>`).join('');seg.querySelectorAll('.seg-btn').forEach(b=>b.onclick=()=>goToView(b.dataset.v));const ind=seg.querySelector('#segInd');if(ind)ind.style.transition='none';requestAnimationFrame(()=>{updateSeg();requestAnimationFrame(()=>{if(ind)ind.style.transition='';});});}
 function updateSeg(){const seg=document.getElementById('seg');const ind=seg&&seg.querySelector('#segInd');if(!ind)return;seg.querySelectorAll('.seg-btn').forEach(b=>b.classList.toggle('on',b.dataset.v===VIEW));const a=seg.querySelector('.seg-btn.on');if(a){ind.style.left=a.offsetLeft+'px';ind.style.width=a.offsetWidth+'px';}}
 function animTabSlide(outSign){pullOffset=0;const W=listEl.offsetWidth||window.innerWidth;const outX=outSign*W;listEl.style.transition='transform .2s ease, opacity .2s ease';listEl.style.transform='translateX('+outX+'px)';listEl.style.opacity='0';setTimeout(()=>{renderList();layoutList();listEl.style.transition='none';listEl.style.transform='translateX('+(-outX)+'px)';listEl.style.opacity='0';requestAnimationFrame(()=>requestAnimationFrame(()=>{listEl.style.transition='transform .28s cubic-bezier(.22,1,.36,1), opacity .22s ease';listEl.style.transform='translateX(0)';listEl.style.opacity='1';setTimeout(()=>{tabAnim=false;},300);}));},200);}
@@ -553,7 +567,7 @@ function fire(appId,person){
 
 let pendRow=null,pendX=0,pendY=0,pendTimer=0,pendStarted=false;
 function pendClear(){if(pendTimer){clearTimeout(pendTimer);pendTimer=0;}pendRow=null;pendStarted=false;}
-listEl.addEventListener('pointerdown',e=>{const av=e.target.closest('.av');if(!av)return;const row=av.closest('.row');if(!row)return;e.preventDefault();pendRow=row;pendX=e.clientX;pendY=e.clientY;pendStarted=false;try{av.setPointerCapture(e.pointerId);}catch(_){}pendTimer=setTimeout(()=>{pendTimer=0;if(pendRow){pendStarted=true;startPick(pendRow,pendX,pendY);}},80);});
+listEl.addEventListener('pointerdown',e=>{if(editMode)return;const av=e.target.closest('.av');if(!av)return;const row=av.closest('.row');if(!row)return;e.preventDefault();pendRow=row;pendX=e.clientX;pendY=e.clientY;pendStarted=false;try{av.setPointerCapture(e.pointerId);}catch(_){}pendTimer=setTimeout(()=>{pendTimer=0;if(pendRow){pendStarted=true;startPick(pendRow,pendX,pendY);}},80);});
 listEl.addEventListener('pointermove',e=>{if(pendStarted&&picking){e.preventDefault();moveBig(e.clientX,e.clientY);return;}if(pendRow&&!pendStarted&&Math.hypot(e.clientX-pendX,e.clientY-pendY)>10){if(pendTimer){clearTimeout(pendTimer);pendTimer=0;}pendStarted=true;startPick(pendRow,pendX,pendY);moveBig(e.clientX,e.clientY);}});
 listEl.addEventListener('pointerup',e=>{if(pendTimer){clearTimeout(pendTimer);pendTimer=0;}if(pendStarted&&picking){endPick(e.clientX,e.clientY);pendClear();return;}if(pendRow){const p=CURRENT[+pendRow.dataset.i]||null;pendClear();if(p)tapContact(p);}});
 listEl.addEventListener('pointercancel',()=>{if(pendTimer){clearTimeout(pendTimer);pendTimer=0;}if(picking)resetPick();pendClear();swOn=false;});
@@ -568,10 +582,16 @@ function switchTab(dx){
   animTabSlide(fingerLeft?-1:1);
 }
 let swX=0,swY=0,swOn=false,swRow=null;
-listEl.addEventListener('pointerdown',e=>{if(e.target.closest('.av')){swOn=false;swRow=null;return;}swOn=true;swX=e.clientX;swY=e.clientY;swRow=e.target.closest('.row');});
+listEl.addEventListener('pointerdown',e=>{if(editMode){swOn=false;return;}if(e.target.closest('.av')){swOn=false;swRow=null;return;}swOn=true;swX=e.clientX;swY=e.clientY;swRow=e.target.closest('.row');});
 listEl.addEventListener('pointerup',e=>{if(!swOn||picking){swOn=false;return;}swOn=false;const dx=e.clientX-swX,dy=e.clientY-swY;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.4){switchTab(dx);}else if(Math.abs(dx)<8&&Math.abs(dy)<8&&swRow){const p=CURRENT[+swRow.dataset.i]||null;if(p)tapContact(p);}});
-let plY=0,plOn=false,pullOffset=0,plLast=0,plVel=0,plArmed=false;
-function setPull(v){if(!v)listEl.style.transform='';}
+let plY=0,plBase=0,plOn=false,pullOffset=0,plArmed=false,plVel=0,plLastY=0,plLastT=0,plRAF=0,MAXPULL=600;
+function computeMax(){MAXPULL=Math.max(120,window.innerHeight-160);}
+computeMax();window.addEventListener('resize',computeMax);
+function setPull(v){pullOffset=Math.max(0,Math.min(MAXPULL,v));listEl.style.transform=pullOffset?('translateY('+pullOffset+'px)'):'';}
+listEl.addEventListener('touchstart',e=>{if(editMode)return;if(picking||pendStarted||e.target.closest('.av')){plArmed=false;plOn=false;return;}if(plRAF){cancelAnimationFrame(plRAF);plRAF=0;}computeMax();plArmed=(listEl.scrollTop<=0||pullOffset>0);plOn=false;plY=e.touches[0].clientY;plLastY=plY;plLastT=Date.now();plVel=0;plBase=pullOffset;},{passive:true});
+listEl.addEventListener('touchmove',e=>{if(!plArmed||picking||pendStarted)return;const cy=e.touches[0].clientY;const dy=cy-plY;if(!plOn){if((dy>4&&listEl.scrollTop<=0)||pullOffset>0){plOn=true;listEl.style.transition='none';}else{if(dy<-2||listEl.scrollTop>0)plArmed=false;return;}}const now=Date.now();const dt=(now-plLastT)||16;plVel=(cy-plLastY)/dt*16;plLastY=cy;plLastT=now;const target=plBase+dy;if(target<=0){setPull(0);plOn=false;plArmed=false;return;}e.preventDefault();setPull(target);},{passive:false});
+function plEnd(){if(!plOn)return;plOn=false;plArmed=false;let v=plVel;if(plRAF)cancelAnimationFrame(plRAF);const step=()=>{v*=0.95;if(Math.abs(v)<0.4){plRAF=0;return;}const nv=pullOffset+v;if(nv<=0){setPull(0);plRAF=0;return;}if(nv>=MAXPULL){setPull(MAXPULL);plRAF=0;return;}setPull(nv);plRAF=requestAnimationFrame(step);};plRAF=requestAnimationFrame(step);}
+listEl.addEventListener('touchend',plEnd);listEl.addEventListener('touchcancel',plEnd);
 
 let toastT;
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1700);}
@@ -660,6 +680,15 @@ function doHandFlip(){
 buildFabDots();
 menuFab.onclick=()=>{if(document.querySelector('.hbar-backdrop'))closeHbar();else openHbar();};
 document.body.appendChild(menuFab);
+const favEditBtn=document.createElement('button');favEditBtn.className='fav-edit';favEditBtn.id='favEdit';favEditBtn.setAttribute('aria-label','עריכת סדר');favEditBtn.innerHTML=ICON.edit;favEditBtn.onclick=()=>setEdit(!editMode);document.body.appendChild(favEditBtn);
+function updateFavEdit(){const b=document.getElementById('favEdit');if(!b)return;const show=(VIEW==='fav');b.classList.toggle('show',show);if(!show&&editMode){editMode=false;document.body.classList.remove('editing');}b.classList.toggle('on',editMode);}
+function setEdit(on){editMode=on&&(VIEW==='fav');document.body.classList.toggle('editing',editMode);favEditBtn.classList.toggle('on',editMode);renderList();}
+let dragRow=null,dragIdx=0,dragStartY=0,RSTEP=72;
+listEl.addEventListener('pointerdown',e=>{if(!editMode)return;const row=e.target.closest('.row');if(!row)return;e.preventDefault();dragRow=row;dragIdx=+row.dataset.i;dragStartY=e.clientY;const rows=[...listEl.querySelectorAll('.row')];if(rows.length>1)RSTEP=rows[1].offsetTop-rows[0].offsetTop;rows.forEach(r=>{if(r!==row)r.style.transition='transform .15s ease';});row.style.transition='none';row.style.zIndex='5';row.classList.add('dragging');if(navigator.vibrate)navigator.vibrate(8);try{listEl.setPointerCapture(e.pointerId);}catch(_){}});
+listEl.addEventListener('pointermove',e=>{if(!editMode||!dragRow)return;e.preventDefault();const dy=e.clientY-dragStartY;dragRow.style.transform='translateY('+dy+'px)';const rows=[...listEl.querySelectorAll('.row')];let ni=Math.round(dragIdx+dy/RSTEP);ni=Math.max(0,Math.min(rows.length-1,ni));dragRow._ni=ni;rows.forEach((r,i)=>{if(r===dragRow)return;let sh=0;if(dragIdx<ni&&i>dragIdx&&i<=ni)sh=-RSTEP;else if(dragIdx>ni&&i<dragIdx&&i>=ni)sh=RSTEP;r.style.transform=sh?('translateY('+sh+'px)'):'';});});
+function reEnd(){if(!dragRow)return;const ni=dragRow._ni,oi=dragIdx;[...listEl.querySelectorAll('.row')].forEach(r=>{r.style.transition='';r.style.transform='';r.style.zIndex='';r.classList.remove('dragging');});dragRow=null;if(VIEW==='fav'&&ni!=null&&ni!==oi){const moved=CURRENT.splice(oi,1)[0];CURRENT.splice(ni,0,moved);FAVORDER=CURRENT.map(fKey);saveFavOrder();}renderList();}
+listEl.addEventListener('pointerup',e=>{if(editMode&&dragRow)reEnd();});
+listEl.addEventListener('pointercancel',e=>{if(editMode&&dragRow)reEnd();});
 positionFab();
 
 const ICN_BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
