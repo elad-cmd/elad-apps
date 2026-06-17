@@ -202,6 +202,7 @@
   .srch-input{width:100%;padding:15px 18px;border:none;border-radius:16px;font-size:16px;font-family:inherit;text-align:right;color:var(--tq-ink);background:#fff;outline:none;box-shadow:0 14px 34px -10px rgba(0,0,0,.55);}
   .ovl.preview .sheet h2{color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.7);}
   .dup-empty{color:rgba(255,255,255,.9);text-align:center;font-size:17px;padding:48px 0;}
+  .mg-donewrap{min-height:70vh;display:flex;align-items:center;justify-content:center;}
   .mg-home{display:block;margin:26px auto 0;padding:14px 28px;border:none;border-radius:14px;background:#fff;color:var(--tq-ink);font-family:inherit;font-weight:800;font-size:15.5px;cursor:pointer;box-shadow:0 10px 24px -10px rgba(0,0,0,.5);}
   .dup-group{position:relative;border-radius:16px;overflow:hidden;margin-bottom:14px;touch-action:pan-y;}
   .dg-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-start;gap:6px;padding:0 22px;background:#143e40;color:rgba(255,255,255,.9);}
@@ -714,20 +715,20 @@ function computeMergeGroups(){
   return Object.values(groups).filter(g=>g.length>=2);
 }
 function mgUpdateSel(groupEl,person){[...groupEl.querySelectorAll('.dup-member')].forEach(mm=>mm.classList.toggle('selected',mm._person===person));}
-function mgDone(sc,msg){const body=sc.querySelector('#dupBody');if(!body)return;body.innerHTML='<div class="dup-empty">'+msg+'<button class="mg-home">חזור למסך הבית</button></div>';const b=body.querySelector('.mg-home');if(b)b.onclick=goHome;}
-function mgRefresh(sc){const left=sc.querySelectorAll('.dup-group').length;const h=sc.querySelector('.scr-head h2');if(h)h.textContent='מיזוג כפילויות ('+left+')';if(left===0)mgDone(sc,'סיימת עם הכפילויות 🎉');}
+function mgDone(sc){const body=sc.querySelector('#dupBody');if(!body)return;body.innerHTML='<div class="mg-donewrap"><button class="mg-home">חזור למסך הבית</button></div>';const b=body.querySelector('.mg-home');if(b)b.onclick=goHome;}
+function mgRefresh(sc){const left=sc.querySelectorAll('.dup-group').length;const h=sc.querySelector('.scr-head h2');if(h)h.textContent='מיזוג כפילויות ('+left+')';if(left===0)mgDone(sc);}
 function mgRemovePerson(person){const i=PEOPLE.indexOf(person);if(i>=0)PEOPLE.splice(i,1);}
 function openMerge(){
   const groups=computeMergeGroups();
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>מיזוג כפילויות ('+groups.length+')</h2></div><div class="scr-body" id="dupBody"></div>');
   const dupBody=sc.querySelector('#dupBody');
-  if(!groups.length){mgDone(sc,'לא נמצאו כפילויות 🎉');return;}
+  if(!groups.length){mgDone(sc);return;}
   const sel=new Map();
   groups.forEach((g,gi)=>{
     sel.set(gi,g[0]);
     const card=document.createElement('div');card.className='dup-group';
     const members=g.map(person=>{
-      const dh=personDetails(person).map(d=>'<div class="dm-d">'+escapeHtml(d)+'</div>').join('');
+      const det=personDetails(person);const dh=det.length?'<div class="dm-d">'+escapeHtml(det.join(' · '))+'</div>':'';
       return '<div class="dup-member'+(person===g[0]?' selected':'')+'"><span class="dm-av">'+escapeHtml(initials(person.name))+'</span><div class="dm-txt"><div class="dm-n">'+escapeHtml(person.name||'(ללא שם)')+'</div>'+dh+'</div><span class="dm-keep">יישמר</span></div>';
     }).join('');
     card.innerHTML='<div class="dg-bg">'+ICON.broom+'<span class="dg-arrow">\u2039</span></div><div class="dg-fg"><button class="dg-del" aria-label="הסר">'+ICON.broom+'<span class="dg-arrow">\u2039</span></button>'+members+'<div class="dup-acts"><button class="mbtn merge">מזג</button><button class="mbtn cancel">בטל</button></div></div>';
@@ -861,7 +862,7 @@ function openResetConfirm(){
   ov.querySelector('#rsBtn').onclick=()=>{if(stage===1){stage=2;ov.querySelector('#rsHint').textContent='בטוח לחלוטין? הפעולה בלתי הפיכה.';ov.querySelector('#rsBtn').textContent='כן, אפס סופית';}else{doReset();}};
 }
 function homeEnter(){const h=document.getElementById('home');if(!h)return;h.style.zIndex='75';h.classList.remove('enter');void h.offsetWidth;h.classList.add('enter');setTimeout(()=>{h.classList.remove('enter');h.style.zIndex='';},560);}
-function closeScreen(sc){if(!sc)return;sc.classList.remove('show');setTimeout(()=>sc.remove(),560);homeEnter();}
+function closeScreen(sc){if(!sc)return;sc.classList.remove('show');setTimeout(()=>sc.remove(),560);const others=[...document.querySelectorAll('.scr')].filter(x=>x!==sc);if(!others.length)homeEnter();}
 function goHome(){
   const scr=document.querySelectorAll('.scr');
   if(scr.length){scr.forEach(s=>{s.classList.remove('show');setTimeout(()=>s.remove(),560);});homeEnter();}
