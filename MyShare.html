@@ -237,6 +237,9 @@
   .fav-1{left:38.7%;top:61.3%;}
   .fav-2{left:61.3%;top:38.7%;}
   .fav-3{left:84%;top:16%;}
+  .fav3-0{left:20%;top:80%;}
+  .fav3-1{left:50%;top:50%;}
+  .fav3-2{left:80%;top:20%;}
   .sheet-head{display:flex;align-items:center;gap:8px;margin:2px 0 12px;}
   .sheet-x{width:32px;height:32px;flex:0 0 auto;border:none;background:rgba(8,40,42,.08);border-radius:50%;color:var(--tq-ink);cursor:pointer;display:flex;align-items:center;justify-content:center;}
   .sheet-x svg{width:16px;height:16px;}
@@ -254,7 +257,9 @@
   .srch-results{display:flex;flex-direction:column-reverse;gap:8px;overflow-y:auto;max-height:46vh;padding:6px 0 10px;-webkit-overflow-scrolling:touch;}
   .srch-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.12);border-radius:14px;padding:8px 12px;}
   .srch-row .sav{width:42px;height:42px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex:0 0 auto;}
-  .srch-row .snm{color:#fff;font-size:15px;font-weight:700;}
+  .srch-txt{display:flex;flex-direction:column;min-width:0;}
+  .srch-row .snm{color:#fff;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .srch-row .ssub{font-size:12.5px;color:rgba(255,255,255,.65);direction:ltr;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .srch-input{width:100%;padding:15px 18px;border:none;border-radius:16px;font-size:16px;font-family:inherit;text-align:right;color:var(--tq-ink);background:#fff;outline:none;box-shadow:0 14px 34px -10px rgba(0,0,0,.55);}
   .ovl.preview .sheet h2{color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.7);}
   .dup-empty{color:rgba(255,255,255,.85);text-align:center;font-size:16px;padding:40px 0;}
@@ -265,8 +270,8 @@
   .dm-bg svg{width:24px;height:24px;}
   .dm-fg{position:relative;display:flex;align-items:center;gap:11px;background:#143e40;padding:10px 12px;will-change:transform;}
   .dup-member.selected .dm-fg{box-shadow:inset 0 0 0 2px var(--tq-deep);background:#15494b;}
-  .dm-hint{position:absolute;top:5px;left:8px;opacity:.45;color:#fff;}
-  .dm-hint svg{width:15px;height:15px;}
+  .dm-hint{position:absolute;top:5px;left:8px;opacity:.7;color:#fff;}
+  .dm-hint svg{width:18px;height:18px;}
   .dm-av{width:42px;height:42px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex:0 0 auto;}
   .dm-txt{flex:1;min-width:0;}
   .dm-n{font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -277,6 +282,23 @@
   .dup-actions .mbtn{flex:1;padding:10px;border:none;border-radius:12px;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;}
   .mbtn.merge{background:var(--tq-deep);color:#fff;}
   .mbtn.skip{background:rgba(255,255,255,.12);color:#fff;}
+  .mpovl{position:fixed;inset:0;z-index:85;display:flex;align-items:flex-end;justify-content:center;background:rgba(8,40,42,0);transition:background .25s;pointer-events:none;}
+  .mpovl.show{background:rgba(8,40,42,.5);pointer-events:auto;}
+  .mp-sheet{width:100%;max-width:520px;background:#fff;color:var(--tq-ink);border-radius:22px 22px 0 0;padding:14px 16px 26px;transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);max-height:84%;overflow-y:auto;}
+  .mpovl.show .mp-sheet{transform:none;}
+  .mp-hint{font-size:12.5px;color:#7a9a9b;margin:2px 0 12px;text-align:center;line-height:1.5;}
+  .mp-section{margin-bottom:12px;}
+  .mp-section h3{font-size:13.5px;font-weight:700;color:var(--tq-ink);margin-bottom:7px;}
+  .mp-same{font-size:11px;color:#9ab;font-weight:600;}
+  .mp-opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin-bottom:7px;cursor:pointer;}
+  .mp-opt.on{border-color:var(--tq-deep);background:rgba(0,194,168,.08);}
+  .mp-chk{width:24px;height:24px;border-radius:7px;border:1.6px solid var(--line);display:flex;align-items:center;justify-content:center;color:#fff;flex:0 0 auto;}
+  .mp-opt.on .mp-chk{background:var(--tq-deep);border-color:var(--tq-deep);}
+  .mp-chk svg{width:15px;height:15px;opacity:0;}
+  .mp-opt.on .mp-chk svg{opacity:1;}
+  .mp-v{flex:1;min-width:0;font-size:14.5px;font-weight:600;color:var(--tq-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .mp-v.ltr{direction:ltr;text-align:right;}
+  .mp-confirm{width:100%;padding:13px;border:none;border-radius:14px;background:var(--tq-deep);color:#fff;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;margin-top:4px;}
   .home{position:fixed;inset:0;}
   @keyframes homeEnter{0%{transform:translateX(-100%);}100%{transform:translateX(0);}}
   .home.enter{animation:homeEnter .52s cubic-bezier(.34,1.45,.5,1);}
@@ -348,16 +370,16 @@ const PALETTES=[
 ];
 
 const CONTACTS=[
-  {name:'דנה לוי', msg:'מעולה, נדבר מחר', phone:'050-1234567', fav:true, last:18},
-  {name:'דנה לוי', msg:'שלחתי לך מייל', phone:'052-7654321', fav:false, last:6},
-  {name:'דנה לוי', msg:'', phone:'03-6543210', fav:false, last:2},
-  {name:'דנה כהן', msg:'נדבר אחר כך', phone:'054-8889990', fav:false, last:9},
-  {name:'דנה אבני', msg:'תודה רבה!', phone:'050-2223334', fav:true, last:11},
-  {name:'דנה פרץ', msg:'בסדר גמור', phone:'053-4445556', fav:false, last:5},
-  {name:'יוסי כהן', msg:'שלחתי לך את הקובץ', phone:'050-1112223', fav:true, last:17},
-  {name:'יוסי כהן', msg:'אחזור אליך בהמשך', phone:'058-9998887', fav:false, last:4},
-  {name:'מיכל חדד', msg:'אני בדרך, עוד 10 דקות', phone:'052-3334445', fav:true, last:16},
-  {name:'מיכל חדד', msg:'', phone:'054-1239876', fav:false, last:3},
+  {name:'דנה לוי', msg:'מעולה, נדבר מחר', phone:'050-1234567', email:'dana@gmail.com', fav:true, last:18},
+  {name:'דנה לוי', msg:'שלחתי לך מייל', phone:'052-7654321', email:'dana.levi@work.co.il', fav:false, last:6},
+  {name:'דנה לוי', msg:'', phone:'03-6543210', email:'', fav:false, last:2},
+  {name:'דנה כהן', msg:'נדבר אחר כך', phone:'054-8889990', email:'dk@gmail.com', fav:false, last:9},
+  {name:'דנה אבני', msg:'תודה רבה!', phone:'050-2223334', email:'', fav:true, last:11},
+  {name:'דנה פרץ', msg:'בסדר גמור', phone:'053-4445556', email:'', fav:false, last:5},
+  {name:'יוסי כהן', msg:'שלחתי לך את הקובץ', phone:'050-1112223', email:'yossi@gmail.com', fav:true, last:17},
+  {name:'יוסי כהן', msg:'אחזור אליך בהמשך', phone:'058-9998887', email:'yossi.cohen@work.com', fav:false, last:4},
+  {name:'מיכל חדד', msg:'אני בדרך, עוד 10 דקות', phone:'052-3334445', email:'michal@gmail.com', fav:true, last:16},
+  {name:'מיכל חדד', msg:'', phone:'054-1239876', email:'', fav:false, last:3},
   {name:'אבי בר', msg:'תודה רבה על העזרה', phone:'050-5556667', fav:false, last:5},
   {name:'רוני כץ', msg:'איפה נפגשים?', phone:'053-7778889', fav:false, last:12},
   {name:'נועה גולן', msg:'מצוין, סגרנו על זה', phone:'052-2221110', fav:false, last:3},
@@ -385,8 +407,8 @@ let SHARED = _shared || (MODE==='share' ? 'https://example.com/demo' : '');
 let PEOPLE = CONTACTS;
 if(BRIDGE){try{const arr=JSON.parse(bGet('getContacts','[]')||'[]');if(arr&&arr.length)PEOPLE=arr;}catch(e){}}
 
-const DEF={left:'whatsapp',right:'call',up:'mail',down:'',rail:['telegram','instagram','copy'],hand:'right',palette:0,dirv:2};
-function loadCfg(){const c={left:DEF.left,right:DEF.right,up:DEF.up,down:DEF.down,rail:DEF.rail.slice(),hand:DEF.hand,palette:DEF.palette,dirv:DEF.dirv};try{const s=JSON.parse(localStorage.getItem('myshare_cfg')||'{}');if(s.dirv===DEF.dirv){['left','right','up','down'].forEach(k=>{if(k in s)c[k]=s[k];});}if(Array.isArray(s.rail))c.rail=s.rail;if(s.hand==='left'||s.hand==='right')c.hand=s.hand;if(typeof s.palette==='number')c.palette=s.palette;}catch(e){}return c;}
+const DEF={left:'whatsapp',right:'call',up:'mail',down:'',rail:['telegram','instagram','copy'],hand:'right',palette:0,dirv:2,share:['whatsapp','messenger','mail']};
+function loadCfg(){const c={left:DEF.left,right:DEF.right,up:DEF.up,down:DEF.down,rail:DEF.rail.slice(),hand:DEF.hand,palette:DEF.palette,dirv:DEF.dirv,share:DEF.share.slice()};try{const s=JSON.parse(localStorage.getItem('myshare_cfg')||'{}');if(s.dirv===DEF.dirv){['left','right','up','down'].forEach(k=>{if(k in s)c[k]=s[k];});}if(Array.isArray(s.rail))c.rail=s.rail;if(Array.isArray(s.share)&&s.share.length)c.share=s.share.slice(0,3);if(s.hand==='left'||s.hand==='right')c.hand=s.hand;if(typeof s.palette==='number')c.palette=s.palette;}catch(e){}return c;}
 function saveCfg(){try{localStorage.setItem('myshare_cfg',JSON.stringify(cfg));}catch(e){}}
 let cfg=loadCfg();saveCfg();
 function statKey(p){return (p&&(p.phone||p.name))||'';}
@@ -434,7 +456,7 @@ function buildStage(row){
   const lh=(cfg.hand==='left');
   const sgn=lh?1:-1;
   const ndx=sgn*0.7071, ndy=0.7071;
-  const list=['whatsapp','messenger','mail'];
+  const list=cfg.share.slice(0,3);
   const GAPX=92, STEP=80;
   list.forEach((appId,i)=>{
     const app=byId(appId);
@@ -527,13 +549,14 @@ function closeSheet(){ovl.classList.remove('show');ovl.classList.remove('preview
 ovl.addEventListener('click',e=>{if(e.target===ovl)closeSheet();});
 
 function openPicker(target){
-  const allowNone = target!=='rail';
+  const allowNone = (target!=='rail' && typeof target!=='number');
   let cells = CATALOG.map(a=>`<button class="gi" data-app="${a.id}"><span class="c">${a.ic}</span><span>${escapeHtml(a.label)}</span></button>`).join('');
   if(allowNone) cells += `<button class="gi" data-app="__none__"><span class="c none">${ICON.plus}</span><span>ריק</span></button>`;
-  const title = target==='rail' ? 'הוסף אפליקציה למסילה' : `בחר אפליקציה ל“${escapeHtml(DIRSHORT[target]||target)}”`;
+  const title = target==='rail' ? 'הוסף אפליקציה למסילה' : (typeof target==='number' ? 'בחר אפליקציית שיתוף' : `בחר אפליקציה ל“${escapeHtml(DIRSHORT[target]||target)}”`);
   showSheet(`<h2>${title}</h2><div class="grid">${cells}</div>`);
   sheet.querySelectorAll('.gi').forEach(b=>b.onclick=()=>{
     const id=b.dataset.app;
+    if(typeof target==='number'){ if(id!=='__none__')cfg.share[target]=id; saveCfg();toast('עודכן');openSettings(); return; }
     if(target==='rail'){ if(id!=='__none__' && !cfg.rail.includes(id))cfg.rail.push(id); saveCfg();toast('נוסף למסילה');closeSheet(); }
     else { cfg[target]= id==='__none__' ? '' : id; saveCfg();toast('עודכן');openSettings(); }
   });
@@ -543,20 +566,19 @@ const srch=document.getElementById('srch');
 const srchResults=document.getElementById('srchResults');
 const searchInput=document.getElementById('searchInput');
 function vvSearch(){const vv=window.visualViewport;const kb=vv?Math.max(0,window.innerHeight-vv.height-(vv.offsetTop||0)):0;srch.style.paddingBottom=Math.max(kb,88)+'px';}
-function renderSearch(q){q=(q||'').trim();srchResults.innerHTML='';if(!q)return;PEOPLE.filter(p=>String(p.name).indexOf(q)>=0).slice(0,40).forEach(p=>{const r=document.createElement('div');r.className='srch-row';r.innerHTML=`<span class="sav">${escapeHtml(initials(p.name))}</span><span class="snm">${escapeHtml(p.name)}</span>`;srchResults.appendChild(r);});}
+function renderSearch(q){q=(q||'').trim();srchResults.innerHTML='';if(!q)return;PEOPLE.filter(p=>String(p.name).indexOf(q)>=0).slice(0,40).forEach(p=>{const r=document.createElement('div');r.className='srch-row';const sub=p.phone||p.email||'';r.innerHTML=`<span class="sav">${escapeHtml(initials(p.name))}</span><div class="srch-txt"><span class="snm">${escapeHtml(p.name)}</span>${sub?`<span class="ssub">${escapeHtml(sub)}</span>`:''}</div>`;srchResults.appendChild(r);});}
 function openSearch(){srch.classList.add('show');srchResults.innerHTML='';searchInput.value='';if(window.visualViewport)window.visualViewport.addEventListener('resize',vvSearch);setTimeout(()=>{searchInput.focus();vvSearch();},60);setTimeout(vvSearch,380);}
 function closeSearch(){srch.classList.remove('show');searchInput.blur();if(window.visualViewport)window.visualViewport.removeEventListener('resize',vvSearch);srch.style.paddingBottom='';}
 searchInput.addEventListener('input',()=>renderSearch(searchInput.value));
 srch.addEventListener('click',e=>{if(e.target===srch||e.target.classList.contains('srch-veil'))closeSearch();});
 function openSettings(){
-  const keys=['up','left','right','down'];
-  const coins=keys.map((k,i)=>{
-    const app=byId(cfg[k]);
-    return `<button class="fav-coin fav-${i}" data-dir="${k}"><span class="fav-c${app?'':' add'}">${app?app.ic:ICON.plus}</span><span class="fav-lbl">${app?escapeHtml(app.label):'ריק'}</span></button>`;
+  const coins=cfg.share.map((id,i)=>{
+    const app=byId(id);
+    return `<button class="fav-coin fav3-${i}" data-i="${i}"><span class="fav-c${app?'':' add'}">${app?app.ic:ICON.plus}</span><span class="fav-lbl">${app?escapeHtml(app.label):'ריק'}</span></button>`;
   }).join('');
-  showSheet(`<div class="sheet-head"><button class="sheet-x" aria-label="סגור"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><h2 style="flex:1;margin:0;text-align:center;">מועדפי השיתוף</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="favdiag">${coins}</div><p class="cr-hint">לוחצים על אפליקציה כדי להחליף אותה. נשמר במכשיר.</p>`);
+  showSheet(`<div class="sheet-head"><button class="sheet-x" aria-label="סגור"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><h2 style="flex:1;margin:0;text-align:center;">אפליקציות שיתוף</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="favdiag">${coins}</div><p class="cr-hint">לוחצים על אפליקציה כדי להחליף אותה. נשמר במכשיר.</p>`);
   const xb=sheet.querySelector('.sheet-x');if(xb)xb.onclick=closeSheet;
-  sheet.querySelectorAll('.fav-coin').forEach(b=>b.onclick=()=>openPicker(b.dataset.dir));
+  sheet.querySelectorAll('.fav-coin').forEach(b=>b.onclick=()=>openPicker(+b.dataset.i));
 }
 
 function openPaletteSheet(){
@@ -684,11 +706,34 @@ function openMerge(){
     const acts=document.createElement('div');acts.className='dup-actions';
     const bMerge=document.createElement('button');bMerge.className='mbtn merge';bMerge.textContent='מזג';
     const bSkip=document.createElement('button');bSkip.className='mbtn skip';bSkip.textContent='לא כפילויות';
-    bMerge.onclick=()=>{const keep=sel.get(gi);g.forEach(p=>{if(p!==keep)mgRemovePerson(p);});renderList();groupEl.style.transition='opacity .25s, transform .25s';groupEl.style.opacity='0';groupEl.style.transform='translateY(-8px)';setTimeout(()=>{groupEl.remove();mgRefresh(sc);},260);if(navigator.vibrate)navigator.vibrate(10);toast('מוזג');};
+    bMerge.onclick=()=>{openMergePicker(g,sel.get(gi),()=>{groupEl.style.transition='opacity .25s, transform .25s';groupEl.style.opacity='0';groupEl.style.transform='translateY(-8px)';setTimeout(()=>{groupEl.remove();mgRefresh(sc);},260);});};
     bSkip.onclick=()=>{groupEl.style.transition='opacity .2s';groupEl.style.opacity='0';setTimeout(()=>{groupEl.remove();mgRefresh(sc);},210);};
     acts.appendChild(bMerge);acts.appendChild(bSkip);groupEl.appendChild(acts);
     dupBody.appendChild(groupEl);
   });
+}
+function openMergePicker(group,keep,onDone){
+  const phones=[...new Set(group.map(p=>p.phone).filter(Boolean))];
+  const emails=[...new Set(group.map(p=>p.email).filter(Boolean))];
+  const names=[...new Set(group.map(p=>p.name).filter(Boolean))];
+  const vals={names,phones,emails};
+  const sel={names:new Set([keep.name||names[0]].filter(Boolean)),phones:new Set(phones),emails:new Set(emails)};
+  const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  const section=(key,title,arr,ltr)=>{if(!arr.length)return '';const same=arr.length===1?' <span class="mp-same">(זהה בכולם)</span>':'';return '<div class="mp-section"><h3>'+title+same+'</h3>'+arr.map((v,i)=>'<div class="mp-opt'+(sel[key].has(v)?' on':'')+'" data-key="'+key+'" data-idx="'+i+'"><span class="mp-chk">'+ICON.check+'</span><span class="mp-v'+(ltr?' ltr':'')+'">'+escapeHtml(v)+'</span></div>').join('')+'</div>';};
+  const ov=document.createElement('div');ov.className='mpovl';
+  ov.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xsvg+'</button><h2 style="flex:1;margin:0;text-align:center;">מה לשמור במיזוג?</h2><span style="width:32px;flex:0 0 auto;"></span></div><p class="mp-hint">סמן מה לשמור. ערך שזהה בכולם נשמר פעם אחת; בערכים שונים אפשר לשמור כמה.</p>'+section('names','שם',names,false)+section('phones','טלפונים',phones,true)+section('emails','מיילים',emails,true)+'<button class="mp-confirm" id="mpDo">אשר מיזוג</button></div>';
+  document.body.appendChild(ov);
+  requestAnimationFrame(()=>ov.classList.add('show'));
+  const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),260);};
+  ov.querySelector('.sheet-x').onclick=close;
+  ov.addEventListener('click',e=>{if(e.target===ov)close();});
+  ov.querySelectorAll('.mp-opt').forEach(o=>{o.onclick=()=>{const k=o.dataset.key,v=vals[k][+o.dataset.idx];if(sel[k].has(v))sel[k].delete(v);else sel[k].add(v);o.classList.toggle('on',sel[k].has(v));};});
+  ov.querySelector('#mpDo').onclick=()=>{
+    const sp=phones.filter(v=>sel.phones.has(v)),se=emails.filter(v=>sel.emails.has(v));
+    keep.phone=sp[0]||'';keep.phones=sp;keep.email=se[0]||'';keep.emails=se;
+    group.forEach(p=>{if(p!==keep)mgRemovePerson(p);});
+    renderList();close();if(navigator.vibrate)navigator.vibrate(10);toast('מוזג');if(onDone)onDone();
+  };
 }
 function homeEnter(){const h=document.getElementById('home');if(!h)return;h.style.zIndex='75';h.classList.remove('enter');void h.offsetWidth;h.classList.add('enter');setTimeout(()=>{h.classList.remove('enter');h.style.zIndex='';},560);}
 function closeScreen(sc){if(!sc)return;sc.classList.remove('show');setTimeout(()=>sc.remove(),560);homeEnter();}
@@ -697,6 +742,7 @@ function goHome(){
   if(scr.length){scr.forEach(s=>{s.classList.remove('show');setTimeout(()=>s.remove(),560);});homeEnter();}
   closeSheet();closeSearch();
 }
+function foldPaletteRow(pb){const sw=[...pb.querySelectorAll('.pal-sw')];const n=sw.length;sw.forEach((s,i)=>{s.style.transitionDelay=((n-1-i)*0.04).toFixed(2)+'s';s.style.transform='scale(0)';});setTimeout(()=>{if(pb&&pb.parentNode)pb.remove();},60+n*40+300);}
 function openPaletteRow(itemEl){
   const bar=document.querySelector('.hbar');if(!bar)return;
   const ex=bar.querySelector('.palbar');if(ex){ex.remove();return;}
@@ -714,7 +760,7 @@ function openPaletteRow(itemEl){
   }).join('');
   bar.appendChild(pb);
   requestAnimationFrame(()=>pb.classList.add('show'));
-  pb.querySelectorAll('.pal-sw').forEach(b=>b.onclick=(e)=>{e.stopPropagation();cfg.palette=+b.dataset.i;applyPalette(cfg.palette);saveCfg();if(navigator.vibrate)navigator.vibrate(6);closeHbar();});
+  pb.querySelectorAll('.pal-sw').forEach(b=>b.onclick=(e)=>{e.stopPropagation();cfg.palette=+b.dataset.i;applyPalette(cfg.palette);saveCfg();if(navigator.vibrate)navigator.vibrate(6);foldPaletteRow(pb);setTimeout(()=>closeHbar(),200);});
 }
 function closeHbar(cb){
   const bd=document.querySelector('.hbar-backdrop');if(!bd)return;
@@ -730,7 +776,7 @@ function openHbar(){
   const items=[
     {ic:ICON.home,     label:'בית',              fn:goHome},
     {ic:ICON.search,   label:'חיפוש',            fn:openSearch},
-    {ic:ICON.star,     label:'מועדפים',          fn:openSettings},
+    {ic:ICON.shareapp, label:'שיתוף',            fn:openSettings},
     {ic:ICON.palette,  label:'פלטת צבעים',       pal:true},
     {ic:(cfg.hand==='left'?ICON.phoneL:ICON.phoneR), label:(cfg.hand==='left'?'יד ימין':'יד שמאל'), hand:1},
     {ic:'<svg viewBox="72 34 102 102" fill="none" stroke="currentColor"><g transform="translate(96 86) rotate(28) scale(0.8)" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><line x1="0" y1="-52" x2="0" y2="-4"/><path d="M-12 4 H12 L22 42 Q0 50 -22 42 Z" stroke-width="6"/><line x1="-4" y1="9" x2="-8" y2="44" stroke-width="4"/><line x1="6" y1="9" x2="10" y2="44" stroke-width="4"/></g><rect x="86.5" y="79" width="18" height="9" rx="4" transform="rotate(28 95 83)" fill="currentColor"/><g fill="currentColor"><circle cx="110" cy="126" r="6"/><circle cx="128" cy="126" r="5"/><circle cx="146" cy="126" r="4"/></g></svg>', label:'סדר פסח', fn:openSeder, big:1}
