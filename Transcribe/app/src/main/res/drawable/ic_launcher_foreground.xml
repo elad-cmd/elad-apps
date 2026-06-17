@@ -1,0 +1,35 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Microphone capsule -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M43,41 a11,11 0 0 1 22,0 v6 a11,11 0 0 1 -22,0 z" />
+
+    <!-- Cradle / holder -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M37,49 v3 a17,17 0 0 0 34,0 v-3" />
+
+    <!-- Stem -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M54,69 v9" />
+
+    <!-- Base -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M44,80 h20" />
+</vector>

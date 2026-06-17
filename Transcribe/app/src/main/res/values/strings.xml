@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">תמלול</string>
+    <string name="share_label">תמלל בעברית</string>
+
+    <string name="intro_title">תמלול הקלטות לעברית</string>
+    <string name="intro_body">קיבלת הקלטה קולית בוואטסאפ או בכל אפליקציה? לחץ עליה לחיצה ארוכה, בחר \"שתף\", ובחר את \"תמלול\". ההקלטה תתומלל לטקסט עברי שתוכל להעתיק או לשתף. כדי שזה יעבוד צריך להזין כאן מפתח אישי פעם אחת.</string>
+
+    <string name="key_label">מפתח OpenAI</string>
+    <string name="key_hint">‎sk-…‎</string>
+    <string name="key_help">המפתח נשמר רק במכשיר שלך ונשלח ישירות ל-OpenAI. אין שרת ביניים. השג מפתח בכתובת platform.openai.com/api-keys</string>
+    <string name="save">שמור מפתח</string>
+    <string name="saved">המפתח נשמר</string>
+    <string name="key_missing">לא הוזן מפתח. הזן מפתח כדי להתחיל.</string>
+    <string name="key_empty_error">הדבק מפתח תקין שמתחיל ב-sk</string>
+    <string name="ready">מוכן. שתף הקלטה לאפליקציה כדי לתמלל.</string>
+
+    <string name="transcribing">מתמלל… רגע אחד</string>
+    <string name="result_title">התמלול</string>
+    <string name="copy">העתק</string>
+    <string name="copied">התמלול הועתק</string>
+    <string name="share">שתף</string>
+    <string name="close">סגור</string>
+    <string name="open_app">פתח הגדרות</string>
+
+    <string name="err_no_key">אין מפתח. פתח את אפליקציית התמלול והזן מפתח.</string>
+    <string name="err_no_file">לא התקבל קובץ שמע</string>
+    <string name="err_too_big">הקובץ גדול מדי (מעל 25 מגה). נסה הקלטה קצרה יותר.</string>
+    <string name="err_network">בעיית רשת. בדוק חיבור לאינטרנט ונסה שוב.</string>
+    <string name="err_auth">המפתח שגוי או פג תוקף. עדכן אותו בהגדרות.</string>
+    <string name="err_generic">לא הצלחתי לתמלל. נסה שוב.</string>
+    <string name="empty_result">לא זוהה דיבור בהקלטה</string>
+</resources>
