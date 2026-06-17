@@ -247,7 +247,7 @@
   .ovl.preview.show{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;}
   .ovl.preview .sheet{background:transparent;box-shadow:none;color:#fff;}
   .ovl.bare .sheet{background:transparent;box-shadow:none;padding:0 16px 30px;}
-  .srch{position:fixed;inset:0;z-index:96;display:flex;flex-direction:column;justify-content:flex-end;opacity:0;pointer-events:none;transition:opacity .2s ease;}
+  .srch{position:fixed;inset:0;z-index:88;display:flex;flex-direction:column;justify-content:flex-end;opacity:0;pointer-events:none;transition:opacity .2s ease;}
   .srch.show{opacity:1;pointer-events:auto;}
   .srch-veil{position:absolute;inset:0;background:rgba(0,0,0,.5);}
   .srch-panel{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 16px 14px;}
@@ -257,6 +257,26 @@
   .srch-row .snm{color:#fff;font-size:15px;font-weight:700;}
   .srch-input{width:100%;padding:15px 18px;border:none;border-radius:16px;font-size:16px;font-family:inherit;text-align:right;color:var(--tq-ink);background:#fff;outline:none;box-shadow:0 14px 34px -10px rgba(0,0,0,.55);}
   .ovl.preview .sheet h2{color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.7);}
+  .dup-empty{color:rgba(255,255,255,.85);text-align:center;font-size:16px;padding:40px 0;}
+  .dup-group{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:13px;margin-bottom:14px;}
+  .dup-title{font-size:13.5px;font-weight:700;color:rgba(255,255,255,.9);margin-bottom:10px;}
+  .dup-member{position:relative;border-radius:12px;overflow:hidden;margin-bottom:8px;touch-action:pan-y;}
+  .dm-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end;padding:0 18px;background:#d23b30;color:#fff;}
+  .dm-bg svg{width:24px;height:24px;}
+  .dm-fg{position:relative;display:flex;align-items:center;gap:11px;background:#143e40;padding:10px 12px;will-change:transform;}
+  .dup-member.selected .dm-fg{box-shadow:inset 0 0 0 2px var(--tq-deep);background:#15494b;}
+  .dm-hint{position:absolute;top:5px;left:8px;opacity:.45;color:#fff;}
+  .dm-hint svg{width:15px;height:15px;}
+  .dm-av{width:42px;height:42px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex:0 0 auto;}
+  .dm-txt{flex:1;min-width:0;}
+  .dm-n{font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .dm-s{font-size:12px;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:right;}
+  .dm-keep{font-size:11px;font-weight:800;color:var(--tq-ink);background:#fff;border-radius:999px;padding:3px 9px;opacity:0;flex:0 0 auto;}
+  .dup-member.selected .dm-keep{opacity:1;}
+  .dup-actions{display:flex;gap:10px;margin-top:4px;}
+  .dup-actions .mbtn{flex:1;padding:10px;border:none;border-radius:12px;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;}
+  .mbtn.merge{background:var(--tq-deep);color:#fff;}
+  .mbtn.skip{background:rgba(255,255,255,.12);color:#fff;}
   .home{position:fixed;inset:0;}
   @keyframes homeEnter{0%{transform:translateX(-100%);}100%{transform:translateX(0);}}
   .home.enter{animation:homeEnter .52s cubic-bezier(.34,1.45,.5,1);}
@@ -300,6 +320,7 @@ const ICON={
   dotsDiag:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="19" r="2.1"/><circle cx="12" cy="12" r="2.1"/><circle cx="19" cy="5" r="2.1"/></svg>',
   dotsDiagL:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5" r="2.1"/><circle cx="12" cy="12" r="2.1"/><circle cx="19" cy="19" r="2.1"/></svg>',
   home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>',
+  broomDel:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4 L12 13"/><path d="M9.5 10.5 L14.5 15.5"/><path d="M12 13 L7 21 L16 18 Z"/></svg>',
   houseDots:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="7" r="1.8"/><circle cx="8.4" cy="9.7" r="1.8"/><circle cx="15.6" cy="9.7" r="1.8"/><circle cx="4.9" cy="12.3" r="1.8"/><circle cx="19.1" cy="12.3" r="1.8"/><circle cx="8.4" cy="13.2" r="1.8"/><circle cx="15.6" cy="13.2" r="1.8"/><circle cx="8.4" cy="16.8" r="1.8"/><circle cx="12" cy="16.8" r="1.8"/><circle cx="15.6" cy="16.8" r="1.8"/></svg>',
   user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>',
   link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>'
@@ -327,24 +348,31 @@ const PALETTES=[
 ];
 
 const CONTACTS=[
-  {name:'דנה לוי', msg:'מעולה, נדבר מחר', fav:true, last:18},
-  {name:'אבי בר', msg:'תודה רבה על העזרה', fav:false, last:5},
-  {name:'יוסי כהן', msg:'שלחתי לך את הקובץ', fav:true, last:17},
-  {name:'רוני כץ', msg:'איפה נפגשים?', fav:false, last:12},
-  {name:'מיכל חדד', msg:'אני בדרך, עוד 10 דקות', fav:true, last:16},
-  {name:'נועה גולן', msg:'מצוין, סגרנו על זה', fav:false, last:3},
-  {name:'עמית בן חיים', msg:'נדבר בהמשך השבוע', fav:false, last:9},
-  {name:'הילה כהן', msg:'בסדר גמור, להתראות', fav:true, last:14},
-  {name:'תומר שגיא', msg:'אשלח לך פרטים אחר כך', fav:false, last:7},
-  {name:'שירה מזרחי', msg:'קיבלתי, תודה!', fav:true, last:15},
-  {name:'איתי דרור', msg:'מתי נוח לך לדבר?', fav:false, last:2},
-  {name:'גלית אדרי', msg:'נשמע טוב לי', fav:false, last:11},
-  {name:'אורן פלד', msg:'אני אבדוק ואחזור אליך', fav:false, last:6},
-  {name:'ליאת שמש', msg:'תודה על העדכון', fav:true, last:13},
-  {name:'דוד אביב', msg:'בוא נסגור לשבוע הבא', fav:false, last:4},
-  {name:'נטע ברק', msg:'מצחיק', fav:false, last:10},
-  {name:'יעל רום', msg:'אני כבר שם', fav:false, last:8},
-  {name:'בועז נחום', msg:'אין בעיה, דבר איתי', fav:false, last:1}
+  {name:'דנה לוי', msg:'מעולה, נדבר מחר', phone:'050-1234567', fav:true, last:18},
+  {name:'דנה לוי', msg:'שלחתי לך מייל', phone:'052-7654321', fav:false, last:6},
+  {name:'דנה לוי', msg:'', phone:'03-6543210', fav:false, last:2},
+  {name:'דנה כהן', msg:'נדבר אחר כך', phone:'054-8889990', fav:false, last:9},
+  {name:'דנה אבני', msg:'תודה רבה!', phone:'050-2223334', fav:true, last:11},
+  {name:'דנה פרץ', msg:'בסדר גמור', phone:'053-4445556', fav:false, last:5},
+  {name:'יוסי כהן', msg:'שלחתי לך את הקובץ', phone:'050-1112223', fav:true, last:17},
+  {name:'יוסי כהן', msg:'אחזור אליך בהמשך', phone:'058-9998887', fav:false, last:4},
+  {name:'מיכל חדד', msg:'אני בדרך, עוד 10 דקות', phone:'052-3334445', fav:true, last:16},
+  {name:'מיכל חדד', msg:'', phone:'054-1239876', fav:false, last:3},
+  {name:'אבי בר', msg:'תודה רבה על העזרה', phone:'050-5556667', fav:false, last:5},
+  {name:'רוני כץ', msg:'איפה נפגשים?', phone:'053-7778889', fav:false, last:12},
+  {name:'נועה גולן', msg:'מצוין, סגרנו על זה', phone:'052-2221110', fav:false, last:3},
+  {name:'עמית בן חיים', msg:'נדבר בהמשך השבוע', phone:'054-6667778', fav:false, last:9},
+  {name:'הילה כהן', msg:'בסדר גמור, להתראות', phone:'050-9990001', fav:true, last:14},
+  {name:'תומר שגיא', msg:'אשלח לך פרטים', phone:'058-1230456', fav:false, last:7},
+  {name:'שירה מזרחי', msg:'קיבלתי, תודה!', phone:'052-4567890', fav:true, last:15},
+  {name:'איתי דרור', msg:'מתי נוח לדבר?', phone:'053-3219876', fav:false, last:2},
+  {name:'גלית אדרי', msg:'נשמע טוב לי', phone:'050-7418520', fav:false, last:11},
+  {name:'אורן פלד', msg:'אבדוק ואחזור', phone:'054-9638520', fav:false, last:6},
+  {name:'ליאת שמש', msg:'תודה על העדכון', phone:'052-1597530', fav:true, last:13},
+  {name:'דוד אביב', msg:'בוא נסגור לשבוע', phone:'050-8527410', fav:false, last:4},
+  {name:'נטע ברק', msg:'מצחיק', phone:'053-9517530', fav:false, last:10},
+  {name:'יעל רום', msg:'אני כבר שם', phone:'058-7539510', fav:false, last:8},
+  {name:'בועז נחום', msg:'אין בעיה', phone:'050-3571590', fav:false, last:1}
 ];
 function initials(n){const p=String(n||'').trim().split(/\s+/);return ((p[0]||'')[0]||'')+((p[1]||'')[0]||'');}
 
@@ -514,7 +542,7 @@ function openPicker(target){
 const srch=document.getElementById('srch');
 const srchResults=document.getElementById('srchResults');
 const searchInput=document.getElementById('searchInput');
-function vvSearch(){const vv=window.visualViewport;const kb=vv?Math.max(0,window.innerHeight-vv.height-(vv.offsetTop||0)):0;srch.style.paddingBottom=kb+'px';}
+function vvSearch(){const vv=window.visualViewport;const kb=vv?Math.max(0,window.innerHeight-vv.height-(vv.offsetTop||0)):0;srch.style.paddingBottom=Math.max(kb,88)+'px';}
 function renderSearch(q){q=(q||'').trim();srchResults.innerHTML='';if(!q)return;PEOPLE.filter(p=>String(p.name).indexOf(q)>=0).slice(0,40).forEach(p=>{const r=document.createElement('div');r.className='srch-row';r.innerHTML=`<span class="sav">${escapeHtml(initials(p.name))}</span><span class="snm">${escapeHtml(p.name)}</span>`;srchResults.appendChild(r);});}
 function openSearch(){srch.classList.add('show');srchResults.innerHTML='';searchInput.value='';if(window.visualViewport)window.visualViewport.addEventListener('resize',vvSearch);setTimeout(()=>{searchInput.focus();vvSearch();},60);setTimeout(vvSearch,380);}
 function closeSearch(){srch.classList.remove('show');searchInput.blur();if(window.visualViewport)window.visualViewport.removeEventListener('resize',vvSearch);srch.style.paddingBottom='';}
@@ -609,8 +637,58 @@ function openSeder(){
     '<button class="opt" id="optMerge"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 7h3a4 4 0 0 1 0 8H8M16 17h-3a4 4 0 0 1 0-8h3\"/></svg></span><span><span class="otitle">מיזוג כפילויות</span><span class="odesc">איחוד אנשי קשר שמופיעים פעמיים</span></span><span class="ostep">שלב 1</span></button>'+
     '<button class="opt" id="optFilter"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 5h16l-6 8v5l-4 2v-7z\"/></svg></span><span><span class="otitle">סינון רשימה</span><span class="odesc">החלקה: שומר / ארכיון / לבדיקה</span></span><span class="ostep">שלב 2</span></button>'+
     '</div>');
-  sc.querySelector('#optMerge').onclick=()=>toast('מיזוג כפילויות — נבנה בשלב הבא');
+  sc.querySelector('#optMerge').onclick=()=>openMerge();
   sc.querySelector('#optFilter').onclick=()=>toast('סינון — נבנה בשלב הבא');
+}
+function normMergeName(n){return String(n||'').trim().replace(/\s+/g,' ');}
+function computeMergeGroups(){const map={};PEOPLE.forEach(p=>{const k=normMergeName(p.name);if(!k)return;(map[k]=map[k]||[]).push(p);});return Object.values(map).filter(g=>g.length>=2);}
+function mgUpdateSel(groupEl,person){[...groupEl.querySelectorAll('.dup-member')].forEach(mm=>mm.classList.toggle('selected',mm._person===person));}
+function mgRefresh(sc){const left=sc.querySelectorAll('.dup-group').length;const h=sc.querySelector('.scr-head h2');if(h)h.textContent='מיזוג כפילויות ('+left+')';const body=sc.querySelector('#dupBody');if(left===0&&body&&!body.querySelector('.dup-empty'))body.innerHTML='<div class="dup-empty">סיימת עם הכפילויות 🎉</div>';}
+function mgRemovePerson(person){const i=PEOPLE.indexOf(person);if(i>=0)PEOPLE.splice(i,1);}
+function attachMergeMember(m,person,gi,sel,groupEl,g,sc){
+  m._person=person;
+  const fg=m.querySelector('.dm-fg');let sx=0,dx=0,drag=false,moved=false;
+  fg.addEventListener('pointerdown',e=>{drag=true;moved=false;sx=e.clientX;dx=0;fg.style.transition='none';try{fg.setPointerCapture(e.pointerId);}catch(_){}});
+  fg.addEventListener('pointermove',e=>{if(!drag)return;dx=e.clientX-sx;if(dx>0)dx=0;if(Math.abs(dx)>6)moved=true;fg.style.transform='translateX('+dx+'px)';});
+  const end=()=>{if(!drag)return;drag=false;
+    if(dx<=-92){
+      fg.style.transition='transform .25s ease-out';fg.style.transform='translateX(-115%)';
+      const h0=m.offsetHeight;m.style.maxHeight=h0+'px';void m.offsetWidth;m.style.transition='opacity .25s, max-height .3s ease, margin .3s';m.style.maxHeight='0';m.style.opacity='0';m.style.marginBottom='0';
+      mgRemovePerson(person);const j=g.indexOf(person);if(j>=0)g.splice(j,1);
+      if(sel.get(gi)===person&&g.length)sel.set(gi,g[0]);
+      if(navigator.vibrate)navigator.vibrate(12);
+      setTimeout(()=>{m.remove();renderList();if(g.length<2){groupEl.remove();}else{mgUpdateSel(groupEl,sel.get(gi));}mgRefresh(sc);toast('נמחק');},300);
+    }else{
+      fg.style.transition='transform .2s';fg.style.transform='';
+      if(!moved){sel.set(gi,person);mgUpdateSel(groupEl,person);}
+    }
+  };
+  fg.addEventListener('pointerup',end);fg.addEventListener('pointercancel',end);
+}
+function openMerge(){
+  const groups=computeMergeGroups();
+  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>מיזוג כפילויות ('+groups.length+')</h2></div><div class="scr-body" id="dupBody"></div>');
+  const dupBody=sc.querySelector('#dupBody');
+  if(!groups.length){dupBody.innerHTML='<div class="dup-empty">לא נמצאו כפילויות 🎉</div>';return;}
+  const sel=new Map();
+  groups.forEach((g,gi)=>{
+    sel.set(gi,g[0]);
+    const groupEl=document.createElement('div');groupEl.className='dup-group';
+    const title=document.createElement('div');title.className='dup-title';title.textContent=g.length+' כפילויות — בחר מי יישמר';groupEl.appendChild(title);
+    g.slice().forEach(person=>{
+      const m=document.createElement('div');m.className='dup-member'+(person===g[0]?' selected':'');
+      m.innerHTML='<div class="dm-bg">'+ICON.broomDel+'</div><div class="dm-fg"><span class="dm-hint">'+ICON.broomDel+'</span><span class="dm-av">'+escapeHtml(initials(person.name))+'</span><div class="dm-txt"><div class="dm-n">'+escapeHtml(person.name)+'</div><div class="dm-s">'+escapeHtml(person.phone||person.msg||'')+'</div></div><span class="dm-keep">יישמר</span></div>';
+      attachMergeMember(m,person,gi,sel,groupEl,g,sc);
+      groupEl.appendChild(m);
+    });
+    const acts=document.createElement('div');acts.className='dup-actions';
+    const bMerge=document.createElement('button');bMerge.className='mbtn merge';bMerge.textContent='מזג';
+    const bSkip=document.createElement('button');bSkip.className='mbtn skip';bSkip.textContent='לא כפילויות';
+    bMerge.onclick=()=>{const keep=sel.get(gi);g.forEach(p=>{if(p!==keep)mgRemovePerson(p);});renderList();groupEl.style.transition='opacity .25s, transform .25s';groupEl.style.opacity='0';groupEl.style.transform='translateY(-8px)';setTimeout(()=>{groupEl.remove();mgRefresh(sc);},260);if(navigator.vibrate)navigator.vibrate(10);toast('מוזג');};
+    bSkip.onclick=()=>{groupEl.style.transition='opacity .2s';groupEl.style.opacity='0';setTimeout(()=>{groupEl.remove();mgRefresh(sc);},210);};
+    acts.appendChild(bMerge);acts.appendChild(bSkip);groupEl.appendChild(acts);
+    dupBody.appendChild(groupEl);
+  });
 }
 function homeEnter(){const h=document.getElementById('home');if(!h)return;h.style.zIndex='75';h.classList.remove('enter');void h.offsetWidth;h.classList.add('enter');setTimeout(()=>{h.classList.remove('enter');h.style.zIndex='';},560);}
 function closeScreen(sc){if(!sc)return;sc.classList.remove('show');setTimeout(()=>sc.remove(),560);homeEnter();}
