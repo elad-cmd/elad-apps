@@ -247,6 +247,15 @@
   .ovl.preview.show{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;}
   .ovl.preview .sheet{background:transparent;box-shadow:none;color:#fff;}
   .ovl.bare .sheet{background:transparent;box-shadow:none;padding:0 16px 30px;}
+  .srch{position:fixed;inset:0;z-index:96;display:flex;flex-direction:column;justify-content:flex-end;opacity:0;pointer-events:none;transition:opacity .2s ease;}
+  .srch.show{opacity:1;pointer-events:auto;}
+  .srch-veil{position:absolute;inset:0;background:rgba(0,0,0,.5);}
+  .srch-panel{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 16px 14px;}
+  .srch-results{display:flex;flex-direction:column-reverse;gap:8px;overflow-y:auto;max-height:46vh;padding:6px 0 10px;-webkit-overflow-scrolling:touch;}
+  .srch-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.12);border-radius:14px;padding:8px 12px;}
+  .srch-row .sav{width:42px;height:42px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex:0 0 auto;}
+  .srch-row .snm{color:#fff;font-size:15px;font-weight:700;}
+  .srch-input{width:100%;padding:15px 18px;border:none;border-radius:16px;font-size:16px;font-family:inherit;text-align:right;color:var(--tq-ink);background:#fff;outline:none;box-shadow:0 14px 34px -10px rgba(0,0,0,.55);}
   .ovl.preview .sheet h2{color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.7);}
   .home{position:fixed;inset:0;}
   @keyframes homeEnter{0%{transform:translateX(-100%);}100%{transform:translateX(0);}}
@@ -265,6 +274,7 @@
   <div class="stage" id="stage"><div class="veil"></div></div>
   <div class="toast" id="toast"></div>
   <div class="ovl" id="ovl"><div class="sheet" id="sheet"></div></div>
+  <div class="srch" id="srch"><div class="srch-veil"></div><div class="srch-panel"><div class="srch-results" id="srchResults"></div><input id="searchInput" class="srch-input" type="text" placeholder="הקלד שם…"></div></div>
 
 <script>
 function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
@@ -501,14 +511,15 @@ function openPicker(target){
   });
 }
 
-function openSearch(){
-  showSheet('<input id="searchInput" type="text" placeholder="הקלד שם…" style="width:100%;padding:15px 18px;border:none;border-radius:16px;font-size:16px;font-family:inherit;text-align:right;color:var(--tq-ink);background:#fff;outline:none;box-shadow:0 14px 34px -10px rgba(0,0,0,.5);">');
-  ovl.classList.add('bare');
-  const inp=sheet.querySelector('#searchInput');
-  inp.oninput=()=>{const q=inp.value.trim();[...document.querySelectorAll('.row')].forEach(r=>{const nm=r.querySelector('.nm').textContent;r.style.display=(!q||nm.indexOf(q)>=0)?'':'none';});listEl.scrollTop=0;};
-  setTimeout(()=>{inp.focus();listEl.scrollTop=0;},80);
-  setTimeout(()=>{listEl.scrollTop=0;},450);
-}
+const srch=document.getElementById('srch');
+const srchResults=document.getElementById('srchResults');
+const searchInput=document.getElementById('searchInput');
+function vvSearch(){const vv=window.visualViewport;const kb=vv?Math.max(0,window.innerHeight-vv.height-(vv.offsetTop||0)):0;srch.style.paddingBottom=kb+'px';}
+function renderSearch(q){q=(q||'').trim();srchResults.innerHTML='';if(!q)return;PEOPLE.filter(p=>String(p.name).indexOf(q)>=0).slice(0,40).forEach(p=>{const r=document.createElement('div');r.className='srch-row';r.innerHTML=`<span class="sav">${escapeHtml(initials(p.name))}</span><span class="snm">${escapeHtml(p.name)}</span>`;srchResults.appendChild(r);});}
+function openSearch(){srch.classList.add('show');srchResults.innerHTML='';searchInput.value='';if(window.visualViewport)window.visualViewport.addEventListener('resize',vvSearch);setTimeout(()=>{searchInput.focus();vvSearch();},60);setTimeout(vvSearch,380);}
+function closeSearch(){srch.classList.remove('show');searchInput.blur();if(window.visualViewport)window.visualViewport.removeEventListener('resize',vvSearch);srch.style.paddingBottom='';}
+searchInput.addEventListener('input',()=>renderSearch(searchInput.value));
+srch.addEventListener('click',e=>{if(e.target===srch||e.target.classList.contains('srch-veil'))closeSearch();});
 function openSettings(){
   const keys=['up','left','right','down'];
   const coins=keys.map((k,i)=>{
@@ -606,7 +617,7 @@ function closeScreen(sc){if(!sc)return;sc.classList.remove('show');setTimeout(()
 function goHome(){
   const scr=document.querySelectorAll('.scr');
   if(scr.length){scr.forEach(s=>{s.classList.remove('show');setTimeout(()=>s.remove(),560);});homeEnter();}
-  closeSheet();
+  closeSheet();closeSearch();
 }
 function openPaletteRow(itemEl){
   const bar=document.querySelector('.hbar');if(!bar)return;
