@@ -201,24 +201,27 @@
   .srch-row .ssub{font-size:12.5px;color:rgba(255,255,255,.65);direction:ltr;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .srch-input{width:100%;padding:15px 18px;border:none;border-radius:16px;font-size:16px;font-family:inherit;text-align:right;color:var(--tq-ink);background:#fff;outline:none;box-shadow:0 14px 34px -10px rgba(0,0,0,.55);}
   .ovl.preview .sheet h2{color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.7);}
-  .dup-empty{color:rgba(255,255,255,.85);text-align:center;font-size:16px;padding:40px 0;}
+  .dup-empty{color:rgba(255,255,255,.9);text-align:center;font-size:17px;padding:48px 0;}
+  .mg-home{display:block;margin:26px auto 0;padding:14px 28px;border:none;border-radius:14px;background:#fff;color:var(--tq-ink);font-family:inherit;font-weight:800;font-size:15.5px;cursor:pointer;box-shadow:0 10px 24px -10px rgba(0,0,0,.5);}
   .dup-group{position:relative;border-radius:16px;overflow:hidden;margin-bottom:14px;touch-action:pan-y;}
   .dg-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-start;gap:6px;padding:0 22px;background:#143e40;color:rgba(255,255,255,.9);}
-  .dg-bg svg{width:30px;height:30px;}
-  .dg-fg{position:relative;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:13px;will-change:transform;}
-  .dg-del{position:absolute;top:9px;left:9px;display:flex;align-items:center;gap:1px;background:rgba(255,255,255,.12);border:none;border-radius:11px;padding:5px 8px;color:#fff;cursor:pointer;}
-  .dg-del svg{width:21px;height:21px;}
+  .dg-bg svg{width:30px;height:30px;transform:scaleX(-1);}
+  .dg-fg{position:relative;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:44px 14px 14px;will-change:transform;}
+  .dg-del{position:absolute;top:10px;left:10px;display:flex;align-items:center;gap:1px;background:rgba(255,255,255,.12);border:none;border-radius:11px;padding:5px 8px;color:#fff;cursor:pointer;z-index:2;}
+  .dg-del svg{width:21px;height:21px;transform:scaleX(-1);}
   .dg-del .dg-arrow{font-size:17px;line-height:1;font-weight:800;margin-top:-1px;}
-  .dup-title{font-size:13.5px;font-weight:700;color:rgba(255,255,255,.9);margin-bottom:10px;padding-inline-start:60px;min-height:30px;display:flex;align-items:center;justify-content:flex-end;}
   .dup-member{display:flex;align-items:center;gap:11px;background:#143e40;border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer;}
   .dup-member.selected{box-shadow:inset 0 0 0 2px var(--tq-deep);background:#15494b;}
   .dm-av{width:42px;height:42px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex:0 0 auto;}
   .dm-txt{flex:1;min-width:0;}
   .dm-n{font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .dm-s{font-size:12px;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:right;}
+  .dm-d{font-size:12px;color:rgba(255,255,255,.72);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:right;margin-top:1px;}
   .dm-keep{font-size:11px;font-weight:800;color:var(--tq-ink);background:#fff;border-radius:999px;padding:3px 9px;opacity:0;flex:0 0 auto;}
   .dup-member.selected .dm-keep{opacity:1;}
-  .mbtn.merge{display:block;width:100%;margin-top:12px;padding:13px;border:none;border-radius:13px;background:var(--tq-deep);color:#fff;font-family:inherit;font-weight:800;font-size:15.5px;cursor:pointer;box-shadow:0 8px 18px -8px rgba(0,194,168,.6);}
+  .dup-acts{display:flex;gap:10px;align-items:center;margin-top:12px;}
+  .mbtn{border:none;border-radius:12px;font-family:inherit;cursor:pointer;}
+  .mbtn.merge{background:var(--tq-deep);color:#fff;font-weight:700;font-size:14px;padding:10px 26px;}
+  .mbtn.cancel{background:transparent;color:rgba(255,255,255,.75);font-weight:600;font-size:13px;padding:9px 16px;}
   .mpovl{position:fixed;inset:0;z-index:85;display:flex;align-items:flex-end;justify-content:center;background:rgba(8,40,42,0);transition:background .25s;pointer-events:none;}
   .mpovl.show{background:rgba(8,40,42,.5);pointer-events:auto;}
   .mp-sheet{width:100%;max-width:520px;background:#fff;color:var(--tq-ink);border-radius:22px 22px 0 0;padding:14px 16px 26px;transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);max-height:84%;overflow-y:auto;}
@@ -663,38 +666,63 @@ function openSeder(){
   sc.querySelector('#optFilter').onclick=()=>openFilter();
   sc.querySelector('#optReset').onclick=()=>openResetConfirm();
 }
-function normMergeName(n){return String(n||'').trim().replace(/\s+/g,' ');}
-function computeMergeGroups(){const map={};PEOPLE.forEach(p=>{const k=normMergeName(p.name);if(!k)return;(map[k]=map[k]||[]).push(p);});return Object.values(map).filter(g=>g.length>=2);}
+function normEmail(e){return String(e||'').trim().toLowerCase();}
+function normPhone(p){const d=String(p||'').replace(/\D/g,'');return d.length>=7?d.slice(-9):'';}
+function normName(n){try{return String(n||'').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu,'').trim().split(/\s+/).filter(Boolean).sort().join(' ');}catch(e){return String(n||'').toLowerCase().replace(/[^a-z0-9\u0590-\u05ff\s]/g,'').trim().split(/\s+/).filter(Boolean).sort().join(' ');}}
+function personDetails(p){const ph=(p.phones&&p.phones.length)?p.phones:(p.phone?[p.phone]:[]);const em=(p.emails&&p.emails.length)?p.emails:(p.email?[p.email]:[]);return [...new Set([...ph,...em].filter(Boolean))];}
+function computeMergeGroups(){
+  const recs=PEOPLE.slice();
+  const parent=recs.map((_,i)=>i);
+  const find=x=>{while(parent[x]!==x){parent[x]=parent[parent[x]];x=parent[x];}return x;};
+  const uni=(a,b)=>{parent[find(a)]=find(b);};
+  const byKey={};
+  const link=(k,i)=>{if(!k)return;if(byKey[k]!==undefined)uni(byKey[k],i);else byKey[k]=i;};
+  recs.forEach((r,i)=>{
+    const ph=(r.phones&&r.phones.length)?r.phones:[r.phone];
+    const em=(r.emails&&r.emails.length)?r.emails:[r.email];
+    ph.forEach(p=>{const k=normPhone(p);if(k)link('p:'+k,i);});
+    em.forEach(e=>{const k=normEmail(e);if(k)link('e:'+k,i);});
+    const nk=normName(r.name);if(nk)link('n:'+nk,i);
+  });
+  const groups={};
+  recs.forEach((r,i)=>{const root=find(i);(groups[root]=groups[root]||[]).push(r);});
+  return Object.values(groups).filter(g=>g.length>=2);
+}
 function mgUpdateSel(groupEl,person){[...groupEl.querySelectorAll('.dup-member')].forEach(mm=>mm.classList.toggle('selected',mm._person===person));}
-function mgRefresh(sc){const left=sc.querySelectorAll('.dup-group').length;const h=sc.querySelector('.scr-head h2');if(h)h.textContent='מיזוג כפילויות ('+left+')';const body=sc.querySelector('#dupBody');if(left===0&&body&&!body.querySelector('.dup-empty'))body.innerHTML='<div class="dup-empty">סיימת עם הכפילויות 🎉</div>';}
+function mgDone(sc,msg){const body=sc.querySelector('#dupBody');if(!body)return;body.innerHTML='<div class="dup-empty">'+msg+'<button class="mg-home">חזור למסך הבית</button></div>';const b=body.querySelector('.mg-home');if(b)b.onclick=goHome;}
+function mgRefresh(sc){const left=sc.querySelectorAll('.dup-group').length;const h=sc.querySelector('.scr-head h2');if(h)h.textContent='מיזוג כפילויות ('+left+')';if(left===0)mgDone(sc,'סיימת עם הכפילויות 🎉');}
 function mgRemovePerson(person){const i=PEOPLE.indexOf(person);if(i>=0)PEOPLE.splice(i,1);}
 function openMerge(){
   const groups=computeMergeGroups();
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>מיזוג כפילויות ('+groups.length+')</h2></div><div class="scr-body" id="dupBody"></div>');
   const dupBody=sc.querySelector('#dupBody');
-  if(!groups.length){dupBody.innerHTML='<div class="dup-empty">לא נמצאו כפילויות 🎉</div>';return;}
+  if(!groups.length){mgDone(sc,'לא נמצאו כפילויות 🎉');return;}
   const sel=new Map();
   groups.forEach((g,gi)=>{
     sel.set(gi,g[0]);
     const card=document.createElement('div');card.className='dup-group';
-    const members=g.map(person=>'<div class="dup-member'+(person===g[0]?' selected':'')+'"><span class="dm-av">'+escapeHtml(initials(person.name))+'</span><div class="dm-txt"><div class="dm-n">'+escapeHtml(person.name)+'</div><div class="dm-s">'+escapeHtml(person.phone||person.msg||'')+'</div></div><span class="dm-keep">יישמר</span></div>').join('');
-    card.innerHTML='<div class="dg-bg">'+ICON.broom+'<span class="dg-arrow">‹</span></div><div class="dg-fg"><button class="dg-del" aria-label="הסר כרטיסייה">'+ICON.broom+'<span class="dg-arrow">‹</span></button><div class="dup-title">'+g.length+' כפילויות — בחר מי יישמר</div>'+members+'<button class="mbtn merge">מזג</button></div>';
+    const members=g.map(person=>{
+      const dh=personDetails(person).map(d=>'<div class="dm-d">'+escapeHtml(d)+'</div>').join('');
+      return '<div class="dup-member'+(person===g[0]?' selected':'')+'"><span class="dm-av">'+escapeHtml(initials(person.name))+'</span><div class="dm-txt"><div class="dm-n">'+escapeHtml(person.name||'(ללא שם)')+'</div>'+dh+'</div><span class="dm-keep">יישמר</span></div>';
+    }).join('');
+    card.innerHTML='<div class="dg-bg">'+ICON.broom+'<span class="dg-arrow">\u2039</span></div><div class="dg-fg"><button class="dg-del" aria-label="הסר">'+ICON.broom+'<span class="dg-arrow">\u2039</span></button>'+members+'<div class="dup-acts"><button class="mbtn merge">מזג</button><button class="mbtn cancel">בטל</button></div></div>';
     const fg=card.querySelector('.dg-fg');
+    [...card.querySelectorAll('.dup-member')].forEach((el,idx)=>el._person=g[idx]);
     const dismiss=()=>{fg.style.transition='transform .25s ease-out';fg.style.transform='translateX(-115%)';const h0=card.offsetHeight;card.style.maxHeight=h0+'px';void card.offsetWidth;card.style.transition='opacity .25s, max-height .3s ease, margin .3s';card.style.maxHeight='0';card.style.opacity='0';card.style.marginBottom='0';if(navigator.vibrate)navigator.vibrate(12);setTimeout(()=>{card.remove();mgRefresh(sc);toast('הוסר');},300);};
-    [...card.querySelectorAll('.dup-member')].forEach((mm,idx)=>{mm._person=g[idx];mm.onclick=()=>{sel.set(gi,mm._person);mgUpdateSel(card,mm._person);};});
     card.querySelector('.mbtn.merge').onclick=()=>{openMergePicker(g,sel.get(gi),()=>{card.style.transition='opacity .25s, transform .25s';card.style.opacity='0';card.style.transform='translateY(-8px)';setTimeout(()=>{card.remove();mgRefresh(sc);},260);});};
+    card.querySelector('.mbtn.cancel').onclick=dismiss;
     card.querySelector('.dg-del').onclick=(e)=>{e.stopPropagation();dismiss();};
-    let sx=0,dx=0,drag=false;
-    fg.addEventListener('pointerdown',e=>{if(e.target.closest('.dup-member')||e.target.closest('.mbtn')||e.target.closest('.dg-del'))return;drag=true;sx=e.clientX;dx=0;fg.style.transition='none';});
-    fg.addEventListener('pointermove',e=>{if(!drag)return;dx=e.clientX-sx;if(dx>0)dx=0;fg.style.transform='translateX('+dx+'px)';});
-    const end=()=>{if(!drag)return;drag=false;if(dx<=-90){dismiss();}else{fg.style.transition='transform .2s';fg.style.transform='';}};
+    let sx=0,dx=0,drag=false,moved=false,downT=null;
+    fg.addEventListener('pointerdown',e=>{if(e.target.closest('.mbtn'))return;drag=true;moved=false;sx=e.clientX;dx=0;downT=e.target;fg.style.transition='none';});
+    fg.addEventListener('pointermove',e=>{if(!drag)return;dx=e.clientX-sx;if(Math.abs(dx)>6)moved=true;if(dx>0)dx=0;fg.style.transform='translateX('+dx+'px)';});
+    const end=()=>{if(!drag)return;drag=false;if(dx<=-90){dismiss();return;}fg.style.transition='transform .2s';fg.style.transform='';if(!moved&&downT){const t=downT.closest('.dup-member');if(t){sel.set(gi,t._person);mgUpdateSel(card,t._person);}}};
     fg.addEventListener('pointerup',end);fg.addEventListener('pointercancel',end);
     dupBody.appendChild(card);
   });
 }
 function openMergePicker(group,keep,onDone){
-  const phones=[...new Set(group.map(p=>p.phone).filter(Boolean))];
-  const emails=[...new Set(group.map(p=>p.email).filter(Boolean))];
+  const phones=[...new Set([].concat(...group.map(p=>(p.phones&&p.phones.length)?p.phones:[p.phone])).filter(Boolean))];
+  const emails=[...new Set([].concat(...group.map(p=>(p.emails&&p.emails.length)?p.emails:[p.email])).filter(Boolean))];
   const names=[...new Set(group.map(p=>p.name).filter(Boolean))];
   const vals={names,phones,emails};
   const sel={names:new Set([keep.name||names[0]].filter(Boolean)),phones:new Set(phones),emails:new Set(emails)};
