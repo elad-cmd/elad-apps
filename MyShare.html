@@ -379,22 +379,23 @@ function buildStage(row){
   bigEl.style.left=cx+'px';bigEl.style.top=cy+'px';stage.appendChild(bigEl);
   const nm=document.createElement('div');nm.className='bigname';
   nm.textContent=row.querySelector('.nm').textContent;
-  nm.style.left=cx+'px';nm.style.top=(cy+58)+'px';stage.appendChild(nm);
-  DIRPOS.forEach(d=>{
-    const appId=cfg[d.key];
-    const app=byId(appId);
+  nm.style.left=cx+'px';nm.style.top=(cy-62)+'px';stage.appendChild(nm);
+  const lh=(cfg.hand==='left');
+  const ndx=(lh?1:-1)*0.7071, ndy=0.7071;
+  const favs=['up','left','right','down'].map(k=>cfg[k]).filter(Boolean);
+  const list=favs.concat(cfg.rail).concat(['__add__']);
+  const START=66, STEP=60;
+  list.forEach((appId,i)=>{
+    const isAdd=(appId==='__add__');
+    const app=isAdd?null:byId(appId);
     const disabled=(MODE==='share' && appId==='call');
-    const el=document.createElement('div');el.className='dirc'+(app?'':' add')+(disabled?' disabled':'');
-    el.innerHTML=`<div class="coin">${app?app.ic:ICON.plus}</div><div class="lbl">${app?escapeHtml(app.label):'הוסף'}</div>`;
-    const x=cx+d.dx*RADIUS, y=cy+d.dy*RADIUS;
+    const el=document.createElement('div');el.className='dirc'+(isAdd?' add':'')+(disabled?' disabled':'');
+    el.innerHTML=`<div class="coin">${isAdd?ICON.plus:(app?app.ic:ICON.plus)}</div><div class="lbl">${isAdd?'הוסף':(app?escapeHtml(app.label):'')}</div>`;
+    const dist=START+i*STEP;
+    const x=cx+ndx*dist, y=cy+ndy*dist;
     el.style.left=x+'px';el.style.top=y+'px';stage.appendChild(el);
-    if(!disabled)targets.push({kind:'dir', key:d.key, x, y, coinEl:el.querySelector('.coin'), dirc:el});
+    if(!disabled)targets.push({kind:'app', id:appId, x, y, coinEl:el.querySelector('.coin'), dirc:el});
   });
-  const railEl=document.createElement('div');railEl.className='rail';
-  const railHtml=cfg.rail.map(id=>{const a=byId(id);return `<div class="ritem" data-app="${id}"><div class="rc">${a?a.ic:ICON.more}</div><div class="rlbl">${a?escapeHtml(a.label):''}</div></div>`;}).join('');
-  railEl.innerHTML=railHtml+`<div class="ritem" data-app="__add__"><div class="rc add">${ICON.plus}</div><div class="rlbl">הוסף</div></div>`;
-  stage.appendChild(railEl);
-  [...railEl.querySelectorAll('.ritem')].forEach(el=>{const rr=el.querySelector('.rc').getBoundingClientRect();targets.push({kind:'rail', id:el.dataset.app, x:rr.left+rr.width/2, y:rr.top+rr.height/2, coinEl:el.querySelector('.rc'), ritem:el});});
 }
 
 function applyProximity(px,py){
@@ -425,10 +426,8 @@ function endPick(px,py){
   resetPick();
   if(!sel)return;
   if(navigator.vibrate)navigator.vibrate(8);
-  if(sel.kind==='rail'){if(sel.id==='__add__'){openPicker('rail');return;}fire(sel.id,person);return;}
-  const appId=cfg[sel.key];
-  if(!appId){openPicker(sel.key);return;}
-  fire(appId,person);
+  if(sel.id==='__add__'){openPicker('rail');return;}
+  fire(sel.id,person);
 }
 function fire(appId,person){
   const k=statKey(person);if(k){STATS[k]=(STATS[k]||0)+1;saveStats();}
@@ -527,9 +526,9 @@ function flipContacts(newHand){
   document.body.classList.toggle('hand-left',newHand==='left');
   document.body.classList.toggle('hand-right',newHand!=='left');
   const last=items.map(o=>o.el.getBoundingClientRect());
-  items.forEach((o,k)=>{o.el.style.transform='translateX('+(first[k].left-last[k].left)+'px)';});
+  items.forEach((o,k)=>{const dx=(first[k].left-last[k].left);o.el.style.transform=o.el.classList.contains('av')?('translate('+dx+'px,-50%)'):('translateX('+dx+'px)');});
   void document.body.offsetWidth;
-  items.forEach(o=>{o.el.style.transition='transform .55s cubic-bezier(.34,1.45,.5,1) '+(o.i*0.05).toFixed(2)+'s';o.el.style.transform='translateX(0)';});
+  items.forEach(o=>{o.el.style.transition='transform .55s cubic-bezier(.34,1.45,.5,1) '+(o.i*0.05).toFixed(2)+'s';o.el.style.transform=o.el.classList.contains('av')?'translate(0,-50%)':'translateX(0)';});
   setTimeout(()=>{items.forEach(o=>{o.el.style.transition='';o.el.style.transform='';});},1000+rows.length*55);
 }
 function applyDot(){const f=document.getElementById('menuFab');if(!f)return;const svg=f.querySelector('svg');if(!svg)return;svg.style.transformOrigin='50% 50%';svg.style.transition='none';svg.style.animation='none';svg.style.transform='rotate('+dotRot+'deg)';}
@@ -602,7 +601,7 @@ function openPaletteRow(itemEl){
   const ex=bar.querySelector('.palbar');if(ex){ex.remove();return;}
   const lh=(cfg.hand==='left');
   const rect=itemEl.getBoundingClientRect();
-  const dirX=lh?1:-1;
+  const dirX=lh?-1:1;
   const baseX=rect.left+rect.width/2+dirX*6;
   const baseY=rect.top+rect.height/2+10;
   const SW=34,STEP=30;
