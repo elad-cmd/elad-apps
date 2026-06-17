@@ -84,7 +84,7 @@
   .dirc.hot .coin{background:var(--tq-deep);color:#fff;box-shadow:0 16px 34px -8px rgba(8,50,50,.85);}
   .dirc.hot .lbl{opacity:1;font-weight:800;background:var(--tq-deep);color:#fff;padding:3px 9px;border-radius:9px;}
 
-  .rail{position:absolute;top:50%;left:10px;transform:translateY(-50%);display:flex;flex-direction:column;align-items:flex-start;gap:24px;}
+  .rail{position:absolute;bottom:96px;left:10px;display:flex;flex-direction:column-reverse;align-items:flex-start;gap:20px;}
   .rail.rl{left:auto;right:10px;align-items:flex-end;}
   .rail.rl .rlbl{left:auto;right:48px;transform:translate(8px,-50%);}
   .rail.rl .ritem.hot .rlbl{transform:translate(0,-50%);}
@@ -92,7 +92,7 @@
   .rail .rc{width:38px;height:38px;border-radius:50%;border:1.6px solid rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;color:#fff;background:transparent;transition:transform .13s ease-out, background .13s;will-change:transform;}
   .rail .rc svg{width:18px;height:18px;}
   .rail .rc.add{border-style:dashed;}
-  .rail .ritem.hot .rc{background:rgba(255,255,255,.22);}
+  .rail .ritem.hot .rc{background:var(--tq-deep);border-color:var(--tq-deep);color:#fff;}
   .rail .rlbl{position:absolute;left:48px;top:50%;transform:translate(-8px,-50%);white-space:nowrap;font-size:12px;font-weight:700;color:#fff;background:rgba(8,40,42,.74);padding:5px 11px;border-radius:999px;opacity:0;transition:opacity .14s, transform .14s;pointer-events:none;}
   .rail .ritem.hot .rlbl{opacity:1;transform:translate(0,-50%);}
 
@@ -242,9 +242,15 @@
   .fav-1{left:38.7%;top:61.3%;}
   .fav-2{left:61.3%;top:38.7%;}
   .fav-3{left:84%;top:16%;}
-  .fav3-0{left:20%;top:80%;}
+  .fav3-0{left:80%;top:20%;}
   .fav3-1{left:50%;top:50%;}
-  .fav3-2{left:80%;top:20%;}
+  .fav3-2{left:20%;top:80%;}
+  .fav-extras{margin-top:4px;}
+  .fav-extras h4{font-size:13px;font-weight:700;color:var(--tq-ink);text-align:center;margin:8px 0 8px;}
+  .fav-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+  .fav-chip{display:inline-flex;align-items:center;gap:6px;background:var(--soft);color:var(--tq-ink);border:1px solid var(--line);border-radius:999px;padding:6px 13px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .fav-chip .x{font-size:13px;opacity:.55;}
+  .fav-chip.add{border-style:dashed;color:var(--tq-deep);background:#fff;}
   .sheet-head{display:flex;align-items:center;gap:8px;margin:2px 0 12px;}
   .sheet-x{width:32px;height:32px;flex:0 0 auto;border:none;background:rgba(8,40,42,.08);border-radius:50%;color:var(--tq-ink);cursor:pointer;display:flex;align-items:center;justify-content:center;}
   .sheet-x svg{width:16px;height:16px;}
@@ -481,9 +487,9 @@ function buildStage(row){
     targets.push({kind:'app', id:appId, x, y, coinEl:el.querySelector('.coin'), dirc:el});
   });
   const extras=(cfg.rail||[]).filter(Boolean);
-  if(extras.length){
+  {
     const railEl=document.createElement('div');railEl.className='rail'+(lh?' rl':'');
-    railEl.innerHTML=extras.map(id=>{const a=byId(id);return '<div class="ritem" data-app="'+id+'"><div class="rc">'+(a?a.ic:ICON.more)+'</div><div class="rlbl">'+(a?escapeHtml(a.label):'')+'</div></div>';}).join('');
+    railEl.innerHTML=extras.map(id=>{const a=byId(id);return '<div class="ritem" data-app="'+id+'"><div class="rc">'+(a?a.ic:ICON.more)+'</div><div class="rlbl">'+(a?escapeHtml(a.label):'')+'</div></div>';}).join('')+'<div class="ritem" data-app="__bank__"><div class="rc add">'+ICON.plus+'</div><div class="rlbl">עוד</div></div>';
     stage.appendChild(railEl);
     [...railEl.querySelectorAll('.ritem')].forEach(el=>{const rr=el.querySelector('.rc').getBoundingClientRect();targets.push({kind:'rail',id:el.dataset.app,x:rr.left+rr.width/2,y:rr.top+rr.height/2,coinEl:el.querySelector('.rc'),ritem:el});});
   }
@@ -517,6 +523,7 @@ function endPick(px,py){
   resetPick();
   if(!sel)return;
   if(navigator.vibrate)navigator.vibrate(8);
+  if(sel.id==='__bank__'){openShareBank(person);return;}
   if(!sel.id||sel.id==='__add__'){return;}
   fire(sel.id,person);
 }
@@ -571,7 +578,7 @@ function openPicker(target){
   sheet.querySelectorAll('.gi').forEach(b=>b.onclick=()=>{
     const id=b.dataset.app;
     if(typeof target==='number'){ if(id!=='__none__')cfg.share[target]=id; saveCfg();toast('עודכן');openSettings(); return; }
-    if(target==='rail'){ if(id!=='__none__' && !cfg.rail.includes(id))cfg.rail.push(id); saveCfg();toast('נוסף למסילה');closeSheet(); }
+    if(target==='rail'){ if(id!=='__none__' && !cfg.rail.includes(id))cfg.rail.push(id); saveCfg();toast('נוסף למסילה');openSettings(); }
     else { cfg[target]= id==='__none__' ? '' : id; saveCfg();toast('עודכן');openSettings(); }
   });
 }
@@ -591,9 +598,12 @@ function openSettings(){
     const app=byId(id);
     return `<button class="fav-coin fav3-${i}" data-i="${i}"><span class="fav-c${app?'':' add'}">${app?app.ic:ICON.plus}</span><span class="fav-lbl">${app?escapeHtml(app.label):'ריק'}</span></button>`;
   }).join('');
-  showSheet(`<div class="sheet-head"><button class="sheet-x" aria-label="סגור"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><h2 style="flex:1;margin:0;text-align:center;">אפליקציות שיתוף</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="favdiag">${coins}</div><p class="cr-hint">לוחצים על אפליקציה כדי להחליף אותה. נשמר במכשיר.</p>`);
+  const chips=cfg.rail.map((id,i)=>{const a=byId(id);return '<button class="fav-chip" data-rm="'+i+'">'+(a?escapeHtml(a.label):id)+' <span class="x">✕</span></button>';}).join('')+'<button class="fav-chip add" id="railAdd">הוסף +</button>';
+  showSheet(`<div class="sheet-head"><button class="sheet-x" aria-label="סגור"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><h2 style="flex:1;margin:0;text-align:center;">אפליקציות שיתוף</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="favdiag">${coins}</div><div class="fav-extras"><h4>אפליקציות נוספות (מסילה)</h4><div class="fav-chips">${chips}</div></div><p class="cr-hint">למעלה — שלוש המהירות; מתחת — רשימה נוספת. נשמר במכשיר.</p>`);
   const xb=sheet.querySelector('.sheet-x');if(xb)xb.onclick=closeSheet;
   sheet.querySelectorAll('.fav-coin').forEach(b=>b.onclick=()=>openPicker(+b.dataset.i));
+  sheet.querySelectorAll('.fav-chip[data-rm]').forEach(b=>b.onclick=()=>{cfg.rail.splice(+b.dataset.rm,1);saveCfg();openSettings();});
+  const ra=sheet.querySelector('#railAdd');if(ra)ra.onclick=()=>openPicker('rail');
 }
 
 function openPaletteSheet(){
@@ -761,6 +771,17 @@ function openMergePicker(group,keep,onDone){
     group.forEach(p=>{if(p!==keep)mgRemovePerson(p);});
     renderList();close();if(navigator.vibrate)navigator.vibrate(10);toast('מוזג');if(onDone)onDone();
   };
+}
+function openShareBank(person){
+  if(!person)return;
+  const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  const cells=CATALOG.map(a=>'<button class="gi" data-app="'+a.id+'"><span class="c">'+a.ic+'</span><span>'+escapeHtml(a.label)+'</span></button>').join('');
+  const ov=document.createElement('div');ov.className='mpovl';
+  ov.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xsvg+'</button><h2 style="flex:1;margin:0;text-align:center;">שיתוף לאפליקציה</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="grid">'+cells+'</div></div>';
+  document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
+  const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),260);};
+  ov.querySelector('.sheet-x').onclick=close;ov.addEventListener('click',e=>{if(e.target===ov)close();});
+  ov.querySelectorAll('.gi').forEach(b=>b.onclick=()=>{fire(b.dataset.app,person);close();});
 }
 function homeEnter(){const h=document.getElementById('home');if(!h)return;h.style.zIndex='75';h.classList.remove('enter');void h.offsetWidth;h.classList.add('enter');setTimeout(()=>{h.classList.remove('enter');h.style.zIndex='';},560);}
 function closeScreen(sc){if(!sc)return;sc.classList.remove('show');setTimeout(()=>sc.remove(),560);homeEnter();}
