@@ -257,6 +257,26 @@
   .home{position:fixed;inset:0;}
   @keyframes homeEnter{0%{transform:translateX(-100%);}100%{transform:translateX(0);}}
   .home.enter{animation:homeEnter .52s cubic-bezier(.34,1.45,.5,1);}
+  .flt-body{display:flex;flex-direction:column;align-items:center;}
+  .flt-count{color:rgba(255,255,255,.82);font-size:13px;font-weight:700;margin:6px 0 14px;}
+  .flt-deck{position:relative;width:100%;max-width:330px;height:360px;margin:0 auto;}
+  .flt-card{position:absolute;inset:0;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:26px;cursor:grab;will-change:transform;touch-action:none;box-shadow:0 18px 40px -18px rgba(0,0,0,.6);}
+  .flt-av{width:108px;height:108px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:800;}
+  .flt-name{font-size:22px;font-weight:800;color:#fff;text-align:center;}
+  .flt-sub{font-size:15px;color:rgba(255,255,255,.75);direction:ltr;}
+  .flt-badge{position:absolute;top:20px;font-size:18px;font-weight:900;padding:5px 13px;border-radius:11px;opacity:0;border:3px solid;pointer-events:none;}
+  .flt-badge.keep{right:20px;color:#3ddc97;border-color:#3ddc97;transform:rotate(13deg);}
+  .flt-badge.arch{left:20px;color:#ff6b5e;border-color:#ff6b5e;transform:rotate(-13deg);}
+  .flt-badge.rev{left:50%;transform:translateX(-50%);color:#5bb8ff;border-color:#5bb8ff;}
+  .flt-acts{display:flex;gap:20px;justify-content:center;align-items:center;margin-top:26px;}
+  .flt-btn{width:62px;height:62px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 10px 24px -10px rgba(0,0,0,.55);}
+  .flt-btn svg{width:28px;height:28px;}
+  .flt-btn.arch{background:#ff6b5e;color:#fff;}
+  .flt-btn.rev{background:#5bb8ff;color:#fff;width:52px;height:52px;}
+  .flt-btn.keep{background:#3ddc97;color:#fff;}
+  .flt-hint{font-size:12.5px;color:rgba(255,255,255,.6);text-align:center;margin-top:16px;line-height:1.6;}
+  .flt-done{color:#fff;text-align:center;font-size:18px;font-weight:700;padding:46px 20px;line-height:1.8;}
+  .flt-done .sm{font-size:14px;font-weight:600;color:rgba(255,255,255,.8);}
 </style>
 </head>
 <body>
@@ -303,6 +323,8 @@ const ICON={
   houseDots:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="7" r="1.8"/><circle cx="8.4" cy="9.7" r="1.8"/><circle cx="15.6" cy="9.7" r="1.8"/><circle cx="4.9" cy="12.3" r="1.8"/><circle cx="19.1" cy="12.3" r="1.8"/><circle cx="8.4" cy="13.2" r="1.8"/><circle cx="15.6" cy="13.2" r="1.8"/><circle cx="8.4" cy="16.8" r="1.8"/><circle cx="12" cy="16.8" r="1.8"/><circle cx="15.6" cy="16.8" r="1.8"/></svg>',
   check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>',
   broom:'<svg viewBox="72 34 102 102" fill="none" stroke="currentColor"><g transform="translate(96 86) rotate(28) scale(0.8)" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><line x1="0" y1="-52" x2="0" y2="-4"/><path d="M-12 4 H12 L22 42 Q0 50 -22 42 Z" stroke-width="6"/><line x1="-4" y1="9" x2="-8" y2="44" stroke-width="4"/><line x1="6" y1="9" x2="10" y2="44" stroke-width="4"/></g><rect x="86.5" y="79" width="18" height="9" rx="4" transform="rotate(28 95 83)" fill="currentColor"/><g fill="currentColor"><circle cx="110" cy="126" r="6"/><circle cx="128" cy="126" r="5"/><circle cx="146" cy="126" r="4"/></g></svg>',
+  archive:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8"/><path d="M10 12h4"/></svg>',
+  flag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h12l-2.5 4 2.5 4H5"/></svg>',
   link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>'
 };
 
@@ -609,7 +631,7 @@ function openSeder(){
     '<button class="opt" id="optReset"><span class="oic" style="background:#fde8e6;color:#c0392b;"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 12a9 9 0 1 0 3-6.7L3 8\"/><path d=\"M3 3v5h5\"/></svg></span><span><span class="otitle">איפוס האפליקציה</span><span class="odesc">מחיקת כל ההגדרות והנתונים</span></span></button>'+
     '</div>');
   sc.querySelector('#optMerge').onclick=()=>openMerge();
-  sc.querySelector('#optFilter').onclick=()=>toast('סינון — נבנה בשלב הבא');
+  sc.querySelector('#optFilter').onclick=()=>openFilter();
   sc.querySelector('#optReset').onclick=()=>openResetConfirm();
 }
 function normMergeName(n){return String(n||'').trim().replace(/\s+/g,' ');}
@@ -663,6 +685,65 @@ function openMergePicker(group,keep,onDone){
     group.forEach(p=>{if(p!==keep)mgRemovePerson(p);});
     renderList();close();if(navigator.vibrate)navigator.vibrate(10);toast('מוזג');if(onDone)onDone();
   };
+}
+function openFilter(){
+  const queue=PEOPLE.slice(); const total=queue.length;
+  let idx=0,kept=0,arch=0,rev=0;
+  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>סינון רשימה</h2></div><div class="scr-body flt-body" id="fltBody"></div>');
+  const body=sc.querySelector('#fltBody');
+  function render(){
+    if(idx>=queue.length){
+      body.innerHTML='<div class="flt-done">סיימת לסנן 🎉<div class="sm">שומר '+kept+' · ארכיון '+arch+' · לבדיקה '+rev+'</div></div>';
+      return;
+    }
+    const p=queue[idx];
+    const sub=p.phone||p.email||p.msg||'';
+    body.innerHTML=
+      '<div class="flt-count">'+(idx+1)+' / '+total+'</div>'+
+      '<div class="flt-deck"><div class="flt-card" id="fltCard">'+
+        '<div class="flt-badge keep">שומר</div><div class="flt-badge arch">ארכיון</div><div class="flt-badge rev">לבדיקה</div>'+
+        '<div class="flt-av">'+escapeHtml(initials(p.name))+'</div>'+
+        '<div class="flt-name">'+escapeHtml(p.name)+'</div>'+
+        (sub?'<div class="flt-sub">'+escapeHtml(sub)+'</div>':'')+
+      '</div></div>'+
+      '<div class="flt-acts">'+
+        '<button class="flt-btn arch" data-a="arch" aria-label="ארכיון">'+ICON.archive+'</button>'+
+        '<button class="flt-btn rev" data-a="rev" aria-label="לבדיקה">'+ICON.flag+'</button>'+
+        '<button class="flt-btn keep" data-a="keep" aria-label="שומר">'+ICON.check+'</button>'+
+      '</div>'+
+      '<p class="flt-hint">החלקה ימינה — שומר · שמאלה — ארכיון · למעלה — לבדיקה</p>';
+    body.querySelectorAll('.flt-btn').forEach(b=>b.onclick=()=>commit(b.dataset.a));
+    attach();
+  }
+  function commit(a){
+    const card=body.querySelector('#fltCard');
+    let tx='0',ty='0',rot=0;
+    if(a==='keep'){tx='130%';rot=20;kept++;}
+    else if(a==='arch'){tx='-130%';rot=-20;arch++;}
+    else{ty='-130%';rev++;}
+    if(card){card.style.transition='transform .3s ease-out, opacity .3s';card.style.transform='translate('+tx+','+ty+') rotate('+rot+'deg)';card.style.opacity='0';}
+    if(a==='arch'){mgRemovePerson(queue[idx]);renderList();}
+    if(navigator.vibrate)navigator.vibrate(8);
+    idx++; setTimeout(render,300);
+  }
+  function attach(){
+    const card=body.querySelector('#fltCard'); if(!card)return;
+    const bk=card.querySelector('.flt-badge.keep'),ba=card.querySelector('.flt-badge.arch'),br=card.querySelector('.flt-badge.rev');
+    let sx=0,sy=0,dx=0,dy=0,drag=false;
+    card.addEventListener('pointerdown',e=>{e.stopPropagation();drag=true;sx=e.clientX;sy=e.clientY;dx=dy=0;card.style.transition='none';try{card.setPointerCapture(e.pointerId);}catch(_){}});
+    card.addEventListener('pointermove',e=>{if(!drag)return;dx=e.clientX-sx;dy=e.clientY-sy;card.style.transform='translate('+dx+'px,'+dy+'px) rotate('+(dx/18)+'deg)';
+      const ax=Math.abs(dx),ay=Math.abs(dy);
+      bk.style.opacity=(dx>0&&ax>=ay)?Math.min(1,dx/90):0;
+      ba.style.opacity=(dx<0&&ax>=ay)?Math.min(1,-dx/90):0;
+      br.style.opacity=(dy<0&&ay>ax)?Math.min(1,-dy/90):0;});
+    const end=e=>{if(!drag)return;e.stopPropagation();drag=false;const TH=85,ax=Math.abs(dx),ay=Math.abs(dy);
+      if(dy<-TH&&ay>ax)commit('rev');
+      else if(dx>TH)commit('keep');
+      else if(dx<-TH)commit('arch');
+      else{card.style.transition='transform .2s';card.style.transform='';bk.style.opacity=ba.style.opacity=br.style.opacity=0;}};
+    card.addEventListener('pointerup',end);card.addEventListener('pointercancel',end);
+  }
+  render();
 }
 function openShareBank(person){
   if(!person)return;
