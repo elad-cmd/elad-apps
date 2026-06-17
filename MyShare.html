@@ -31,7 +31,7 @@
   .seg-btn{flex:1;display:flex;align-items:center;justify-content:center;border:none;background:rgba(255,255,255,.12);color:rgba(255,255,255,.85);padding:9px 0;border-radius:12px;cursor:pointer;transition:background .15s,color .15s;}
   .seg-btn svg{width:20px;height:20px;}
   .seg-btn.on{background:#fff;color:var(--tq-ink);}
-  .scr{position:fixed;inset:0;z-index:70;background:linear-gradient(180deg,var(--tq-top),var(--tq-bot));color:#fff;transform:translateY(-100%);transition:transform .52s cubic-bezier(.34,1.45,.5,1);display:flex;flex-direction:column;}
+  .scr{position:fixed;inset:0;z-index:70;background:linear-gradient(180deg,var(--tq-top),var(--tq-bot));color:#fff;transform:translateX(100%);transition:transform .52s cubic-bezier(.34,1.45,.5,1);display:flex;flex-direction:column;}
   .scr.show{transform:none;}
   .scr-head{display:flex;align-items:center;gap:10px;padding:16px 18px 8px;}
   .scr-head h2{font-size:18px;font-weight:700;flex:1;}
@@ -67,7 +67,7 @@
   .stage{position:fixed;inset:0;z-index:40;pointer-events:none;opacity:0;transition:opacity .34s ease;}
   .stage.show{opacity:1;pointer-events:auto;}
   .stage .veil{position:absolute;inset:0;background:var(--dim);}
-  .bigav{position:absolute;width:81px;height:81px;border-radius:50%;background:var(--white);border:2.5px solid var(--tq-deep);color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;transform:translate(-50%,-50%);will-change:left,top;box-shadow:0 0 14px 2px rgba(255,255,255,.18), 0 16px 34px -12px rgba(8,50,50,.6);transition:left .05s linear, top .05s linear;}
+  .bigav{position:absolute;width:81px;height:81px;border-radius:50%;background:var(--white);border:2.5px solid var(--tq-deep);color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;transform:translate(-50%,-50%);will-change:left,top;box-shadow:0 0 14px 2px rgba(255,255,255,.18), 0 16px 34px -12px rgba(8,50,50,.6);}
   .bigav::after{content:"";position:absolute;inset:-22px;border-radius:50%;background:radial-gradient(circle, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 70%);filter:blur(6px);z-index:-1;pointer-events:none;}
   .bigname{position:absolute;transform:translate(-50%,0);font-size:14px;font-weight:700;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.3);white-space:nowrap;}
 
@@ -225,6 +225,17 @@
   .cr-left{left:8%;top:50%;}
   .cr-right{left:92%;top:50%;}
   .cr-hint{font-size:12.5px;color:#7a9a9b;text-align:center;margin-top:8px;}
+  .favdiag{position:relative;width:280px;height:280px;margin:8px auto 6px;}
+  .fav-coin{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;}
+  .fav-c{width:58px;height:58px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -8px rgba(8,50,50,.45);transition:transform .12s;}
+  .fav-c svg{width:28px;height:28px;}
+  .fav-c.add{border:1.7px dashed var(--tq-deep);color:var(--tq-deep);}
+  .fav-coin:active .fav-c{transform:scale(.9);}
+  .fav-lbl{font-size:12px;font-weight:700;color:var(--tq-ink);max-width:84px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .fav-0{left:16%;top:84%;}
+  .fav-1{left:38.7%;top:61.3%;}
+  .fav-2{left:61.3%;top:38.7%;}
+  .fav-3{left:84%;top:16%;}
   .sheet-head{display:flex;align-items:center;gap:8px;margin:2px 0 12px;}
   .sheet-x{width:32px;height:32px;flex:0 0 auto;border:none;background:rgba(8,40,42,.08);border-radius:50%;color:var(--tq-ink);cursor:pointer;display:flex;align-items:center;justify-content:center;}
   .sheet-x svg{width:16px;height:16px;}
@@ -236,7 +247,7 @@
   .ovl.preview .sheet{background:transparent;box-shadow:none;color:#fff;}
   .ovl.preview .sheet h2{color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.7);}
   .home{position:fixed;inset:0;}
-  @keyframes homeEnter{0%{transform:translateY(-100%);}100%{transform:translateY(0);}}
+  @keyframes homeEnter{0%{transform:translateX(-100%);}100%{transform:translateX(0);}}
   .home.enter{animation:homeEnter .52s cubic-bezier(.34,1.45,.5,1);}
 </style>
 </head>
@@ -363,7 +374,7 @@ function layoutList(){const t=document.querySelector('.top');if(t)listEl.style.t
 renderSeg();renderList();layoutList();
 window.addEventListener('resize',layoutList);
 
-const RADIUS=86, TRIGGER=30, INF=140, MAXB=0.62, SELECT=80;
+const RADIUS=86, TRIGGER=30, INF=140, MAXB=0, SELECT=80;
 const DIRPOS=[{key:'left',dx:-1,dy:0},{key:'right',dx:1,dy:0},{key:'up',dx:0,dy:-1},{key:'down',dx:0,dy:1}];
 const DIRSHORT={left:'שמאל',right:'ימין',up:'מעלה',down:'מטה'};
 const stage=document.getElementById('stage');
@@ -381,15 +392,15 @@ function buildStage(row){
   nm.textContent=row.querySelector('.nm').textContent;
   nm.style.left=cx+'px';nm.style.top=(cy-62)+'px';stage.appendChild(nm);
   const lh=(cfg.hand==='left');
-  const ndx=(lh?1:-1)*0.7071, ndy=0.7071;
+  const sgn=lh?1:-1;
+  const ndx=sgn*0.7071, ndy=0.7071;
   const list=['whatsapp','messenger','mail'];
-  const START=70, STEP=62;
+  const GAPX=92, STEP=80;
   list.forEach((appId,i)=>{
     const app=byId(appId);
     const el=document.createElement('div');el.className='dirc';
     el.innerHTML=`<div class="coin">${app?app.ic:ICON.plus}</div><div class="lbl">${app?escapeHtml(app.label):''}</div>`;
-    const dist=START+i*STEP;
-    const x=cx+ndx*dist, y=cy+ndy*dist;
+    const x=cx+sgn*GAPX+ndx*(i*STEP), y=cy+ndy*(i*STEP);
     el.style.left=x+'px';el.style.top=y+'px';stage.appendChild(el);
     targets.push({kind:'app', id:appId, x, y, coinEl:el.querySelector('.coin'), dirc:el});
   });
@@ -496,13 +507,14 @@ function openSearch(){
   setTimeout(()=>{listEl.scrollTop=0;},450);
 }
 function openSettings(){
-  const dirs=DIRPOS.map(d=>{
-    const app=byId(cfg[d.key]);
-    return `<button class="cr-dir cr-${d.key}" data-dir="${d.key}"><span class="cr-coin${app?'':' add'}">${app?app.ic:ICON.plus}</span><span class="cr-lbl">${app?escapeHtml(app.label):'ריק'}</span></button>`;
+  const keys=['up','left','right','down'];
+  const coins=keys.map((k,i)=>{
+    const app=byId(cfg[k]);
+    return `<button class="fav-coin fav-${i}" data-dir="${k}"><span class="fav-c${app?'':' add'}">${app?app.ic:ICON.plus}</span><span class="fav-lbl">${app?escapeHtml(app.label):'ריק'}</span></button>`;
   }).join('');
-  showSheet(`<div class="sheet-head"><button class="sheet-x" aria-label="סגור"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><h2 style="flex:1;margin:0;text-align:center;">מועדפי הכיוונים</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="compass"><div class="cr-center">${ICON.user}</div>${dirs}</div><p class="cr-hint">לוחצים על כיוון כדי לשבץ אפליקציה. נשמר במכשיר.</p>`);
+  showSheet(`<div class="sheet-head"><button class="sheet-x" aria-label="סגור"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><h2 style="flex:1;margin:0;text-align:center;">מועדפי השיתוף</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="favdiag">${coins}</div><p class="cr-hint">לוחצים על אפליקציה כדי להחליף אותה. נשמר במכשיר.</p>`);
   const xb=sheet.querySelector('.sheet-x');if(xb)xb.onclick=closeSheet;
-  sheet.querySelectorAll('.cr-dir').forEach(b=>b.onclick=()=>openPicker(b.dataset.dir));
+  sheet.querySelectorAll('.fav-coin').forEach(b=>b.onclick=()=>openPicker(b.dataset.dir));
 }
 
 function openPaletteSheet(){
@@ -565,9 +577,9 @@ function doHandFlip(){
   cfg.hand=newHand;saveCfg();
   f.style.setProperty('--dx',(tgt-cur)+'px');
   f.style.animation='none';void f.offsetWidth;
-  f.style.animation='fabHop .78s linear forwards';
-  const done=()=>{f.removeEventListener('animationend',done);f.style.animation='';f.style.transform='';f.style.removeProperty('--dx');f.classList.toggle('left',cfg.hand==='left');fabRot+=(newHand==='left'?-90:90);const dm=f.querySelector('.dotmorph');if(dm)dm.style.transform='rotate('+fabRot+'deg)';flipContacts(newHand);};
-  f.addEventListener('animationend',done);
+  f.style.animation='fabHop .55s linear forwards';
+  setTimeout(()=>{f.style.animation='';f.style.transform='';f.style.removeProperty('--dx');f.classList.toggle('left',cfg.hand==='left');fabRot+=(newHand==='left'?-90:90);const dm=f.querySelector('.dotmorph');if(dm)dm.style.transform='rotate('+fabRot+'deg)';},550);
+  setTimeout(()=>flipContacts(newHand),650);
   toast(newHand==='left'?'יד שמאל':'יד ימין');
 }
 buildFabDots();
@@ -598,13 +610,14 @@ function openPaletteRow(itemEl){
   const ex=bar.querySelector('.palbar');if(ex){ex.remove();return;}
   const lh=(cfg.hand==='left');
   const rect=itemEl.getBoundingClientRect();
-  const dirX=lh?-1:1;
-  const baseX=rect.left+rect.width/2+dirX*6;
-  const baseY=rect.top+rect.height/2+10;
-  const SW=34,STEP=30;
+  const sgn=lh?1:-1;
+  const D=0.7071, cxi=rect.left+rect.width/2, cyi=rect.top+rect.height/2;
+  const OFFSET=54, STEP=40, SW=34;
+  const baseX=cxi+(-sgn*D)*OFFSET, baseY=cyi+(D)*OFFSET;
+  const dx=sgn*D, dy=D;
   const pb=document.createElement('div');pb.className='palbar';
   pb.innerHTML=PALETTES.map((p,i)=>{
-    const x=Math.round(baseX+dirX*i*STEP-SW/2), y=Math.round(baseY+i*STEP-SW/2);
+    const x=Math.round(baseX+dx*i*STEP-SW/2), y=Math.round(baseY+dy*i*STEP-SW/2);
     return `<button class="pal-sw${i===cfg.palette?' on':''}" data-i="${i}" style="left:${x}px;top:${y}px;transition-delay:${(i*0.03).toFixed(2)}s;background:linear-gradient(180deg,${p.top},${p.bot})" aria-label="${escapeHtml(p.name)}"></button>`;
   }).join('');
   bar.appendChild(pb);
