@@ -254,7 +254,7 @@
   .ovl.bare .sheet{background:transparent;box-shadow:none;padding:0 16px 30px;}
   .srch{position:fixed;inset:0;z-index:88;display:flex;flex-direction:column;justify-content:flex-end;opacity:0;pointer-events:none;transition:opacity .2s ease;}
   .srch.show{opacity:1;pointer-events:auto;}
-  .srch-veil{position:absolute;inset:0;background:rgba(0,0,0,.5);}
+  .srch-veil{position:absolute;inset:0;background:rgba(8,22,23,.96);}
   .srch-panel{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 16px 14px;}
   .srch-results{display:flex;flex-direction:column-reverse;gap:8px;overflow-y:auto;max-height:46vh;padding:6px 0 10px;-webkit-overflow-scrolling:touch;}
   .srch-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.12);border-radius:14px;padding:8px 12px;}
@@ -409,8 +409,8 @@ let SHARED = _shared || (MODE==='share' ? 'https://example.com/demo' : '');
 let PEOPLE = CONTACTS;
 if(BRIDGE){try{const arr=JSON.parse(bGet('getContacts','[]')||'[]');if(arr&&arr.length)PEOPLE=arr;}catch(e){}}
 
-const DEF={left:'whatsapp',right:'call',up:'mail',down:'',rail:['telegram','instagram','copy'],hand:'right',palette:0,dirv:2,share:['whatsapp','messenger','mail']};
-function loadCfg(){const c={left:DEF.left,right:DEF.right,up:DEF.up,down:DEF.down,rail:DEF.rail.slice(),hand:DEF.hand,palette:DEF.palette,dirv:DEF.dirv,share:DEF.share.slice()};try{const s=JSON.parse(localStorage.getItem('myshare_cfg')||'{}');if(s.dirv===DEF.dirv){['left','right','up','down'].forEach(k=>{if(k in s)c[k]=s[k];});}if(Array.isArray(s.rail))c.rail=s.rail;if(Array.isArray(s.share)&&s.share.length)c.share=s.share.slice(0,3);if(s.hand==='left'||s.hand==='right')c.hand=s.hand;if(typeof s.palette==='number')c.palette=s.palette;}catch(e){}return c;}
+const DEF={left:'whatsapp',right:'call',up:'mail',down:'',rail:['telegram','instagram','copy'],hand:'right',palette:0,dirv:2,share:['call','whatsapp',''],sharev:1};
+function loadCfg(){const c={left:DEF.left,right:DEF.right,up:DEF.up,down:DEF.down,rail:DEF.rail.slice(),hand:DEF.hand,palette:DEF.palette,dirv:DEF.dirv,share:DEF.share.slice(),sharev:DEF.sharev};try{const s=JSON.parse(localStorage.getItem('myshare_cfg')||'{}');if(s.dirv===DEF.dirv){['left','right','up','down'].forEach(k=>{if(k in s)c[k]=s[k];});}if(Array.isArray(s.rail))c.rail=s.rail;if(s.sharev===DEF.sharev&&Array.isArray(s.share)&&s.share.length)c.share=s.share.slice(0,3);if(s.hand==='left'||s.hand==='right')c.hand=s.hand;if(typeof s.palette==='number')c.palette=s.palette;}catch(e){}return c;}
 function saveCfg(){try{localStorage.setItem('myshare_cfg',JSON.stringify(cfg));}catch(e){}}
 let cfg=loadCfg();saveCfg();
 function statKey(p){return (p&&(p.phone||p.name))||'';}
@@ -501,7 +501,7 @@ function endPick(px,py){
   resetPick();
   if(!sel)return;
   if(navigator.vibrate)navigator.vibrate(8);
-  if(sel.id==='__add__'){openPicker('rail');return;}
+  if(!sel.id||sel.id==='__add__'){return;}
   fire(sel.id,person);
 }
 function fire(appId,person){
@@ -642,7 +642,7 @@ document.body.appendChild(menuFab);
 positionFab();
 
 const ICN_BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
-function openScreen(html){const sc=document.createElement('div');sc.className='scr';sc.innerHTML=html;document.body.appendChild(sc);void sc.offsetHeight;requestAnimationFrame(()=>requestAnimationFrame(()=>sc.classList.add('show')));const b=sc.querySelector('.scr-back');if(b)b.onclick=()=>closeScreen(sc);return sc;}
+function openScreen(html){closeSearch();const sc=document.createElement('div');sc.className='scr';sc.innerHTML=html;document.body.appendChild(sc);void sc.offsetHeight;requestAnimationFrame(()=>requestAnimationFrame(()=>sc.classList.add('show')));const b=sc.querySelector('.scr-back');if(b)b.onclick=()=>closeScreen(sc);return sc;}
 function openSeder(){
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>סדר פסח — ניקוי הרשימה</h2></div>'+
     '<div class="scr-body"><div class="seder-intro">ננקה את אנשי הקשר בשני שלבים: קודם מאחדים כפילויות, ואז עוברים אחד-אחד ומסננים. אפשר לעשות רק את מה שצריך.</div>'+
