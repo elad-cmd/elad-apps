@@ -1016,7 +1016,23 @@ document.getElementById('welSample').onclick=()=>{localStorage.setItem('myshare_
 document.getElementById('welGoogle').onclick=()=>{localStorage.setItem('myshare_onboarded','1');hideWelcome();toast('סנכרון מ‑Google יחובר בגרסת האנדרואיד');};
 function _csvSplit(l){const r=[];let c='',q=false;for(let i=0;i<l.length;i++){const ch=l[i];if(ch==='"'){if(q&&l[i+1]==='"'){c+='"';i++;}else q=!q;}else if(ch===','&&!q){r.push(c);c='';}else c+=ch;}r.push(c);return r;}
 function parseCSVContacts(t){const lines=t.split(/\r?\n/).filter(x=>x.trim());if(!lines.length)return[];const hdr=_csvSplit(lines[0]).map(h=>h.toLowerCase().trim());const find=(...keys)=>hdr.findIndex(h=>keys.some(k=>h.includes(k)));const iName=find('name','שם'),iGiven=find('given','first'),iFamily=find('family','last'),iPhone=find('phone','tel','mobile','טלפון','נייד'),iEmail=find('mail','דוא'),iOrg=find('organization','company','חברה','ארגון');const out=[];for(let i=1;i<lines.length;i++){const c=_csvSplit(lines[i]);const g=(x)=>x>=0&&c[x]?c[x].trim():'';let name=g(iName);if(!name)name=(g(iGiven)+' '+g(iFamily)).trim();const ph=g(iPhone),em=g(iEmail),org=g(iOrg);if(name||ph||em)out.push({name:name||'(ללא שם)',phone:ph,email:em,org:org,msg:'',fav:false,last:0});}return out;}
-function parseVCards(t){const out=[];t.split(/BEGIN:VCARD/i).forEach(b=>{if(!b.trim())return;const get=(re)=>{const m=b.match(re);return m?m[1].trim():'';};let name=get(/[\r\n]FN[^:\r\n]*:([^\r\n]*)/i);if(!name){name=get(/[\r\n]N[^:\r\n]*:([^\r\n]*)/i).replace(/;/g,' ').replace(/\s+/g,' ').trim();}const ph=get(/[\r\n]TEL[^:\r\n]*:([^\r\n]*)/i);const em=get(/[\r\n]EMAIL[^:\r\n]*:([^\r\n]*)/i);const org=get(/[\r\n]ORG[^:\r\n]*:([^\r\n]*)/i).replace(/;.*$/,'').trim();if(name||ph||em)out.push({name:name||'(ללא שם)',phone:ph,email:em,org:org,msg:'',fav:false,last:0});});return out;}
+function qpDecode(str){const b=[];for(let i=0;i<str.length;i++){const c=str[i];if(c==='='){const h=str.substr(i+1,2);if(/^[0-9A-Fa-f]{2}$/.test(h)){b.push(parseInt(h,16));i+=2;}else b.push(c.charCodeAt(0));}else b.push(c.charCodeAt(0));}try{return new TextDecoder('utf-8').decode(new Uint8Array(b));}catch(e){return str;}}
+function splitVCards(t){const out=[];const re=/BEGIN:VCARD[\s\S]*?END:VCARD/gi;let m;while((m=re.exec(t)))out.push(m[0]);return out;}
+function parseVBlock(block){
+  const phys=block.split(/\r\n|\n/);const L=[];
+  for(const ln of phys){if((ln.startsWith(' ')||ln.startsWith('\t'))&&L.length)L[L.length-1]+=ln.slice(1);else L.push(ln);}
+  const L2=[];for(let i=0;i<L.length;i++){let line=L[i];if(/quoted-printable/i.test(line)){while(line.endsWith('=')&&i+1<L.length)line=line.slice(0,-1)+L[++i];}L2.push(line);}
+  const rec={emails:[],phones:[],name:'',org:''};let fn='',nf='';
+  for(const line of L2){const ci=line.indexOf(':');if(ci<0)continue;const left=line.slice(0,ci),val=line.slice(ci+1);
+    const segs=left.split(';');const prop=segs[0].toUpperCase();const isQP=segs.slice(1).some(p=>/quoted-printable/i.test(p));const dec=v=>isQP?qpDecode(v):v;
+    if(prop==='FN')fn=dec(val).trim();else if(prop==='N')nf=dec(val);
+    else if(prop==='EMAIL'){const e=val.trim();if(e)rec.emails.push(e);}
+    else if(prop==='TEL'){const t=val.trim();if(t)rec.phones.push(t);}
+    else if(prop==='ORG')rec.org=dec(val).split(';').filter(Boolean).join(' ').trim();}
+  if(fn)rec.name=fn;else if(nf){const p=nf.split(';');rec.name=[p[1]||'',p[2]||'',p[0]||''].map(s=>s.trim()).filter(Boolean).join(' ');}
+  rec.email=rec.emails[0]||'';rec.phone=rec.phones[0]||'';return rec;
+}
+function parseVCards(t){const out=[];splitVCards(t).forEach(b=>{const r=parseVBlock(b);if(r.name||r.phone||r.email)out.push({name:r.name||'(ללא שם)',phone:r.phone,email:r.email,org:r.org,phones:r.phones,emails:r.emails,msg:'',fav:false,last:0});});return out;}
 function loadContactsFile(file){const rd=new FileReader();rd.onload=()=>{const t=String(rd.result||'');const arr=/BEGIN:VCARD/i.test(t)?parseVCards(t):parseCSVContacts(t);if(!arr.length){toast('לא נמצאו אנשי קשר בקובץ');return;}PEOPLE=arr;FAVORDER=[];FDEC={};try{saveDec();}catch(e){}try{localStorage.setItem('myshare_onboarded','1');}catch(e){}hideWelcome();renderSeg();renderList();layoutList();toast('נטענו '+arr.length+' אנשי קשר');};rd.readAsText(file,'utf-8');}
 document.getElementById('welUpload').onclick=()=>document.getElementById('welFile').click();
 document.getElementById('welFile').onchange=e=>{const f=e.target.files&&e.target.files[0];if(f)loadContactsFile(f);};
