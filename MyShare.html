@@ -315,6 +315,8 @@
   .li-tag.keep{background:rgba(0,194,168,.22);color:#7fe9d8;}
   .li-tag.maybe{background:rgba(255,255,255,.14);color:rgba(255,255,255,.82);}
   .li-tag.del{background:rgba(224,138,122,.22);color:#e7a79e;}
+  .arc-row{display:flex;align-items:center;gap:11px;background:#143e40;border-radius:12px;padding:10px 12px;margin-bottom:8px;}
+  .arc-restore{margin-inline-start:auto;background:rgba(255,255,255,.14);color:#fff;border:none;border-radius:10px;padding:6px 13px;font-family:inherit;font-weight:600;font-size:12.5px;cursor:pointer;flex:0 0 auto;}
   .set-toggle{display:flex;align-items:center;justify-content:center;gap:12px;width:fit-content;max-width:86%;margin:16px auto 64px;padding:9px 16px;background:rgba(255,255,255,.1);border-radius:14px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;}
   .sw-tog{position:relative;width:46px;height:26px;border-radius:999px;background:rgba(255,255,255,.25);flex:0 0 auto;transition:background .2s;}
   .sw-tog.on{background:var(--tq-deep);}
@@ -485,7 +487,8 @@ let editMode=false;
 const STAR='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.8 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z"/></svg>';
 let FAVORDER=(function(){try{return JSON.parse(localStorage.getItem('myshare_favorder')||'[]')||[];}catch(e){return[];}})();
 function saveFavOrder(){try{localStorage.setItem('myshare_favorder',JSON.stringify(FAVORDER));}catch(e){}}
-function peopleFor(v){let a=PEOPLE.slice();if(v==='fav'){a=a.filter(p=>p.fav);a.sort((x,y)=>{const ix=FAVORDER.indexOf(fKey(x)),iy=FAVORDER.indexOf(fKey(y));if(ix<0&&iy<0)return byName(x,y);if(ix<0)return 1;if(iy<0)return -1;return ix-iy;});}else if(v==='abc')a.sort(byName);else a.sort((x,y)=>(STATS[statKey(y)]||0)-(STATS[statKey(x)]||0)||(y.last||0)-(x.last||0));return a;}
+let FDEC=loadDec();
+function peopleFor(v){let a=PEOPLE.slice().filter(p=>FDEC[fKey(p)]!=='delete');if(v==='fav'){a=a.filter(p=>p.fav);a.sort((x,y)=>{const ix=FAVORDER.indexOf(fKey(x)),iy=FAVORDER.indexOf(fKey(y));if(ix<0&&iy<0)return byName(x,y);if(ix<0)return 1;if(iy<0)return -1;return ix-iy;});}else if(v==='abc')a.sort(byName);else a.sort((x,y)=>(STATS[statKey(y)]||0)-(STATS[statKey(x)]||0)||(y.last||0)-(x.last||0));return a;}
 function renderList(){CURRENT=peopleFor(VIEW);listEl.innerHTML='';CURRENT.forEach((c,i)=>{const row=document.createElement('div');row.className='row';row.dataset.i=i;row.innerHTML=`<span class="av">${escapeHtml(initials(c.name))}${c.fav?'<span class="favstar">'+STAR+'</span>':''}</span><div class="meta"><div class="ml"><span class="nm">${escapeHtml(c.name)}</span></div>${c.msg?`<div class="ml"><span class="sub">${escapeHtml(c.msg)}</span></div>`:""}</div>`;listEl.appendChild(row);});updateFavEdit();}
 function renderSeg(){const seg=document.getElementById('seg');seg.innerHTML='<div class="seg-ind" id="segInd"></div>'+VIEWS.map(v=>`<button class="seg-btn${v.id===VIEW?' on':''}" data-v="${v.id}" aria-label="${escapeHtml(v.label)}" title="${escapeHtml(v.label)}">${v.ic}</button>`).join('');seg.querySelectorAll('.seg-btn').forEach(b=>b.onclick=()=>goToView(b.dataset.v));const ind=seg.querySelector('#segInd');if(ind)ind.style.transition='none';requestAnimationFrame(()=>{updateSeg();requestAnimationFrame(()=>{if(ind)ind.style.transition='';});});}
 function updateSeg(){const seg=document.getElementById('seg');const ind=seg&&seg.querySelector('#segInd');if(!ind)return;seg.querySelectorAll('.seg-btn').forEach(b=>b.classList.toggle('on',b.dataset.v===VIEW));const a=seg.querySelector('.seg-btn.on');if(a){ind.style.left=a.offsetLeft+'px';ind.style.width=a.offsetWidth+'px';}}
@@ -811,7 +814,6 @@ function openMergePicker(group,keep,onDone){
 }
 function fKey(p){return statKey(p)||(p&&p.name)||'';}
 function loadDec(){try{return JSON.parse(localStorage.getItem('myshare_dec')||'{}')||{};}catch(e){return {};}}
-let FDEC=loadDec();
 function saveDec(){try{localStorage.setItem('myshare_dec',JSON.stringify(FDEC));}catch(e){}}
 function fCounts(){let k=0,d=0,m=0,left=0;PEOPLE.forEach(p=>{const v=FDEC[fKey(p)];if(v==='keep')k++;else if(v==='delete')d++;else if(v==='maybe')m++;else left++;});return{keep:k,del:d,maybe:m,left:left};}
 function fViewIds(vf){if(vf==='undecided')return PEOPLE.filter(p=>!FDEC[fKey(p)]);return PEOPLE.filter(p=>FDEC[fKey(p)]===vf);}
@@ -822,7 +824,7 @@ function openFilter(){
   function tabs(){
     const c=fCounts();
     const t=(k,l,n)=>'<button class="vtab'+(vf===k?' on':'')+'" data-f="'+k+'"><b>'+n+'</b><span>'+l+'</span></button>';
-    return '<div class="flt-tabs">'+t('undecided','לא נבדקו',c.left)+t('keep','נשמרו',c.keep)+t('delete','נמחקו',c.del)+t('maybe','לבדיקה',c.maybe)+'<button class="vtab-toggle" id="vtog" aria-label="תצוגה">'+(vm==='cards'?ICON.viewlist:ICON.viewcards)+'</button></div>';
+    return '<div class="flt-tabs">'+t('undecided','לא נבדקו',c.left)+t('keep','נשמרו',c.keep)+t('delete','ארכיון',c.del)+t('maybe','לבדיקה',c.maybe)+'<button class="vtab-toggle" id="vtog" aria-label="תצוגה">'+(vm==='cards'?ICON.viewlist:ICON.viewcards)+'</button></div>';
   }
   function render(){
     const ou=sc.querySelector('.flt-undo');if(ou)ou.remove();body.innerHTML=tabs()+'<div id="fltView" class="flt-view"></div>';
@@ -835,10 +837,10 @@ function openFilter(){
   function undo(){const h=hist.pop();if(h){delete FDEC[h.key];saveDec();render();}}
   function cards(view){
     const q=fViewIds('undecided');
-    if(!q.length){const c=fCounts();view.innerHTML='<div class="flt-done">עברת על כל אנשי הקשר 🎉<div class="sm">נשמרו '+c.keep+' · לבדיקה '+c.maybe+' · נמחקו '+c.del+'</div><button class="mg-home">חזור למסך הבית</button></div>';const hb=view.querySelector('.mg-home');if(hb)hb.onclick=goHome;return;}
+    if(!q.length){const c=fCounts();view.innerHTML='<div class="flt-done">עברת על כל אנשי הקשר 🎉<div class="sm">נשמרו '+c.keep+' · לבדיקה '+c.maybe+' · בארכיון '+c.del+'</div><button class="mg-home">חזור למסך הבית</button></div>';const hb=view.querySelector('.mg-home');if(hb)hb.onclick=goHome;return;}
     const p=q[0];const det=personDetails(p);
     const ph=p.phone||((p.phones&&p.phones[0])||'');const em=p.email||((p.emails&&p.emails[0])||'');
-    view.innerHTML='<div class="flt-stage"><div class="flt-deck"><div class="flt-card" id="fcard"><div class="flt-badge keep">שומר</div><div class="flt-badge del">מחק</div><div class="flt-badge maybe">לבדיקה</div><div class="flt-av">'+escapeHtml(initials(p.name))+'</div><div class="flt-name">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(p.org?'<div class="flt-org">'+escapeHtml(p.org)+'</div>':'')+(ph?'<div class="flt-line">'+escapeHtml(ph)+'</div>':'')+(em?'<div class="flt-line">'+escapeHtml(em)+'</div>':'')+'</div></div></div><div class="flt-acts"><button class="flt-btn keep" data-a="keep" aria-label="שומר">'+ICON.check+'</button><button class="flt-btn maybe" data-a="maybe" aria-label="לבדיקה">'+ICON.clock+'</button><button class="flt-btn del" data-a="delete" aria-label="מחק">'+ICON.trash+'</button></div>';
+    view.innerHTML='<div class="flt-stage"><div class="flt-deck"><div class="flt-card" id="fcard"><div class="flt-badge keep">שומר</div><div class="flt-badge del">ארכוב</div><div class="flt-badge maybe">לבדיקה</div><div class="flt-av">'+escapeHtml(initials(p.name))+'</div><div class="flt-name">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(p.org?'<div class="flt-org">'+escapeHtml(p.org)+'</div>':'')+(ph?'<div class="flt-line">'+escapeHtml(ph)+'</div>':'')+(em?'<div class="flt-line">'+escapeHtml(em)+'</div>':'')+'</div></div></div><div class="flt-acts"><button class="flt-btn keep" data-a="keep" aria-label="שומר">'+ICON.check+'</button><button class="flt-btn maybe" data-a="maybe" aria-label="לבדיקה">'+ICON.clock+'</button><button class="flt-btn del" data-a="delete" aria-label="ארכוב">'+ICON.archive+'</button></div>';
     view.querySelectorAll('.flt-btn').forEach(b=>b.onclick=()=>commit(b.dataset.a));
     if(hist.length){const last=hist[hist.length-1];const u=document.createElement('button');u.className='flt-undo dir-'+last.dir;u.innerHTML=(last.dir==='right'?ICON.backLeft:last.dir==='left'?ICON.backRight:ICON.backUp);u.setAttribute('aria-label','ביטול');u.onclick=undo;sc.appendChild(u);}
     attach(p);
@@ -861,16 +863,16 @@ function openFilter(){
   }
   function list(view){
     const ids=fViewIds(vf);
-    if(!ids.length){view.innerHTML='<div class="flt-done">'+(vf==='undecided'?'עברת על כל אנשי הקשר 🎉':vf==='keep'?'אין נשמרים עדיין':vf==='maybe'?'אין אנשי קשר לבדיקה':'אין נמחקים')+'</div>';return;}
+    if(!ids.length){view.innerHTML='<div class="flt-done">'+(vf==='undecided'?'עברת על כל אנשי הקשר 🎉':vf==='keep'?'אין נשמרים עדיין':vf==='maybe'?'אין אנשי קשר לבדיקה':'אין בארכיון')+'</div>';return;}
     view.innerHTML='<div class="flt-list">'+ids.map((p,i)=>{
       const det=personDetails(p);const d=FDEC[fKey(p)];
-      const tag=d==='keep'?'<span class="li-tag keep">נשמר</span>':d==='maybe'?'<span class="li-tag maybe">לבדיקה</span>':d==='delete'?'<span class="li-tag del">נמחק</span>':'';
+      const tag=d==='keep'?'<span class="li-tag keep">נשמר</span>':d==='maybe'?'<span class="li-tag maybe">לבדיקה</span>':d==='delete'?'<span class="li-tag del">בארכיון</span>':'';
       return '<div class="flt-row" data-i="'+i+'"><div class="flt-row-bg"></div><div class="flt-row-fg"><span class="li-av">'+escapeHtml(initials(p.name))+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(det.length?'<div class="s">'+escapeHtml(det.join(' · '))+'</div>':'')+'</div>'+tag+'</div></div>';
     }).join('')+'</div>';
     view.querySelectorAll('.flt-row').forEach(rw=>{
       const fg=rw.querySelector('.flt-row-fg');const bg=rw.querySelector('.flt-row-bg');const p=ids[+rw.dataset.i];
       let sx=0,dx=0,drag=false,moved=false,d0=0;
-      const setDir=(sg)=>{if(sg===d0)return;d0=sg;if(sg>0){bg.className='flt-row-bg keepbg';bg.innerHTML=ICON.check;}else if(sg<0){bg.className='flt-row-bg delbg';bg.innerHTML=ICON.trash;}else{bg.className='flt-row-bg';bg.innerHTML='';}};
+      const setDir=(sg)=>{if(sg===d0)return;d0=sg;if(sg>0){bg.className='flt-row-bg keepbg';bg.innerHTML=ICON.check;}else if(sg<0){bg.className='flt-row-bg delbg';bg.innerHTML=ICON.archive;}else{bg.className='flt-row-bg';bg.innerHTML='';}};
       fg.addEventListener('pointerdown',e=>{e.stopPropagation();drag=true;moved=false;sx=e.clientX;dx=0;d0=0;fg.style.transition='none';});
       fg.addEventListener('pointermove',e=>{if(!drag)return;dx=e.clientX-sx;if(Math.abs(dx)>6)moved=true;setDir(Math.sign(dx));fg.style.transform='translateX('+dx+'px)';});
       const fin=e=>{if(!drag)return;e.stopPropagation();drag=false;if(dx>80){decide(p,'keep');rowOut(rw,1);}else if(dx<-80){decide(p,'delete');rowOut(rw,-1);}else{fg.style.transition='transform .2s';fg.style.transform='';setDir(0);if(!moved)openContact(p);}};
@@ -880,6 +882,19 @@ function openFilter(){
   function rowOut(rw,dir){const fg=rw.querySelector('.flt-row-fg');fg.style.transition='transform .25s';fg.style.transform='translateX('+(dir>0?'115%':'-115%')+')';if(navigator.vibrate)navigator.vibrate(8);setTimeout(render,260);}
   render();
 
+}
+function openArchive(){
+  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>ארכיון</h2></div><div class="scr-body" id="arcBody"></div>');
+  function render(){
+    const arch=PEOPLE.filter(p=>FDEC[fKey(p)]==='delete');
+    const body=sc.querySelector('#arcBody');if(!body)return;
+    if(!arch.length){body.innerHTML='<div class="dup-empty">הארכיון ריק</div>';return;}
+    body.innerHTML='<p class="cr-hint" style="text-align:right;margin:0 0 12px;">אנשי קשר בארכיון אינם מוצגים ברשימה (ולא נמחקים מהטלפון). אפשר לשחזר, או לנקות סופית.</p><div class="flt-list">'+arch.map((p,i)=>{const det=personDetails(p);return '<div class="arc-row"><span class="li-av">'+escapeHtml(initials(p.name))+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(det.length?'<div class="s">'+escapeHtml(det.join(' · '))+'</div>':'')+'</div><button class="arc-restore" data-i="'+i+'">שחזר</button></div>';}).join('')+'</div><button class="mp-confirm" id="arcClear" style="background:#d23b30;margin-top:18px;">נקה ארכיון סופית</button>';
+    body.querySelectorAll('.arc-restore').forEach(b=>b.onclick=()=>{const p=arch[+b.dataset.i];delete FDEC[fKey(p)];saveDec();renderList();render();toast('שוחזר');});
+    const cb=body.querySelector('#arcClear');let st=1;
+    if(cb)cb.onclick=()=>{if(st===1){st=2;cb.textContent='בטוח? פעולה בלתי הפיכה';}else{arch.forEach(p=>{const i=PEOPLE.indexOf(p);if(i>=0)PEOPLE.splice(i,1);delete FDEC[fKey(p)];});saveDec();renderList();render();toast('הארכיון נוקה');}};
+  }
+  render();
 }
 function openShareBank(person){
   if(!person)return;
@@ -947,6 +962,7 @@ function openHbar(){
     {ic:ICON.gear,     label:'הגדר',            fn:openSettings},
     {ic:ICON.palette,  label:'פלטת צבעים',       pal:true},
     {ic:(cfg.hand==='left'?ICON.phoneL:ICON.phoneR), label:(cfg.hand==='left'?'יד ימין':'יד שמאל'), hand:1},
+    {ic:ICON.archive, label:'ארכיון', fn:openArchive},
     {ic:'<svg viewBox="72 34 102 102" fill="none" stroke="currentColor"><g transform="translate(96 86) rotate(28) scale(0.8)" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><line x1="0" y1="-52" x2="0" y2="-4"/><path d="M-12 4 H12 L22 42 Q0 50 -22 42 Z" stroke-width="6"/><line x1="-4" y1="9" x2="-8" y2="44" stroke-width="4"/><line x1="6" y1="9" x2="10" y2="44" stroke-width="4"/></g><rect x="86.5" y="79" width="18" height="9" rx="4" transform="rotate(28 95 83)" fill="currentColor"/><g fill="currentColor"><circle cx="110" cy="126" r="6"/><circle cx="128" cy="126" r="5"/><circle cx="146" cy="126" r="4"/></g></svg>', label:'סדר פסח', fn:openSeder, big:1}
   ];
   const n=items.length;
