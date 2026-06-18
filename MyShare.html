@@ -114,12 +114,29 @@
   .hbar.run .hm-item{animation:hmIn var(--dur,.5s) linear both;}
   .hbar.closing .hm-item{animation:hmOut var(--cdur,.4s) cubic-bezier(.5,.04,.7,.32) both;animation-delay:calc(var(--r,0)*.04s);}
   @keyframes hmIn{
-    0%{opacity:0;transform:translate(var(--sx,0px),var(--sy,0px)) scale(0.5);}
-    22%{opacity:1;transform:translate(calc(var(--sx,0px) * 0.30),calc(var(--sy,0px) * 0.30)) scale(0.92);}
-    50%{opacity:1;transform:translate(calc(var(--sx,0px) * -0.08),calc(var(--sy,0px) * -0.08)) scale(1.05);}
-    70%{transform:translate(calc(var(--sx,0px) * 0.04),calc(var(--sy,0px) * 0.04)) scale(0.99);}
-    85%{transform:translate(calc(var(--sx,0px) * -0.02),calc(var(--sy,0px) * -0.02)) scale(1.006);}
-    100%{opacity:1;transform:translate(0,0) scale(1);}
+    0%{opacity:0.00;transform:translate(calc(var(--sx,0px) * 1.0000),calc(var(--sy,0px) * 1.0000)) scale(0.600);}
+    4.5%{opacity:0.25;transform:translate(calc(var(--sx,0px) * 0.8972),calc(var(--sy,0px) * 0.8972)) scale(0.641);}
+    9.1%{opacity:0.51;transform:translate(calc(var(--sx,0px) * 0.6689),calc(var(--sy,0px) * 0.6689)) scale(0.732);}
+    13.6%{opacity:0.76;transform:translate(calc(var(--sx,0px) * 0.4112),calc(var(--sy,0px) * 0.4112)) scale(0.836);}
+    18.2%{opacity:1.00;transform:translate(calc(var(--sx,0px) * 0.1851),calc(var(--sy,0px) * 0.1851)) scale(0.926);}
+    22.7%{opacity:1.00;transform:translate(calc(var(--sx,0px) * 0.0197),calc(var(--sy,0px) * 0.0197)) scale(0.992);}
+    27.3%{opacity:1.00;transform:translate(calc(var(--sx,0px) * -0.0794),calc(var(--sy,0px) * -0.0794)) scale(1.032);}
+    31.8%{opacity:1.00;transform:translate(calc(var(--sx,0px) * -0.1216),calc(var(--sy,0px) * -0.1216)) scale(1.049);}
+    36.4%{opacity:1.00;transform:translate(calc(var(--sx,0px) * -0.1230),calc(var(--sy,0px) * -0.1230)) scale(1.049);}
+    40.9%{opacity:1.00;transform:translate(calc(var(--sx,0px) * -0.1007),calc(var(--sy,0px) * -0.1007)) scale(1.040);}
+    45.5%{opacity:1.00;transform:translate(calc(var(--sx,0px) * -0.0689),calc(var(--sy,0px) * -0.0689)) scale(1.028);}
+    50%{opacity:1.00;transform:translate(calc(var(--sx,0px) * -0.0375),calc(var(--sy,0px) * -0.0375)) scale(1.015);}
+    54.5%{opacity:1.00;transform:translate(calc(var(--sx,0px) * -0.0124),calc(var(--sy,0px) * -0.0124)) scale(1.005);}
+    59.1%{opacity:1.00;transform:translate(calc(var(--sx,0px) * 0.0045),calc(var(--sy,0px) * 0.0045)) scale(0.998);}
+    63.6%{opacity:1.00;transform:translate(calc(var(--sx,0px) * 0.0133),calc(var(--sy,0px) * 0.0133)) scale(0.995);}
+    68.2%{opacity:1.00;transform:translate(calc(var(--sx,0px) * 0.0160),calc(var(--sy,0px) * 0.0160)) scale(0.994);}
+    72.7%{opacity:1.00;transform:translate(calc(var(--sx,0px) * 0.0145),calc(var(--sy,0px) * 0.0145)) scale(0.994);}
+    77.3%{opacity:1.00;transform:translate(calc(var(--sx,0px) * 0.0109),calc(var(--sy,0px) * 0.0109)) scale(0.996);}
+    81.8%{opacity:1.00;transform:translate(calc(var(--sx,0px) * 0.0067),calc(var(--sy,0px) * 0.0067)) scale(0.997);}
+    86.4%{opacity:1.00;transform:translate(calc(var(--sx,0px) * 0.0031),calc(var(--sy,0px) * 0.0031)) scale(0.999);}
+    90.9%{opacity:1.00;transform:translate(calc(var(--sx,0px) * 0.0004),calc(var(--sy,0px) * 0.0004)) scale(1.000);}
+    95.5%{opacity:1.00;transform:translate(calc(var(--sx,0px) * -0.0012),calc(var(--sy,0px) * -0.0012)) scale(1.000);}
+    100%{opacity:1.00;transform:translate(calc(var(--sx,0px) * 0.0000),calc(var(--sy,0px) * 0.0000)) scale(1.000);}
   }
   @keyframes hmOut{0%{opacity:1;transform:translate(0,0) scale(1);}18%{transform:translate(0,0) scale(1.08);}100%{opacity:0;transform:translate(var(--sx,0),var(--sy,0)) scale(.4);}}
   .hm-ic{width:50px;height:50px;border-radius:50%;background:var(--white);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px -8px rgba(8,50,50,.6);color:var(--tq-ink);transition:transform .16s cubic-bezier(.34,1.56,.64,1), background .16s ease, color .16s ease;}
@@ -989,7 +1006,7 @@ function openHbar(){
     const cx=cxFab+dirX*k*hStep, cy=cyFab+k*vStep;
     const off=Math.round(lh ? (cx-25) : (window.innerWidth-cx-25));
     const bottom=Math.round(cy-25);
-    const dur='0.46', cdur=(0.42+i*0.05).toFixed(2);
+    const dur='0.52', cdur=(0.42+i*0.05).toFixed(2);
     return `<button class="hm-item" style="${posProp}:${off}px;bottom:${bottom}px;--dur:${dur}s;--cdur:${cdur}s;--i:${i};--r:${n-1-i}" data-i="${i}"><span class="hm-ic${it.big?' big':''}">${it.ic}</span><span class="hm-label">${escapeHtml(it.label)}</span></button>`;
   }).join('');
   bd.appendChild(bar);document.body.appendChild(bd);
