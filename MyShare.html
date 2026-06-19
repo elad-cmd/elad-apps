@@ -293,15 +293,16 @@
   .flt-view{flex:1;display:flex;flex-direction:column;min-height:0;}
   .flt-stage{flex:1;display:flex;align-items:center;justify-content:center;padding:6px 0;}
   .flt-deck{position:relative;width:100%;max-width:320px;margin:0 auto;}
-  .flt-card{position:relative;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:24px;display:flex;flex-direction:column;align-items:center;gap:9px;padding:30px 24px;cursor:grab;will-change:transform;touch-action:none;box-shadow:0 18px 40px -18px rgba(0,0,0,.6);}
-  .flt-av{width:84px;height:84px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;margin-bottom:2px;}
-  .flt-name{font-size:23px;font-weight:800;color:#fff;text-align:center;}
-  .flt-org{font-size:15px;font-weight:600;color:rgba(255,255,255,.85);text-align:center;}
-  .flt-line{font-size:14px;color:rgba(255,255,255,.72);direction:ltr;text-align:center;}
+  @keyframes fltIn{0%{opacity:0;transform:translateY(16px) scale(.96);}100%{opacity:1;transform:translateY(0) scale(1);}}
+  .flt-card{position:relative;background:var(--soft);border:1px solid rgba(0,0,0,.06);border-radius:24px;display:flex;flex-direction:column;align-items:center;gap:9px;padding:30px 24px;cursor:grab;will-change:transform;touch-action:none;box-shadow:0 18px 40px -18px rgba(0,0,0,.6);animation:fltIn .26s cubic-bezier(.22,1,.36,1);}
+  .flt-av{width:84px;height:84px;border-radius:50%;background:var(--tq-deep);color:#fff;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;margin-bottom:2px;}
+  .flt-name{font-size:23px;font-weight:800;color:var(--tq-ink);text-align:center;}
+  .flt-org{font-size:15px;font-weight:600;color:var(--tq-ink);opacity:.75;text-align:center;}
+  .flt-line{font-size:14px;color:var(--tq-ink);opacity:.62;direction:ltr;text-align:center;}
   .flt-badge{position:absolute;top:18px;font-size:18px;font-weight:900;padding:5px 13px;border-radius:11px;opacity:0;border:3px solid;pointer-events:none;}
-  .flt-badge.keep{right:18px;color:#5fe0cb;border-color:#5fe0cb;transform:rotate(13deg);}
-  .flt-badge.del{left:18px;color:#e7a79e;border-color:#e7a79e;transform:rotate(-13deg);}
-  .flt-badge.maybe{bottom:18px;top:auto;left:50%;transform:translateX(-50%);color:#c2cdcf;border-color:#c2cdcf;}
+  .flt-badge.keep{right:18px;color:var(--tq-deep);border-color:var(--tq-deep);transform:rotate(13deg);}
+  .flt-badge.del{left:18px;color:#d9776a;border-color:#d9776a;transform:rotate(-13deg);}
+  .flt-badge.maybe{bottom:18px;top:auto;left:50%;transform:translateX(-50%);color:#8b99a0;border-color:#8b99a0;}
   .flt-acts{display:flex;gap:16px;justify-content:center;align-items:center;margin-top:8px;}
   .flt-btn{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.06);border:1.6px solid rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,.85);transition:background .15s,border-color .15s;}
   .flt-btn svg{width:27px;height:27px;}
@@ -366,9 +367,8 @@
   <div class="welcome hide" id="welcome"><div class="wel-card">
     <div class="wel-logo"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1AB8A9"/><stop offset="1" stop-color="#0E7576"/></linearGradient></defs><rect x="2" y="2" width="96" height="96" rx="24" fill="url(#wg)"/><circle cx="30.14" cy="69.86" r="4.00" fill="#fff" fill-opacity="0.27"/><circle cx="36.00" cy="64.00" r="5.64" fill="#fff"/><circle cx="41.85" cy="58.15" r="7.28" fill="#fff" fill-opacity="0.43"/><circle cx="47.71" cy="52.29" r="8.92" fill="#fff"/><circle cx="55.88" cy="44.12" r="10.56" fill="#fff" fill-opacity="0.59"/><circle cx="64.06" cy="35.94" r="12.20" fill="#fff"/></svg></div>
     <h2 class="wel-title">ברוכים הבאים ל‑Sweep</h2>
-    <p class="wel-sub">איך מתחילים? אפשר לסנכרן את אנשי הקשר שלך מ‑Google, או להתנסות עם רשימה לדוגמה.</p>
+    <p class="wel-sub">איך מתחילים? אפשר לסנכרן את אנשי הקשר שלך מ‑Google, או לטעון קובץ אנשי קשר.</p>
     <button class="wel-btn wel-google" id="welGoogle">סנכרון מ‑Google</button>
-    <button class="wel-btn wel-sample" id="welSample">רשימה לדוגמה</button>
     <button class="wel-btn wel-upload" id="welUpload">טען קובץ אנשי קשר</button>
     <input type="file" id="welFile" accept=".csv,.vcf,text/csv,text/vcard" style="display:none">
   </div></div>
@@ -494,7 +494,7 @@ const _params=new URLSearchParams(location.search);
 const _shared = BRIDGE ? (bGet('getSharedText','')||'') : '';
 const MODE = (_shared || _params.get('share')==='1') ? 'share' : 'home';
 let SHARED = _shared || (MODE==='share' ? 'https://example.com/demo' : '');
-let PEOPLE = CONTACTS;
+let PEOPLE = [];
 if(BRIDGE){try{const arr=JSON.parse(bGet('getContacts','[]')||'[]');if(arr&&arr.length)PEOPLE=arr;}catch(e){}}
 
 const DEF={hand:'right',palette:0,share:['call','whatsapp','mail'],sharev:3,dblCall:false};
@@ -1046,11 +1046,10 @@ function openHbar(){
   requestAnimationFrame(()=>{bd.classList.add('show');bar.classList.add('run');});
   const close=cb=>closeHbar(cb);
   bd.addEventListener('click',e=>{if(e.target===bd||e.target===bar)close();});
-  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.pal){if(navigator.vibrate)navigator.vibrate(8);b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);openPaletteRow(b);return;}if(it.hand){if(navigator.vibrate)navigator.vibrate(10);b.classList.add('tapped');closeHbar();setTimeout(doHandFlip,800);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);closeHbar();snapFabClosed();setTimeout(()=>{document.querySelectorAll('.scr').forEach(x=>x.remove());it.fn();},210);};});
+  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.pal){if(navigator.vibrate)navigator.vibrate(8);b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);openPaletteRow(b);return;}if(it.hand){if(navigator.vibrate)navigator.vibrate(10);b.classList.add('tapped');closeHbar();setTimeout(doHandFlip,800);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);closeHbar();snapFabClosed();setTimeout(()=>{closeSearch();document.querySelectorAll('.scr').forEach(x=>x.remove());it.fn();},210);};});
 }
 const welcomeEl=document.getElementById('welcome');
 function hideWelcome(){welcomeEl.classList.add('hide');updateSearchFab();}
-document.getElementById('welSample').onclick=()=>{localStorage.setItem('myshare_onboarded','1');hideWelcome();};
 document.getElementById('welGoogle').onclick=()=>{localStorage.setItem('myshare_onboarded','1');hideWelcome();toast('סנכרון מ‑Google יחובר בגרסת האנדרואיד');};
 function _csvSplit(l){const r=[];let c='',q=false;for(let i=0;i<l.length;i++){const ch=l[i];if(ch==='"'){if(q&&l[i+1]==='"'){c+='"';i++;}else q=!q;}else if(ch===','&&!q){r.push(c);c='';}else c+=ch;}r.push(c);return r;}
 function parseCSVContacts(t){const lines=t.split(/\r?\n/).filter(x=>x.trim());if(!lines.length)return[];const hdr=_csvSplit(lines[0]).map(h=>h.toLowerCase().trim());const find=(...keys)=>hdr.findIndex(h=>keys.some(k=>h.includes(k)));const iName=find('name','שם'),iGiven=find('given','first'),iFamily=find('family','last'),iPhone=find('phone','tel','mobile','טלפון','נייד'),iEmail=find('mail','דוא'),iOrg=find('organization','company','חברה','ארגון');const out=[];for(let i=1;i<lines.length;i++){const c=_csvSplit(lines[i]);const g=(x)=>x>=0&&c[x]?c[x].trim():'';let name=g(iName);if(!name)name=(g(iGiven)+' '+g(iFamily)).trim();const ph=g(iPhone),em=g(iEmail),org=g(iOrg);if(name||ph||em)out.push({name:name||'(ללא שם)',phone:ph,email:em,org:org,msg:'',fav:false,last:0});}return out;}
@@ -1075,7 +1074,7 @@ function loadContactsFile(file){const rd=new FileReader();rd.onload=()=>{const t
 document.getElementById('welUpload').onclick=()=>document.getElementById('welFile').click();
 document.getElementById('welFile').onchange=e=>{const f=e.target.files&&e.target.files[0];if(f)loadContactsFile(f);};
 
-if(!localStorage.getItem('myshare_onboarded'))welcomeEl.classList.remove('hide');
+if(!PEOPLE.length)welcomeEl.classList.remove('hide');
 updateSearchFab();
 </script>
 </body>
