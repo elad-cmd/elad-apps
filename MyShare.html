@@ -201,6 +201,8 @@
   .ovl.bare .fav-lbl{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.5);}
   .ovl.bare .cr-hint{color:rgba(255,255,255,.82);}
   .ovl.bare .sheet-x{background:rgba(255,255,255,.2);color:#fff;}
+  .ovl.bare .sheet-x-bottom{position:absolute;bottom:26px;right:26px;width:46px;height:46px;}
+  .ovl.bare .sheet-x-bottom svg{width:20px;height:20px;}
   .srch{position:fixed;inset:0;z-index:88;display:flex;flex-direction:column;justify-content:flex-end;opacity:0;pointer-events:none;transition:opacity .2s ease;}
   .srch.show{opacity:1;pointer-events:auto;}
   .srch-veil{position:absolute;inset:0;background:rgba(8,22,23,.96);}
@@ -291,10 +293,10 @@
   .vtab-toggle{flex:0 0 auto;width:42px;border:none;border-radius:12px;background:rgba(255,255,255,.08);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;}
   .vtab-toggle svg{width:20px;height:20px;}
   .flt-view{flex:1;display:flex;flex-direction:column;min-height:0;}
-  .flt-stage{flex:1;display:flex;align-items:center;justify-content:center;padding:6px 0;}
-  .flt-deck{position:relative;width:100%;max-width:320px;margin:0 auto;}
+  .flt-stage{flex:1;display:flex;align-items:stretch;justify-content:center;padding:6px 0;}
+  .flt-deck{position:relative;width:100%;max-width:320px;margin:0 auto;display:flex;}
   @keyframes fltIn{0%{opacity:0;transform:translateY(16px) scale(.96);}100%{opacity:1;transform:translateY(0) scale(1);}}
-  .flt-card{position:relative;background:var(--soft);border:1px solid rgba(0,0,0,.06);border-radius:24px;display:flex;flex-direction:column;align-items:center;gap:9px;padding:30px 24px;cursor:grab;will-change:transform;touch-action:none;box-shadow:0 18px 40px -18px rgba(0,0,0,.6);animation:fltIn .26s cubic-bezier(.22,1,.36,1);}
+  .flt-card{position:relative;background:var(--soft);border:1px solid rgba(0,0,0,.06);border-radius:24px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:30px 24px;cursor:grab;will-change:transform;touch-action:none;box-shadow:0 18px 40px -18px rgba(0,0,0,.6);animation:fltIn .26s cubic-bezier(.22,1,.36,1);}
   .flt-av{width:84px;height:84px;border-radius:50%;background:var(--tq-deep);color:#fff;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;margin-bottom:2px;}
   .flt-name{font-size:23px;font-weight:800;color:var(--tq-ink);text-align:center;}
   .flt-org{font-size:15px;font-weight:600;color:var(--tq-ink);opacity:.75;text-align:center;}
@@ -309,7 +311,7 @@
   .flt-btn.del{}
   .flt-btn.maybe{width:50px;height:50px;}
   .flt-btn.keep{border-color:#2fcdb6;color:#5fe0cb;}
-  .flt-undo{position:absolute;z-index:6;width:46px;height:46px;border-radius:50%;border:none;background:rgba(255,255,255,.18);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 20px -8px rgba(0,0,0,.55);}
+  .flt-undo{position:absolute;z-index:6;width:46px;height:46px;border-radius:50%;border:none;background:rgba(255,255,255,.18);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 20px -8px rgba(0,0,0,.55);transition:opacity .35s ease;}
   .flt-undo svg{width:22px;height:22px;}
   .flt-undo.dir-right{right:10px;top:46%;transform:translateY(-50%);}
   .flt-undo.dir-left{left:10px;top:46%;transform:translateY(-50%);}
@@ -672,7 +674,7 @@ function openSettings(){
     const app=byId(id);
     return `<button class="fav-coin fav3-${i}" data-i="${i}"><span class="fav-c${app?'':' add'}">${app?app.ic:ICON.plus}</span><span class="fav-lbl">${app?escapeHtml(app.label):'ריק'}</span></button>`;
   }).join('');
-  showSheet(`<div class="sheet-head"><button class="sheet-x" aria-label="סגור"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><h2 style="flex:1;margin:0;text-align:center;">אפליקציות שיתוף</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="favdiag">${coins}</div><p class="cr-hint">לוחצים על נקודה כדי להחליף אפליקציה. נשמר במכשיר.</p><div class="set-toggle" id="dblTog"><span>דאבל קליק לחיוג</span><span class="sw-tog${cfg.dblCall?' on':''}"><span class="sw-knob"></span></span></div>`);
+  showSheet(`<div class="sheet-head"><h2 style="margin:0;text-align:center;width:100%;">אפליקציות שיתוף</h2></div><div class="favdiag">${coins}</div><p class="cr-hint">לוחצים על נקודה כדי להחליף אפליקציה. נשמר במכשיר.</p><div class="set-toggle" id="dblTog"><span>דאבל קליק לחיוג</span><span class="sw-tog${cfg.dblCall?' on':''}"><span class="sw-knob"></span></span></div><button class="sheet-x sheet-x-bottom" aria-label="סגור"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`);
   ovl.classList.add('bare');
   const xb=sheet.querySelector('.sheet-x');if(xb)xb.onclick=closeSheet;
   const dt=sheet.querySelector('#dblTog');if(dt)dt.onclick=()=>{cfg.dblCall=!cfg.dblCall;saveCfg();openSettings();};
@@ -887,7 +889,7 @@ function openFilter(){
     const ph=p.phone||((p.phones&&p.phones[0])||'');const em=p.email||((p.emails&&p.emails[0])||'');
     view.innerHTML='<div class="flt-stage"><div class="flt-deck"><div class="flt-card" id="fcard"><div class="flt-badge keep">שומר</div><div class="flt-badge del">ארכוב</div><div class="flt-badge maybe">לבדיקה</div><div class="flt-av">'+escapeHtml(initials(p.name))+'</div><div class="flt-name">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(p.org?'<div class="flt-org">'+escapeHtml(p.org)+'</div>':'')+(ph?'<div class="flt-line">'+escapeHtml(ph)+'</div>':'')+(em?'<div class="flt-line">'+escapeHtml(em)+'</div>':'')+'</div></div></div><div class="flt-acts"><button class="flt-btn keep" data-a="keep" aria-label="שומר">'+ICON.check+'</button><button class="flt-btn maybe" data-a="maybe" aria-label="לבדיקה">'+ICON.clock+'</button><button class="flt-btn del" data-a="delete" aria-label="ארכוב">'+ICON.archive+'</button></div>';
     view.querySelectorAll('.flt-btn').forEach(b=>b.onclick=()=>commit(b.dataset.a));
-    if(hist.length){const last=hist[hist.length-1];const u=document.createElement('button');u.className='flt-undo dir-'+last.dir;u.innerHTML=(last.dir==='right'?ICON.backLeft:last.dir==='left'?ICON.backRight:ICON.backUp);u.setAttribute('aria-label','ביטול');u.onclick=undo;sc.appendChild(u);}
+    if(hist.length){const last=hist[hist.length-1];const u=document.createElement('button');u.className='flt-undo dir-'+last.dir;u.innerHTML=(last.dir==='right'?ICON.backLeft:last.dir==='left'?ICON.backRight:ICON.backUp);u.setAttribute('aria-label','ביטול');u.onclick=undo;sc.appendChild(u);setTimeout(()=>{if(u.isConnected){u.style.opacity='0';setTimeout(()=>{if(u.isConnected)u.remove();},350);}},2000);}
     attach(p);
   }
   function commit(d){
