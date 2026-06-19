@@ -646,7 +646,7 @@ function initFromCSV(text,fileName){const d=buildData(text);
   S={...d,_csv:text,fileName:fileName||'contacts.csv',order:d.records.map(r=>r.id),pos:0,decisions:{},history:[],introDone:false,filterLabel:null,viewFilter:'undecided',viewMode:'cards'};}
 function resumeFromCSV(p){const d=buildData(p.csv);
   S={...d,_csv:p.csv,fileName:p.fileName||'contacts.csv',order:(p.order&&p.order.length)?p.order:d.records.map(r=>r.id),pos:p.pos||0,decisions:p.decisions||{},history:[],introDone:p.introDone||((p.pos||0)>0),filterLabel:p.filterLabel||null,viewFilter:p.viewFilter||'undecided',viewMode:p.viewMode||'cards'};}
-function viewIds(){if(!S.viewFilter||S.viewFilter==='undecided')return S.order.filter(id=>S.decisions[id]===undefined);return S.records.filter(r=>S.decisions[r.id]===S.viewFilter).map(r=>r.id);}
+function viewIds(){if(!S.viewFilter||S.viewFilter==='undecided')return S.order.filter(id=>S.decisions[id]===undefined);const passed=S._passed||[];return S.records.filter(r=>S.decisions[r.id]===S.viewFilter&&!passed.includes(r.id)).map(r=>r.id);}
 function emptyMsg(){return S.viewFilter==='keep'?'אין נשמרים עדיין':S.viewFilter==='delete'?'אין נמחקים':S.viewFilter==='maybe'?'אין אנשי קשר לבדיקה':'עברת על כל אנשי הקשר 🎉';}
 function recById(id){return S.records.find(r=>r.id===id);}
 function normEmail(e){return (e||'').trim().toLowerCase();}
@@ -904,7 +904,7 @@ function renderMain(){
     <button class="float-back" id="floatBack" aria-label="ביטול">${ICON.back}</button>
     <div class="search-results" id="searchResults"></div>`;
   showFab(true);
-  app.querySelectorAll('.vtab').forEach(t=>{t.onclick=()=>{S.viewFilter=t.dataset.f;persist();renderMain();};});
+  app.querySelectorAll('.vtab').forEach(t=>{t.onclick=()=>{S.viewFilter=t.dataset.f;S._passed=[];persist();renderMain();};});
   document.getElementById('viewToggle').onclick=()=>{S.viewMode=(S.viewMode==='cards')?'list':'cards';persist();renderMain();};
   document.getElementById('floatBack').onclick=undo;
   setupSearch();
@@ -1061,9 +1061,7 @@ function attachDrag(card,isIntro){
     if(!active)return;active=false;
     const ax=Math.abs(dx),ay=Math.abs(dy),TH=86;let dir=null;
     if(ax>ay&&ax>TH)dir=dx>0?'keep':'delete';else if(ay>=ax&&ay>TH)dir='maybe';
-    if(dir&&!isIntro&&dir===S.viewFilter){
-      card.style.transition='transform .3s';card.style.transform='';if(sKeep)sKeep.style.opacity=sDel.style.opacity=sMaybe.style.opacity=0;setTint('transparent',0);
-    } else if(dir){flyOut(card,dir);if(isIntro)setTimeout(dismissIntro,180);else decide(dir,true);}
+    if(dir){flyOut(card,dir);if(isIntro)setTimeout(dismissIntro,180);else if(dir===S.viewFilter)passCard(dir);else decide(dir,true);}
     else{card.style.transition='transform .25s';card.style.transform='';if(sKeep)sKeep.style.opacity=sDel.style.opacity=sMaybe.style.opacity=0;setTint('transparent',0);}
     dx=dy=0;
   }
@@ -1076,9 +1074,14 @@ function flyOut(card,dir){card.style.transition='transform .35s ease-out, opacit
   card.style.transform=`translate(${tx}px,${ty}px) rotate(${tx/14}deg)`;card.style.opacity='0';}
 
 /* ===== decisions ===== */
+function passCard(dir){
+  const ids=viewIds();const id=ids[0];if(id===undefined)return;
+  (S._passed||(S._passed=[])).push(id);
+  setTimeout(()=>{refreshTabs();renderDeck();},180);
+}
 function decide(dir,fromDrag){
   const ids=viewIds();const id=ids[0];if(id===undefined)return;
-  if(dir===S.viewFilter){if(fromDrag)renderDeck();return;}
+  if(dir===S.viewFilter){passCard(dir);return;}
   const prev=S.decisions[id];
   S.decisions[id]=dir;S.history.push({id,prev,dir});persist();
   const go=()=>{refreshTabs();renderDeck();showFloatBack(dir);};
