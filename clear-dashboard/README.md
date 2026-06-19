@@ -11,7 +11,7 @@ Node.js גרסה 18 ומעלה (מומלץ 20+). בדיקה: `node -v`.
 ## הרצה מקומית (במחשב)
 
 ```powershell
-cd "C:\Users\elad\010_קלוד\claude_elad_michal\קלוד אלעד\apps\clear-dashboard"
+cd "C:\Users\elad\010_קלוד\Claude_C\claude_elad\apps\clear-dashboard"
 npm install
 npm run dev
 ```
