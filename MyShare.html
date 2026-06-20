@@ -379,6 +379,10 @@
   .dial-res-txt{display:flex;flex-direction:column;min-width:0;text-align:right;}
   .drn{color:#fff;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .drp{color:rgba(255,255,255,.7);font-size:12.5px;direction:ltr;text-align:right;}
+  .install-pill{position:fixed;top:12px;left:14px;z-index:50;display:none;align-items:center;gap:6px;background:var(--white);color:var(--tq-ink);border:none;border-radius:999px;padding:8px 14px 8px 11px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;box-shadow:0 10px 24px -10px rgba(0,0,0,.55);}
+  .install-pill.show{display:inline-flex;}
+  .install-pill svg{width:18px;height:18px;}
+  .install-pill:active{transform:scale(.95);}
 </style>
 </head>
 <body>
@@ -1116,6 +1120,25 @@ document.getElementById('welUpload').onclick=()=>document.getElementById('welFil
 document.getElementById('welFile').onchange=e=>{const f=e.target.files&&e.target.files[0];if(f)loadContactsFile(f);};
 
 if(!PEOPLE.length)welcomeEl.classList.remove('hide');
+(function(){
+let deferredPrompt=null;
+const installBtn=document.createElement('button');
+installBtn.id='installBtn';installBtn.className='install-pill';installBtn.setAttribute('aria-label','התקן אפליקציה');
+installBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 21h14"/></svg><span>התקן</span>';
+document.body.appendChild(installBtn);
+function standalone(){return (window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;}
+const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+function showI(){if(!standalone())installBtn.classList.add('show');}
+function hideI(){installBtn.classList.remove('show');}
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;showI();});
+window.addEventListener('appinstalled',function(){deferredPrompt=null;hideI();});
+installBtn.onclick=function(){
+  if(deferredPrompt){deferredPrompt.prompt();if(deferredPrompt.userChoice)deferredPrompt.userChoice.then(function(){deferredPrompt=null;hideI();}).catch(function(){});}
+  else if(ios){if(typeof toast==='function')toast('שתף ⬆ ואז "הוסף למסך הבית"');}
+  else{if(typeof toast==='function')toast('בתפריט הדפדפן בחר "הוסף למסך הבית"');}
+};
+if(ios&&!standalone())showI();
+})();
 updateSearchFab();
 </script>
 </body>
