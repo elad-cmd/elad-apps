@@ -79,6 +79,11 @@
   .app-card__go{display:inline-flex;align-items:center;gap:8px;margin-top:11px;font-weight:700;color:var(--teal-dark);font-size:.9rem}
   .app-card__go i{transition:transform .25s ease}
   .app-card:hover .app-card__go i{transform:translateX(-5px)}
+  .copy-link-btn{margin-top:9px;display:inline-flex;align-items:center;justify-content:center;gap:6px;width:38px;height:38px;background:var(--teal-light);border:1px solid var(--teal);color:var(--teal-dark);border-radius:10px;cursor:pointer;align-self:flex-start;font-family:inherit;transition:width .15s ease}
+  .copy-link-btn i{font-size:.98rem}
+  .copy-link-btn .cl-done{display:none;font-size:.82rem;font-weight:700;white-space:nowrap}
+  .copy-link-btn.copied{width:auto;padding:0 12px;background:var(--mint-soft);border-color:var(--mint)}
+  .copy-link-btn.copied .cl-done{display:inline}
 
   /* ===== Portal card (קישור חוצה לאינדקס אחר) ===== */
   .app-card--portal{border:2px solid var(--pink);background:linear-gradient(180deg,#fff,#fff7f9)}
@@ -180,7 +185,7 @@
       <span class="app-card__go">להורדה <i class="fa-solid fa-arrow-left"></i></span>
     </a>
 
-    <a class="app-card app-card--purple" href="https://github.com/elad-cmd/elad-apps/releases/tag/transcribe-latest" target="_blank" rel="noopener">
+    <a class="app-card app-card--purple" href="https://github.com/elad-cmd/elad-apps/releases/download/transcribe-latest/Transcribe.apk" target="_blank" rel="noopener">
       <div class="app-card__icon"><i class="fa-solid fa-microphone-lines"></i></div>
       <span class="app-card__tag">אנדרואיד</span>
       <h3 class="app-card__title">Z_Timlul</h3>
@@ -189,7 +194,8 @@
         <div class="app-card__tech-row"><i class="fa-solid fa-code"></i><span><b>בנוי ב:</b> <code>Kotlin</code> — אנדרואיד ילידי</span></div>
         <div class="app-card__tech-row"><i class="fa-brands fa-github"></i><span><b>פריסה:</b> נבנה ב-GitHub Actions ל-<code>APK</code> (תג <code>transcribe-latest</code>)</span></div>
       </div>
-      <span class="app-card__go">להורדה <i class="fa-solid fa-arrow-left"></i></span>
+      <span class="app-card__go">קישור להורדה בנייד <i class="fa-solid fa-arrow-left"></i></span>
+      <button class="copy-link-btn" type="button" aria-label="העתק קישור" title="העתק קישור" onclick="event.preventDefault();event.stopPropagation();var b=this;navigator.clipboard.writeText('https://github.com/elad-cmd/elad-apps/releases/download/transcribe-latest/Transcribe.apk').then(function(){b.classList.add('copied');setTimeout(function(){b.classList.remove('copied');},1400);});"><i class="fa-solid fa-copy"></i><span class="cl-done">הועתק</span></button>
     </a>
 
     <a class="app-card app-card--teal" href="https://elad-cmd.github.io/elad-apps/HistoryTimeline/histo-timeline.html" target="_blank" rel="noopener">
