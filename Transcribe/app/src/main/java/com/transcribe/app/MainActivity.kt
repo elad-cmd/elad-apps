@@ -19,9 +19,9 @@ import org.json.JSONObject
 import java.io.File
 
 /**
- * Single-activity native shell. The whole UI lives in assets/app.html (WebView).
- * Native side handles: API-key storage, mic recording, the transcription call,
- * shared-audio intents, and copy/share. JS talks to it through the "Android" bridge.
+ * Native shell. UI lives in assets/app.html (WebView). Native handles key storage,
+ * mic recording (with pause/resume), the transcription call, shared-audio intents
+ * (single or multiple), and copy/share. JS uses the "Android" bridge + window.TX callbacks.
  */
 class MainActivity : Activity() {
 
@@ -29,20 +29,20 @@ class MainActivity : Activity() {
     private var recorder: MediaRecorder? = null
     private var recFile: File? = null
     private var pageReady = false
-    private var pendingSharedUri: Uri? = null
+    private var pendingShared: List<Uri> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         web = WebView(this).apply {
             settings.javaScriptEnabled = true
-            settings.domStorageEnabled = true          // localStorage for history
+            settings.domStorageEnabled = true
             settings.mediaPlaybackRequiresUserGesture = false
             addJavascriptInterface(Bridge(), "Android")
             webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView, url: String) {
                     if (!pageReady) {
                         pageReady = true
-                        pendingSharedUri?.let { transcribeShared(it) }
+                        if (pendingShared.isNotEmpty()) transcribeSharedList(pendingShared)
                     }
                 }
             }
@@ -59,64 +59,68 @@ class MainActivity : Activity() {
     }
 
     private fun handleIntent(intent: Intent?) {
-        val uri = sharedAudioUri(intent) ?: return
-        if (pageReady) transcribeShared(uri) else pendingSharedUri = uri
+        val uris = sharedAudioUris(intent)
+        if (uris.isEmpty()) return
+        if (pageReady) transcribeSharedList(uris) else pendingShared = uris
     }
 
-    private fun sharedAudioUri(intent: Intent?): Uri? {
-        if (intent == null || intent.action != Intent.ACTION_SEND) return null
+    private fun sharedAudioUris(intent: Intent?): List<Uri> {
+        if (intent == null) return emptyList()
         @Suppress("DEPRECATION")
-        return intent.getParcelableExtra(Intent.EXTRA_STREAM)
+        return when (intent.action) {
+            Intent.ACTION_SEND ->
+                (intent.getParcelableExtra(Intent.EXTRA_STREAM) as? Uri)?.let { listOf(it) } ?: emptyList()
+            Intent.ACTION_SEND_MULTIPLE ->
+                intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM) ?: emptyList()
+            else -> emptyList()
+        }
     }
 
     // ---- JS callbacks ----
-
     private fun callJs(fn: String, vararg args: String) {
         val joined = args.joinToString(",") { JSONObject.quote(it) }
         runOnUiThread { web.evaluateJavascript("window.TX && window.TX.$fn($joined)", null) }
     }
-
     private fun callJsRaw(fn: String, arg: String) {
         runOnUiThread { web.evaluateJavascript("window.TX && window.TX.$fn($arg)", null) }
     }
 
     // ---- transcription ----
-
-    private fun transcribeShared(uri: Uri) {
-        callJs("onSharedStart")
+    private fun transcribeSharedList(uris: List<Uri>) {
+        callJsRaw("onSharedStart", uris.size.toString())
         Thread {
-            val res = try {
-                val bytes = contentResolver.openInputStream(uri)?.use { it.readBytes() }
-                if (bytes == null) err(R.string.err_no_file)
-                else {
-                    val mime = contentResolver.getType(uri) ?: intent?.type ?: "audio/ogg"
-                    OpenAiTranscriber.transcribe(Prefs.getKey(this), bytes, "audio." + extFor(mime, uri), mime)
+            for (uri in uris) {
+                val res = try {
+                    val bytes = contentResolver.openInputStream(uri)?.use { it.readBytes() }
+                    if (bytes == null) err(R.string.err_no_file)
+                    else {
+                        val mime = contentResolver.getType(uri) ?: "audio/ogg"
+                        OpenAiTranscriber.transcribe(Prefs.getKey(this), bytes, "audio." + extFor(mime, uri), mime)
+                    }
+                } catch (e: Exception) { err(R.string.err_generic) }
+                when (res) {
+                    is OpenAiTranscriber.Result.Ok -> callJs("onShared", res.text, "")
+                    is OpenAiTranscriber.Result.Err -> callJs("onShared", "", getString(res.errorRes))
                 }
-            } catch (e: Exception) { err(R.string.err_generic) }
-            deliver(res, shared = true)
+            }
+            callJs("onSharedDone")
         }.start()
     }
 
     private fun transcribeFile(f: File) {
         Thread {
             val res = try {
-                val bytes = f.readBytes()
-                OpenAiTranscriber.transcribe(Prefs.getKey(this), bytes, "audio.m4a", "audio/m4a")
+                OpenAiTranscriber.transcribe(Prefs.getKey(this), f.readBytes(), "audio.m4a", "audio/m4a")
             } catch (e: Exception) { err(R.string.err_generic) }
             f.delete()
-            deliver(res, shared = false)
+            when (res) {
+                is OpenAiTranscriber.Result.Ok -> callJs("onResult", res.text, "")
+                is OpenAiTranscriber.Result.Err -> callJs("onResult", "", getString(res.errorRes))
+            }
         }.start()
     }
 
     private fun err(res: Int) = OpenAiTranscriber.Result.Err(res)
-
-    private fun deliver(res: OpenAiTranscriber.Result, shared: Boolean) {
-        val fn = if (shared) "onShared" else "onResult"
-        when (res) {
-            is OpenAiTranscriber.Result.Ok -> callJs(fn, res.text, "")
-            is OpenAiTranscriber.Result.Err -> callJs(fn, "", getString(res.errorRes))
-        }
-    }
 
     private fun extFor(mime: String, uri: Uri): String {
         val m = mime.lowercase()
@@ -138,7 +142,6 @@ class MainActivity : Activity() {
     }
 
     // ---- recording ----
-
     private fun beginRecorder(): Boolean {
         try {
             val f = File(cacheDir, "rec_${System.currentTimeMillis()}.m4a")
@@ -165,15 +168,9 @@ class MainActivity : Activity() {
 
     private fun stopRecorder(): File? {
         return try {
-            recorder?.stop()
-            recorder?.release()
-            recorder = null
-            recFile
+            recorder?.stop(); recorder?.release(); recorder = null; recFile
         } catch (e: Exception) {
-            recorder?.release()
-            recorder = null
-            recFile?.delete()
-            null
+            recorder?.release(); recorder = null; recFile?.delete(); null
         }
     }
 
@@ -185,14 +182,12 @@ class MainActivity : Activity() {
         }
     }
 
-    // ---- bridge exposed to JS ----
-
+    // ---- bridge ----
     inner class Bridge {
         @JavascriptInterface fun hasKey(): Boolean = Prefs.hasKey(this@MainActivity)
         @JavascriptInterface fun getKey(): String = Prefs.getKey(this@MainActivity)
         @JavascriptInterface fun setKey(value: String) { Prefs.setKey(this@MainActivity, value) }
 
-        /** "ok" | "need_permission" | "error" */
         @JavascriptInterface fun startRecording(): String {
             val granted = checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
             if (!granted) {
@@ -202,11 +197,14 @@ class MainActivity : Activity() {
             return if (beginRecorder()) "ok" else "error"
         }
 
-        @JavascriptInterface fun cancelRecording() {
-            stopRecorder()?.delete()
+        @JavascriptInterface fun pauseRecording(): Boolean {
+            return try { recorder?.pause(); true } catch (e: Exception) { false }
         }
+        @JavascriptInterface fun resumeRecording(): Boolean {
+            return try { recorder?.resume(); true } catch (e: Exception) { false }
+        }
+        @JavascriptInterface fun cancelRecording() { stopRecorder()?.delete() }
 
-        /** Stops recording and transcribes; result via TX.onResult(text, err). */
         @JavascriptInterface fun stopAndTranscribe() {
             val f = stopRecorder()
             if (f == null) callJs("onResult", "", getString(R.string.err_generic))
@@ -217,24 +215,14 @@ class MainActivity : Activity() {
             val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             cm.setPrimaryClip(ClipData.newPlainText("transcript", text))
         }
-
         @JavascriptInterface fun share(text: String) {
-            val send = Intent(Intent.ACTION_SEND).apply {
-                type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, text)
-            }
+            val send = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, text) }
             startActivity(Intent.createChooser(send, null).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         }
-
         @JavascriptInterface fun openUrl(url: String) {
-            try {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-            } catch (e: Exception) {
-            }
+            try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) } catch (e: Exception) {}
         }
     }
 
-    companion object {
-        private const val REQ_MIC = 101
-    }
+    companion object { private const val REQ_MIC = 101 }
 }

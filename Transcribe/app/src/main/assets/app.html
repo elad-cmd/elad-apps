@@ -6,316 +6,316 @@
 <title>תמלול</title>
 <style>
   :root{
-    --bg:#0E1320; --bg2:#0B0F1A; --card:#1A2130; --card2:#222C3D; --brd:#2A3344;
-    --ink:#EAF0F7; --mut:#8A97A8; --faint:#6C7889;
-    --acc:#16C2A8; --accink:#06281f; --rec:#FF5A5F;
+    --bg:#E6F1EC; --page:#F3F9F6; --card:#FFFFFF; --line:#DCE8E2;
+    --ink:#1A2A24; --mut:#6E8076; --faint:#9AA9A1;
+    --acc:#12876B; --accd:#0E6E57; --rec:#E2685F; --del:#D9534F;
+    --shCard:0 6px 18px -8px rgba(20,80,60,.28);
+    --shBtn:0 8px 20px -6px rgba(18,135,107,.5);
+    --shFab:0 16px 32px -6px rgba(10,60,45,.45), 0 6px 14px rgba(10,60,45,.3);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
+  html,body{margin:0;height:100%;background:var(--page);color:var(--ink);
     font-family:'Assistant',system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
     overflow:hidden;-webkit-user-select:none;user-select:none}
-  .screen{position:fixed;inset:0;display:none;flex-direction:column;background:var(--bg)}
+  .screen{position:fixed;inset:0;display:none;flex-direction:column;background:var(--page)}
   .screen.on{display:flex}
-  .pad{padding:18px 18px env(safe-area-inset-bottom) 18px}
-  .top{display:flex;align-items:center;gap:12px;padding:18px 18px 8px}
-  .top .ttl{font-size:20px;font-weight:700;flex:1}
-  .iconbtn{width:38px;height:38px;border-radius:50%;background:var(--card);border:0.5px solid var(--brd);
-    display:flex;align-items:center;justify-content:center;color:var(--ink);flex:0 0 auto}
-  .iconbtn svg{width:20px;height:20px}
   svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
-  /* HOME */
-  .recwrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:26px 0 18px}
-  .recbtn{width:128px;height:128px;border-radius:50%;background:var(--acc);color:var(--accink);
-    display:flex;align-items:center;justify-content:center;border:none;
-    box-shadow:0 0 0 10px rgba(22,194,168,.14);transition:transform .12s}
-  .recbtn:active{transform:scale(.94)}
-  .recbtn svg{width:54px;height:54px;stroke:var(--accink);stroke-width:2}
-  .rectxt{font-size:15px;margin-top:16px;color:var(--ink)}
-  .recsub{font-size:12px;margin-top:4px;color:var(--mut)}
-  .sect{font-size:13px;color:var(--mut);padding:6px 20px 8px}
-  .list{flex:1;overflow-y:auto;padding:0 16px 120px}
-  .item{background:var(--card);border:0.5px solid var(--brd);border-radius:14px;padding:12px 14px;margin-bottom:10px}
-  .item .t{font-size:13.5px;line-height:1.5;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .item .d{font-size:11px;color:var(--faint);margin-top:5px}
-  .empty{color:var(--faint);font-size:13px;text-align:center;padding:30px 20px}
+  .head{padding:16px 18px 8px;text-align:center}
+  .head .t{font-size:20px;font-weight:700;color:var(--ink)}
+  .head .s{font-size:11.5px;color:var(--mut);margin-top:2px}
 
-  /* RESULT */
-  .rbody{flex:1;overflow-y:auto;padding:6px 18px 14px}
-  .tbox{background:var(--card);border:0.5px solid var(--brd);border-radius:16px;padding:16px;
-    font-size:16px;line-height:1.75;color:var(--ink);text-align:right;-webkit-user-select:text;user-select:text;min-height:60%}
-  .foot{display:flex;gap:10px;padding:10px 18px calc(16px + env(safe-area-inset-bottom))}
-  .btn{flex:1;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:600;
-    display:flex;align-items:center;justify-content:center;gap:8px}
-  .btn svg{width:19px;height:19px}
-  .btn.pri{background:var(--acc);color:var(--accink)} .btn.pri svg{stroke:var(--accink)}
-  .btn.sec{background:var(--card);color:var(--ink);border:0.5px solid var(--brd)}
+  .scroll{flex:1;overflow-y:auto;padding:6px 16px 96px}
 
-  /* BUSY / RECORDING overlays */
-  .center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
-  .spinner{width:46px;height:46px;border-radius:50%;border:4px solid rgba(255,255,255,.12);border-top-color:var(--acc);animation:spin 1s linear infinite}
+  /* transcript box */
+  .box{background:var(--card);border-radius:18px;box-shadow:var(--shCard);padding:14px 15px;margin-bottom:14px}
+  .box .tx{font-size:15.5px;line-height:1.7;color:var(--ink);text-align:right;-webkit-user-select:text;user-select:text;white-space:pre-wrap}
+  .box .acts{display:flex;justify-content:flex-end;gap:6px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+  .ibtn{width:38px;height:38px;border-radius:12px;background:var(--page);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;color:var(--mut)}
+  .ibtn svg{width:19px;height:19px}
+  .ibtn.del{color:var(--del)}
+  .box.busy .tx{color:var(--mut);display:flex;align-items:center;gap:10px}
+  .spin{width:20px;height:20px;border-radius:50%;border:3px solid rgba(18,135,107,.18);border-top-color:var(--acc);animation:spin 1s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
-  .busytxt{margin-top:18px;font-size:16px;color:var(--ink)}
-  .pulse{width:150px;height:150px;border-radius:50%;background:var(--rec);display:flex;align-items:center;justify-content:center;animation:pulse 1.4s ease-in-out infinite}
-  .pulse svg{width:60px;height:60px;stroke:#fff;stroke-width:2}
-  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,90,95,.45)}50%{box-shadow:0 0 0 22px rgba(255,90,95,0)}}
-  .timer{font-size:34px;font-weight:700;margin-top:26px;letter-spacing:2px}
-  .recrow{display:flex;gap:14px;margin-top:30px;align-items:center}
-  .stopbtn{background:var(--acc);color:var(--accink);border:none;border-radius:999px;padding:15px 34px;font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
-  .stopbtn svg{width:18px;height:18px;stroke:var(--accink)}
-  .cancelbtn{background:transparent;border:none;color:var(--mut);font-size:15px;padding:12px}
 
-  /* SETTINGS / HELP */
-  .scrollpad{flex:1;overflow-y:auto;padding:6px 18px 40px}
-  .lbl{font-size:12px;color:var(--acc);font-weight:600;margin:14px 2px 7px}
-  .input{width:100%;background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:13px 14px;
-    font-size:14px;color:var(--ink);direction:ltr;text-align:left;-webkit-user-select:text;user-select:text}
-  .help-txt{font-size:12.5px;color:var(--mut);line-height:1.6;margin:8px 2px 0}
-  .save{width:100%;background:var(--acc);color:var(--accink);border:none;border-radius:26px;padding:15px;font-size:16px;font-weight:700;margin-top:18px}
-  .ghost{width:100%;background:transparent;color:var(--acc);border:1px solid var(--acc);border-radius:24px;padding:13px;font-size:14px;font-weight:600;margin-top:12px}
-  .status{font-size:14px;margin-top:16px;text-align:center}
-  .status.ok{color:#3DDC97} .status.no{color:#FF7A7A}
-  .step{background:var(--card);border:0.5px solid var(--brd);border-radius:14px;padding:14px;margin-bottom:12px}
-  .step h4{margin:0 0 4px;font-size:15px;display:flex;align-items:center;gap:9px}
-  .step .n{width:26px;height:26px;border-radius:50%;background:var(--acc);color:var(--accink);display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex:0 0 auto}
-  .step p{margin:0;font-size:13.5px;color:var(--mut);line-height:1.6}
-  .openlink{display:inline-flex;align-items:center;gap:6px;background:var(--acc);color:var(--accink);border:none;border-radius:20px;padding:9px 16px;font-size:13px;font-weight:600;margin-top:10px}
-  .warnbox{font-size:12.5px;color:#F0C36A;background:rgba(240,195,106,.1);border:1px solid rgba(240,195,106,.3);border-radius:10px;padding:9px 11px;margin-top:10px;line-height:1.55}
+  /* empty record box */
+  .recbox{background:var(--card);border-radius:18px;box-shadow:var(--shCard);padding:14px 15px;margin-bottom:14px;
+    display:flex;align-items:center;gap:14px;border:1.5px dashed var(--line)}
+  .recbox .ph{flex:1;color:var(--faint);font-size:14.5px;text-align:right}
+  .recdot{width:58px;height:58px;border-radius:50%;background:var(--acc);box-shadow:var(--shBtn);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;flex:0 0 auto;color:#fff}
+  .recdot .dots{display:flex;gap:5px;transform:rotate(-45deg)}
+  .recdot .dots i{width:6px;height:6px;border-radius:50%;background:#fff;display:block}
+  .recdot .lab{font-size:9.5px;color:#fff;margin-top:3px;font-weight:600}
 
-  /* PSYCHO FAB MENU */
-  .fab{position:fixed;left:18px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:60;width:58px;height:58px;border-radius:50%;
-    background:#fff;border:none;display:flex;align-items:center;justify-content:center;
-    box-shadow:0 20px 44px 2px rgba(0,0,0,.6), 0 8px 18px rgba(0,0,0,.5);transition:transform .15s}
-  .fab:active{transform:scale(.9)}
-  .fdots{display:flex;gap:8px;transform:rotate(-45deg);transition:opacity .2s,transform .3s}
-  .fdots i{width:7px;height:7px;border-radius:50%;background:#0E1320;display:block}
-  .fx{position:absolute;width:24px;height:24px;opacity:0;transform:rotate(-45deg) scale(.4);transition:opacity .2s,transform .3s}
-  .fx:before,.fx:after{content:"";position:absolute;left:11px;top:2px;width:2.5px;height:20px;background:#0E1320;border-radius:2px}
-  .fx:before{transform:rotate(45deg)} .fx:after{transform:rotate(-45deg)}
-  .fab.open .fdots{opacity:0;transform:rotate(45deg) scale(.4)}
-  .fab.open .fx{opacity:1;transform:rotate(0) scale(1)}
-  .fabitem{position:fixed;left:24px;bottom:calc(24px + env(safe-area-inset-bottom));z-index:59;
-    display:flex;flex-direction:column;align-items:center;gap:4px;
-    opacity:0;pointer-events:none;transform:translate(0,0) scale(.3);
-    transition:transform .42s cubic-bezier(.34,1.4,.5,1),opacity .3s}
-  .fabitem .c{width:46px;height:46px;border-radius:50%;background:var(--card2);border:0.5px solid var(--brd);
-    display:flex;align-items:center;justify-content:center;color:var(--ink);box-shadow:0 10px 24px -8px rgba(0,0,0,.6)}
-  .fabitem .c svg{width:21px;height:21px}
-  .fabitem .lab{font-size:10.5px;color:var(--ink);background:rgba(14,19,32,.85);padding:1px 7px;border-radius:8px;white-space:nowrap}
-  .fabitem.act .c{background:var(--acc);color:var(--accink)} .fabitem.act .c svg{stroke:var(--accink)}
-  .menuopen .fabitem{opacity:1;pointer-events:auto}
-  .scrim{position:fixed;inset:0;z-index:58;background:rgba(8,11,18,0);pointer-events:none;transition:background .3s}
-  .menuopen .scrim{background:rgba(8,11,18,.55);pointer-events:auto}
+  /* bottom bar */
+  .botbar{position:absolute;left:0;right:0;bottom:0;height:72px;display:flex;align-items:center;
+    gap:10px;padding:0 16px calc(env(safe-area-inset-bottom)) 16px;background:transparent}
+  .barbtn{height:48px;border-radius:24px;border:none;display:flex;align-items:center;justify-content:center;gap:8px;
+    font-size:15px;font-weight:600;box-shadow:var(--shBtn)}
+  .barbtn svg{width:20px;height:20px}
+  .barbtn.pri{background:var(--acc);color:#fff;flex:1} .barbtn.pri svg{stroke:#fff}
+  .barbtn.ghost{background:var(--card);color:var(--acc);box-shadow:var(--shCard);width:52px;flex:0 0 auto} .barbtn.ghost svg{stroke:var(--acc)}
+  /* psycho menu fab */
+  .fab{width:52px;height:52px;border-radius:50%;background:var(--card);border:none;flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;box-shadow:var(--shFab)}
+  .fab .d{display:flex;gap:6px;transform:rotate(-45deg)}
+  .fab .d i{width:6px;height:6px;border-radius:50%;background:var(--ink);display:block}
+  .drop{position:absolute;left:16px;bottom:84px;width:184px;background:var(--card);border-radius:16px;
+    box-shadow:var(--shFab);padding:6px;opacity:0;transform:translateY(8px) scale(.96);pointer-events:none;
+    transition:opacity .2s,transform .2s;z-index:40}
+  .drop.show{opacity:1;transform:none;pointer-events:auto}
+  .drop button{width:100%;display:flex;align-items:center;justify-content:flex-end;gap:10px;background:none;border:none;
+    padding:12px 12px;font-size:14.5px;color:var(--ink);border-radius:10px}
+  .drop button svg{width:19px;height:19px;color:var(--mut)}
+  .drop button.danger{color:var(--del)} .drop button.danger svg{color:var(--del)}
+  .scrim{position:absolute;inset:0;background:rgba(20,50,40,0);pointer-events:none;transition:background .25s;z-index:35}
+  .scrim.show{background:rgba(20,50,40,.28);pointer-events:auto}
+
+  /* recording */
+  .center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+  .wave{display:flex;align-items:center;gap:4px;height:60px;margin-bottom:8px}
+  .wave i{width:4px;border-radius:3px;background:var(--rec);animation:wv 1s ease-in-out infinite}
+  .wave.paused i{animation:none;background:var(--faint)}
+  @keyframes wv{0%,100%{height:10px}50%{height:42px}}
+  .timer{font-size:40px;font-weight:700;letter-spacing:2px;color:var(--ink);margin-top:10px}
+  .rstate{font-size:14px;color:var(--mut);margin-top:6px}
+  .recctrls{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px;padding:0 18px}
+  .rbtn{height:54px;border-radius:27px;border:none;font-size:16px;font-weight:700;padding:0 26px;display:flex;align-items:center;gap:8px}
+  .rbtn svg{width:20px;height:20px}
+  .rbtn.primary{background:var(--acc);color:#fff;box-shadow:var(--shBtn)} .rbtn.primary svg{stroke:#fff}
+  .rbtn.ghost{background:var(--card);color:var(--acc);box-shadow:var(--shCard)} .rbtn.ghost svg{stroke:var(--acc)}
+  .rbtn.cancel{background:transparent;color:var(--mut);box-shadow:none;font-weight:600;padding:0 14px}
+
+  /* settings / help */
+  .top{display:flex;align-items:center;padding:16px 18px 8px}
+  .top .tt{font-size:20px;font-weight:700;flex:1;text-align:right}
+  .scrollpad{flex:1;overflow-y:auto;padding:8px 18px 110px}
+  .lbl{font-size:12px;color:var(--acc);font-weight:700;margin:14px 2px 7px;text-align:right}
+  .input{width:100%;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;
+    font-size:14px;color:var(--ink);direction:ltr;text-align:left;box-shadow:var(--shCard);-webkit-user-select:text;user-select:text}
+  .help-txt{font-size:12.5px;color:var(--mut);line-height:1.6;margin:8px 2px 0;text-align:right}
+  .save{width:100%;background:var(--acc);color:#fff;border:none;border-radius:27px;padding:16px;font-size:16px;font-weight:700;margin-top:18px;box-shadow:var(--shBtn)}
+  .ghostbtn{width:100%;background:var(--card);color:var(--acc);border:none;border-radius:25px;padding:14px;font-size:14.5px;font-weight:600;margin-top:12px;box-shadow:var(--shCard)}
+  .status{font-size:14px;margin-top:16px;text-align:center;font-weight:600}
+  .status.ok{color:var(--acc)} .status.no{color:var(--del)}
+  .homebtn{position:absolute;left:18px;right:18px;bottom:calc(20px + env(safe-area-inset-bottom));
+    background:var(--acc);color:#fff;border:none;border-radius:27px;padding:16px;font-size:16px;font-weight:700;
+    box-shadow:var(--shBtn);display:flex;align-items:center;justify-content:center;gap:8px}
+  .homebtn svg{width:20px;height:20px;stroke:#fff}
+  .step{background:var(--card);border-radius:16px;box-shadow:var(--shCard);padding:14px;margin-bottom:12px}
+  .step h4{margin:0 0 4px;font-size:15px;display:flex;align-items:center;gap:9px;justify-content:flex-end;text-align:right}
+  .step .n{width:26px;height:26px;border-radius:50%;background:var(--acc);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+  .step p{margin:0;font-size:13.5px;color:var(--mut);line-height:1.6;text-align:right}
+  .openlink{display:inline-flex;align-items:center;gap:6px;background:var(--acc);color:#fff;border:none;border-radius:20px;padding:9px 16px;font-size:13px;font-weight:600;margin-top:10px;box-shadow:var(--shBtn)}
+  .warnbox{font-size:12.5px;color:#9A6B00;background:#FBF1DC;border-radius:10px;padding:9px 11px;margin-top:10px;line-height:1.55;text-align:right}
+
+  .toast{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);background:var(--ink);color:#fff;
+    padding:10px 18px;border-radius:20px;font-size:14px;z-index:60;opacity:0;transition:opacity .2s;max-width:80%;text-align:center}
+  .toast.show{opacity:1}
 </style>
 </head>
 <body>
 
-<!-- HOME -->
-<section id="home" class="screen on">
-  <div class="top"><span class="ttl">תמלול</span></div>
-  <div class="recwrap">
-    <button class="recbtn" id="recBtn" aria-label="הקלט">
-      <svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="22"/></svg>
-    </button>
-    <div class="rectxt">הקש כדי להקליט</div>
-    <div class="recsub">או שתף הקלטה קולית מווטסאפ</div>
+<!-- MAIN (boxes) -->
+<section id="main" class="screen on">
+  <div class="head"><div class="t">תמלול</div><div class="s">הקלט או שתף הקלטה — וקבל טקסט</div></div>
+  <div class="scroll" id="boxes"></div>
+  <div class="drop" id="drop">
+    <button data-go="settings"><span>הגדרות</span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.5 5.5l2 2M16.5 16.5l2 2M18.5 5.5l-2 2M7.5 16.5l-2 2"/></svg></button>
+    <button data-go="help"><span>עזרה — איך משיגים מפתח</span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 .9-1 1.7"/><circle cx="12" cy="17" r=".5" fill="currentColor" stroke="none"/></svg></button>
+    <button class="danger" data-clear><span>נקה את המסך</span><svg viewBox="0 0 24 24"><path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13"/></svg></button>
   </div>
-  <div class="sect">אחרונים</div>
-  <div class="list" id="recent"></div>
-</section>
-
-<!-- RESULT -->
-<section id="result" class="screen">
-  <div class="top">
-    <button class="iconbtn" data-back aria-label="חזרה"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
-    <span class="ttl">התמלול</span>
-  </div>
-  <div class="rbody"><div class="tbox" id="resText"></div></div>
-  <div class="foot">
-    <button class="btn pri" id="copyBtn"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg> העתק</button>
-    <button class="btn sec" id="shareBtn"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg> שתף</button>
+  <div class="scrim" id="scrim"></div>
+  <div class="botbar">
+    <button class="fab" id="fab" aria-label="תפריט"><span class="d"><i></i><i></i><i></i></span></button>
+    <span style="flex:1"></span>
+    <button class="barbtn ghost" id="shareAll" aria-label="שתף הכל"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.4"/><circle cx="6" cy="12" r="2.4"/><circle cx="18" cy="19" r="2.4"/><path d="M8.2 13.3l7.6 4.4M15.8 6.3l-7.6 4.4"/></svg></button>
+    <button class="barbtn pri" id="copyAll"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h9"/></svg> העתק הכל</button>
   </div>
 </section>
 
 <!-- RECORDING -->
 <section id="recording" class="screen">
   <div class="center">
-    <div class="pulse"><svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div>
+    <div class="wave" id="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="timer" id="timer">0:00</div>
-    <div class="recrow">
-      <button class="stopbtn" id="stopBtn"><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg> סיום ותמלול</button>
-    </div>
-    <button class="cancelbtn" id="cancelBtn">ביטול</button>
+    <div class="rstate" id="rstate">מקליט…</div>
   </div>
-</section>
-
-<!-- BUSY -->
-<section id="busy" class="screen">
-  <div class="center"><div class="spinner"></div><div class="busytxt" id="busyTxt">מתמלל… רגע אחד</div></div>
-</section>
-
-<!-- HISTORY -->
-<section id="history" class="screen">
-  <div class="top">
-    <button class="iconbtn" data-home aria-label="בית"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
-    <span class="ttl">היסטוריה</span>
+  <div class="recctrls">
+    <button class="rbtn primary" id="finishBtn"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5 9-11"/></svg> סיים</button>
+    <button class="rbtn ghost" id="pauseBtn"><svg viewBox="0 0 24 24"><rect x="7" y="5" width="3.5" height="14" rx="1"/><rect x="13.5" y="5" width="3.5" height="14" rx="1"/></svg> השהה</button>
+    <span style="flex:1"></span>
+    <button class="rbtn cancel" id="cancelBtn">בטל</button>
   </div>
-  <div class="list" id="histList" style="padding-top:6px"></div>
 </section>
 
 <!-- SETTINGS -->
 <section id="settings" class="screen">
-  <div class="top">
-    <button class="iconbtn" data-home aria-label="בית"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
-    <span class="ttl">הגדרות</span>
-  </div>
+  <div class="top"><span class="tt">הגדרות</span></div>
   <div class="scrollpad">
     <div class="lbl">מפתח OpenAI</div>
     <input class="input" id="keyInput" placeholder="sk-..." autocapitalize="off" autocorrect="off" spellcheck="false">
     <p class="help-txt">המפתח נשמר רק במכשיר שלך ונשלח ישירות ל-OpenAI. אין שרת ביניים.</p>
     <button class="save" id="saveKey">שמור מפתח</button>
-    <button class="ghost" id="toHelp">איך משיגים מפתח?</button>
+    <button class="ghostbtn" id="toHelp">איך משיגים מפתח?</button>
     <div class="status" id="keyStatus"></div>
   </div>
+  <button class="homebtn" data-go="main"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg> חזרה לדף הבית</button>
 </section>
 
 <!-- HELP -->
 <section id="help" class="screen">
-  <div class="top">
-    <button class="iconbtn" data-back-to="settings" aria-label="חזרה"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
-    <span class="ttl">איך משיגים מפתח</span>
-  </div>
+  <div class="top"><span class="tt">איך משיגים מפתח</span></div>
   <div class="scrollpad">
     <p class="help-txt" style="font-size:13.5px;margin-bottom:8px">תהליך חד-פעמי של כ-5 דקות. כל אחד פותח מפתח משלו ומשלם רק על מה שהוא מתמלל — בערך 2 אגורות לדקה.</p>
-
-    <div class="step"><h4><span class="n">1</span> הרשמה</h4>
-      <p>היכנסו לאתר ופתחו חשבון — הכי מהיר עם "Continue with Google". המסך נקרא "Create an account".</p>
-      <button class="openlink" data-url="https://platform.openai.com/signup">פתח את אתר ההרשמה ←</button></div>
-
-    <div class="step"><h4><span class="n">2</span> אימות</h4>
-      <p>מזינים קוד שמגיע לאימייל, ולעיתים גם אימות טלפון. פעם אחת בלבד.</p></div>
-
-    <div class="step"><h4><span class="n">3</span> טעינת קרדיט</h4>
-      <p>בהגדרות החיוב מוסיפים כרטיס אשראי וטוענים סכום קטן מראש — מספיק 5 דולר. זה קרדיט מראש, אז אי אפשר להיות מחויב יותר מזה.</p>
-      <button class="openlink" data-url="https://platform.openai.com/settings/organization/billing/overview">פתח את עמוד החיוב ←</button></div>
-
-    <div class="step"><h4><span class="n">4</span> יצירת המפתח</h4>
-      <p>בעמוד המפתחות לוחצים "Create new secret key", ומעתיקים מיד בלחיצה על Copy.</p>
-      <button class="openlink" data-url="https://platform.openai.com/api-keys">פתח את עמוד המפתחות ←</button>
-      <div class="warnbox">המפתח מוצג פעם אחת בלבד. העתיקו אותו מיד. אם פספסתם — צרו מפתח חדש, זה בחינם.</div></div>
-
-    <div class="step"><h4><span class="n">5</span> הדבקה כאן</h4>
-      <p>חוזרים לאפליקציה, נכנסים להגדרות, מדביקים את המפתח ולוחצים "שמור מפתח".</p></div>
+    <div class="step"><h4>הרשמה <span class="n">1</span></h4><p>היכנסו לאתר ופתחו חשבון — הכי מהיר עם "Continue with Google".</p><button class="openlink" data-url="https://platform.openai.com/signup">פתח את אתר ההרשמה ←</button></div>
+    <div class="step"><h4>אימות <span class="n">2</span></h4><p>מזינים קוד שמגיע לאימייל, ולעיתים גם אימות טלפון. פעם אחת בלבד.</p></div>
+    <div class="step"><h4>טעינת קרדיט <span class="n">3</span></h4><p>מוסיפים כרטיס וטוענים סכום קטן מראש — מספיק 5 דולר. קרדיט מראש, בלי הפתעות.</p><button class="openlink" data-url="https://platform.openai.com/settings/organization/billing/overview">פתח את עמוד החיוב ←</button></div>
+    <div class="step"><h4>יצירת המפתח <span class="n">4</span></h4><p>לוחצים "Create new secret key" ומעתיקים מיד בלחיצה על Copy.</p><button class="openlink" data-url="https://platform.openai.com/api-keys">פתח את עמוד המפתחות ←</button><div class="warnbox">המפתח מוצג פעם אחת בלבד. העתיקו אותו מיד. אם פספסתם — צרו מפתח חדש, זה בחינם.</div></div>
+    <div class="step"><h4>הדבקה כאן <span class="n">5</span></h4><p>חוזרים להגדרות, מדביקים את המפתח ולוחצים "שמור מפתח".</p></div>
   </div>
+  <button class="homebtn" data-go="settings"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg> חזרה</button>
 </section>
 
-<!-- PSYCHO FAB MENU -->
-<div class="scrim" id="scrim"></div>
-<button class="fab" id="fab" aria-label="תפריט"><span class="fdots"><i></i><i></i><i></i></span><span class="fx"></span></button>
-<div class="fabitem" data-nav="home" data-i="1"><span class="c"><svg viewBox="0 0 24 24"><path d="M4 11 12 4l8 7"/><path d="M6 10v8a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-8" stroke-dasharray="2 2.4"/></svg></span><span class="lab">בית</span></div>
-<div class="fabitem" data-nav="history" data-i="2"><span class="c"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg></span><span class="lab">היסטוריה</span></div>
-<div class="fabitem" data-nav="settings" data-i="3"><span class="c"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.1-1.3l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2.3-1.3L13.6 2h-3.2l-.4 2.5a7 7 0 0 0-2.3 1.3l-2.3-1-2 3.4 2 1.5A7 7 0 0 0 5 12a7 7 0 0 0 .1 1.3l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2.3 1.3l.4 2.5h3.2l.4-2.5a7 7 0 0 0 2.3-1.3l2.3 1 2-3.4-2-1.5A7 7 0 0 0 19 12Z"/></svg></span><span class="lab">הגדרות</span></div>
-<div class="fabitem" data-nav="help" data-i="4"><span class="c"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 .9-1 1.7"/><line x1="12" y1="17" x2="12" y2="17"/></svg></span><span class="lab">עזרה</span></div>
+<div class="toast" id="toast"></div>
 
 <script>
 (function(){
-  var A = window.Android || null;
-  function bridge(fn, def){ try{ return A ? A[fn]() : def; }catch(e){ return def; } }
+  var A=window.Android||null;
+  function br(fn,d){ try{return A?A[fn]():d;}catch(e){return d;} }
+  var screens=['main','recording','settings','help'];
+  function show(id){ screens.forEach(function(s){document.getElementById(s).classList.toggle('on',s===id);}); closeMenu(); }
 
-  var screens = ['home','result','recording','busy','history','settings','help'];
-  function show(id){ screens.forEach(function(s){ document.getElementById(s).classList.toggle('on', s===id); }); closeMenu(); }
-
-  // ---------- history ----------
-  function loadHist(){ try{ return JSON.parse(localStorage.getItem('tx_hist')||'[]'); }catch(e){ return []; } }
-  function saveHist(arr){ try{ localStorage.setItem('tx_hist', JSON.stringify(arr.slice(0,100))); }catch(e){} }
-  function addHist(text){ var a=loadHist(); a.unshift({t:text, d:Date.now()}); saveHist(a); renderRecent(); renderHist(); }
-  function fmt(ts){ var d=new Date(ts), n=new Date(); var hm=d.getHours()+':'+('0'+d.getMinutes()).slice(-2);
-    if(d.toDateString()===n.toDateString()) return 'היום, '+hm;
-    var y=new Date(n-86400000); if(d.toDateString()===y.toDateString()) return 'אתמול, '+hm;
-    return d.getDate()+'/'+(d.getMonth()+1)+', '+hm; }
-  function itemHtml(o){ return '<div class="item" data-t="'+encodeURIComponent(o.t)+'"><div class="t">'+esc(o.t)+'</div><div class="d">'+fmt(o.d)+'</div></div>'; }
-  function esc(s){ return (s||'').replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];}); }
-  function renderRecent(){ var a=loadHist().slice(0,3), el=document.getElementById('recent');
-    el.innerHTML = a.length ? a.map(itemHtml).join('') : '<div class="empty">עדיין אין תמלולים. הקלט או שתף הקלטה כדי להתחיל.</div>'; }
-  function renderHist(){ var a=loadHist(), el=document.getElementById('histList');
-    el.innerHTML = a.length ? a.map(itemHtml).join('') : '<div class="empty">אין היסטוריה עדיין.</div>'; }
-
-  // ---------- result ----------
-  var curText='', backTo='home';
-  function openResult(text, from){ curText=text; backTo=from||'home'; document.getElementById('resText').textContent=text; show('result'); }
-
-  document.body.addEventListener('click', function(e){
-    var it = e.target.closest('.item'); if(it){ openResult(decodeURIComponent(it.getAttribute('data-t')), it.closest('#history')?'history':'home'); return; }
-    var back = e.target.closest('[data-back]'); if(back){ show(backTo); return; }
-    var bt = e.target.closest('[data-back-to]'); if(bt){ show(bt.getAttribute('data-back-to')); return; }
-    var hm = e.target.closest('[data-home]'); if(hm){ show('home'); return; }
-    var nav = e.target.closest('[data-nav]'); if(nav){ go(nav.getAttribute('data-nav')); return; }
-    var url = e.target.closest('[data-url]'); if(url){ if(A&&A.openUrl) A.openUrl(url.getAttribute('data-url')); return; }
-  });
-
-  function go(id){ if(id==='settings') refreshKey(); if(id==='history') renderHist(); show(id); }
-
-  document.getElementById('copyBtn').addEventListener('click', function(){ if(A&&A.copy) A.copy(curText); toast('הועתק'); });
-  document.getElementById('shareBtn').addEventListener('click', function(){ if(A&&A.share) A.share(curText); });
-
-  // ---------- settings ----------
-  function refreshKey(){ var has=bridge('hasKey',false); var k=bridge('getKey',''); 
-    document.getElementById('keyInput').value=k||'';
-    var st=document.getElementById('keyStatus');
-    st.textContent = has ? 'מחובר ומוכן לתמלל' : 'עדיין לא הוזן מפתח';
-    st.className = 'status '+(has?'ok':'no'); }
-  document.getElementById('saveKey').addEventListener('click', function(){
-    var v=document.getElementById('keyInput').value.trim();
-    if(v.length<10 || v.slice(0,2)!=='sk'){ toast('הדבק מפתח תקין שמתחיל ב-sk'); return; }
-    if(A&&A.setKey) A.setKey(v); refreshKey(); toast('המפתח נשמר'); });
-  document.getElementById('toHelp').addEventListener('click', function(){ show('help'); });
-
-  // ---------- recording ----------
-  var timerInt=null, t0=0;
-  function tick(){ var s=Math.floor((Date.now()-t0)/1000); document.getElementById('timer').textContent=Math.floor(s/60)+':'+('0'+(s%60)).slice(-2); }
-  function beginRecUI(){ t0=Date.now(); document.getElementById('timer').textContent='0:00'; show('recording'); timerInt=setInterval(tick,500); }
-  function endTimer(){ if(timerInt){ clearInterval(timerInt); timerInt=null; } }
-
-  function tryRecord(){
-    if(!bridge('hasKey',false)){ toast('קודם צריך מפתח'); go('settings'); return; }
-    var r = A&&A.startRecording ? A.startRecording() : 'error';
-    if(r==='ok') beginRecUI();
-    else if(r==='need_permission'){ /* wait for onMicPermission */ }
-    else toast('לא ניתן להקליט');
-  }
-  document.getElementById('recBtn').addEventListener('click', tryRecord);
-  document.getElementById('stopBtn').addEventListener('click', function(){ endTimer(); document.getElementById('busyTxt').textContent='מתמלל… רגע אחד'; show('busy'); if(A&&A.stopAndTranscribe) A.stopAndTranscribe(); });
-  document.getElementById('cancelBtn').addEventListener('click', function(){ endTimer(); if(A&&A.cancelRecording) A.cancelRecording(); show('home'); });
-
-  // ---------- native -> JS ----------
-  window.TX = {
-    onResult: function(text, err){ if(err){ show('home'); toast(err); } else { addHist(text); openResult(text,'home'); } },
-    onSharedStart: function(){ document.getElementById('busyTxt').textContent='מתמלל… רגע אחד'; show('busy'); },
-    onShared: function(text, err){ if(err){ show('home'); toast(err); } else { addHist(text); openResult(text,'home'); } },
-    onMicPermission: function(granted){ if(granted){ var r=A&&A.startRecording?A.startRecording():'error'; if(r==='ok') beginRecUI(); } else { toast('צריך הרשאת מיקרופון'); } }
+  // ---- icons ----
+  var IC={
+    copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h9"/></svg>',
+    share:'<svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.4"/><circle cx="6" cy="12" r="2.4"/><circle cx="18" cy="19" r="2.4"/><path d="M8.2 13.3l7.6 4.4M15.8 6.3l-7.6 4.4"/></svg>',
+    del:'<svg viewBox="0 0 24 24"><path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13"/></svg>'
   };
 
-  // ---------- toast ----------
-  var toastEl=null, toastT=null;
-  function toast(msg){ if(!toastEl){ toastEl=document.createElement('div'); toastEl.style.cssText='position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#222C3D;color:#EAF0F7;padding:10px 18px;border-radius:20px;font-size:14px;z-index:100;border:0.5px solid #2A3344;opacity:0;transition:opacity .2s;max-width:80%;text-align:center'; document.body.appendChild(toastEl);} 
-    toastEl.textContent=msg; toastEl.style.opacity='1'; clearTimeout(toastT); toastT=setTimeout(function(){toastEl.style.opacity='0';},1800); }
+  // ---- boxes model ----
+  var boxes=[];
+  function load(){ try{boxes=JSON.parse(localStorage.getItem('tx_boxes')||'[]');}catch(e){boxes=[];} }
+  function save(){ try{localStorage.setItem('tx_boxes',JSON.stringify(boxes));}catch(e){} }
+  function esc(s){return (s||'').replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+  function nid(){return 'b'+Date.now()+Math.floor(Math.random()*999);}
 
-  // ---------- FAB menu (45° fan) ----------
-  var fab=document.getElementById('fab'), open=false;
-  var items=[].slice.call(document.querySelectorAll('.fabitem'));
-  var GAP=64;
-  function placeItems(){ items.forEach(function(el){ var i=+el.getAttribute('data-i');
-    if(open){ var d=i*GAP; el.style.transform='translate('+d+'px,'+(-d)+'px) scale(1)'; el.style.transitionDelay=(i*0.04)+'s'; }
-    else { el.style.transform='translate(0,0) scale(.3)'; el.style.transitionDelay=((items.length-i)*0.03)+'s'; } }); }
-  function openMenu(){ open=true; document.body.classList.add('menuopen'); fab.classList.add('open'); placeItems(); }
-  function closeMenu(){ open=false; document.body.classList.remove('menuopen'); fab.classList.remove('open'); placeItems(); }
-  fab.addEventListener('click', function(){ open?closeMenu():openMenu(); });
-  document.getElementById('scrim').addEventListener('click', closeMenu);
-  placeItems();
+  function render(){
+    var el=document.getElementById('boxes'); var h='';
+    boxes.forEach(function(b){
+      if(b.state==='busy'){
+        h+='<div class="box busy" data-id="'+b.id+'"><div class="tx"><span class="spin"></span>מתמלל… רגע אחד</div></div>';
+      } else {
+        h+='<div class="box" data-id="'+b.id+'"><div class="tx">'+esc(b.text)+'</div>'
+          +'<div class="acts">'
+          +'<button class="ibtn" data-act="copy" data-id="'+b.id+'">'+IC.copy+'</button>'
+          +'<button class="ibtn" data-act="share" data-id="'+b.id+'">'+IC.share+'</button>'
+          +'<button class="ibtn del" data-act="del" data-id="'+b.id+'">'+IC.del+'</button>'
+          +'</div></div>';
+      }
+    });
+    // empty record box (always last)
+    h+='<div class="recbox" id="recAdd"><div class="ph">לחץ להקלטה חדשה…</div>'
+      +'<div class="recdot"><span class="dots"><i></i><i></i><i></i></span><span class="lab">הקלט</span></div></div>';
+    el.innerHTML=h;
+  }
+
+  function allText(){ return boxes.filter(function(b){return b.state!=='busy'&&b.text;}).map(function(b){return b.text;}).join('\n\n'); }
+
+  // ---- actions ----
+  document.getElementById('boxes').addEventListener('click',function(e){
+    if(e.target.closest('#recAdd')){ startRecordFlow(); return; }
+    var b=e.target.closest('[data-act]'); if(!b) return;
+    var id=b.getAttribute('data-id'), act=b.getAttribute('data-act');
+    var box=boxes.find(function(x){return x.id===id;}); if(!box) return;
+    if(act==='copy'){ if(A&&A.copy)A.copy(box.text); toast('הועתק'); }
+    if(act==='share'){ if(A&&A.share)A.share(box.text); }
+    if(act==='del'){ boxes=boxes.filter(function(x){return x.id!==id;}); save(); render(); }
+  });
+  document.getElementById('copyAll').addEventListener('click',function(){ var t=allText(); if(!t){toast('אין מה להעתיק');return;} if(A&&A.copy)A.copy(t); toast('כל התמלולים הועתקו'); });
+  document.getElementById('shareAll').addEventListener('click',function(){ var t=allText(); if(!t){toast('אין מה לשתף');return;} if(A&&A.share)A.share(t); });
+
+  // ---- recording ----
+  var tInt=null,t0=0,acc=0,paused=false,recId=null;
+  function fmt(s){return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2);}
+  function tick(){ var s=acc+(paused?0:Math.floor((Date.now()-t0)/1000)); document.getElementById('timer').textContent=fmt(s); }
+  function startRecordFlow(){
+    if(!br('hasKey',false)){ toast('קודם צריך מפתח'); show('settings'); refreshKey(); return; }
+    var r=A&&A.startRecording?A.startRecording():'error';
+    if(r==='ok') beginUI();
+    else if(r==='need_permission'){} else toast('לא ניתן להקליט');
+  }
+  function beginUI(){ acc=0;t0=Date.now();paused=false; document.getElementById('timer').textContent='0:00';
+    document.getElementById('rstate').textContent='מקליט…'; document.getElementById('wave').classList.remove('paused');
+    setPauseLabel(false); show('recording'); tInt=setInterval(tick,400); }
+  function stopTimer(){ if(tInt){clearInterval(tInt);tInt=null;} }
+  function setPauseLabel(p){ var b=document.getElementById('pauseBtn'); b.innerHTML=(p
+    ?'<svg viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></svg> המשך'
+    :'<svg viewBox="0 0 24 24"><rect x="7" y="5" width="3.5" height="14" rx="1"/><rect x="13.5" y="5" width="3.5" height="14" rx="1"/></svg> השהה'); }
+  document.getElementById('pauseBtn').addEventListener('click',function(){
+    if(!paused){ if(A&&A.pauseRecording)A.pauseRecording(); acc+=Math.floor((Date.now()-t0)/1000); paused=true;
+      document.getElementById('rstate').textContent='מושהה'; document.getElementById('wave').classList.add('paused'); setPauseLabel(true); }
+    else { if(A&&A.resumeRecording)A.resumeRecording(); t0=Date.now(); paused=false;
+      document.getElementById('rstate').textContent='מקליט…'; document.getElementById('wave').classList.remove('paused'); setPauseLabel(false); }
+  });
+  document.getElementById('finishBtn').addEventListener('click',function(){
+    stopTimer(); show('main');
+    recId=nid(); boxes.push({id:recId,state:'busy'}); save(); render();
+    if(A&&A.stopAndTranscribe)A.stopAndTranscribe();
+  });
+  document.getElementById('cancelBtn').addEventListener('click',function(){ stopTimer(); if(A&&A.cancelRecording)A.cancelRecording(); show('main'); });
+
+  // ---- settings ----
+  function refreshKey(){ var has=br('hasKey',false),k=br('getKey','');
+    document.getElementById('keyInput').value=k||'';
+    var st=document.getElementById('keyStatus'); st.textContent=has?'מחובר ומוכן לתמלל':'עדיין לא הוזן מפתח'; st.className='status '+(has?'ok':'no'); }
+  document.getElementById('saveKey').addEventListener('click',function(){
+    var v=document.getElementById('keyInput').value.trim();
+    if(v.length<10||v.slice(0,2)!=='sk'){ toast('הדבק מפתח תקין שמתחיל ב-sk'); return; }
+    if(A&&A.setKey)A.setKey(v); refreshKey(); toast('המפתח נשמר'); });
+  document.getElementById('toHelp').addEventListener('click',function(){ show('help'); });
+
+  // ---- native -> JS ----
+  function fillBusyBox(id,text,err){
+    var b=boxes.find(function(x){return x.id===id;});
+    if(err){ boxes=boxes.filter(function(x){return x.id!==id;}); toast(err); }
+    else if(b){ b.state='done'; b.text=text; }
+    save(); render();
+  }
+  var sharePendId=null;
+  window.TX={
+    onResult:function(text,err){ if(recId){ fillBusyBox(recId,text,err); recId=null; } },
+    onSharedStart:function(n){ show('main'); sharePendId=nid(); boxes.push({id:sharePendId,state:'busy'}); save(); render(); },
+    onShared:function(text,err){ if(err){ toast(err); return; } boxes.push({id:nid(),state:'done',text:text}); save(); render(); },
+    onSharedDone:function(){ if(sharePendId){ boxes=boxes.filter(function(x){return x.id!==sharePendId;}); sharePendId=null; save(); render(); } },
+    onMicPermission:function(g){ if(g){ var r=A&&A.startRecording?A.startRecording():'error'; if(r==='ok') beginUI(); } else toast('צריך הרשאת מיקרופון'); }
+  };
+
+  // ---- menu ----
+  var menu=false, drop=document.getElementById('drop'), scrim=document.getElementById('scrim');
+  function openMenu(){menu=true;drop.classList.add('show');scrim.classList.add('show');}
+  function closeMenu(){menu=false;drop.classList.remove('show');scrim.classList.remove('show');}
+  document.getElementById('fab').addEventListener('click',function(){menu?closeMenu():openMenu();});
+  scrim.addEventListener('click',closeMenu);
+  drop.addEventListener('click',function(e){
+    var g=e.target.closest('[data-go]'); if(g){ var d=g.getAttribute('data-go'); if(d==='settings')refreshKey(); show(d); return; }
+    if(e.target.closest('[data-clear]')){ boxes=[]; save(); render(); closeMenu(); toast('המסך נוקה'); }
+  });
+
+  // ---- nav buttons (home/back) ----
+  document.body.addEventListener('click',function(e){
+    var g=e.target.closest('[data-go]'); if(g && !e.target.closest('#drop')){ var d=g.getAttribute('data-go'); if(d==='settings')refreshKey(); show(d); return; }
+    var u=e.target.closest('[data-url]'); if(u){ if(A&&A.openUrl)A.openUrl(u.getAttribute('data-url')); }
+  });
+
+  // ---- toast ----
+  var tEl=document.getElementById('toast'),tT=null;
+  function toast(m){ tEl.textContent=m; tEl.classList.add('show'); clearTimeout(tT); tT=setTimeout(function(){tEl.classList.remove('show');},1800); }
 
   // init
-  renderRecent();
-  if(!bridge('hasKey',false)){ /* first run: hint user via settings when they act */ }
+  load(); render();
 })();
 </script>
 </body>
