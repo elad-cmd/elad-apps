@@ -2,11 +2,19 @@ package com.transcribe.app
 
 import android.Manifest
 import android.app.Activity
+import android.app.KeyguardManager
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.util.Base64
+import org.json.JSONArray
+import java.io.ByteArrayOutputStream
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
@@ -30,6 +38,7 @@ class MainActivity : Activity() {
     private var recFile: File? = null
     private var pageReady = false
     private var pendingShared: List<Uri> = emptyList()
+    private var pendingAuthPurpose: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +65,16 @@ class MainActivity : Activity() {
         super.onNewIntent(intent)
         setIntent(intent)
         handleIntent(intent)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQ_AUTH) {
+            val ok = resultCode == RESULT_OK
+            val p = pendingAuthPurpose; pendingAuthPurpose = null
+            if (p != null) callJs("onAuth", p, if (ok) "1" else "0")
+        }
     }
 
     private fun handleIntent(intent: Intent?) {
@@ -190,6 +209,17 @@ class MainActivity : Activity() {
         @JavascriptInterface fun getLang(): String = Prefs.getLang(this@MainActivity)
         @JavascriptInterface fun setLang(value: String) { Prefs.setLang(this@MainActivity, value) }
 
+        @JavascriptInterface fun requestAuth(purpose: String) {
+            runOnUiThread {
+                val km = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+                if (!km.isDeviceSecure) { callJs("onAuth", purpose, "1"); return@runOnUiThread }
+                @Suppress("DEPRECATION")
+                val intent = km.createConfirmDeviceCredentialIntent("אימות זהות", "אשר/י כדי לראות או להעתיק את המפתח")
+                if (intent == null) { callJs("onAuth", purpose, "1") }
+                else { pendingAuthPurpose = purpose; startActivityForResult(intent, REQ_AUTH) }
+            }
+        }
+
         @JavascriptInterface fun startRecording(): String {
             val granted = checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
             if (!granted) {
@@ -224,7 +254,61 @@ class MainActivity : Activity() {
         @JavascriptInterface fun openUrl(url: String) {
             try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) } catch (e: Exception) {}
         }
+
+        /** Share text directly to a specific app package. Returns false if it could not. */
+        @JavascriptInterface fun shareToApp(pkg: String, text: String): Boolean {
+            return try {
+                startActivity(Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"; putExtra(Intent.EXTRA_TEXT, text); setPackage(pkg)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }); true
+            } catch (e: Exception) {
+                try { startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, text) }, null).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) } catch (e2: Exception) {}
+                false
+            }
+        }
+
+        /** Open WhatsApp chat with a specific number, prefilled with the text. */
+        @JavascriptInterface fun shareToWhatsApp(number: String, text: String) {
+            val n = number.filter { it.isDigit() }
+            val url = "https://wa.me/" + n + "?text=" + Uri.encode(text)
+            try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) } catch (e: Exception) {}
+        }
+
+        /** JSON list of apps that can receive shared text, with icons (base64). */
+        @JavascriptInterface fun listShareApps(): String {
+            return try {
+                val pm = packageManager
+                val intent = Intent(Intent.ACTION_SEND).setType("text/plain")
+                val ris = pm.queryIntentActivities(intent, 0)
+                val arr = JSONArray(); val seen = HashSet<String>()
+                for (ri in ris) {
+                    val pkg = ri.activityInfo.packageName
+                    if (pkg == packageName || !seen.add(pkg)) continue
+                    val o = JSONObject()
+                    o.put("pkg", pkg)
+                    o.put("label", ri.loadLabel(pm).toString())
+                    o.put("icon", drawableToB64(ri.loadIcon(pm)))
+                    arr.put(o)
+                }
+                arr.toString()
+            } catch (e: Exception) { "[]" }
+        }
     }
 
-    companion object { private const val REQ_MIC = 101 }
+    private fun drawableToB64(d: Drawable, size: Int = 88): String {
+        return try {
+            val bmp = if (d is BitmapDrawable && d.bitmap != null) {
+                Bitmap.createScaledBitmap(d.bitmap, size, size, true)
+            } else {
+                val b = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+                val c = Canvas(b); d.setBounds(0, 0, size, size); d.draw(c); b
+            }
+            val out = ByteArrayOutputStream()
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, out)
+            "data:image/png;base64," + Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP)
+        } catch (e: Exception) { "" }
+    }
+
+    companion object { private const val REQ_MIC = 101; private const val REQ_AUTH = 102 }
 }

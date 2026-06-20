@@ -113,7 +113,7 @@
   }
 
   .hbar-backdrop{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,0);transition:background .45s ease;}
-  .hbar-backdrop.show{background:rgba(0,0,0,.90);}
+  .hbar-backdrop.show{background:rgba(0,0,0,.5);}
   .hbar{position:fixed;inset:0;z-index:91;pointer-events:none;}
   .hm-item{position:absolute;pointer-events:auto;background:none;border:none;cursor:pointer;width:50px;height:50px;padding:0;opacity:0;}
   .hbar.run .hm-item{animation:hmIn var(--dur,.5s) linear both;}
@@ -369,6 +369,16 @@
   .dial-key:active{background:rgba(255,255,255,.25);}
   .dial-key.dial-call{background:var(--tq-deep);}
   .dial-key svg{width:27px;height:27px;}
+  .dial-res{display:flex;flex-direction:column;gap:8px;width:100%;max-width:340px;max-height:32vh;overflow-y:auto;margin-bottom:2px;}
+  .dial-res-row{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.1);border-radius:14px;padding:7px 11px;cursor:pointer;}
+  .dial-res-row.dial-res-new{background:var(--tq-deep);}
+  .dial-res-new .drn,.dial-res-new .drp{color:#fff;}
+  .dial-av{width:42px;height:42px;border-radius:50%;border:none;background:#fff;color:var(--tq-ink);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;}
+  .dial-res-new .dial-av{color:var(--tq-deep);}
+  .dial-av svg{width:20px;height:20px;}
+  .dial-res-txt{display:flex;flex-direction:column;min-width:0;text-align:right;}
+  .drn{color:#fff;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .drp{color:rgba(255,255,255,.7);font-size:12.5px;direction:ltr;text-align:right;}
 </style>
 </head>
 <body>
@@ -715,7 +725,7 @@ function flipContacts(newHand){
   const last=items.map(o=>o.el.getBoundingClientRect());
   items.forEach((o,k)=>{const dx=(first[k].left-last[k].left);o.el.style.transform=o.el.classList.contains('av')?('translate('+dx+'px,-50%)'):('translateX('+dx+'px)');});
   void document.body.offsetWidth;
-  items.forEach(o=>{o.el.style.transition='transform .55s cubic-bezier(.34,1.45,.5,1) '+(o.i*0.05).toFixed(2)+'s';o.el.style.transform=o.el.classList.contains('av')?'translate(0,-50%)':'translateX(0)';});
+  items.forEach(o=>{o.el.style.transition='transform .55s cubic-bezier(.34,1.45,.5,1) '+(o.i*0.03).toFixed(2)+'s';o.el.style.transform=o.el.classList.contains('av')?'translate(0,-50%)':'translateX(0)';});
   setTimeout(()=>{items.forEach(o=>{o.el.style.transition='';o.el.style.transform='';});},1000+rows.length*55);
 }
 
@@ -740,7 +750,7 @@ function doHandFlip(){
   f.style.animation='none';void f.offsetWidth;
   f.style.animation='fabHop .55s linear forwards';
   setTimeout(()=>{f.style.animation='';f.style.transform='';f.style.removeProperty('--dx');f.classList.toggle('left',cfg.hand==='left');fabRot+=(newHand==='left'?-90:90);const dm=f.querySelector('.dotmorph');if(dm)dm.style.transform='rotate('+fabRot+'deg)';},550);
-  setTimeout(()=>flipContacts(newHand),650);
+  setTimeout(()=>flipContacts(newHand),750);
   toast(newHand==='left'?'יד שמאל':'יד ימין');
 }
 buildFabDots();
@@ -762,9 +772,9 @@ botbar.querySelector('#bbDial').onclick=()=>openDialer();
 botbar.querySelector('#bbBack').onclick=()=>navBack();
 function updateBar(){const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||sheetOpen);botbar.classList.toggle('collapsed',!(onHome&&!menuOpen&&!welcomeOn));}
 function navBack(){if(srch.classList.contains('show')){closeSearch();return;}const scrs=[...document.querySelectorAll('.scr')];const top=scrs[scrs.length-1];if(top&&top._back){top._back();return;}if(HIST.length){const fn=HIST.pop();fn();}}
-function openDialer(){const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>חייגן</h2></div><div class="scr-body dial-body"><div class="dial-num" id="dialNum"></div><div class="dial-grid" id="dialGrid"></div><div class="dial-actions"><button class="dial-key dial-bksp" id="dialBk" aria-label="מחק">⌫</button><button class="dial-key dial-call" id="dialCall" aria-label="חיוג">'+ICON.call+'</button></div></div>');sc.classList.add('scr-bottom');sc._reopen=openDialer;let val='';const num=sc.querySelector('#dialNum');const grid=sc.querySelector('#dialGrid');const keys=['1','2','3','4','5','6','7','8','9','*','0','#'];grid.innerHTML=keys.map(k=>'<button class="dial-key" data-k="'+k+'">'+k+'</button>').join('');const upd=()=>{num.textContent=val;};grid.querySelectorAll('.dial-key[data-k]').forEach(b=>b.onclick=()=>{val+=b.dataset.k;upd();if(navigator.vibrate)navigator.vibrate(4);});sc.querySelector('#dialBk').onclick=()=>{val=val.slice(0,-1);upd();};sc.querySelector('#dialCall').onclick=()=>{if(val)location.href='tel:'+val;};upd();}
+function openDialer(){const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>חייגן</h2></div><div class="scr-body dial-body"><div class="dial-res" id="dialRes"></div><div class="dial-num" id="dialNum"></div><div class="dial-grid" id="dialGrid"></div><div class="dial-actions"><button class="dial-key dial-bksp" id="dialBk" aria-label="מחק">⌫</button><button class="dial-key dial-call" id="dialCall" aria-label="חיוג">'+ICON.call+'</button></div></div>');sc.classList.add('scr-bottom');sc._reopen=openDialer;let val='';const num=sc.querySelector('#dialNum');const grid=sc.querySelector('#dialGrid');const res=sc.querySelector('#dialRes');const dig=x=>String(x||'').replace(/[^0-9]/g,'');function renderRes(){res.innerHTML='';if(val.length<6)return;PEOPLE.filter(p=>[p.phone].concat(p.phones||[]).filter(Boolean).some(ph=>dig(ph).indexOf(val)>=0)).slice(0,6).forEach(p=>{const ph=p.phone||(p.phones&&p.phones[0])||'';const row=document.createElement('div');row.className='dial-res-row';row.innerHTML='<button class="dial-av" aria-label="שתף">'+escapeHtml(initials(p.name))+'</button><div class="dial-res-txt"><div class="drn">'+escapeHtml(p.name||'')+'</div><div class="drp">'+escapeHtml(ph)+'</div></div>';row.querySelector('.dial-av').onclick=e=>{e.stopPropagation();openShareBank(p);};row.onclick=()=>{if(ph)location.href='tel:'+ph;};res.appendChild(row);});const exact=PEOPLE.some(p=>[p.phone].concat(p.phones||[]).some(ph=>dig(ph)===val));if(!exact){const row=document.createElement('div');row.className='dial-res-row dial-res-new';row.innerHTML='<button class="dial-av" aria-label="שתף">'+ICON.plus+'</button><div class="dial-res-txt"><div class="drn">מספר חדש</div><div class="drp">'+escapeHtml(val)+'</div></div>';row.querySelector('.dial-av').onclick=e=>{e.stopPropagation();openShareBank({name:val,phone:val,phones:[val]});};row.onclick=()=>{location.href='tel:'+val;};res.appendChild(row);}}const keys=['1','2','3','4','5','6','7','8','9','*','0','#'];grid.innerHTML=keys.map(k=>'<button class="dial-key" data-k="'+k+'">'+k+'</button>').join('');const upd=()=>{num.textContent=val;renderRes();};grid.querySelectorAll('.dial-key[data-k]').forEach(b=>b.onclick=()=>{val+=b.dataset.k;upd();if(navigator.vibrate)navigator.vibrate(4);});sc.querySelector('#dialBk').onclick=()=>{val=val.slice(0,-1);upd();};sc.querySelector('#dialCall').onclick=()=>{if(val)location.href='tel:'+val;};upd();}
 function openAddContact(){const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>איש קשר חדש</h2></div><div class="scr-body"><div class="ct-card"><div class="ct-frow ct-namerow"><input class="ct-inp ct-nameinp" id="acName" placeholder="שם"></div><div class="ct-frow"><input class="ct-inp" id="acPhone" placeholder="טלפון" dir="ltr"></div><div class="ct-frow"><input class="ct-inp" id="acEmail" placeholder="מייל" dir="ltr"></div><button class="mp-confirm" id="acSave" style="margin-top:16px;">שמור</button></div></div>');sc.classList.add('scr-bottom');sc._reopen=openAddContact;sc.querySelector('#acSave').onclick=()=>{const name=sc.querySelector('#acName').value.trim();const phone=sc.querySelector('#acPhone').value.trim();const email=sc.querySelector('#acEmail').value.trim();if(!name&&!phone&&!email){toast('הזן לפחות שדה אחד');return;}PEOPLE.unshift({name:name||'(ללא שם)',phone:phone,email:email,phones:phone?[phone]:[],emails:email?[email]:[],org:'',msg:'',fav:false,last:0});savePeople();renderList();toast('נוסף איש קשר');sc._back();};}
-try{new MutationObserver(()=>updateBar()).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});}catch(e){}
+let _barRAF=0;function _schedBar(){if(_barRAF)return;_barRAF=requestAnimationFrame(()=>{_barRAF=0;updateBar();});}try{new MutationObserver(_schedBar).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});}catch(e){}
 function updateSearchFab(){updateBar();}
 const favEditBtn=document.createElement('button');favEditBtn.className='fav-edit';favEditBtn.id='favEdit';favEditBtn.setAttribute('aria-label','עריכת סדר');favEditBtn.innerHTML=ICON.edit;favEditBtn.onclick=()=>setEdit(!editMode);document.body.appendChild(favEditBtn);
 function updateFavEdit(){const b=document.getElementById('favEdit');if(!b)return;const show=(VIEW==='fav');b.classList.toggle('show',show);if(!show&&editMode){editMode=false;document.body.classList.remove('editing');}b.classList.toggle('on',editMode);}
@@ -989,7 +999,7 @@ function openShareBank(person){
   ov.querySelector('.sheet-x').onclick=close;ov.addEventListener('click',e=>{if(e.target===ov)close();});
   ov.querySelectorAll('.gi').forEach(b=>b.onclick=()=>{fire(b.dataset.app,person);close();});
 }
-function doReset(){['myshare_cfg','myshare_stats','contacts_view','myshare_onboarded'].forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});location.reload();}
+function doReset(){try{Object.keys(localStorage).forEach(k=>{if(k.indexOf('myshare')===0||k==='contacts_view')localStorage.removeItem(k);});}catch(e){}location.reload();}
 function openResetConfirm(){
   const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   const ov=document.createElement('div');ov.className='mpovl';
@@ -1071,18 +1081,13 @@ function openHbar(){
   const fab=document.getElementById('menuFab');
   const fr=fab.getBoundingClientRect();
   const fcx=fr.left+fr.width/2, fcy=fr.top+fr.height/2;
-  bar.querySelectorAll('.hm-item').forEach(el=>{
-    const ic=el.querySelector('.hm-ic');
-    const ir=ic.getBoundingClientRect(), er=el.getBoundingClientRect();
-    const icx=ir.left+ir.width/2, icy=ir.top+ir.height/2;
-    el.style.setProperty('--sx',Math.round(fcx-icx)+'px');
-    el.style.setProperty('--sy',Math.round(fcy-icy)+'px');
-    el.style.transformOrigin=Math.round(icx-er.left)+'px '+Math.round(icy-er.top)+'px';
-  });
+  const _hm=[...bar.querySelectorAll('.hm-item')];
+  const _meas=_hm.map(el=>{const ic=el.querySelector('.hm-ic');const ir=ic.getBoundingClientRect(),er=el.getBoundingClientRect();return{el,icx:ir.left+ir.width/2,icy:ir.top+ir.height/2,er};});
+  _meas.forEach(m=>{m.el.style.setProperty('--sx',Math.round(fcx-m.icx)+'px');m.el.style.setProperty('--sy',Math.round(fcy-m.icy)+'px');m.el.style.transformOrigin=Math.round(m.icx-m.er.left)+'px '+Math.round(m.icy-m.er.top)+'px';});
   requestAnimationFrame(()=>{bd.classList.add('show');bar.classList.add('run');});
   const close=cb=>closeHbar(cb);
   bd.addEventListener('click',e=>{if(e.target===bd||e.target===bar)close();});
-  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.pal){if(navigator.vibrate)navigator.vibrate(8);b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);openPaletteRow(b);return;}if(it.hand){if(navigator.vibrate)navigator.vibrate(10);b.classList.add('tapped');closeHbar();setTimeout(doHandFlip,800);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);closeHbar();snapFabClosed();setTimeout(()=>{closeSearch();document.querySelectorAll('.scr').forEach(x=>x.remove());it.fn();},210);};});
+  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.pal){if(navigator.vibrate)navigator.vibrate(8);b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);openPaletteRow(b);return;}if(it.hand){if(navigator.vibrate)navigator.vibrate(10);b.classList.add('tapped');closeHbar();setTimeout(doHandFlip,400);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);closeHbar();snapFabClosed();setTimeout(()=>{closeSearch();document.querySelectorAll('.scr').forEach(x=>x.remove());it.fn();},210);};});
 }
 const welcomeEl=document.getElementById('welcome');
 function hideWelcome(){welcomeEl.classList.add('hide');updateSearchFab();}

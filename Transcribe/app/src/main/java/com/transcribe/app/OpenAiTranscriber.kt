@@ -9,15 +9,19 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 /**
- * Sends an audio file to OpenAI's transcription endpoint and returns Hebrew text.
- * Uses the gpt-4o-transcribe model, which handles Hebrew (and mixed Hebrew/English/
- * Arabic) well. The request goes straight from the device to OpenAI — no middle server.
+ * Sends audio to OpenAI and returns text.
+ * lang = ""  -> auto-detect language (transcriptions, gpt-4o-transcribe)
+ * lang = "he"-> force Hebrew recognition (transcriptions, gpt-4o-transcribe, language=he)
+ * lang = "en"-> force ENGLISH OUTPUT via the translations endpoint (whisper-1), which
+ *               translates any spoken language into English.
  */
 object OpenAiTranscriber {
 
-    private const val ENDPOINT = "https://api.openai.com/v1/audio/transcriptions"
-    private const val MODEL = "gpt-4o-transcribe"
-    const val MAX_BYTES = 25L * 1024 * 1024 // OpenAI hard limit
+    private const val TRANSCRIBE_URL = "https://api.openai.com/v1/audio/transcriptions"
+    private const val TRANSLATE_URL = "https://api.openai.com/v1/audio/translations"
+    private const val MODEL_TX = "gpt-4o-transcribe"
+    private const val MODEL_TR = "whisper-1"
+    const val MAX_BYTES = 25L * 1024 * 1024
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
@@ -27,7 +31,6 @@ object OpenAiTranscriber {
 
     sealed class Result {
         data class Ok(val text: String) : Result()
-        /** errorRes is a string resource id from strings.xml */
         data class Err(val errorRes: Int) : Result()
     }
 
@@ -36,23 +39,25 @@ object OpenAiTranscriber {
         if (audio.size > MAX_BYTES) return Result.Err(R.string.err_too_big)
 
         val mediaType = (mime ?: "application/octet-stream").toMediaTypeOrNull()
+        val translate = (lang == "en")
+        val url = if (translate) TRANSLATE_URL else TRANSCRIBE_URL
+
         val builder = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("file", fileName, audio.toRequestBody(mediaType))
-            .addFormDataPart("model", MODEL)
+            .addFormDataPart("model", if (translate) MODEL_TR else MODEL_TX)
             .addFormDataPart("response_format", "text")
-        if (lang.isNotEmpty()) {
+        if (!translate && lang.isNotEmpty()) {
             builder.addFormDataPart("language", lang)
         }
-        if (lang == "he" || lang.isEmpty()) {
+        if (!translate && (lang == "he" || lang.isEmpty())) {
             builder.addFormDataPart("prompt", "תמלול הקלטה קולית. שמור על פיסוק תקין.")
         }
-        val body = builder.build()
 
         val request = Request.Builder()
-            .url(ENDPOINT)
+            .url(url)
             .addHeader("Authorization", "Bearer $apiKey")
-            .post(body)
+            .post(builder.build())
             .build()
 
         return try {
@@ -61,8 +66,7 @@ object OpenAiTranscriber {
                 when {
                     resp.isSuccessful -> {
                         val text = payload.trim()
-                        if (text.isEmpty()) Result.Err(R.string.empty_result)
-                        else Result.Ok(text)
+                        if (text.isEmpty()) Result.Err(R.string.empty_result) else Result.Ok(text)
                     }
                     resp.code == 401 || resp.code == 403 -> Result.Err(R.string.err_auth)
                     resp.code == 413 -> Result.Err(R.string.err_too_big)
