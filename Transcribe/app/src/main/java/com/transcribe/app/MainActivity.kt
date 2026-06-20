@@ -95,7 +95,7 @@ class MainActivity : Activity() {
                     if (bytes == null) err(R.string.err_no_file)
                     else {
                         val mime = contentResolver.getType(uri) ?: "audio/ogg"
-                        OpenAiTranscriber.transcribe(Prefs.getKey(this), bytes, "audio." + extFor(mime, uri), mime)
+                        OpenAiTranscriber.transcribe(Prefs.getKey(this), bytes, "audio." + extFor(mime, uri), mime, Prefs.getLang(this))
                     }
                 } catch (e: Exception) { err(R.string.err_generic) }
                 when (res) {
@@ -110,7 +110,7 @@ class MainActivity : Activity() {
     private fun transcribeFile(f: File) {
         Thread {
             val res = try {
-                OpenAiTranscriber.transcribe(Prefs.getKey(this), f.readBytes(), "audio.m4a", "audio/m4a")
+                OpenAiTranscriber.transcribe(Prefs.getKey(this), f.readBytes(), "audio.m4a", "audio/m4a", Prefs.getLang(this))
             } catch (e: Exception) { err(R.string.err_generic) }
             f.delete()
             when (res) {
@@ -187,6 +187,8 @@ class MainActivity : Activity() {
         @JavascriptInterface fun hasKey(): Boolean = Prefs.hasKey(this@MainActivity)
         @JavascriptInterface fun getKey(): String = Prefs.getKey(this@MainActivity)
         @JavascriptInterface fun setKey(value: String) { Prefs.setKey(this@MainActivity, value) }
+        @JavascriptInterface fun getLang(): String = Prefs.getLang(this@MainActivity)
+        @JavascriptInterface fun setLang(value: String) { Prefs.setLang(this@MainActivity, value) }
 
         @JavascriptInterface fun startRecording(): String {
             val granted = checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED

@@ -754,7 +754,7 @@ document.body.appendChild(searchFab);
 let HIST=[];var tabLock=false;
 const DIAL_ICON='<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="7" cy="5.5" r="1.4"/><circle cx="12" cy="5.5" r="1.4"/><circle cx="17" cy="5.5" r="1.4"/><circle cx="7" cy="10.5" r="1.4"/><circle cx="12" cy="10.5" r="1.4"/><circle cx="17" cy="10.5" r="1.4"/><circle cx="7" cy="15.5" r="1.4"/><circle cx="12" cy="15.5" r="1.4"/><circle cx="17" cy="15.5" r="1.4"/><circle cx="12" cy="20.5" r="1.4"/></svg>';
 const botbar=document.createElement('div');botbar.id='botbar';botbar.className='collapsed';
-botbar.innerHTML='<div class="bb-spacer"></div><button class="bb-btn bb-mid" id="bbAdd" aria-label="הוסף איש קשר">'+ICON.plus+'</button><button class="bb-btn bb-mid bb-search" id="bbSearch" aria-label="חיפוש">'+ICON.search+'</button><button class="bb-btn bb-mid" id="bbDial" aria-label="חייגן">'+DIAL_ICON+'</button><button class="bb-btn" id="bbBack" aria-label="חזרה">'+ICN_BACK+'</button>';
+botbar.innerHTML='<div class="bb-spacer"></div><button class="bb-btn bb-mid" id="bbAdd" aria-label="הוסף איש קשר">'+ICON.plus+'</button><button class="bb-btn bb-mid bb-search" id="bbSearch" aria-label="חיפוש">'+ICON.search+'</button><button class="bb-btn bb-mid" id="bbDial" aria-label="חייגן">'+DIAL_ICON+'</button><button class="bb-btn" id="bbBack" aria-label="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>';
 document.body.appendChild(botbar);
 botbar.querySelector('#bbAdd').onclick=()=>openAddContact();
 botbar.querySelector('#bbSearch').onclick=()=>openSearch();

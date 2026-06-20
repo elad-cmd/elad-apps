@@ -31,22 +31,23 @@ object OpenAiTranscriber {
         data class Err(val errorRes: Int) : Result()
     }
 
-    fun transcribe(apiKey: String, audio: ByteArray, fileName: String, mime: String?): Result {
+    fun transcribe(apiKey: String, audio: ByteArray, fileName: String, mime: String?, lang: String = ""): Result {
         if (audio.isEmpty()) return Result.Err(R.string.err_no_file)
         if (audio.size > MAX_BYTES) return Result.Err(R.string.err_too_big)
 
         val mediaType = (mime ?: "application/octet-stream").toMediaTypeOrNull()
-        val body = MultipartBody.Builder()
+        val builder = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("file", fileName, audio.toRequestBody(mediaType))
             .addFormDataPart("model", MODEL)
-            .addFormDataPart("language", "he")
             .addFormDataPart("response_format", "text")
-            .addFormDataPart(
-                "prompt",
-                "תמלול בעברית של הקלטה קולית. שמור על פיסוק תקין."
-            )
-            .build()
+        if (lang.isNotEmpty()) {
+            builder.addFormDataPart("language", lang)
+        }
+        if (lang == "he" || lang.isEmpty()) {
+            builder.addFormDataPart("prompt", "תמלול הקלטה קולית. שמור על פיסוק תקין.")
+        }
+        val body = builder.build()
 
         val request = Request.Builder()
             .url(ENDPOINT)
