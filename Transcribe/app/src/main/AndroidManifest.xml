@@ -3,6 +3,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:allowBackup="true"
@@ -12,31 +13,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.App">
 
-        <!-- Launcher: explains the app and stores the API key -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.App">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- Bundled Hebrew guide for obtaining an API key -->
-        <activity
-            android:name=".HelpActivity"
-            android:exported="false"
-            android:label="@string/help_title"
-            android:theme="@style/Theme.App" />
-
-        <!-- Share target: receives a shared audio file, transcribes, shows the text -->
-        <activity
-            android:name=".TranscribeActivity"
-            android:exported="true"
-            android:excludeFromRecents="true"
-            android:label="@string/share_label"
-            android:theme="@style/Theme.Dialog">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
