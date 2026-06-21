@@ -171,7 +171,7 @@
   .sheet h2{font-size:16px;font-weight:700;margin:2px 0 14px;text-align:center;}
   .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
   .gi{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;background:none;border:none;font-family:inherit;color:var(--tq-ink);}
-  .gi .c{width:56px;height:56px;border-radius:50%;background:var(--soft);display:flex;align-items:center;justify-content:center;color:var(--tq-ink);transition:transform .12s;}
+  .gi .c{width:56px;height:56px;border-radius:50%;background:#bce0d0;display:flex;align-items:center;justify-content:center;color:var(--tq-ink);transition:transform .12s;}
   .gi:active .c{transform:scale(.92);}
   .gi .c svg{width:26px;height:26px;}
   .gi .c.none{background:#fff;border:1.6px dashed #c2d8d7;color:#9bb7b8;}
@@ -241,7 +241,7 @@
   .mbtn.cancel{background:transparent;color:rgba(255,255,255,.75);font-weight:600;font-size:13px;padding:9px 16px;}
   .mpovl{position:fixed;inset:0;z-index:85;display:flex;align-items:flex-end;justify-content:center;background:rgba(8,40,42,0);transition:background .25s;pointer-events:none;}
   .mpovl.show{background:rgba(8,40,42,.5);pointer-events:auto;}
-  .mp-sheet{width:100%;max-width:520px;background:#fff;color:var(--tq-ink);border-radius:22px 22px 0 0;padding:14px 16px 26px;transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);max-height:84%;overflow-y:auto;}
+  .mp-sheet{width:100%;max-width:520px;background:#d8efe4;color:var(--tq-ink);border-radius:22px 22px 0 0;padding:14px 16px 26px;transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);max-height:84%;overflow-y:auto;}
   .mpovl.show .mp-sheet{transform:none;}
   .mp-hint{font-size:12.5px;color:#7a9a9b;margin:2px 0 12px;text-align:center;line-height:1.5;}
   .mp-section{margin-bottom:12px;}
@@ -381,6 +381,12 @@
   .dial-side:active{background:rgba(255,255,255,.25);}
   .dial-side svg{width:25px;height:25px;}
   .dial-side.dial-call{background:var(--tq-deep);}
+  .dial-handle{width:64px;height:28px;border-radius:14px;border:none;background:rgba(255,255,255,.14);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:2px;flex:0 0 auto;}
+  .dial-handle:active{background:rgba(255,255,255,.26);}
+  .dial-handle svg{width:24px;height:24px;transition:transform .22s ease;}
+  .dial-collapsed .dial-padrow{display:none;}
+  .dial-collapsed .dial-res{max-height:64vh;}
+  .dial-collapsed .dial-handle svg{transform:rotate(180deg);}
   .dial-res-row{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.1);border-radius:14px;padding:7px 11px;cursor:pointer;}
   .dial-res-row.dial-res-new{background:var(--tq-deep);}
   .dial-res-new .drn,.dial-res-new .drp{color:#fff;}
@@ -674,7 +680,7 @@ listEl.addEventListener('pointercancel',()=>{if(pendTimer){clearTimeout(pendTime
 function wirePick(container,onTap){
   let pRow=null,pX=0,pY=0,pTimer=0,pStarted=false,tRow=null,tX=0,tY=0;
   const clr=()=>{if(pTimer){clearTimeout(pTimer);pTimer=0;}pRow=null;pStarted=false;};
-  container.addEventListener('pointerdown',e=>{const av=e.target.closest('.av');if(av){const row=av.closest('.row');if(!row)return;e.preventDefault();e.stopPropagation();pRow=row;pX=e.clientX;pY=e.clientY;pStarted=false;try{av.setPointerCapture(e.pointerId);}catch(_){}pTimer=setTimeout(()=>{pTimer=0;if(pRow){pStarted=true;startPick(pRow,pX,pY);}},80);}else{tRow=e.target.closest('.row');tX=e.clientX;tY=e.clientY;}});
+  container.addEventListener('pointerdown',e=>{const av=e.target.closest('.av');if(av){const row=av.closest('.row');if(!row)return;e.preventDefault();e.stopPropagation();if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();pRow=row;pX=e.clientX;pY=e.clientY;pStarted=false;try{av.setPointerCapture(e.pointerId);}catch(_){}pTimer=setTimeout(()=>{pTimer=0;if(pRow){pStarted=true;startPick(pRow,pX,pY);}},80);}else{tRow=e.target.closest('.row');tX=e.clientX;tY=e.clientY;}});
   container.addEventListener('pointermove',e=>{if(pStarted&&picking){e.preventDefault();moveBig(e.clientX,e.clientY);return;}if(pRow&&!pStarted&&Math.hypot(e.clientX-pX,e.clientY-pY)>10){if(pTimer){clearTimeout(pTimer);pTimer=0;}pStarted=true;startPick(pRow,pX,pY);moveBig(e.clientX,e.clientY);}});
   container.addEventListener('pointerup',e=>{if(pTimer){clearTimeout(pTimer);pTimer=0;}if(pStarted&&picking){e.stopPropagation();endPick(e.clientX,e.clientY);clr();tRow=null;return;}if(pRow){e.stopPropagation();const p=pRow._person||null;clr();tRow=null;if(p&&onTap)onTap(p);return;}if(tRow&&!picking){const dx=e.clientX-tX,dy=e.clientY-tY,r=tRow;tRow=null;if(Math.abs(dx)<8&&Math.abs(dy)<8){const p=r._person||null;if(p&&onTap)onTap(p);}}});
   container.addEventListener('pointercancel',()=>{if(pTimer){clearTimeout(pTimer);pTimer=0;}if(picking)resetPick();clr();tRow=null;});
@@ -807,7 +813,7 @@ botbar.querySelector('#bbDial').onclick=()=>openDialer();
 botbar.querySelector('#bbBack').onclick=()=>navBack();
 function updateBar(){const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||sheetOpen);botbar.classList.toggle('collapsed',!(onHome&&!menuOpen&&!welcomeOn));}
 function navBack(){if(srch.classList.contains('show')){closeSearch();return;}const scrs=[...document.querySelectorAll('.scr')];const top=scrs[scrs.length-1];if(top&&top._back){top._back();return;}if(HIST.length){const fn=HIST.pop();fn();}}
-function openDialer(){const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>חייגן</h2></div><div class="scr-body dial-body"><div class="dial-res" id="dialRes"></div><div class="dial-numrow"><span class="dial-num" id="dialNum"></span></div><div class="dial-padrow"><button class="dial-side dial-call" id="dialCall" aria-label="חיוג">'+ICON.call+'</button><div class="dial-grid" id="dialGrid"></div><button class="dial-side dial-bksp" id="dialBk" aria-label="מחק">⌫</button></div></div>');sc.classList.add('scr-bottom','dialer-scr');sc._reopen=openDialer;let val='';const num=sc.querySelector('#dialNum');const grid=sc.querySelector('#dialGrid');const res=sc.querySelector('#dialRes');wirePick(res,p=>{const ph=p.phone||(p.phones&&p.phones[0])||'';if(ph)location.href='tel:'+ph;});const dig=x=>String(x||'').replace(/[^0-9]/g,'');function renderRes(){res.innerHTML='';if(val.length<6)return;PEOPLE.filter(p=>[p.phone].concat(p.phones||[]).filter(Boolean).some(ph=>dig(ph).indexOf(val)>=0)).slice(0,6).forEach(p=>{const ph=p.phone||(p.phones&&p.phones[0])||'';const row=document.createElement('div');row.className='row';row._person=p;row.innerHTML=rowHTML(p,ph);res.appendChild(row);});const exact=PEOPLE.some(p=>[p.phone].concat(p.phones||[]).some(ph=>dig(ph)===val));if(!exact){const row=document.createElement('div');row.className='row dial-row-new';row._person={name:val,phone:val,phones:[val]};row.innerHTML='<span class="av">'+ICON.plus+'</span><div class="meta"><div class="ml"><span class="nm">מספר חדש</span></div><div class="ml"><span class="sub">'+escapeHtml(val)+'</span></div></div>';res.appendChild(row);}}const keys=['1','2','3','4','5','6','7','8','9','*','0','#'];grid.innerHTML=keys.map(k=>'<button class="dial-key" data-k="'+k+'">'+k+'</button>').join('');const upd=()=>{num.textContent=val;renderRes();};grid.querySelectorAll('.dial-key[data-k]').forEach(b=>b.onclick=()=>{val+=b.dataset.k;upd();if(navigator.vibrate)navigator.vibrate(4);});sc.querySelector('#dialBk').onclick=()=>{val=val.slice(0,-1);upd();};sc.querySelector('#dialCall').onclick=()=>{if(val)location.href='tel:'+val;};upd();}
+function openDialer(){const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>חייגן</h2></div><div class="scr-body dial-body"><div class="dial-res" id="dialRes"></div><div class="dial-numrow"><span class="dial-num" id="dialNum"></span></div><div class="dial-padrow"><button class="dial-side dial-call" id="dialCall" aria-label="חיוג">'+ICON.call+'</button><div class="dial-grid" id="dialGrid"></div><button class="dial-side dial-bksp" id="dialBk" aria-label="מחק">⌫</button></div><button class="dial-handle" id="dialFold" aria-label="קיפול"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button></div>');sc.classList.add('scr-bottom','dialer-scr');sc._reopen=openDialer;let val='';const num=sc.querySelector('#dialNum');const grid=sc.querySelector('#dialGrid');const res=sc.querySelector('#dialRes');wirePick(res,p=>{const ph=p.phone||(p.phones&&p.phones[0])||'';if(ph)location.href='tel:'+ph;});const dig=x=>String(x||'').replace(/[^0-9]/g,'');function renderRes(){res.innerHTML='';if(val.length<6)return;PEOPLE.filter(p=>[p.phone].concat(p.phones||[]).filter(Boolean).some(ph=>dig(ph).indexOf(val)>=0)).slice(0,6).forEach(p=>{const ph=p.phone||(p.phones&&p.phones[0])||'';const row=document.createElement('div');row.className='row';row._person=p;row.innerHTML=rowHTML(p,ph);res.appendChild(row);});const exact=PEOPLE.some(p=>[p.phone].concat(p.phones||[]).some(ph=>dig(ph)===val));if(!exact){const row=document.createElement('div');row.className='row dial-row-new';row._person={name:val,phone:val,phones:[val]};row.innerHTML='<span class="av">'+ICON.plus+'</span><div class="meta"><div class="ml"><span class="nm">מספר חדש</span></div><div class="ml"><span class="sub">'+escapeHtml(val)+'</span></div></div>';res.appendChild(row);}}const keys=['1','2','3','4','5','6','7','8','9','*','0','#'];grid.innerHTML=keys.map(k=>'<button class="dial-key" data-k="'+k+'">'+k+'</button>').join('');const upd=()=>{num.textContent=val;renderRes();};grid.querySelectorAll('.dial-key[data-k]').forEach(b=>b.onclick=()=>{val+=b.dataset.k;upd();if(navigator.vibrate)navigator.vibrate(4);});sc.querySelector('#dialBk').onclick=()=>{val=val.slice(0,-1);upd();};sc.querySelector('#dialCall').onclick=()=>{if(val)location.href='tel:'+val;};sc.querySelector('#dialFold').onclick=()=>{sc.querySelector('.dial-body').classList.toggle('dial-collapsed');};upd();}
 function openNumPad(input){
   if(!input)return;
   const ov=document.createElement('div');ov.className='numpad-ov';
@@ -1053,6 +1059,7 @@ function openShareBank(person){
 }
 function shareTriad(person){
   if(!person)return;
+  try{if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();}catch(e){}
   const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   const cells=cfg.share.slice(0,3).map(function(id){var a=byId(id);return a?'<button class="gi" data-app="'+a.id+'"><span class="c">'+a.ic+'</span><span>'+escapeHtml(a.label)+'</span></button>':'';}).join('')+'<button class="gi" data-more="1"><span class="c">'+ICON.plus+'</span><span>עוד</span></button>';
   const ov=document.createElement('div');ov.className='mpovl';ov.style.zIndex='100';
@@ -1150,7 +1157,7 @@ function openHbar(){
   requestAnimationFrame(()=>{bd.classList.add('show');bar.classList.add('run');});
   const close=cb=>closeHbar(cb);
   bd.addEventListener('click',e=>{if(e.target===bd||e.target===bar)close();});
-  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.pal){if(navigator.vibrate)navigator.vibrate(8);b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);openPaletteRow(b);return;}if(it.hand){if(navigator.vibrate)navigator.vibrate(10);b.classList.add('tapped');closeHbar();setTimeout(doHandFlip,300);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);closeHbar();snapFabClosed();setTimeout(()=>{closeSearch();document.querySelectorAll('.scr').forEach(x=>x.remove());it.fn();},210);};});
+  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.pal){if(navigator.vibrate)navigator.vibrate(8);b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);openPaletteRow(b);return;}if(it.hand){if(navigator.vibrate)navigator.vibrate(10);b.classList.add('tapped');closeHbar();setTimeout(doHandFlip,700);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);closeHbar();snapFabClosed();setTimeout(()=>{closeSearch();document.querySelectorAll('.scr').forEach(x=>x.remove());it.fn();},210);};});
 }
 const welcomeEl=document.getElementById('welcome');
 function hideWelcome(){welcomeEl.classList.add('hide');updateSearchFab();}
