@@ -279,6 +279,8 @@
   .wel-google{background:#fff;color:var(--tq-ink);}
   .wel-sample{background:rgba(255,255,255,.14);color:#fff;}
   .wel-upload{background:rgba(255,255,255,.14);color:#fff;}
+  .wel-install{background:var(--tq-deep);color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 12px 28px -10px rgba(0,194,168,.5);}
+  .wel-install svg{width:20px;height:20px;}
   .home{position:fixed;inset:0;}
   @keyframes homeEnter{0%{transform:translateX(-100%);}100%{transform:translateX(0);}}
   .home.enter{animation:homeEnter .52s cubic-bezier(.34,1.45,.5,1);}
@@ -405,6 +407,7 @@
     <h2 class="wel-title">ברוכים הבאים ל‑Sweep</h2>
     <p class="wel-sub">איך מתחילים? אפשר לסנכרן את אנשי הקשר שלך מ‑Google, או לטעון קובץ אנשי קשר.</p>
     <button class="wel-btn wel-google" id="welGoogle">סנכרון מ‑Google</button>
+    <button class="wel-btn wel-install" id="welInstall" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 21h14"/></svg>התקן את האפליקציה</button>
     <button class="wel-btn wel-upload" id="welUpload">טען קובץ אנשי קשר</button>
     <input type="file" id="welFile" accept=".csv,.vcf,text/csv,text/vcard" style="display:none">
   </div></div>
@@ -1128,17 +1131,20 @@ const installBtn=document.createElement('button');
 installBtn.id='installBtn';installBtn.className='install-pill';installBtn.setAttribute('aria-label','התקן אפליקציה');
 installBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 21h14"/></svg><span>התקן</span>';
 document.body.appendChild(installBtn);
+const welInstall=document.getElementById('welInstall');
 function standalone(){return (window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;}
 const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
-function showI(){if(!standalone())installBtn.classList.add('show');}
-function hideI(){installBtn.classList.remove('show');}
-window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;showI();});
-window.addEventListener('appinstalled',function(){deferredPrompt=null;hideI();});
-installBtn.onclick=function(){
+function showI(){if(standalone())return;installBtn.classList.add('show');if(welInstall)welInstall.style.display='';}
+function hideI(){installBtn.classList.remove('show');if(welInstall)welInstall.style.display='none';}
+function doInstall(){
   if(deferredPrompt){deferredPrompt.prompt();if(deferredPrompt.userChoice)deferredPrompt.userChoice.then(function(){deferredPrompt=null;hideI();}).catch(function(){});}
   else if(ios){if(typeof toast==='function')toast('שתף ⬆ ואז "הוסף למסך הבית"');}
   else{if(typeof toast==='function')toast('בתפריט הדפדפן בחר "הוסף למסך הבית"');}
-};
+}
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;showI();});
+window.addEventListener('appinstalled',function(){deferredPrompt=null;hideI();});
+installBtn.onclick=doInstall;
+if(welInstall)welInstall.onclick=doInstall;
 if(ios&&!standalone())showI();
 })();
 updateSearchFab();
