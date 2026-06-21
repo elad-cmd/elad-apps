@@ -208,7 +208,8 @@
   .srch-panel{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 16px 14px;}
   .srch-results{display:flex;flex-direction:column-reverse;gap:8px;overflow-y:auto;max-height:46vh;padding:6px 0 10px;-webkit-overflow-scrolling:touch;}
   .srch-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.12);border-radius:14px;padding:8px 12px;}
-  .srch-row .sav{width:42px;height:42px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex:0 0 auto;}
+  .srch-row .sav{width:50px;height:50px;border-radius:50%;border:none;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex:0 0 auto;cursor:pointer;box-shadow:0 6px 16px -8px rgba(8,50,50,.5);}
+  .srch-row .sav:active{transform:scale(.93);}
   .srch-txt{display:flex;flex-direction:column;min-width:0;}
   .srch-row .snm{color:#fff;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .srch-row .ssub{font-size:12.5px;color:rgba(255,255,255,.65);direction:ltr;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -365,15 +366,19 @@
   #botbar.bar-hidden{opacity:0;pointer-events:none;}
   body.hand-left #bbBack svg{transform:scaleX(-1);}
   .scr-back{display:none;}
-  .dial-body{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:16px;}
+  .dial-body{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:10px;padding-bottom:14px;}
+  .dial-res{display:flex;flex-direction:column;gap:8px;width:100%;max-width:340px;max-height:48vh;overflow-y:auto;margin-bottom:2px;}
+  .dial-numrow{display:flex;align-items:center;justify-content:center;gap:14px;direction:ltr;}
   .dial-num{font-size:30px;font-weight:700;color:#fff;min-height:38px;direction:ltr;letter-spacing:2px;}
-  .dial-grid{display:grid;grid-template-columns:repeat(3,68px);gap:14px;justify-content:center;}
-  .dial-actions{display:flex;gap:48px;justify-content:center;margin-top:4px;}
-  .dial-key{width:68px;height:68px;border-radius:50%;border:none;background:rgba(255,255,255,.12);color:#fff;font-size:25px;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .dial-bksp{width:44px;height:44px;border-radius:50%;border:none;background:rgba(255,255,255,.12);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .dial-padrow{display:flex;align-items:flex-end;justify-content:center;gap:12px;direction:ltr;width:100%;}
+  .dial-grid{display:grid;grid-template-columns:repeat(3,58px);gap:11px;justify-content:center;}
+  .dial-key{width:58px;height:58px;border-radius:50%;border:none;background:rgba(255,255,255,.12);color:#fff;font-size:23px;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;}
   .dial-key:active{background:rgba(255,255,255,.25);}
-  .dial-key.dial-call{background:var(--tq-deep);}
-  .dial-key svg{width:27px;height:27px;}
-  .dial-res{display:flex;flex-direction:column;gap:8px;width:100%;max-width:340px;max-height:32vh;overflow-y:auto;margin-bottom:2px;}
+  .dial-side{width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;color:#fff;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .dial-side:active{background:rgba(255,255,255,.25);}
+  .dial-side svg{width:25px;height:25px;}
+  .dial-side.dial-call{background:var(--tq-deep);}
   .dial-res-row{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.1);border-radius:14px;padding:7px 11px;cursor:pointer;}
   .dial-res-row.dial-res-new{background:var(--tq-deep);}
   .dial-res-new .drn,.dial-res-new .drp{color:#fff;}
@@ -694,7 +699,7 @@ const srch=document.getElementById('srch');
 const srchResults=document.getElementById('srchResults');
 const searchInput=document.getElementById('searchInput');
 function vvSearch(){const vv=window.visualViewport;const kb=vv?Math.max(0,window.innerHeight-vv.height-(vv.offsetTop||0)):0;srch.style.paddingBottom=Math.max(kb,88)+'px';}
-function renderSearch(q){q=(q||'').trim();srchResults.innerHTML='';if(!q)return;PEOPLE.filter(p=>String(p.name).indexOf(q)>=0).slice(0,40).forEach(p=>{const r=document.createElement('div');r.className='srch-row';const sub=p.phone||p.email||'';r.innerHTML=`<span class="sav">${escapeHtml(initials(p.name))}</span><div class="srch-txt"><span class="snm">${escapeHtml(p.name)}</span>${sub?`<span class="ssub">${escapeHtml(sub)}</span>`:''}</div>`;r.onclick=()=>openContact(p,true);srchResults.appendChild(r);});}
+function renderSearch(q){q=(q||'').trim();srchResults.innerHTML='';if(!q)return;PEOPLE.filter(p=>String(p.name).indexOf(q)>=0).slice(0,40).forEach(p=>{const r=document.createElement('div');r.className='srch-row';const sub=p.phone||p.email||'';r.innerHTML=`<button class="sav" aria-label="שיתוף">${escapeHtml(initials(p.name))}</button><div class="srch-txt"><span class="snm">${escapeHtml(p.name)}</span>${sub?`<span class="ssub">${escapeHtml(sub)}</span>`:''}</div>`;r.querySelector('.sav').onclick=(e)=>{e.stopPropagation();shareTriad(p);};r.querySelector('.srch-txt').onclick=()=>openContact(p,true);srchResults.appendChild(r);});}
 function openSearch(){srch.classList.add('show');srchResults.innerHTML='';searchInput.value='';if(window.visualViewport)window.visualViewport.addEventListener('resize',vvSearch);setTimeout(()=>{searchInput.focus();vvSearch();},60);setTimeout(vvSearch,380);updateSearchFab();}
 function closeSearch(){srch.classList.remove('show');searchInput.blur();if(window.visualViewport)window.visualViewport.removeEventListener('resize',vvSearch);srch.style.paddingBottom='';updateSearchFab();}
 function resumeSearch(){srch.classList.add('show');if(window.visualViewport)window.visualViewport.addEventListener('resize',vvSearch);setTimeout(()=>{searchInput.focus();vvSearch();},60);}
@@ -779,9 +784,9 @@ botbar.querySelector('#bbAdd').onclick=()=>openAddContact();
 botbar.querySelector('#bbSearch').onclick=()=>openSearch();
 botbar.querySelector('#bbDial').onclick=()=>openDialer();
 botbar.querySelector('#bbBack').onclick=()=>navBack();
-function updateBar(){const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||sheetOpen);botbar.classList.toggle('collapsed',!(onHome&&!menuOpen&&!welcomeOn));}
+function updateBar(){const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||sheetOpen||!!document.querySelector('.scr.dialer-scr'));botbar.classList.toggle('collapsed',!(onHome&&!menuOpen&&!welcomeOn));}
 function navBack(){if(srch.classList.contains('show')){closeSearch();return;}const scrs=[...document.querySelectorAll('.scr')];const top=scrs[scrs.length-1];if(top&&top._back){top._back();return;}if(HIST.length){const fn=HIST.pop();fn();}}
-function openDialer(){const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>חייגן</h2></div><div class="scr-body dial-body"><div class="dial-res" id="dialRes"></div><div class="dial-num" id="dialNum"></div><div class="dial-grid" id="dialGrid"></div><div class="dial-actions"><button class="dial-key dial-bksp" id="dialBk" aria-label="מחק">⌫</button><button class="dial-key dial-call" id="dialCall" aria-label="חיוג">'+ICON.call+'</button></div></div>');sc.classList.add('scr-bottom');sc._reopen=openDialer;let val='';const num=sc.querySelector('#dialNum');const grid=sc.querySelector('#dialGrid');const res=sc.querySelector('#dialRes');const dig=x=>String(x||'').replace(/[^0-9]/g,'');function renderRes(){res.innerHTML='';if(val.length<6)return;PEOPLE.filter(p=>[p.phone].concat(p.phones||[]).filter(Boolean).some(ph=>dig(ph).indexOf(val)>=0)).slice(0,6).forEach(p=>{const ph=p.phone||(p.phones&&p.phones[0])||'';const row=document.createElement('div');row.className='dial-res-row';row.innerHTML='<button class="dial-av" aria-label="שתף">'+escapeHtml(initials(p.name))+'</button><div class="dial-res-txt"><div class="drn">'+escapeHtml(p.name||'')+'</div><div class="drp">'+escapeHtml(ph)+'</div></div>';row.querySelector('.dial-av').onclick=e=>{e.stopPropagation();openShareBank(p);};row.onclick=()=>{if(ph)location.href='tel:'+ph;};res.appendChild(row);});const exact=PEOPLE.some(p=>[p.phone].concat(p.phones||[]).some(ph=>dig(ph)===val));if(!exact){const row=document.createElement('div');row.className='dial-res-row dial-res-new';row.innerHTML='<button class="dial-av" aria-label="שתף">'+ICON.plus+'</button><div class="dial-res-txt"><div class="drn">מספר חדש</div><div class="drp">'+escapeHtml(val)+'</div></div>';row.querySelector('.dial-av').onclick=e=>{e.stopPropagation();openShareBank({name:val,phone:val,phones:[val]});};row.onclick=()=>{location.href='tel:'+val;};res.appendChild(row);}}const keys=['1','2','3','4','5','6','7','8','9','*','0','#'];grid.innerHTML=keys.map(k=>'<button class="dial-key" data-k="'+k+'">'+k+'</button>').join('');const upd=()=>{num.textContent=val;renderRes();};grid.querySelectorAll('.dial-key[data-k]').forEach(b=>b.onclick=()=>{val+=b.dataset.k;upd();if(navigator.vibrate)navigator.vibrate(4);});sc.querySelector('#dialBk').onclick=()=>{val=val.slice(0,-1);upd();};sc.querySelector('#dialCall').onclick=()=>{if(val)location.href='tel:'+val;};upd();}
+function openDialer(){const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>חייגן</h2></div><div class="scr-body dial-body"><div class="dial-res" id="dialRes"></div><div class="dial-numrow"><span class="dial-num" id="dialNum"></span><button class="dial-bksp" id="dialBk" aria-label="מחק">⌫</button></div><div class="dial-padrow"><button class="dial-side dial-back" id="dialBack" aria-label="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button><div class="dial-grid" id="dialGrid"></div><button class="dial-side dial-call" id="dialCall" aria-label="חיוג">'+ICON.call+'</button></div></div>');sc.classList.add('scr-bottom','dialer-scr');sc._reopen=openDialer;let val='';const num=sc.querySelector('#dialNum');const grid=sc.querySelector('#dialGrid');const res=sc.querySelector('#dialRes');const dig=x=>String(x||'').replace(/[^0-9]/g,'');function renderRes(){res.innerHTML='';if(val.length<6)return;PEOPLE.filter(p=>[p.phone].concat(p.phones||[]).filter(Boolean).some(ph=>dig(ph).indexOf(val)>=0)).slice(0,6).forEach(p=>{const ph=p.phone||(p.phones&&p.phones[0])||'';const row=document.createElement('div');row.className='dial-res-row';row.innerHTML='<button class="dial-av" aria-label="שתף">'+escapeHtml(initials(p.name))+'</button><div class="dial-res-txt"><div class="drn">'+escapeHtml(p.name||'')+'</div><div class="drp">'+escapeHtml(ph)+'</div></div>';row.querySelector('.dial-av').onclick=e=>{e.stopPropagation();openShareBank(p);};row.onclick=()=>{if(ph)location.href='tel:'+ph;};res.appendChild(row);});const exact=PEOPLE.some(p=>[p.phone].concat(p.phones||[]).some(ph=>dig(ph)===val));if(!exact){const row=document.createElement('div');row.className='dial-res-row dial-res-new';row.innerHTML='<button class="dial-av" aria-label="שתף">'+ICON.plus+'</button><div class="dial-res-txt"><div class="drn">מספר חדש</div><div class="drp">'+escapeHtml(val)+'</div></div>';row.querySelector('.dial-av').onclick=e=>{e.stopPropagation();openShareBank({name:val,phone:val,phones:[val]});};row.onclick=()=>{location.href='tel:'+val;};res.appendChild(row);}}const keys=['1','2','3','4','5','6','7','8','9','*','0','#'];grid.innerHTML=keys.map(k=>'<button class="dial-key" data-k="'+k+'">'+k+'</button>').join('');const upd=()=>{num.textContent=val;renderRes();};grid.querySelectorAll('.dial-key[data-k]').forEach(b=>b.onclick=()=>{val+=b.dataset.k;upd();if(navigator.vibrate)navigator.vibrate(4);});sc.querySelector('#dialBk').onclick=()=>{val=val.slice(0,-1);upd();};sc.querySelector('#dialCall').onclick=()=>{if(val)location.href='tel:'+val;};sc.querySelector('#dialBack').onclick=()=>sc._back();upd();}
 function openAddContact(){const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>איש קשר חדש</h2></div><div class="scr-body"><div class="ct-card"><div class="ct-frow ct-namerow"><input class="ct-inp ct-nameinp" id="acName" placeholder="שם"></div><div class="ct-frow"><input class="ct-inp" id="acPhone" placeholder="טלפון" dir="ltr"></div><div class="ct-frow"><input class="ct-inp" id="acEmail" placeholder="מייל" dir="ltr"></div><button class="mp-confirm" id="acSave" style="margin-top:16px;">שמור</button></div></div>');sc.classList.add('scr-bottom');sc._reopen=openAddContact;sc.querySelector('#acSave').onclick=()=>{const name=sc.querySelector('#acName').value.trim();const phone=sc.querySelector('#acPhone').value.trim();const email=sc.querySelector('#acEmail').value.trim();if(!name&&!phone&&!email){toast('הזן לפחות שדה אחד');return;}PEOPLE.unshift({name:name||'(ללא שם)',phone:phone,email:email,phones:phone?[phone]:[],emails:email?[email]:[],org:'',msg:'',fav:false,last:0});savePeople();renderList();toast('נוסף איש קשר');sc._back();};}
 let _barRAF=0;function _schedBar(){if(_barRAF)return;_barRAF=requestAnimationFrame(()=>{_barRAF=0;updateBar();});}try{new MutationObserver(_schedBar).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});}catch(e){}
 function updateSearchFab(){updateBar();}
@@ -1008,6 +1013,17 @@ function openShareBank(person){
   ov.querySelector('.sheet-x').onclick=close;ov.addEventListener('click',e=>{if(e.target===ov)close();});
   ov.querySelectorAll('.gi').forEach(b=>b.onclick=()=>{fire(b.dataset.app,person);close();});
 }
+function shareTriad(person){
+  if(!person)return;
+  const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  const cells=cfg.share.slice(0,3).map(function(id){var a=byId(id);return a?'<button class="gi" data-app="'+a.id+'"><span class="c">'+a.ic+'</span><span>'+escapeHtml(a.label)+'</span></button>':'';}).join('');
+  const ov=document.createElement('div');ov.className='mpovl';ov.style.zIndex='100';
+  ov.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xsvg+'</button><h2 style="flex:1;margin:0;text-align:center;">שיתוף '+escapeHtml(person.name||'')+'</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="grid">'+cells+'</div></div>';
+  document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
+  const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),260);};
+  ov.querySelector('.sheet-x').onclick=close;ov.addEventListener('click',e=>{if(e.target===ov)close();});
+  ov.querySelectorAll('.gi').forEach(b=>b.onclick=()=>{fire(b.dataset.app,person);close();});
+}
 function doReset(){try{Object.keys(localStorage).forEach(k=>{if(k.indexOf('myshare')===0||k==='contacts_view')localStorage.removeItem(k);});}catch(e){}location.reload();}
 function openResetConfirm(){
   const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
@@ -1127,25 +1143,38 @@ document.getElementById('welFile').onchange=e=>{const f=e.target.files&&e.target
 if(!PEOPLE.length)welcomeEl.classList.remove('hide');
 (function(){
 let deferredPrompt=null;
+let installed=false;
+try{installed=localStorage.getItem('myshare_installed')==='1';}catch(e){}
+const ICN_INSTALL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 21h14"/></svg>';
+const ICN_OPEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6v6M20 4l-8 8"/></svg>';
 const installBtn=document.createElement('button');
-installBtn.id='installBtn';installBtn.className='install-pill';installBtn.setAttribute('aria-label','התקן אפליקציה');
-installBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 21h14"/></svg><span>התקן</span>';
+installBtn.id='installBtn';installBtn.className='install-pill';installBtn.setAttribute('aria-label','התקן או פתח אפליקציה');
 document.body.appendChild(installBtn);
 const welInstall=document.getElementById('welInstall');
 function standalone(){return (window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;}
 const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
-function showI(){if(standalone())return;installBtn.classList.add('show');if(welInstall)welInstall.style.display='';}
-function hideI(){installBtn.classList.remove('show');if(welInstall)welInstall.style.display='none';}
 function doInstall(){
-  if(deferredPrompt){deferredPrompt.prompt();if(deferredPrompt.userChoice)deferredPrompt.userChoice.then(function(){deferredPrompt=null;hideI();}).catch(function(){});}
-  else if(ios){if(typeof toast==='function')toast('שתף ⬆ ואז "הוסף למסך הבית"');}
+  if(deferredPrompt){deferredPrompt.prompt();if(deferredPrompt.userChoice)deferredPrompt.userChoice.then(function(){deferredPrompt=null;}).catch(function(){});}
+  else if(ios){if(typeof toast==='function')toast('שתף \u2b06 ואז "הוסף למסך הבית"');}
   else{if(typeof toast==='function')toast('בתפריט הדפדפן בחר "הוסף למסך הבית"');}
 }
-window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;showI();});
-window.addEventListener('appinstalled',function(){deferredPrompt=null;hideI();});
-installBtn.onclick=doInstall;
-if(welInstall)welInstall.onclick=doInstall;
-if(ios&&!standalone())showI();
+function openApp(){
+  if(typeof toast==='function')toast('פותח\u2026 אם לא נפתח, פתח מאייקון מסך הבית');
+  try{window.location.href='intent://open#Intent;package=com.sweep;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;S.browser_fallback_url='+encodeURIComponent('https://elad-cmd.github.io/elad-apps/MyShare.html')+';end';}catch(e){}
+}
+function render(){
+  if(standalone()){installBtn.classList.remove('show');if(welInstall)welInstall.style.display='none';return;}
+  var mode=installed?'open':((deferredPrompt||ios)?'install':null);
+  if(!mode){installBtn.classList.remove('show');if(welInstall)welInstall.style.display='none';return;}
+  var isOpen=mode==='open';var icon=isOpen?ICN_OPEN:ICN_INSTALL;
+  installBtn.innerHTML=icon+'<span>'+(isOpen?'פתח':'התקן')+'</span>';
+  installBtn.onclick=isOpen?openApp:doInstall;installBtn.classList.add('show');
+  if(welInstall){welInstall.innerHTML=icon+(isOpen?'פתח את האפליקציה':'התקן את האפליקציה');welInstall.onclick=isOpen?openApp:doInstall;welInstall.style.display='';}
+}
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;installed=false;try{localStorage.removeItem('myshare_installed');}catch(e){}render();});
+window.addEventListener('appinstalled',function(){installed=true;deferredPrompt=null;try{localStorage.setItem('myshare_installed','1');}catch(e){}render();});
+if(navigator.getInstalledRelatedApps){navigator.getInstalledRelatedApps().then(function(apps){if(apps&&apps.length){installed=true;try{localStorage.setItem('myshare_installed','1');}catch(e){}render();}}).catch(function(){});}
+render();
 })();
 updateSearchFab();
 </script>
