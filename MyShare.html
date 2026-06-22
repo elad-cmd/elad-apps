@@ -968,7 +968,7 @@ function snapFabClosed(){menuFab.classList.remove('open');const ds=menuFab.query
    2) +CLOSE_GAP  -> icon hops to the other side
    3) +HOP_GAP    -> settle new side, bouncy re-open of bottom bar, fade backdrop
    (Phase B will animate the on-screen contacts inside stage 3.)                 */
-const HF={CLOSE:700, CLOSE_GAP:100, HOP:550, HOP_GAP:100, REOPEN:700};
+const HF={CLOSE:700, CLOSE_GAP:100, HOP:550, HOP_GAP:100, REOPEN:1000};
 function hfOnHome(){
   const screenOpen=!!document.querySelector('.scr');
   const searchOn=srch.classList.contains('show');
@@ -976,6 +976,7 @@ function hfOnHome(){
   return !screenOpen&&!searchOn&&!sheetOpen;
 }
 function botbarCollapse(){            // suck the bar buttons into the menu icon
+  if(!hfOnHome())return;
   const fr=menuFab.getBoundingClientRect();
   const fcx=fr.left+fr.width/2, fcy=fr.top+fr.height/2;
   botbar.classList.remove('bar-hidden','collapsed');
@@ -985,6 +986,11 @@ function botbarCollapse(){            // suck the bar buttons into the menu icon
   const meas=btns.map(b=>{const r=b.getBoundingClientRect();return{b,dx:Math.round(fcx-(r.left+r.width/2)),dy:Math.round(fcy-(r.top+r.height/2))};});
   void botbar.offsetWidth;
   meas.forEach(m=>{m.b.style.transition='transform .6s cubic-bezier(.5,.04,.7,.32), opacity .45s ease';m.b.style.transform='translate('+m.dx+'px,'+m.dy+'px) scale(.34)';m.b.style.opacity='0';});
+  setTimeout(()=>{                    // settle into the hidden resting state once collapsed
+    if(!document.querySelector('.hbar-backdrop'))return;   // menu already closed -> bar restored elsewhere
+    botbar.classList.add('bar-hidden');
+    btns.forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});
+  },640);
 }
 function botbarReopen(){              // spring the bar buttons back out of the icon
   botbar.classList.remove('bar-hidden','collapsed');
@@ -1015,7 +1021,7 @@ function doHandFlip(){
   const bar=bd&&bd.querySelector('.hbar');
   if(bar){bar.classList.remove('run');bar.classList.add('closing');}
   menuFab.classList.remove('open');setFab(false);            // morph the X back into three dots
-  if(onHome)botbarCollapse();
+  /* bottom bar is already collapsed (it collapsed when the 45° menu opened) */
   /* --- stage 2: after close + gap, hop the icon to the other side --- */
   setTimeout(()=>{
     f.style.setProperty('--dx',(tgt-cur)+'px');
@@ -1057,7 +1063,7 @@ botbar.querySelector('#bbAdd').onclick=()=>openAddContact();
 botbar.querySelector('#bbSearch').onclick=()=>openSearch();
 botbar.querySelector('#bbDial').onclick=()=>openDialer();
 botbar.querySelector('#bbBack').onclick=()=>navBack();
-function updateBar(){if(flipping)return;const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||sheetOpen||flipping);botbar.classList.toggle('collapsed',!(onHome&&!menuOpen&&!welcomeOn));}
+function updateBar(){if(flipping)return;const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||sheetOpen||flipping);botbar.classList.toggle('collapsed',!(onHome&&!menuOpen&&!welcomeOn));if(!botbar.classList.contains('bar-hidden')){botbar.querySelectorAll('.bb-btn').forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});}}
 function appBack(){
   const np=document.querySelector('.numpad-ov.show');if(np){np.classList.remove('show');setTimeout(()=>np.remove(),200);return true;}
   const mp=[...document.querySelectorAll('.mpovl.show:not(.exit-dlg)')].pop();if(mp){mp.classList.remove('show');setTimeout(()=>mp.remove(),260);return true;}
@@ -1437,7 +1443,7 @@ function openHbar(){
     const dur='0.52', cdur=(0.42+i*0.05).toFixed(2);
     return `<button class="hm-item" style="${posProp}:${off}px;bottom:${bottom}px;--dur:${dur}s;--cdur:${cdur}s;--i:${i};--r:${n-1-i}" data-i="${i}"><span class="hm-ic${it.big?' big':''}">${it.ic}</span><span class="hm-label">${escapeHtml(it.label)}</span></button>`;
   }).join('');
-  bd.appendChild(bar);document.body.appendChild(bd);updateSearchFab();
+  bd.appendChild(bar);document.body.appendChild(bd);updateSearchFab();botbarCollapse();
   menuFab.classList.add('open');setFab(true);
   const fab=document.getElementById('menuFab');
   const fr=fab.getBoundingClientRect();
