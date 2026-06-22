@@ -820,7 +820,6 @@ function appBack(){
   if(srch.classList.contains('show')){closeSearch();return true;}
   const scrs=[...document.querySelectorAll('.scr')];const top=scrs[scrs.length-1];
   if(top&&top._back){top._back();return true;}
-  if(HIST.length){const fn=HIST.pop();fn();return true;}
   return false;
 }
 function navBack(){if(!appBack()){if(MODE==='share')doExit();else openExitConfirm();}}
