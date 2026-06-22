@@ -16,6 +16,8 @@
         </intent>
         <package android:name="com.sweep" />
         <package android:name="com.whatsapp" />
+        <package android:name="com.waze" />
+        <package android:name="com.google.android.apps.maps" />
     </queries>
 
     <application

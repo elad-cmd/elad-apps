@@ -575,7 +575,13 @@
   function favById(id){ return favs.find(function(f){return f.id===id;}); }
   function favAvatar(f){ if(f.icon) return '<img src="'+f.icon+'">'; var bg=f.type==='wa'?'#25D366':(f.type==='sweep'?'#0FB5A6':'#888'); var ini=(f.label||'?').trim().charAt(0).toUpperCase(); return '<span style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:'+bg+'">'+esc(ini)+'</span>'; }
   function favStripHtml(){ var h='<div class="favstrip">'; favs.forEach(function(f){ h+='<button class="favchip" data-fav="'+f.id+'"><span class="fa">'+favAvatar(f)+'</span><span class="fl">'+esc(f.label)+'</span></button>'; }); h+='<button class="favchip add" data-fav="__add"><span class="fa">+</span><span class="fl">ערוך</span></button></div>'; return h; }
-  function shareFav(f,text){ if(!f||!text)return; if(f.type==='wa'){ if(A&&A.shareToWhatsApp)A.shareToWhatsApp(f.number,text); } else { var pkg=f.type==='sweep'?'com.sweep':f.pkg; var ok=(A&&A.shareToApp)?A.shareToApp(pkg,text):false; if(!ok) toast((f.label||'האפליקציה')+' לא מותקנת'); } }
+  function shareFav(f,text){ if(!f||!text)return;
+    if(f.type==='wa'){ if(A&&A.shareToWhatsApp)A.shareToWhatsApp(f.number,text); return; }
+    var pkg=f.type==='sweep'?'com.sweep':f.pkg;
+    var q=encodeURIComponent(text.trim());
+    if(pkg==='com.waze'){ if(A&&A.openUrl)A.openUrl('https://waze.com/ul?q='+q+'&navigate=yes'); return; }
+    if(pkg==='com.google.android.apps.maps'){ if(A&&A.openUrl)A.openUrl('https://www.google.com/maps/search/?api=1&query='+q); return; }
+    var ok=(A&&A.shareToApp)?A.shareToApp(pkg,text):false; if(!ok) toast((f.label||'האפליקציה')+' לא מותקנת'); }
   function openFavEdit(){ renderFavList(); show('favs'); }
   function renderFavList(){ var el=document.getElementById('favList');
     el.innerHTML = favs.length ? favs.map(function(f){ return '<div class="favrow"><span class="fa">'+favAvatar(f)+'</span><span class="nm">'+esc(f.label)+'</span>'
