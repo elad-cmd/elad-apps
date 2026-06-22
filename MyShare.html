@@ -1005,6 +1005,24 @@ function botbarReopen(){              // spring the bar buttons back out of the 
   meas.forEach((m,i)=>{m.b.style.transition='transform .55s cubic-bezier(.34,1.45,.5,1) '+(i*0.05).toFixed(2)+'s, opacity .3s ease '+(i*0.05).toFixed(2)+'s';m.b.style.transform='';m.b.style.opacity='1';});
   setTimeout(()=>{btns.forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});},950);
 }
+function flipFirstContacts(newHand,n){   // PHASE B: cascade the first N on-screen contacts across (accordion)
+  const rows=[...document.querySelectorAll('#home .row')].slice(0,n);
+  const items=[];
+  rows.forEach((r,vi)=>{r.querySelectorAll('.av,.nm,.sub').forEach(el=>items.push({el,vi}));});
+  if(!items.length){
+    document.body.classList.toggle('hand-left',newHand==='left');
+    document.body.classList.toggle('hand-right',newHand!=='left');
+    return;
+  }
+  const first=items.map(o=>{o.el.style.transition='none';o.el.style.transform='';return o.el.getBoundingClientRect();});
+  document.body.classList.toggle('hand-left',newHand==='left');
+  document.body.classList.toggle('hand-right',newHand!=='left');
+  const last=items.map(o=>o.el.getBoundingClientRect());
+  items.forEach((o,k)=>{const dx=first[k].left-last[k].left;o.el.style.transform=o.el.classList.contains('av')?('translate('+dx+'px,-50%)'):('translateX('+dx+'px)');});
+  void document.body.offsetWidth;
+  items.forEach(o=>{o.el.style.transition='transform .5s cubic-bezier(.34,1.45,.5,1) '+(o.vi*0.05).toFixed(2)+'s';o.el.style.transform=o.el.classList.contains('av')?'translate(0,-50%)':'translateX(0)';});
+  setTimeout(()=>{items.forEach(o=>{o.el.style.transition='';o.el.style.transform='';});},1200);
+}
 function doHandFlip(){
   if(flipping)return;
   const f=menuFab;
@@ -1037,10 +1055,13 @@ function doHandFlip(){
   /* --- stage 3: after hop + gap, settle the new side and re-open the bar --- */
   const t3=HF.CLOSE+HF.CLOSE_GAP+HF.HOP+HF.HOP_GAP;
   setTimeout(()=>{
-    document.body.classList.toggle('hand-left',newHand==='left');
-    document.body.classList.toggle('hand-right',newHand!=='left');
+    if(onHome){
+      flipFirstContacts(newHand,10);          // first 10 rows cascade one after another
+    }else{
+      document.body.classList.toggle('hand-left',newHand==='left');
+      document.body.classList.toggle('hand-right',newHand!=='left');
+    }
     const sf=document.getElementById('searchFab');if(sf)sf.classList.toggle('left',newHand==='left');
-    /* PHASE B: animate the on-screen contacts here (flipContacts) */
     if(onHome)botbarReopen();
     if(bd){bd.classList.remove('show');setTimeout(()=>{if(bd.parentNode)bd.remove();},500);}
   },t3);
