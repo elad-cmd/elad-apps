@@ -267,6 +267,9 @@
   .ct-inp{flex:1;min-width:0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:10px 12px;color:#fff;font-family:inherit;font-size:15px;font-weight:600;outline:none;text-align:right;}
   .ct-inp::placeholder{color:rgba(255,255,255,.4);}
   .ct-inp:focus{border-color:var(--tq-deep);background:rgba(0,194,168,.12);}
+  .mp-sheet .ct-inp{background:#fff;border:1px solid rgba(8,50,50,.20);color:var(--tq-ink);}
+  .mp-sheet .ct-inp::placeholder{color:rgba(8,50,50,.42);}
+  .mp-sheet .ct-inp:focus{border-color:var(--tq-deep);background:#fff;}
   .ct-nameinp{font-size:18px;font-weight:800;text-align:center;}
   .ct-acts{display:flex;gap:6px;flex:0 0 auto;}
   .ct-act{width:38px;height:38px;border-radius:50%;border:none;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;cursor:pointer;}
@@ -430,11 +433,11 @@
   body.hand-left #bbBack svg{transform:scaleX(-1);}
   .scr-back{display:none;}
   .dial-body{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:10px;padding-bottom:104px;}
-  .dial-res{display:flex;flex-direction:column;gap:8px;width:100%;max-width:340px;max-height:48vh;overflow-y:auto;margin-bottom:2px;}
+  .dial-res{display:flex;flex-direction:column;gap:8px;width:100%;max-width:340px;max-height:48vh;overflow-y:auto;margin-bottom:2px;transition:max-height .38s cubic-bezier(.4,0,.2,1);}
   .dial-numrow{display:flex;align-items:center;justify-content:center;gap:14px;direction:ltr;}
   .dial-num{font-size:30px;font-weight:700;color:#fff;min-height:38px;direction:ltr;letter-spacing:2px;}
   .dial-bksp{width:44px;height:44px;border-radius:50%;border:none;background:rgba(255,255,255,.12);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
-  .dial-padrow{display:flex;align-items:flex-end;justify-content:center;gap:12px;direction:ltr;width:100%;}
+  .dial-padrow{display:flex;align-items:flex-end;justify-content:center;gap:12px;direction:ltr;width:100%;overflow:hidden;max-height:52vh;transform-origin:center bottom;transition:max-height .38s cubic-bezier(.4,0,.2,1),opacity .3s ease,transform .38s cubic-bezier(.4,0,.2,1);}
   .dial-grid{display:grid;grid-template-columns:repeat(3,58px);gap:11px;justify-content:center;}
   .dial-key{width:58px;height:58px;border-radius:50%;border:none;background:rgba(255,255,255,.12);color:#fff;font-size:23px;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;}
   .dial-key:active{background:rgba(255,255,255,.25);}
@@ -445,7 +448,7 @@
   .dial-handle{width:64px;height:28px;border-radius:14px;border:none;background:rgba(255,255,255,.14);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:2px;flex:0 0 auto;}
   .dial-handle:active{background:rgba(255,255,255,.26);}
   .dial-handle svg{width:24px;height:24px;transition:transform .22s ease;}
-  .dial-collapsed .dial-padrow{display:none;}
+  .dial-collapsed .dial-padrow{max-height:0;opacity:0;transform:translateY(26px) scaleY(.5);pointer-events:none;margin-top:-10px;}
   .dial-collapsed .dial-res{max-height:64vh;}
   .dial-collapsed .dial-handle svg{transform:rotate(180deg);}
   .dial-res-row{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.1);border-radius:14px;padding:7px 11px;cursor:pointer;}
@@ -968,29 +971,32 @@ function snapFabClosed(){menuFab.classList.remove('open');const ds=menuFab.query
    2) +CLOSE_GAP  -> icon hops to the other side
    3) +HOP_GAP    -> settle new side, bouncy re-open of bottom bar, fade backdrop
    (Phase B will animate the on-screen contacts inside stage 3.)                 */
-const HF={CLOSE:700, CLOSE_GAP:100, HOP:550, HOP_GAP:100, REOPEN:1000};
+const HF={CLOSE:700, CLOSE_GAP:100, HOP:550, HOP_GAP:100, BAR_DELAY:800, REOPEN:1000};
 function hfOnHome(){
   const screenOpen=!!document.querySelector('.scr');
   const searchOn=srch.classList.contains('show');
   const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');
   return !screenOpen&&!searchOn&&!sheetOpen;
 }
-function botbarCollapse(){            // suck the bar buttons into the menu icon
+function botbarCollapse(){            // collapse the bar into the icon = exact time-reverse of botbarReopen
   if(!hfOnHome())return;
-  const fr=menuFab.getBoundingClientRect();
-  const fcx=fr.left+fr.width/2, fcy=fr.top+fr.height/2;
   botbar.classList.remove('bar-hidden','collapsed');
   const btns=[...botbar.querySelectorAll('.bb-btn')];
   btns.forEach(b=>{b.style.transition='none';b.style.transform='';b.style.opacity='1';});
   void botbar.offsetWidth;
+  const fr=menuFab.getBoundingClientRect();
+  const fcx=fr.left+fr.width/2, fcy=fr.top+fr.height/2;
   const meas=btns.map(b=>{const r=b.getBoundingClientRect();return{b,dx:Math.round(fcx-(r.left+r.width/2)),dy:Math.round(fcy-(r.top+r.height/2))};});
   void botbar.offsetWidth;
-  meas.forEach(m=>{m.b.style.transition='transform .6s cubic-bezier(.5,.04,.7,.32), opacity .45s ease';m.b.style.transform='translate('+m.dx+'px,'+m.dy+'px) scale(.34)';m.b.style.opacity='0';});
+  const N=meas.length;
+  // reopen: out from icon, i*0.05 stagger, cubic-bezier(.34,1.45,.5,1)
+  // reverse: into icon, (N-1-i)*0.05 stagger (last-out goes first), time-reversed easing
+  meas.forEach((m,i)=>{const d=((N-1-i)*0.05).toFixed(2);m.b.style.transition='transform .55s cubic-bezier(.5,0,.66,-.45) '+d+'s, opacity .3s ease '+(((N-1-i)*0.05)+0.25).toFixed(2)+'s';m.b.style.transform='translate('+m.dx+'px,'+m.dy+'px) scale(.4)';m.b.style.opacity='0';});
   setTimeout(()=>{                    // settle into the hidden resting state once collapsed
     if(!document.querySelector('.hbar-backdrop'))return;   // menu already closed -> bar restored elsewhere
     botbar.classList.add('bar-hidden');
     btns.forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});
-  },640);
+  },550+(N-1)*50+120);
 }
 function botbarReopen(){              // spring the bar buttons back out of the icon
   botbar.classList.remove('bar-hidden','collapsed');
@@ -1062,10 +1068,10 @@ function doHandFlip(){
       document.body.classList.toggle('hand-right',newHand!=='left');
     }
     const sf=document.getElementById('searchFab');if(sf)sf.classList.toggle('left',newHand==='left');
-    if(onHome)botbarReopen();
+    if(onHome)setTimeout(botbarReopen,HF.BAR_DELAY);   // bar opens only after the on-screen contacts finish crossing
     if(bd){bd.classList.remove('show');setTimeout(()=>{if(bd.parentNode)bd.remove();},500);}
   },t3);
-  setTimeout(()=>{flipping=false;updateBar();},t3+HF.REOPEN);
+  setTimeout(()=>{flipping=false;updateBar();},t3+HF.BAR_DELAY+HF.REOPEN);
 }
 buildFabDots();
 menuFab.onclick=()=>{if(document.querySelector('.hbar-backdrop'))closeHbar();else openHbar();};
