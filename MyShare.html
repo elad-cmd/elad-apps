@@ -962,21 +962,83 @@ function dmTr(p){return 'translate('+Math.round(p[0]-DM_HALF)+'px,'+Math.round(p
 function buildFabDots(){menuFab.innerHTML='<span class="dotmorph" style="transform:rotate('+fabRot+'deg)">'+DM_OPEN.map((o,i)=>`<i class="dm" data-i="${i}" style="transform:${dmTr(DM_CLOSED[i])}"></i>`).join('')+'</span>';}
 function setFab(open){menuFab.querySelectorAll('.dm').forEach(d=>{const i=+d.dataset.i;d.style.transform=dmTr(open?DM_OPEN[i]:DM_CLOSED[i]);});}
 function snapFabClosed(){menuFab.classList.remove('open');const ds=menuFab.querySelectorAll('.dm');ds.forEach(d=>d.style.transition='none');setFab(false);void menuFab.offsetWidth;requestAnimationFrame(()=>ds.forEach(d=>{d.style.transition='';}));}
+/* ===== hand-flip choreography — PHASE A: 45° menu + icon + bottom bar =====
+   Stages (each delay is measured from the END of the previous animation):
+   1) close 45° menu AND bottom bar together, into the icon (dark backdrop stays)
+   2) +CLOSE_GAP  -> icon hops to the other side
+   3) +HOP_GAP    -> settle new side, bouncy re-open of bottom bar, fade backdrop
+   (Phase B will animate the on-screen contacts inside stage 3.)                 */
+const HF={CLOSE:700, CLOSE_GAP:100, HOP:550, HOP_GAP:100, REOPEN:700};
+function hfOnHome(){
+  const screenOpen=!!document.querySelector('.scr');
+  const searchOn=srch.classList.contains('show');
+  const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');
+  return !screenOpen&&!searchOn&&!sheetOpen;
+}
+function botbarCollapse(){            // suck the bar buttons into the menu icon
+  const fr=menuFab.getBoundingClientRect();
+  const fcx=fr.left+fr.width/2, fcy=fr.top+fr.height/2;
+  botbar.classList.remove('bar-hidden','collapsed');
+  const btns=[...botbar.querySelectorAll('.bb-btn')];
+  btns.forEach(b=>{b.style.transition='none';b.style.transform='';b.style.opacity='1';});
+  void botbar.offsetWidth;
+  const meas=btns.map(b=>{const r=b.getBoundingClientRect();return{b,dx:Math.round(fcx-(r.left+r.width/2)),dy:Math.round(fcy-(r.top+r.height/2))};});
+  void botbar.offsetWidth;
+  meas.forEach(m=>{m.b.style.transition='transform .6s cubic-bezier(.5,.04,.7,.32), opacity .45s ease';m.b.style.transform='translate('+m.dx+'px,'+m.dy+'px) scale(.34)';m.b.style.opacity='0';});
+}
+function botbarReopen(){              // spring the bar buttons back out of the icon
+  botbar.classList.remove('bar-hidden','collapsed');
+  const btns=[...botbar.querySelectorAll('.bb-btn')];
+  btns.forEach(b=>{b.style.transition='none';b.style.transform='';b.style.opacity='1';});
+  void botbar.offsetWidth;
+  const fr=menuFab.getBoundingClientRect();
+  const fcx=fr.left+fr.width/2, fcy=fr.top+fr.height/2;
+  const meas=btns.map(b=>{const r=b.getBoundingClientRect();return{b,dx:Math.round(fcx-(r.left+r.width/2)),dy:Math.round(fcy-(r.top+r.height/2))};});
+  meas.forEach(m=>{m.b.style.transform='translate('+m.dx+'px,'+m.dy+'px) scale(.4)';m.b.style.opacity='0';});
+  void botbar.offsetWidth;
+  meas.forEach((m,i)=>{m.b.style.transition='transform .55s cubic-bezier(.34,1.45,.5,1) '+(i*0.05).toFixed(2)+'s, opacity .3s ease '+(i*0.05).toFixed(2)+'s';m.b.style.transform='';m.b.style.opacity='1';});
+  setTimeout(()=>{btns.forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});},950);
+}
 function doHandFlip(){
+  if(flipping)return;
   const f=menuFab;
-  const newHand=(cfg.hand==='left')?'right':'left';
+  const oldHand=cfg.hand, newHand=(oldHand==='left')?'right':'left';
   const w=window.innerWidth,m=16,sz=54;
-  const cur=(cfg.hand==='left')?(w-m-sz):m;
+  const cur=(oldHand==='left')?(w-m-sz):m;
   const tgt=(newHand==='left')?(w-m-sz):m;
+  const onHome=hfOnHome();
+  flipping=true;
   cfg.hand=newHand;saveCfg();
-  flipping=true;updateBar();
-  f.style.setProperty('--dx',(tgt-cur)+'px');
-  f.style.animation='none';void f.offsetWidth;
-  f.style.animation='fabHop .55s linear forwards';
-  setTimeout(()=>{f.style.animation='';f.style.transform='';f.style.removeProperty('--dx');f.classList.toggle('left',cfg.hand==='left');fabRot+=(newHand==='left'?-90:90);const dm=f.querySelector('.dotmorph');if(dm)dm.style.transform='rotate('+fabRot+'deg)';},550);
-  setTimeout(()=>flipContacts(newHand),650);
-  setTimeout(()=>{flipping=false;updateBar();},1450);
   toast(newHand==='left'?'יד שמאל':'יד ימין');
+  /* --- stage 1: close the 45° menu + bottom bar together, keep dark backdrop --- */
+  const bd=document.querySelector('.hbar-backdrop');
+  const bar=bd&&bd.querySelector('.hbar');
+  if(bar){bar.classList.remove('run');bar.classList.add('closing');}
+  menuFab.classList.remove('open');setFab(false);            // morph the X back into three dots
+  if(onHome)botbarCollapse();
+  /* --- stage 2: after close + gap, hop the icon to the other side --- */
+  setTimeout(()=>{
+    f.style.setProperty('--dx',(tgt-cur)+'px');
+    f.style.animation='none';void f.offsetWidth;
+    f.style.animation='fabHop '+(HF.HOP/1000)+'s linear forwards';
+    setTimeout(()=>{
+      f.style.animation='';f.style.transform='';f.style.removeProperty('--dx');
+      f.classList.toggle('left',newHand==='left');
+      fabRot+=(newHand==='left'?-90:90);
+      const dm=f.querySelector('.dotmorph');if(dm)dm.style.transform='rotate('+fabRot+'deg)';
+    },HF.HOP);
+  },HF.CLOSE+HF.CLOSE_GAP);
+  /* --- stage 3: after hop + gap, settle the new side and re-open the bar --- */
+  const t3=HF.CLOSE+HF.CLOSE_GAP+HF.HOP+HF.HOP_GAP;
+  setTimeout(()=>{
+    document.body.classList.toggle('hand-left',newHand==='left');
+    document.body.classList.toggle('hand-right',newHand!=='left');
+    const sf=document.getElementById('searchFab');if(sf)sf.classList.toggle('left',newHand==='left');
+    /* PHASE B: animate the on-screen contacts here (flipContacts) */
+    if(onHome)botbarReopen();
+    if(bd){bd.classList.remove('show');setTimeout(()=>{if(bd.parentNode)bd.remove();},500);}
+  },t3);
+  setTimeout(()=>{flipping=false;updateBar();},t3+HF.REOPEN);
 }
 buildFabDots();
 menuFab.onclick=()=>{if(document.querySelector('.hbar-backdrop'))closeHbar();else openHbar();};
@@ -995,7 +1057,7 @@ botbar.querySelector('#bbAdd').onclick=()=>openAddContact();
 botbar.querySelector('#bbSearch').onclick=()=>openSearch();
 botbar.querySelector('#bbDial').onclick=()=>openDialer();
 botbar.querySelector('#bbBack').onclick=()=>navBack();
-function updateBar(){const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||sheetOpen||flipping);botbar.classList.toggle('collapsed',!(onHome&&!menuOpen&&!welcomeOn));}
+function updateBar(){if(flipping)return;const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||sheetOpen||flipping);botbar.classList.toggle('collapsed',!(onHome&&!menuOpen&&!welcomeOn));}
 function appBack(){
   const np=document.querySelector('.numpad-ov.show');if(np){np.classList.remove('show');setTimeout(()=>np.remove(),200);return true;}
   const mp=[...document.querySelectorAll('.mpovl.show:not(.exit-dlg)')].pop();if(mp){mp.classList.remove('show');setTimeout(()=>mp.remove(),260);return true;}
@@ -1386,7 +1448,7 @@ function openHbar(){
   requestAnimationFrame(()=>{bd.classList.add('show');bar.classList.add('run');});
   const close=cb=>closeHbar(cb);
   bd.addEventListener('click',e=>{if(e.target===bd||e.target===bar)close();});
-  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.pal){if(navigator.vibrate)navigator.vibrate(8);b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);openPaletteRow(b);return;}if(it.hand){if(navigator.vibrate)navigator.vibrate(10);b.classList.add('tapped');closeHbar();setTimeout(doHandFlip,300);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);closeHbar();snapFabClosed();setTimeout(()=>{closeSearch();document.querySelectorAll('.scr').forEach(x=>x.remove());it.fn();},210);};});
+  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.pal){if(navigator.vibrate)navigator.vibrate(8);b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);openPaletteRow(b);return;}if(it.hand){if(navigator.vibrate)navigator.vibrate(10);b.classList.add('tapped');setTimeout(doHandFlip,150);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);closeHbar();snapFabClosed();setTimeout(()=>{closeSearch();document.querySelectorAll('.scr').forEach(x=>x.remove());it.fn();},210);};});
 }
 const welcomeEl=document.getElementById('welcome');
 function hideWelcome(){welcomeEl.classList.add('hide');updateSearchFab();}
