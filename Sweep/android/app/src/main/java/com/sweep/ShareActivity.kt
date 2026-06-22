@@ -56,6 +56,15 @@ class ShareActivity : Activity() {
         if (requestCode == REQ_CONTACTS) web.reload()
     }
 
+    /**
+     * Back של הטלפון מנותב ל-WebView: ה-JS (History API trap) שומר תמיד מצב היסטוריה,
+     * כך ש-goBack() מפעיל popstate והלוגיקה הפנימית מטפלת (מסך קודם / דיאלוג יציאה).
+     * יציאה אמיתית קורית רק כשה-JS קורא ל-AndroidShare.close().
+     */
+    override fun onBackPressed() {
+        if (web.canGoBack()) web.goBack() else super.onBackPressed()
+    }
+
     /** ספרות בלבד; מספר ישראלי שמתחיל ב-0 מקבל קידומת 972 (ל-wa.me). */
     private fun digits(p: String): String {
         var d = p.filter { it.isDigit() }

@@ -812,7 +812,33 @@ botbar.querySelector('#bbSearch').onclick=()=>openSearch();
 botbar.querySelector('#bbDial').onclick=()=>openDialer();
 botbar.querySelector('#bbBack').onclick=()=>navBack();
 function updateBar(){const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||sheetOpen);botbar.classList.toggle('collapsed',!(onHome&&!menuOpen&&!welcomeOn));}
-function navBack(){if(srch.classList.contains('show')){closeSearch();return;}const scrs=[...document.querySelectorAll('.scr')];const top=scrs[scrs.length-1];if(top&&top._back){top._back();return;}if(HIST.length){const fn=HIST.pop();fn();}}
+function appBack(){
+  const np=document.querySelector('.numpad-ov.show');if(np){np.classList.remove('show');setTimeout(()=>np.remove(),200);return true;}
+  const mp=[...document.querySelectorAll('.mpovl.show:not(.exit-dlg)')].pop();if(mp){mp.classList.remove('show');setTimeout(()=>mp.remove(),260);return true;}
+  if(document.querySelector('.ovl.show')){closeSheet();return true;}
+  if(document.querySelector('.hbar-backdrop')){closeHbar();return true;}
+  if(srch.classList.contains('show')){closeSearch();return true;}
+  const scrs=[...document.querySelectorAll('.scr')];const top=scrs[scrs.length-1];
+  if(top&&top._back){top._back();return true;}
+  if(HIST.length){const fn=HIST.pop();fn();return true;}
+  return false;
+}
+function navBack(){if(!appBack()){if(MODE==='share')doExit();else openExitConfirm();}}
+let exitDlgOpen=false;
+function doExit(){if(BRIDGE&&BRIDGE.close){try{BRIDGE.close();return;}catch(e){}}try{window.close();}catch(e){}}
+function openExitConfirm(){
+  if(exitDlgOpen)return;exitDlgOpen=true;
+  const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  const ov=document.createElement('div');ov.className='mpovl exit-dlg';ov.style.zIndex='120';
+  ov.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xsvg+'</button><h2 style="flex:1;margin:0;text-align:center;">לצאת מהאפליקציה?</h2><span style="width:32px;flex:0 0 auto;"></span></div><p class="mp-hint">האם לצאת מהאפליקציה?</p><div style="display:flex;gap:10px;margin-top:4px;"><button class="mp-confirm" id="exYes" style="background:#d23b30;flex:1;margin-top:0;">צא</button><button class="mp-confirm" id="exNo" style="flex:1;margin-top:0;">הישאר</button></div></div>';
+  document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
+  const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),260);exitDlgOpen=false;};
+  ov.querySelector('.sheet-x').onclick=close;ov.querySelector('#exNo').onclick=close;ov.addEventListener('click',e=>{if(e.target===ov)close();});
+  ov.querySelector('#exYes').onclick=()=>{exitDlgOpen=false;doExit();};
+}
+function armTrap(){try{history.pushState({swtrap:1},'');}catch(e){}}
+window.addEventListener('popstate',function(){armTrap();if(exitDlgOpen)return;if(!appBack()){if(MODE==='share')doExit();else openExitConfirm();}});
+armTrap();
 function openDialer(){const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>חייגן</h2></div><div class="scr-body dial-body"><div class="dial-res" id="dialRes"></div><div class="dial-numrow"><span class="dial-num" id="dialNum"></span></div><div class="dial-padrow"><button class="dial-side dial-call" id="dialCall" aria-label="חיוג">'+ICON.call+'</button><div class="dial-grid" id="dialGrid"></div><button class="dial-side dial-bksp" id="dialBk" aria-label="מחק">⌫</button></div><button class="dial-handle" id="dialFold" aria-label="קיפול"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button></div>');sc.classList.add('scr-bottom','dialer-scr');sc._reopen=openDialer;let val='';const num=sc.querySelector('#dialNum');const grid=sc.querySelector('#dialGrid');const res=sc.querySelector('#dialRes');wirePick(res,p=>{const ph=p.phone||(p.phones&&p.phones[0])||'';if(ph)location.href='tel:'+ph;});const dig=x=>String(x||'').replace(/[^0-9]/g,'');function renderRes(){res.innerHTML='';if(val.length<6)return;PEOPLE.filter(p=>[p.phone].concat(p.phones||[]).filter(Boolean).some(ph=>dig(ph).indexOf(val)>=0)).slice(0,6).forEach(p=>{const ph=p.phone||(p.phones&&p.phones[0])||'';const row=document.createElement('div');row.className='row';row._person=p;row.innerHTML=rowHTML(p,ph);res.appendChild(row);});const exact=PEOPLE.some(p=>[p.phone].concat(p.phones||[]).some(ph=>dig(ph)===val));if(!exact){const row=document.createElement('div');row.className='row dial-row-new';row._person={name:val,phone:val,phones:[val]};row.innerHTML='<span class="av">'+ICON.plus+'</span><div class="meta"><div class="ml"><span class="nm">מספר חדש</span></div><div class="ml"><span class="sub">'+escapeHtml(val)+'</span></div></div>';res.appendChild(row);}}const keys=['1','2','3','4','5','6','7','8','9','*','0','#'];grid.innerHTML=keys.map(k=>'<button class="dial-key" data-k="'+k+'">'+k+'</button>').join('');const upd=()=>{num.textContent=val;renderRes();};grid.querySelectorAll('.dial-key[data-k]').forEach(b=>b.onclick=()=>{val+=b.dataset.k;upd();if(navigator.vibrate)navigator.vibrate(4);});sc.querySelector('#dialBk').onclick=()=>{val=val.slice(0,-1);upd();};sc.querySelector('#dialCall').onclick=()=>{if(val)location.href='tel:'+val;};sc.querySelector('#dialFold').onclick=()=>{sc.querySelector('.dial-body').classList.toggle('dial-collapsed');};upd();}
 function openNumPad(input){
   if(!input)return;
