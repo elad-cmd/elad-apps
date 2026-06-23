@@ -322,6 +322,7 @@
   .pk-chk{width:26px;height:26px;border-radius:50%;border:1.7px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;flex:0 0 auto;color:transparent;transition:background .12s,border-color .12s;}
   .pk-chk svg{width:14px;height:14px;}
   .pk-chk.on{background:var(--tq-deep);border-color:var(--tq-deep);color:#04342C;}
+  .pk-chk.add{border-color:var(--tq-deep);color:var(--tq-deep);}
   .list-cta{flex:0 0 auto;align-self:center;display:inline-flex;align-items:center;gap:8px;margin:2px auto 4px;background:var(--tq-deep);color:#04342C;border:none;border-radius:999px;padding:11px 20px;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 10px 24px -10px rgba(0,0,0,.6);}
   .list-cta svg{width:18px;height:18px;}
   .list-empty{text-align:center;color:rgba(255,255,255,.6);font-size:13.5px;padding:30px 24px;}
@@ -330,12 +331,14 @@
   .la-name{color:#fff;font-size:14.5px;font-weight:700;}
   .ct-lists{margin-top:6px;}
   .ct-lists-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;}
-  .ct-lchip{background:rgba(0,194,168,.22);color:#7fe9d8;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:999px;}
-  .ct-addlist{display:inline-flex;align-items:center;gap:6px;background:var(--tq-deep);color:#04342C;border:none;border-radius:999px;padding:8px 15px;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer;}
-  .ct-addlist svg{width:15px;height:15px;}
-  .pk-search{padding:8px 16px 4px;}
+  .ct-lchip{background:rgba(0,194,168,.22);color:#7fe9d8;font-size:12.5px;font-weight:700;padding:6px 13px;border-radius:999px;border:none;font-family:inherit;cursor:pointer;}
+  .ct-lchip.on{background:var(--tq-deep);color:#04342C;}
+  .ct-addlist{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--tq-deep);color:#04342C;border:none;border-radius:50%;padding:0;cursor:pointer;}
+  .ct-addlist svg{width:18px;height:18px;}
+  .pk-search{position:fixed;left:0;right:0;bottom:84px;z-index:96;padding:10px 16px;background:var(--tq-bot);box-shadow:0 -12px 22px -8px rgba(0,0,0,.55);}
+  .mpk-scr .scr-body{padding-bottom:170px;}
   .pk-inp{width:100%;text-align:right;padding-left:42px;}
-  .pk-az{position:absolute;z-index:30;top:106px;bottom:18px;left:0;width:20px;display:none;flex-direction:column;align-items:center;justify-content:space-around;padding:6px 0;touch-action:none;}
+  .pk-az{position:absolute;z-index:30;top:64px;bottom:158px;left:0;width:20px;display:none;flex-direction:column;align-items:center;justify-content:space-around;padding:6px 0;touch-action:none;}
   .pk-az.show{display:flex;}
   .pk-az .azl{font-size:10px;line-height:1;font-weight:700;color:rgba(255,255,255,.5);pointer-events:none;transition:transform .1s;}
   .pk-az .azl.on{color:#fff;transform:scale(1.7);}
@@ -353,10 +356,10 @@
   .vtab-toggle{flex:0 0 auto;width:42px;border:none;border-radius:12px;background:rgba(255,255,255,.08);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;}
   .vtab-toggle svg{width:20px;height:20px;}
   .flt-view{flex:1;display:flex;flex-direction:column;min-height:0;}
-  .flt-stage{flex:1;display:flex;align-items:stretch;justify-content:center;padding:6px 0;}
+  .flt-stage{flex:0 0 auto;display:flex;align-items:center;justify-content:center;padding:8px 0 0;}
   .flt-deck{position:relative;width:100%;max-width:320px;margin:0 auto;display:flex;}
   @keyframes fltIn{0%{opacity:0;transform:translateY(16px) scale(.96);}100%{opacity:1;transform:translateY(0) scale(1);}}
-  .flt-card{position:relative;background:var(--soft);border:1px solid rgba(0,0,0,.06);border-radius:24px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:30px 24px;cursor:grab;will-change:transform;touch-action:none;box-shadow:0 18px 40px -18px rgba(0,0,0,.6);animation:fltIn .26s cubic-bezier(.22,1,.36,1);}
+  .flt-card{position:relative;background:var(--soft);border:1px solid rgba(0,0,0,.06);border-radius:24px;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:22px 22px;cursor:grab;will-change:transform;touch-action:none;box-shadow:0 18px 40px -18px rgba(0,0,0,.6);animation:fltIn .26s cubic-bezier(.22,1,.36,1);}
   .flt-av{width:84px;height:84px;border-radius:50%;background:var(--tq-deep);color:#fff;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;margin-bottom:2px;}
   .flt-name{font-size:23px;font-weight:800;color:var(--tq-ink);text-align:center;}
   .flt-org{font-size:15px;font-weight:600;color:var(--tq-ink);opacity:.75;text-align:center;}
@@ -392,8 +395,8 @@
   .flt-undo.dir-left{left:10px;top:46%;transform:translateY(-50%);}
   .flt-undo.dir-down{bottom:118px;left:50%;transform:translateX(-50%);}
   .flt-undo.dir-up{top:118px;left:50%;transform:translateX(-50%);}
-  .lp-wrap{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;padding:4px 0 8px;}
-  .lp-cap{flex:0 0 auto;background:var(--tq-deep);color:#04342C;font-weight:700;font-size:14px;padding:11px 18px;border-radius:999px;border:none;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;}
+  .lp-wrap{display:flex;flex-wrap:nowrap;gap:9px;justify-content:flex-start;padding:6px 2px 10px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .lp-cap{flex:0 0 auto;white-space:nowrap;background:var(--tq-deep);color:#04342C;font-weight:700;font-size:14px;padding:11px 18px;border-radius:999px;border:none;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;}
   .lp-cap svg{width:16px;height:16px;}
   .lp-cap.lp-new{background:rgba(8,50,50,.10);color:var(--tq-ink);}
   .flt-done{color:#fff;text-align:center;font-size:18px;font-weight:700;padding:46px 20px;line-height:1.8;}
@@ -717,6 +720,15 @@ function renderLists(){
   lb.querySelector('#capEdit').onclick=openListManage;
 }
 function listsOf(p){const k=fKey(p);return (cfg.lists||[]).filter(L=>(L.members||[]).indexOf(k)>=0);}
+function uiConfirm(msg,onYes){
+  const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  const ov=document.createElement('div');ov.className='mpovl';ov.style.zIndex='122';
+  ov.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xsvg+'</button><h2 style="flex:1;margin:0;text-align:center;">אישור</h2><span style="width:32px;flex:0 0 auto;"></span></div><p class="mp-hint">'+escapeHtml(msg)+'</p><div style="display:flex;gap:10px;margin-top:4px;"><button class="mp-confirm" id="ucYes" style="flex:1;margin-top:0;">כן</button><button class="mp-confirm" id="ucNo" style="flex:1;margin-top:0;background:rgba(8,50,50,.12);color:var(--tq-ink);">בטל</button></div></div>';
+  document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
+  const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),260);};
+  ov.querySelector('.sheet-x').onclick=close;ov.querySelector('#ucNo').onclick=close;ov.addEventListener('click',e=>{if(e.target===ov)close();});
+  ov.querySelector('#ucYes').onclick=()=>{close();if(onYes)onYes();};
+}
 function openListAssign(person,onChange){
   const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   const ov=document.createElement('div');ov.className='mpovl';ov.style.zIndex='106';
@@ -766,16 +778,18 @@ function openListManage(){
 function openMemberPicker(listId){
   const L=(cfg.lists||[]).find(x=>x.id===listId);if(!L)return;
   const sel=new Set(L.members);
-  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>חברי «'+escapeHtml(L.name)+'»</h2></div><div class="pk-search"><div class="srch-inwrap" id="pkInwrap"><input id="pkSearch" class="ct-inp pk-inp" placeholder="חיפוש שם…" autocomplete="off"><button class="srch-clear pk-clear" id="pkClear" type="button" aria-label="נקה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div><div class="scr-body" id="mpkBody"><div class="pk-list" id="pkList"></div></div><div class="pk-az" id="pkAz"></div><div class="pk-bub" id="pkBub"></div>');
+  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>חברי «'+escapeHtml(L.name)+'»</h2></div><div class="pk-search"><div class="srch-inwrap" id="pkInwrap"><input id="pkSearch" class="ct-inp pk-inp" placeholder="חיפוש שם…" autocomplete="off"><button class="srch-clear pk-clear" id="pkClear" type="button" aria-label="נקה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div><div class="scr-body" id="mpkBody"><div class="pk-list" id="pkList"></div></div><div class="pk-az" id="pkAz"></div><div class="pk-bub" id="pkBub"></div>');sc.classList.add('mpk-scr');
   sc._reopen=()=>openMemberPicker(listId);
   const body=sc.querySelector('#mpkBody');const listBox=sc.querySelector('#pkList');
   const all=PEOPLE.slice().filter(p=>FDEC[fKey(p)]!=='delete').sort(byName);
   let shown=all;
   function paint(q){
     q=(q||'').trim();
-    shown=q?all.filter(p=>String(p.name).indexOf(q)>=0):all;
-    listBox.innerHTML=shown.map((p,i)=>'<div class="pk-row" data-i="'+i+'"><span class="pk-chk'+(sel.has(fKey(p))?' on':'')+'">'+ICON.check+'</span><span class="li-av">'+escapeHtml(initials(p.name))+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div></div></div>').join('');
-    listBox.querySelectorAll('.pk-row').forEach(rw=>{const p=shown[+rw.dataset.i];const k=fKey(p);const chk=rw.querySelector('.pk-chk');rw.onclick=()=>{if(sel.has(k))sel.delete(k);else sel.add(k);chk.classList.toggle('on');if(navigator.vibrate)navigator.vibrate(3);};});
+    const base=all.filter(p=>!sel.has(fKey(p)));
+    shown=q?base.filter(p=>String(p.name).indexOf(q)>=0):base;
+    if(!shown.length){listBox.innerHTML='<div class="flt-done" style="font-size:14px;padding:34px 16px;">'+(q?'לא נמצאו תוצאות':'כל אנשי הקשר כבר ברשימה')+'</div>';buildPkAz();return;}
+    listBox.innerHTML=shown.map((p,i)=>'<div class="pk-row" data-i="'+i+'"><span class="pk-chk add">'+ICON.plus+'</span><span class="li-av">'+escapeHtml(initials(p.name))+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div></div></div>').join('');
+    listBox.querySelectorAll('.pk-row').forEach(rw=>{const p=shown[+rw.dataset.i];const k=fKey(p);rw.onclick=()=>{sel.add(k);if(navigator.vibrate)navigator.vibrate(4);paint(q);};});
     buildPkAz();
   }
   const az=sc.querySelector('#pkAz'),bub=sc.querySelector('#pkBub');let azL=[],azM={},azAct=false;
@@ -785,7 +799,7 @@ function openMemberPicker(listId){
   az.addEventListener('pointermove',e=>{if(!azAct)return;e.preventDefault();e.stopPropagation();azScrubP(e.clientY);});
   az.addEventListener('pointerup',()=>{azAct=false;bub.classList.remove('show');az.querySelectorAll('.azl.on').forEach(s=>s.classList.remove('on'));});
   az.addEventListener('pointercancel',()=>{azAct=false;bub.classList.remove('show');});
-  const si=sc.querySelector('#pkSearch');si.addEventListener('input',()=>paint(si.value));const pkClear=sc.querySelector('#pkClear');const pkInwrap=sc.querySelector('#pkInwrap');function updPk(){if(pkInwrap)pkInwrap.classList.toggle('has-text',!!si.value);}si.addEventListener('input',updPk);if(pkClear)pkClear.onclick=()=>{si.value='';paint('');updPk();si.focus();};
+  const si=sc.querySelector('#pkSearch');si.addEventListener('input',()=>paint(si.value));const pkClear=sc.querySelector('#pkClear');const pkInwrap=sc.querySelector('#pkInwrap');function updPk(){if(pkInwrap)pkInwrap.classList.toggle('has-text',!!si.value);}si.addEventListener('input',updPk);if(pkClear)pkClear.onclick=()=>{si.value='';paint('');updPk();si.focus();};const psEl=sc.querySelector('.pk-search');const vvk=window.visualViewport;const liftPk=()=>{const kb=vvk?Math.max(0,window.innerHeight-vvk.height-(vvk.offsetTop||0)):0;if(psEl)psEl.style.bottom=kb>0?(kb+10)+'px':'';};si.addEventListener('focus',()=>{if(vvk)vvk.addEventListener('resize',liftPk);setTimeout(liftPk,60);setTimeout(liftPk,380);});si.addEventListener('blur',()=>{if(vvk)vvk.removeEventListener('resize',liftPk);if(psEl)psEl.style.bottom='';});
   paint('');
   const origBack=sc._back;
   sc._back=()=>{L.members=[...sel];saveCfg();renderLists();renderList();origBack();};
@@ -1194,7 +1208,7 @@ function openContact(person,fromSearch){
   card.querySelectorAll('.ct-inp').forEach(inp=>{const k=inp.dataset.key;inp.value=person[k]||'';const save=()=>{person[k]=inp.value;renderList();savePeople();};inp.addEventListener('input',save);inp.addEventListener('blur',save);});
   card.querySelectorAll('.ct-act').forEach(b=>{b.onclick=(e)=>{e.stopPropagation();fireAction(b.dataset.act,person);};});
   const fb=card.querySelector('#ctFav');if(fb){if(person.fav)fb.classList.add('on');fb.onclick=()=>{person.fav=!person.fav;fb.classList.toggle('on',!!person.fav);renderList();savePeople();};}
-  function paintCtLists(){const box=sc.querySelector('#ctLists');if(!box)return;const mine=listsOf(person);box.innerHTML='<div class="ct-lists-row">'+mine.map(L=>'<span class="ct-lchip">'+escapeHtml(L.name)+'</span>').join('')+'<button class="ct-addlist" id="ctAddList">'+ICON.plus+'<span>הוסף לרשימה</span></button></div>';const ab=box.querySelector('#ctAddList');if(ab)ab.onclick=()=>openListAssign(person,paintCtLists);}
+  function paintCtLists(){const box=sc.querySelector('#ctLists');if(!box)return;const mine=listsOf(person);box.innerHTML='<div class="ct-lists-row">'+mine.map(L=>'<button class="ct-lchip on" data-id="'+L.id+'">'+escapeHtml(L.name)+'</button>').join('')+'<button class="ct-addlist" id="ctAddList" aria-label="הוסף לרשימה">'+ICON.plus+'</button></div>';const ab=box.querySelector('#ctAddList');if(ab)ab.onclick=()=>openListAssign(person,paintCtLists);box.querySelectorAll('.ct-lchip[data-id]').forEach(b=>b.onclick=()=>{const L=(cfg.lists||[]).find(x=>x.id===b.dataset.id);if(!L)return;uiConfirm('להסיר את «'+(person.name||"איש הקשר")+'» מהרשימה «'+L.name+'»?',function(){const i=L.members.indexOf(fKey(person));if(i>=0)L.members.splice(i,1);saveCfg();renderLists();renderList();paintCtLists();});});}
   paintCtLists();
 }
 function openSeder(){
@@ -1372,9 +1386,10 @@ function openFilter(){
   }
   function pickList(p){
     if(!p)return;
+    if(document.querySelector('.lp-ovl'))return;
     if(!(cfg.lists&&cfg.lists.length)){promptListName('',function(nm){if(nm){const L={id:'L'+Date.now(),name:nm,members:[]};cfg.lists.push(L);saveCfg();addToListAndAdvance(p,L);}});return;}
     const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
-    const ov=document.createElement('div');ov.className='mpovl';ov.style.zIndex='114';
+    const ov=document.createElement('div');ov.className='mpovl lp-ovl';ov.style.zIndex='114';
     const chips=cfg.lists.map(L=>'<button class="lp-cap" data-id="'+L.id+'">'+escapeHtml(L.name)+(L.members.length?' · '+L.members.length:'')+'</button>').join('');
     ov.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xsvg+'</button><h2 style="flex:1;margin:0;text-align:center;">הוסף לרשימה</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="lp-wrap">'+chips+'<button class="lp-cap lp-new" id="lpNew">'+ICON.plus+' רשימה חדשה</button></div></div>';
     document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
