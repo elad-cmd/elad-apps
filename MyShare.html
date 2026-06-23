@@ -400,6 +400,7 @@
   .flt-done .sm{font-size:14px;font-weight:600;color:rgba(255,255,255,.8);margin-top:6px;}
   .flt-done .mg-home{margin:20px auto 0;}
   .flt-list{display:flex;flex-direction:column;gap:8px;padding-bottom:60px;}
+  .flt-search{flex:0 0 auto;padding:8px 0 0;}
   .flt-row{position:relative;border-radius:12px;overflow:hidden;touch-action:pan-y;}
   .flt-row-bg{position:absolute;inset:0;display:flex;align-items:center;padding:0 18px;direction:ltr;color:#fff;background:transparent;}
   .flt-row-bg.keepbg{background:rgba(0,194,168,.92);justify-content:flex-start;}
@@ -1292,7 +1293,7 @@ function saveDec(){try{localStorage.setItem('myshare_dec',JSON.stringify(FDEC));
 function fCounts(){let k=0,d=0,m=0,left=0;PEOPLE.forEach(p=>{const v=FDEC[fKey(p)];if(v==='keep')k++;else if(v==='delete')d++;else if(v==='maybe')m++;else left++;});return{keep:k,del:d,maybe:m,left:left};}
 function fViewIds(vf){if(vf==='undecided')return PEOPLE.filter(p=>!FDEC[fKey(p)]);return PEOPLE.filter(p=>FDEC[fKey(p)]===vf);}
 function openFilter(){
-  let vf='undecided',vm='cards',hist=[],passed=new Set(),introSeen=false;
+  let vf='undecided',vm='cards',hist=[],passed=new Set(),introSeen=false,fq='';
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>סינון רשימה</h2></div><div class="scr-body flt-body" id="fltBody"></div>');sc._reopen=openFilter;
   const body=sc.querySelector('#fltBody');
   function tabs(){
@@ -1300,12 +1301,26 @@ function openFilter(){
     const t=(k,l,n)=>'<button class="vtab'+(vf===k?' on':'')+'" data-f="'+k+'"><b>'+n+'</b><span>'+l+'</span></button>';
     return '<div class="flt-tabs">'+t('undecided','לא נבדקו',c.left)+t('keep','נשמרו',c.keep)+t('delete','ארכיון',c.del)+t('maybe','לבדיקה',c.maybe)+'<button class="vtab-toggle" id="vtog" aria-label="תצוגה">'+(vm==='cards'?ICON.viewlist:ICON.viewcards)+'</button></div>';
   }
+  function fMatch(p){if(!fq)return true;const q=fq.trim().toLowerCase();if(!q)return true;const hay=[(p.name||''),(p.phone||''),(p.email||'')].concat(p.phones||[]).concat(p.emails||[]).join(' ').toLowerCase();return hay.indexOf(q)>=0;}
+  const X_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  function searchBarHTML(){return '<div class="flt-search"><div class="srch-inwrap'+(fq?' has-text':'')+'"><input id="fltSearch" class="ct-inp pk-inp" type="text" placeholder="חיפוש ברשימה…" autocomplete="off"><button class="srch-clear pk-clear" id="fltSearchClear" type="button" aria-label="נקה">'+X_SVG+'</button></div></div>';}
+  function renderView(){const view=body.querySelector('#fltView');if(!view)return;if(vm==='cards')cards(view);else list(view);}
+  function wireSearch(){
+    const si=body.querySelector('#fltSearch');if(!si)return;si.value=fq;
+    const wrap=si.closest('.srch-inwrap');
+    si.oninput=()=>{fq=si.value;if(wrap)wrap.classList.toggle('has-text',!!fq);renderView();};
+    const cl=body.querySelector('#fltSearchClear');if(cl)cl.onclick=()=>{fq='';si.value='';if(wrap)wrap.classList.remove('has-text');renderView();si.focus();};
+    const vv=window.visualViewport;
+    const lift=()=>{const kb=vv?Math.max(0,window.innerHeight-vv.height-(vv.offsetTop||0)):0;body.style.paddingBottom=kb>0?(kb+12)+'px':'';};
+    si.addEventListener('focus',()=>{if(vv)vv.addEventListener('resize',lift);setTimeout(lift,60);setTimeout(lift,380);});
+    si.addEventListener('blur',()=>{if(vv)vv.removeEventListener('resize',lift);body.style.paddingBottom='';});
+  }
   function render(){
-    const ou=sc.querySelector('.flt-undo');if(ou)ou.remove();body.innerHTML=tabs()+'<div id="fltView" class="flt-view"></div>';
+    const ou=sc.querySelector('.flt-undo');if(ou)ou.remove();body.innerHTML=tabs()+'<div id="fltView" class="flt-view"></div>'+searchBarHTML();
     body.querySelectorAll('.vtab').forEach(t=>t.onclick=()=>{vf=t.dataset.f;passed=new Set();render();});
     body.querySelector('#vtog').onclick=()=>{vm=(vm==='cards')?'list':'cards';render();};
-    const view=body.querySelector('#fltView');
-    if(vm==='cards')cards(view);else list(view);
+    wireSearch();
+    renderView();
   }
   function decide(p,d){if(!p)return;FDEC[fKey(p)]=d;saveDec();hist.push({key:fKey(p),dir:(d==='keep'?'right':d==='delete'?'left':'down')});}
   function undo(){const h=hist.pop();if(h){delete FDEC[h.key];if(h.list){const L=(cfg.lists||[]).find(x=>x.id===h.list);if(L){const i=L.members.indexOf(h.key);if(i>=0)L.members.splice(i,1);saveCfg();renderLists();}}saveDec();render();}}
@@ -1328,8 +1343,9 @@ function openFilter(){
     card.addEventListener('pointerup',end);card.addEventListener('pointercancel',end);
   }
   function cards(view){
-    if(vf==='undecided'&&!introSeen&&fViewIds('undecided').filter(p=>!passed.has(fKey(p))).length){introCard(view);return;}
-    const q=fViewIds(vf).filter(p=>!passed.has(fKey(p)));
+    if(vf==='undecided'&&!introSeen&&!fq&&fViewIds('undecided').filter(p=>!passed.has(fKey(p))).length){introCard(view);return;}
+    const q=fViewIds(vf).filter(p=>!passed.has(fKey(p))).filter(fMatch);
+    if(!q.length&&fq){view.innerHTML='<div class="flt-done">לא נמצאו תוצאות</div>';return;}
     if(!q.length){if(vf==='undecided'){const c=fCounts();view.innerHTML='<div class="flt-done">עברת על כל אנשי הקשר 🎉<div class="sm">נשמרו '+c.keep+' · לבדיקה '+c.maybe+' · בארכיון '+c.del+'</div><button class="mg-home">חזור למסך הבית</button></div>';const hb=view.querySelector('.mg-home');if(hb)hb.onclick=goHome;}else{const msg=fViewIds(vf).length>0?'עברת על כל הכרטיסים':(vf==='keep'?'אין נשמרים עדיין':vf==='maybe'?'אין אנשי קשר לבדיקה':'אין בארכיון');view.innerHTML='<div class="flt-done">'+msg+'</div>';}return;}
     const p=q[0];const det=personDetails(p);
     const ph=p.phone||((p.phones&&p.phones[0])||'');const em=p.email||((p.emails&&p.emails[0])||'');
@@ -1378,7 +1394,8 @@ function openFilter(){
     card.addEventListener('pointerup',end);card.addEventListener('pointercancel',end);
   }
   function list(view){
-    const all=fViewIds(vf);const ids=all.filter(p=>!passed.has(fKey(p)));
+    const all=fViewIds(vf);const ids=all.filter(p=>!passed.has(fKey(p))).filter(fMatch);
+    if(!ids.length&&fq){view.innerHTML='<div class="flt-done">לא נמצאו תוצאות</div>';return;}
     if(!ids.length){const msg=vf==='undecided'?'עברת על כל אנשי הקשר 🎉':(all.length>0?'עברת על כל הכרטיסים':(vf==='keep'?'אין נשמרים עדיין':vf==='maybe'?'אין אנשי קשר לבדיקה':'אין בארכיון'));view.innerHTML='<div class="flt-done">'+msg+'</div>';return;}
     view.innerHTML='<div class="flt-list">'+ids.map((p,i)=>{
       const det=personDetails(p);const d=FDEC[fKey(p)];
