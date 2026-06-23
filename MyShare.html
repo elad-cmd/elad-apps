@@ -365,6 +365,7 @@
   .flt-badge.keep{right:18px;color:var(--tq-deep);border-color:var(--tq-deep);transform:rotate(13deg);}
   .flt-badge.del{left:18px;color:#d9776a;border-color:#d9776a;transform:rotate(-13deg);}
   .flt-badge.maybe{bottom:18px;top:auto;left:50%;transform:translateX(-50%);color:#8b99a0;border-color:#8b99a0;}
+  .flt-badge.list{top:18px;left:50%;transform:translateX(-50%);color:var(--tq-deep);border-color:var(--tq-deep);}
   .flt-acts{display:flex;gap:16px;justify-content:center;align-items:center;margin-top:8px;}
   .flt-btn{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.06);border:1.6px solid rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,.85);transition:background .15s,border-color .15s;}
   .flt-btn svg{width:27px;height:27px;}
@@ -379,6 +380,7 @@
   .flt-intro .fi-ic.keep{background:var(--tq-deep);}
   .flt-intro .fi-ic.del{background:#d9776a;}
   .flt-intro .fi-ic.maybe{background:#8b99a0;}
+  .flt-intro .fi-ic.list{background:var(--tq-deep);}
   .flt-intro .fi-tx{display:flex;flex-direction:column;line-height:1.2;text-align:right;}
   .flt-intro .fi-tx b{font-size:15px;color:var(--tq-ink);font-weight:800;}
   .flt-intro .fi-tx span{font-size:13px;color:#5a7d7e;}
@@ -389,6 +391,11 @@
   .flt-undo.dir-right{right:10px;top:46%;transform:translateY(-50%);}
   .flt-undo.dir-left{left:10px;top:46%;transform:translateY(-50%);}
   .flt-undo.dir-down{bottom:118px;left:50%;transform:translateX(-50%);}
+  .flt-undo.dir-up{top:118px;left:50%;transform:translateX(-50%);}
+  .lp-wrap{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;padding:4px 0 8px;}
+  .lp-cap{flex:0 0 auto;background:var(--tq-deep);color:#04342C;font-weight:700;font-size:14px;padding:11px 18px;border-radius:999px;border:none;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;}
+  .lp-cap svg{width:16px;height:16px;}
+  .lp-cap.lp-new{background:rgba(8,50,50,.10);color:var(--tq-ink);}
   .flt-done{color:#fff;text-align:center;font-size:18px;font-weight:700;padding:46px 20px;line-height:1.8;}
   .flt-done .sm{font-size:14px;font-weight:600;color:rgba(255,255,255,.8);margin-top:6px;}
   .flt-done .mg-home{margin:20px auto 0;}
@@ -1301,13 +1308,14 @@ function openFilter(){
     if(vm==='cards')cards(view);else list(view);
   }
   function decide(p,d){if(!p)return;FDEC[fKey(p)]=d;saveDec();hist.push({key:fKey(p),dir:(d==='keep'?'right':d==='delete'?'left':'down')});}
-  function undo(){const h=hist.pop();if(h){delete FDEC[h.key];saveDec();render();}}
+  function undo(){const h=hist.pop();if(h){delete FDEC[h.key];if(h.list){const L=(cfg.lists||[]).find(x=>x.id===h.list);if(L){const i=L.members.indexOf(h.key);if(i>=0)L.members.splice(i,1);saveCfg();renderLists();}}saveDec();render();}}
   function introCard(view){
     view.innerHTML='<div class="flt-stage"><div class="flt-deck"><div class="flt-card flt-intro" id="fcard">'
       +'<div class="fi-title">איך מסננים?</div>'
       +'<div class="fi-row"><span class="fi-ic keep">'+ICON.check+'</span><div class="fi-tx"><b>החלקה ימינה</b><span>שמירה</span></div></div>'
       +'<div class="fi-row"><span class="fi-ic del">'+ICON.archive+'</span><div class="fi-tx"><b>החלקה שמאלה</b><span>ארכיון</span></div></div>'
       +'<div class="fi-row"><span class="fi-ic maybe">'+ICON.clock+'</span><div class="fi-tx"><b>החלקה למטה</b><span>בדיקה</span></div></div>'
+      +'<div class="fi-row"><span class="fi-ic list">'+ICON.plus+'</span><div class="fi-tx"><b>החלקה למעלה</b><span>הוספה לרשימה</span></div></div>'
       +'<div class="fi-note">אל דאגה — תמיד אפשר להחזיר מהארכיון</div>'
       +'<button class="fi-start" id="fiStart">התחל</button></div></div></div>';
     const card=view.querySelector('#fcard');
@@ -1325,7 +1333,7 @@ function openFilter(){
     if(!q.length){if(vf==='undecided'){const c=fCounts();view.innerHTML='<div class="flt-done">עברת על כל אנשי הקשר 🎉<div class="sm">נשמרו '+c.keep+' · לבדיקה '+c.maybe+' · בארכיון '+c.del+'</div><button class="mg-home">חזור למסך הבית</button></div>';const hb=view.querySelector('.mg-home');if(hb)hb.onclick=goHome;}else{const msg=fViewIds(vf).length>0?'עברת על כל הכרטיסים':(vf==='keep'?'אין נשמרים עדיין':vf==='maybe'?'אין אנשי קשר לבדיקה':'אין בארכיון');view.innerHTML='<div class="flt-done">'+msg+'</div>';}return;}
     const p=q[0];const det=personDetails(p);
     const ph=p.phone||((p.phones&&p.phones[0])||'');const em=p.email||((p.emails&&p.emails[0])||'');
-    view.innerHTML='<div class="flt-stage"><div class="flt-deck"><div class="flt-card" id="fcard"><div class="flt-badge keep">שומר</div><div class="flt-badge del">ארכוב</div><div class="flt-badge maybe">לבדיקה</div><div class="flt-av">'+escapeHtml(initials(p.name))+'</div><div class="flt-name">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(p.org?'<div class="flt-org">'+escapeHtml(p.org)+'</div>':'')+(ph?'<div class="flt-line">'+escapeHtml(ph)+'</div>':'')+(em?'<div class="flt-line">'+escapeHtml(em)+'</div>':'')+'</div></div></div><div class="flt-acts"><button class="flt-btn keep" data-a="keep" aria-label="שומר">'+ICON.check+'</button><button class="flt-btn maybe" data-a="maybe" aria-label="לבדיקה">'+ICON.clock+'</button><button class="flt-btn del" data-a="delete" aria-label="ארכוב">'+ICON.archive+'</button></div>';
+    view.innerHTML='<div class="flt-stage"><div class="flt-deck"><div class="flt-card" id="fcard"><div class="flt-badge keep">שומר</div><div class="flt-badge del">ארכוב</div><div class="flt-badge maybe">לבדיקה</div><div class="flt-badge list">רשימה</div><div class="flt-av">'+escapeHtml(initials(p.name))+'</div><div class="flt-name">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(p.org?'<div class="flt-org">'+escapeHtml(p.org)+'</div>':'')+(ph?'<div class="flt-line">'+escapeHtml(ph)+'</div>':'')+(em?'<div class="flt-line">'+escapeHtml(em)+'</div>':'')+'</div></div></div><div class="flt-acts"><button class="flt-btn keep" data-a="keep" aria-label="שומר">'+ICON.check+'</button><button class="flt-btn maybe" data-a="maybe" aria-label="לבדיקה">'+ICON.clock+'</button><button class="flt-btn del" data-a="delete" aria-label="ארכוב">'+ICON.archive+'</button></div>';
     view.querySelectorAll('.flt-btn').forEach(b=>b.onclick=()=>commit(b.dataset.a));
     if(hist.length){const last=hist[hist.length-1];const u=document.createElement('button');u.className='flt-undo dir-'+last.dir;u.innerHTML=(last.dir==='right'?ICON.backLeft:last.dir==='left'?ICON.backRight:ICON.backUp);u.setAttribute('aria-label','ביטול');u.onclick=undo;sc.appendChild(u);setTimeout(()=>{if(u.isConnected){u.style.opacity='0';setTimeout(()=>{if(u.isConnected)u.remove();},350);}},2000);}
     attach(p);
@@ -1338,13 +1346,35 @@ function openFilter(){
     if(d===vf&&p)passed.add(fKey(p));else decide(p,d);
     if(navigator.vibrate)navigator.vibrate(8);setTimeout(render,300);
   }
+  function addToListAndAdvance(p,L){
+    const k=fKey(p);if(L.members.indexOf(k)<0)L.members.push(k);saveCfg();renderLists();
+    FDEC[k]='keep';saveDec();hist.push({key:k,dir:'up',list:L.id});
+    const card=body.querySelector('#fcard');
+    if(card){card.style.transition='transform .3s ease-out, opacity .3s';card.style.transform='translate(0,-130%)';card.style.opacity='0';}
+    if(navigator.vibrate)navigator.vibrate(8);toast('נוסף ל«'+L.name+'»');setTimeout(render,300);
+  }
+  function pickList(p){
+    if(!p)return;
+    if(!(cfg.lists&&cfg.lists.length)){promptListName('',function(nm){if(nm){const L={id:'L'+Date.now(),name:nm,members:[]};cfg.lists.push(L);saveCfg();addToListAndAdvance(p,L);}});return;}
+    const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    const ov=document.createElement('div');ov.className='mpovl';ov.style.zIndex='114';
+    const chips=cfg.lists.map(L=>'<button class="lp-cap" data-id="'+L.id+'">'+escapeHtml(L.name)+(L.members.length?' · '+L.members.length:'')+'</button>').join('');
+    ov.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xsvg+'</button><h2 style="flex:1;margin:0;text-align:center;">הוסף לרשימה</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="lp-wrap">'+chips+'<button class="lp-cap lp-new" id="lpNew">'+ICON.plus+' רשימה חדשה</button></div></div>';
+    document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
+    let done=false;
+    const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),260);};
+    const cancel=()=>{if(done)return;close();};
+    ov.querySelector('.sheet-x').onclick=cancel;ov.addEventListener('click',e=>{if(e.target===ov)cancel();});
+    ov.querySelectorAll('.lp-cap[data-id]').forEach(b=>b.onclick=()=>{const L=cfg.lists.find(x=>x.id===b.dataset.id);if(L){done=true;close();addToListAndAdvance(p,L);}});
+    ov.querySelector('#lpNew').onclick=()=>{promptListName('',function(nm){if(nm){const L={id:'L'+Date.now(),name:nm,members:[]};cfg.lists.push(L);saveCfg();done=true;close();addToListAndAdvance(p,L);}});};
+  }
   function attach(p){
     const card=body.querySelector('#fcard');if(!card)return;
-    const bk=card.querySelector('.flt-badge.keep'),bd=card.querySelector('.flt-badge.del'),bm=card.querySelector('.flt-badge.maybe');
+    const bk=card.querySelector('.flt-badge.keep'),bd=card.querySelector('.flt-badge.del'),bm=card.querySelector('.flt-badge.maybe'),bl=card.querySelector('.flt-badge.list');
     let sx=0,sy=0,dx=0,dy=0,drag=false;
     card.addEventListener('pointerdown',e=>{e.stopPropagation();drag=true;sx=e.clientX;sy=e.clientY;dx=dy=0;card.style.transition='none';try{card.setPointerCapture(e.pointerId);}catch(_){}});
-    card.addEventListener('pointermove',e=>{if(!drag)return;dx=e.clientX-sx;dy=e.clientY-sy;card.style.transform='translate('+dx+'px,'+dy+'px) rotate('+(dx/18)+'deg)';const ax=Math.abs(dx),ay=Math.abs(dy);bk.style.opacity=(dx>0&&ax>=ay)?Math.min(1,dx/90):0;bd.style.opacity=(dx<0&&ax>=ay)?Math.min(1,-dx/90):0;bm.style.opacity=(dy>0&&ay>ax)?Math.min(1,dy/90):0;});
-    const end=e=>{if(!drag)return;e.stopPropagation();drag=false;const TH=85,ax=Math.abs(dx),ay=Math.abs(dy);if(dy>TH&&ay>ax)commit('maybe');else if(dx>TH)commit('keep');else if(dx<-TH)commit('delete');else{card.style.transition='transform .2s';card.style.transform='';bk.style.opacity=bd.style.opacity=bm.style.opacity=0;}};
+    card.addEventListener('pointermove',e=>{if(!drag)return;dx=e.clientX-sx;dy=e.clientY-sy;card.style.transform='translate('+dx+'px,'+dy+'px) rotate('+(dx/18)+'deg)';const ax=Math.abs(dx),ay=Math.abs(dy);bk.style.opacity=(dx>0&&ax>=ay)?Math.min(1,dx/90):0;bd.style.opacity=(dx<0&&ax>=ay)?Math.min(1,-dx/90):0;bm.style.opacity=(dy>0&&ay>ax)?Math.min(1,dy/90):0;if(bl)bl.style.opacity=(dy<0&&ay>ax)?Math.min(1,-dy/90):0;});
+    const end=e=>{if(!drag)return;e.stopPropagation();drag=false;const TH=85,ax=Math.abs(dx),ay=Math.abs(dy);if(dy<-TH&&ay>ax){card.style.transition='transform .2s';card.style.transform='';bk.style.opacity=bd.style.opacity=bm.style.opacity=0;if(bl)bl.style.opacity=0;pickList(p);}else if(dy>TH&&ay>ax)commit('maybe');else if(dx>TH)commit('keep');else if(dx<-TH)commit('delete');else{card.style.transition='transform .2s';card.style.transform='';bk.style.opacity=bd.style.opacity=bm.style.opacity=0;if(bl)bl.style.opacity=0;}};
     card.addEventListener('pointerup',end);card.addEventListener('pointercancel',end);
   }
   function list(view){
