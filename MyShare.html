@@ -215,7 +215,12 @@
   .srch-txt{display:flex;flex-direction:column;min-width:0;}
   .srch-row .snm{color:#fff;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .srch-row .ssub{font-size:12.5px;color:rgba(255,255,255,.65);direction:ltr;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .srch-input{width:100%;padding:15px 18px;border:none;border-radius:16px;font-size:16px;font-family:inherit;text-align:right;color:var(--tq-ink);background:#fff;outline:none;box-shadow:0 14px 34px -10px rgba(0,0,0,.55);}
+  .srch-input{width:100%;padding:15px 18px 15px 46px;border:none;border-radius:16px;font-size:16px;font-family:inherit;text-align:right;color:var(--tq-ink);background:#fff;outline:none;box-shadow:0 14px 34px -10px rgba(0,0,0,.55);}
+  .srch-inwrap{position:relative;width:100%;}
+  .srch-clear{position:absolute;top:50%;left:10px;transform:translateY(-50%) scale(.6);opacity:0;pointer-events:none;width:30px;height:30px;border-radius:50%;border:none;background:rgba(8,50,50,.12);color:var(--tq-ink);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:opacity .15s ease, transform .15s ease;}
+  .srch-inwrap.has-text .srch-clear{opacity:1;pointer-events:auto;transform:translateY(-50%) scale(1);}
+  .srch-clear svg{width:15px;height:15px;}
+  .pk-clear{background:rgba(255,255,255,.16);color:#fff;}
   .ovl.preview .sheet h2{color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.7);}
   .dup-empty{color:rgba(255,255,255,.9);text-align:center;font-size:17px;padding:48px 0;}
   .mg-donewrap{min-height:70vh;display:flex;align-items:center;justify-content:center;}
@@ -329,7 +334,7 @@
   .ct-addlist{display:inline-flex;align-items:center;gap:6px;background:var(--tq-deep);color:#04342C;border:none;border-radius:999px;padding:8px 15px;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer;}
   .ct-addlist svg{width:15px;height:15px;}
   .pk-search{padding:8px 16px 4px;}
-  .pk-inp{width:100%;text-align:right;}
+  .pk-inp{width:100%;text-align:right;padding-left:42px;}
   .pk-az{position:absolute;z-index:30;top:106px;bottom:18px;left:0;width:20px;display:none;flex-direction:column;align-items:center;justify-content:space-around;padding:6px 0;touch-action:none;}
   .pk-az.show{display:flex;}
   .pk-az .azl{font-size:10px;line-height:1;font-weight:700;color:rgba(255,255,255,.5);pointer-events:none;transition:transform .1s;}
@@ -416,6 +421,10 @@
   body.hand-left .fav-edit{transform:translate(calc(100vw - 74px),-50%);}
   .fav-edit.on{background:var(--tq-deep);color:#fff;}
   .fav-edit svg{width:22px;height:22px;}
+  .list-add{position:fixed;left:14px;top:50%;transform:translateY(-50%);transition:transform .55s cubic-bezier(.34,1.45,.5,1);z-index:34;width:46px;height:46px;border-radius:50%;border:none;background:var(--tq-deep);color:#04342C;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 12px 26px -8px rgba(0,0,0,.5);}
+  .list-add.show{display:flex;}
+  body.hand-left .list-add{transform:translate(calc(100vw - 74px),-50%);}
+  .list-add svg{width:26px;height:26px;}
   body.editing .row{cursor:grab;}
   .row.dragging{opacity:.96;}
   body.editing .row .av{box-shadow:0 10px 22px -8px rgba(0,0,0,.6);}
@@ -486,7 +495,7 @@
   <div class="stage" id="stage"><div class="veil"></div></div>
   <div class="toast" id="toast"></div>
   <div class="ovl" id="ovl"><div class="sheet" id="sheet"></div></div>
-  <div class="srch" id="srch"><div class="srch-veil"></div><button class="scr-back srch-back" id="srchBack" aria-label="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button><div class="srch-panel"><div class="srch-results" id="srchResults"></div><input id="searchInput" class="srch-input" type="text" placeholder="הקלד שם…"></div></div>
+  <div class="srch" id="srch"><div class="srch-veil"></div><button class="scr-back srch-back" id="srchBack" aria-label="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button><div class="srch-panel"><div class="srch-results" id="srchResults"></div><div class="srch-inwrap" id="srchInwrap"><input id="searchInput" class="srch-input" type="text" placeholder="הקלד שם…"><button class="srch-clear" id="searchClear" type="button" aria-label="נקה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div></div>
   <div class="welcome hide" id="welcome"><div class="wel-card">
     <div class="wel-logo"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1AB8A9"/><stop offset="1" stop-color="#0E7576"/></linearGradient></defs><rect x="2" y="2" width="96" height="96" rx="24" fill="url(#wg)"/><circle cx="30.14" cy="69.86" r="4.00" fill="#fff" fill-opacity="0.27"/><circle cx="36.00" cy="64.00" r="5.64" fill="#fff"/><circle cx="41.85" cy="58.15" r="7.28" fill="#fff" fill-opacity="0.43"/><circle cx="47.71" cy="52.29" r="8.92" fill="#fff"/><circle cx="55.88" cy="44.12" r="10.56" fill="#fff" fill-opacity="0.59"/><circle cx="64.06" cy="35.94" r="12.20" fill="#fff"/></svg></div>
     <h2 class="wel-title">ברוכים הבאים ל‑Sweep</h2>
@@ -650,7 +659,7 @@ function saveFavOrder(){try{localStorage.setItem('myshare_favorder',JSON.stringi
 let FDEC=loadDec();
 function peopleFor(v){let a=PEOPLE.slice().filter(p=>FDEC[fKey(p)]!=='delete');if(v==='fav'){a=a.filter(p=>p.fav);a.sort((x,y)=>{const ix=FAVORDER.indexOf(fKey(x)),iy=FAVORDER.indexOf(fKey(y));if(ix<0&&iy<0)return byName(x,y);if(ix<0)return 1;if(iy<0)return -1;return ix-iy;});}else if(v==='abc')a.sort(byName);else a.sort((x,y)=>(STATS[statKey(y)]||0)-(STATS[statKey(x)]||0)||(y.last||0)-(x.last||0));return a;}
 function rowHTML(c,sub){sub=(sub!==undefined?sub:c.msg)||'';return `<span class="av">${escapeHtml(initials(c.name))}${c.fav?'<span class="favstar">'+STAR+'</span>':''}</span><div class="meta"><div class="ml"><span class="nm">${escapeHtml(c.name)}</span></div>${sub?`<div class="ml"><span class="sub">${escapeHtml(sub)}</span></div>`:""}</div>`;}
-function renderList(){CURRENT=peopleFor(VIEW);if(activeList){const _L=(cfg.lists||[]).find(x=>x.id===activeList);CURRENT=_L?CURRENT.filter(p=>_L.members.indexOf(fKey(p))>=0):CURRENT;}listEl.innerHTML='';CURRENT.forEach((c,i)=>{const row=document.createElement('div');row.className='row';row.dataset.i=i;row._person=c;row.innerHTML=rowHTML(c);listEl.appendChild(row);});if(activeList){const _L2=(cfg.lists||[]).find(x=>x.id===activeList);const cta=document.createElement('button');cta.className='list-cta';cta.innerHTML=ICON.plus+'<span>הוסף אנשי קשר'+(_L2?' ל«'+escapeHtml(_L2.name)+'»':'')+'</span>';cta.onclick=()=>openMemberPicker(activeList);listEl.insertBefore(cta,listEl.firstChild);if(!CURRENT.length){const em=document.createElement('div');em.className='list-empty';em.textContent='אין עדיין אנשי קשר ברשימה הזו — הוסף כמה למעלה';listEl.appendChild(em);}}buildAZ();updateFavEdit();}
+function renderList(){CURRENT=peopleFor(VIEW);if(activeList){const _L=(cfg.lists||[]).find(x=>x.id===activeList);CURRENT=_L?CURRENT.filter(p=>_L.members.indexOf(fKey(p))>=0):CURRENT;}listEl.innerHTML='';CURRENT.forEach((c,i)=>{const row=document.createElement('div');row.className='row';row.dataset.i=i;row._person=c;row.innerHTML=rowHTML(c);listEl.appendChild(row);});if(activeList){if(!CURRENT.length){const em=document.createElement('div');em.className='list-empty';em.textContent='אין עדיין אנשי קשר ברשימה הזו — הוסף מהכפתור הירוק שבצד';listEl.appendChild(em);}}buildAZ();updateFavEdit();updateListAdd();}
 function renderSeg(){const seg=document.getElementById('seg');seg.innerHTML='<div class="seg-ind" id="segInd"></div>'+VIEWS.map(v=>`<button class="seg-btn${v.id===VIEW?' on':''}" data-v="${v.id}" aria-label="${escapeHtml(v.label)}" title="${escapeHtml(v.label)}">${v.ic}</button>`).join('');seg.querySelectorAll('.seg-btn').forEach(b=>b.onclick=()=>goToView(b.dataset.v));const ind=seg.querySelector('#segInd');if(ind)ind.style.transition='none';requestAnimationFrame(()=>{updateSeg();requestAnimationFrame(()=>{if(ind)ind.style.transition='';});});}
 function updateSeg(){const seg=document.getElementById('seg');const ind=seg&&seg.querySelector('#segInd');if(!ind)return;seg.querySelectorAll('.seg-btn').forEach(b=>b.classList.toggle('on',b.dataset.v===VIEW));const a=seg.querySelector('.seg-btn.on');if(a){ind.style.left=a.offsetLeft+'px';ind.style.width=a.offsetWidth+'px';}}
 function animTabSlide(outSign){pullOffset=0;const W=listEl.offsetWidth||window.innerWidth;const outX=outSign*W;listEl.style.transition='transform .2s ease, opacity .2s ease';listEl.style.transform='translateX('+outX+'px)';listEl.style.opacity='0';setTimeout(()=>{renderList();layoutList();listEl.scrollTop=0;tabLock=true;listEl.style.overflowY='hidden';setTimeout(()=>{tabLock=false;listEl.style.overflowY='';},300);listEl.style.transition='none';listEl.style.transform='translateX('+(-outX)+'px)';listEl.style.opacity='0';requestAnimationFrame(()=>requestAnimationFrame(()=>{listEl.style.transition='transform .28s cubic-bezier(.22,1,.36,1), opacity .22s ease';listEl.style.transform='translateX(0)';listEl.style.opacity='1';setTimeout(()=>{tabAnim=false;},300);}));},200);}
@@ -748,7 +757,7 @@ function openListManage(){
 function openMemberPicker(listId){
   const L=(cfg.lists||[]).find(x=>x.id===listId);if(!L)return;
   const sel=new Set(L.members);
-  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>חברי «'+escapeHtml(L.name)+'»</h2></div><div class="pk-search"><input id="pkSearch" class="ct-inp pk-inp" placeholder="חיפוש שם…" autocomplete="off"></div><div class="scr-body" id="mpkBody"><div class="pk-list" id="pkList"></div></div><div class="pk-az" id="pkAz"></div><div class="pk-bub" id="pkBub"></div>');
+  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>חברי «'+escapeHtml(L.name)+'»</h2></div><div class="pk-search"><div class="srch-inwrap" id="pkInwrap"><input id="pkSearch" class="ct-inp pk-inp" placeholder="חיפוש שם…" autocomplete="off"><button class="srch-clear pk-clear" id="pkClear" type="button" aria-label="נקה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div><div class="scr-body" id="mpkBody"><div class="pk-list" id="pkList"></div></div><div class="pk-az" id="pkAz"></div><div class="pk-bub" id="pkBub"></div>');
   sc._reopen=()=>openMemberPicker(listId);
   const body=sc.querySelector('#mpkBody');const listBox=sc.querySelector('#pkList');
   const all=PEOPLE.slice().filter(p=>FDEC[fKey(p)]!=='delete').sort(byName);
@@ -767,7 +776,7 @@ function openMemberPicker(listId){
   az.addEventListener('pointermove',e=>{if(!azAct)return;e.preventDefault();e.stopPropagation();azScrubP(e.clientY);});
   az.addEventListener('pointerup',()=>{azAct=false;bub.classList.remove('show');az.querySelectorAll('.azl.on').forEach(s=>s.classList.remove('on'));});
   az.addEventListener('pointercancel',()=>{azAct=false;bub.classList.remove('show');});
-  const si=sc.querySelector('#pkSearch');si.addEventListener('input',()=>paint(si.value));
+  const si=sc.querySelector('#pkSearch');si.addEventListener('input',()=>paint(si.value));const pkClear=sc.querySelector('#pkClear');const pkInwrap=sc.querySelector('#pkInwrap');function updPk(){if(pkInwrap)pkInwrap.classList.toggle('has-text',!!si.value);}si.addEventListener('input',updPk);if(pkClear)pkClear.onclick=()=>{si.value='';paint('');updPk();si.focus();};
   paint('');
   const origBack=sc._back;
   sc._back=()=>{L.members=[...sel];saveCfg();renderLists();renderList();origBack();};
@@ -905,13 +914,13 @@ function openPicker(slot){
 const srch=document.getElementById('srch');
 const srchResults=document.getElementById('srchResults');
 const searchInput=document.getElementById('searchInput');
-function vvSearch(){const vv=window.visualViewport;const kb=vv?Math.max(0,window.innerHeight-vv.height-(vv.offsetTop||0)):0;srch.style.paddingBottom=Math.max(kb,88)+'px';}
+function vvSearch(){const vv=window.visualViewport;const kb=vv?Math.max(0,window.innerHeight-vv.height-(vv.offsetTop||0)):0;const pb=Math.max(kb,88);srch.style.paddingBottom=pb+'px';if(srchResults)srchResults.style.maxHeight=Math.max(140,window.innerHeight-pb-96)+'px';}
 function renderSearch(q){q=(q||'').trim();srchResults.innerHTML='';if(!q)return;PEOPLE.filter(p=>String(p.name).indexOf(q)>=0).slice(0,40).forEach(p=>{const r=document.createElement('div');r.className='row';r._person=p;r.innerHTML=rowHTML(p,p.phone||p.email||'');srchResults.appendChild(r);});}
 wirePick(srchResults,p=>openContact(p,true));
-function openSearch(){srch.classList.add('show');srchResults.innerHTML='';searchInput.value='';if(window.visualViewport)window.visualViewport.addEventListener('resize',vvSearch);setTimeout(()=>{searchInput.focus();vvSearch();},60);setTimeout(vvSearch,380);updateSearchFab();}
+function openSearch(){srch.classList.add('show');srchResults.innerHTML='';searchInput.value='';if(typeof updSrchClear==='function')updSrchClear();if(window.visualViewport)window.visualViewport.addEventListener('resize',vvSearch);setTimeout(()=>{searchInput.focus();vvSearch();},60);setTimeout(vvSearch,380);updateSearchFab();}
 function closeSearch(){srch.classList.remove('show');searchInput.blur();if(window.visualViewport)window.visualViewport.removeEventListener('resize',vvSearch);srch.style.paddingBottom='';updateSearchFab();}
 function resumeSearch(){srch.classList.add('show');if(window.visualViewport)window.visualViewport.addEventListener('resize',vvSearch);setTimeout(()=>{searchInput.focus();vvSearch();},60);}
-searchInput.addEventListener('input',()=>renderSearch(searchInput.value));
+const srchInwrap=document.getElementById('srchInwrap');const searchClear=document.getElementById('searchClear');function updSrchClear(){if(srchInwrap)srchInwrap.classList.toggle('has-text',!!searchInput.value);}searchInput.addEventListener('input',()=>{renderSearch(searchInput.value);updSrchClear();});if(searchClear)searchClear.onclick=()=>{searchInput.value='';renderSearch('');updSrchClear();searchInput.focus();};
 srch.addEventListener('click',e=>{if(e.target===srch||e.target.classList.contains('srch-veil'))closeSearch();});
 document.getElementById('srchBack').onclick=closeSearch;
 let _tapK=null,_tapT=0,_tapTimer=0;
@@ -1139,7 +1148,9 @@ function openAddContact(){const sc=openScreen('<div class="scr-head"><button cla
 let _barRAF=0;function _schedBar(){if(_barRAF)return;_barRAF=requestAnimationFrame(()=>{_barRAF=0;updateBar();});}try{new MutationObserver(_schedBar).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});}catch(e){}
 function updateSearchFab(){updateBar();}
 const favEditBtn=document.createElement('button');favEditBtn.className='fav-edit';favEditBtn.id='favEdit';favEditBtn.setAttribute('aria-label','עריכת סדר');favEditBtn.innerHTML=ICON.edit;favEditBtn.onclick=()=>setEdit(!editMode);document.body.appendChild(favEditBtn);
-function updateFavEdit(){const b=document.getElementById('favEdit');if(!b)return;const show=(VIEW==='fav');b.classList.toggle('show',show);if(!show&&editMode){editMode=false;document.body.classList.remove('editing');}b.classList.toggle('on',editMode);}
+const listAddBtn=document.createElement('button');listAddBtn.className='list-add';listAddBtn.id='listAdd';listAddBtn.setAttribute('aria-label','הוסף אנשי קשר לרשימה');listAddBtn.innerHTML=ICON.plus;listAddBtn.onclick=()=>{if(activeList)openMemberPicker(activeList);};document.body.appendChild(listAddBtn);
+function updateListAdd(){const b=document.getElementById('listAdd');if(!b)return;b.classList.toggle('show',!!activeList);}
+function updateFavEdit(){const b=document.getElementById('favEdit');if(!b)return;const show=(VIEW==='fav'&&!activeList);b.classList.toggle('show',show);if(!show&&editMode){editMode=false;document.body.classList.remove('editing');}b.classList.toggle('on',editMode);}
 function setEdit(on){editMode=on&&(VIEW==='fav');document.body.classList.toggle('editing',editMode);favEditBtn.classList.toggle('on',editMode);renderList();}
 let dragRow=null,dragIdx=0,dragStartY=0,RSTEP=72;
 listEl.addEventListener('pointerdown',e=>{if(!editMode)return;const row=e.target.closest('.row');if(!row)return;e.preventDefault();dragRow=row;dragIdx=+row.dataset.i;dragStartY=e.clientY;const rows=[...listEl.querySelectorAll('.row')];if(rows.length>1)RSTEP=rows[1].offsetTop-rows[0].offsetTop;rows.forEach(r=>{if(r!==row)r.style.transition='transform .15s ease';});row.style.transition='none';row.style.zIndex='5';row.classList.add('dragging');if(navigator.vibrate)navigator.vibrate(8);try{listEl.setPointerCapture(e.pointerId);}catch(_){}});
