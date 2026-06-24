@@ -112,8 +112,13 @@
   .datebtn input{position:absolute;inset:0;opacity:0}
   .datechip{display:inline-flex;align-items:center;gap:6px;background:var(--acc);color:#fff;border-radius:14px;padding:6px 12px;font-size:12.5px;margin:4px 16px 0}
   .histlist{flex:1;overflow-y:auto;display:flex;flex-direction:column;padding:4px 16px 100px}
-  .datehdr{align-self:center;background:var(--bg);color:var(--mut);font-size:11.5px;font-weight:700;padding:3px 12px;border-radius:12px;margin:10px 0 8px}
-  .hitem{position:relative;background:var(--card);border-radius:16px;box-shadow:var(--shCard);padding:12px 14px 12px 46px;margin-bottom:9px}
+  .datehdr{display:flex;align-items:center;gap:8px;align-self:stretch;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin:8px 0 6px}
+  .datehdr .dchev{color:var(--mut);display:flex;transition:transform .2s} .datehdr.open .dchev{transform:rotate(90deg)} .datehdr .dchev svg{width:18px;height:18px}
+  .datehdr .dlabel{font-weight:700;font-size:13.5px;color:var(--ink)}
+  .datehdr .dcount{font-size:11px;color:var(--mut);background:var(--page);border-radius:10px;padding:1px 8px}
+  .datehdr .dgtrash{margin-left:auto;width:32px;height:32px;border-radius:9px;background:var(--page);border:1px solid var(--line);color:var(--del);display:flex;align-items:center;justify-content:center} .datehdr .dgtrash svg{width:16px;height:16px}
+  .grpitems{display:flex;flex-direction:column;align-self:stretch} .grpitems[hidden]{display:none}
+  .hitem{position:relative;background:var(--card);border-radius:16px;box-shadow:var(--shCard);padding:12px 14px 12px 82px;margin-bottom:9px}
   .hitem .t{font-size:14px;line-height:1.5;color:var(--ink);text-align:right;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .hitem .d{font-size:10.5px;color:var(--faint);margin-top:5px;text-align:left}
   .empty{align-self:center;color:var(--faint);font-size:13px;padding:30px}
@@ -198,6 +203,10 @@
   .htrash{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:10px;background:var(--page);border:1px solid var(--line);color:var(--del);display:flex;align-items:center;justify-content:center}
   .htrash svg{width:17px;height:17px}
   body.selmode .htrash{display:none}
+  .hlock{position:absolute;left:44px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:10px;background:var(--page);border:1px solid var(--line);color:var(--mut);display:flex;align-items:center;justify-content:center}
+  .hlock svg{width:17px;height:17px}
+  .hitem.locked .hlock{color:var(--acc);border-color:var(--acc)}
+  body.selmode .hlock{display:none}
   .toast{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);background:var(--card);color:var(--ink);border:1px solid var(--line);padding:10px 18px;border-radius:20px;font-size:14px;z-index:60;opacity:0;transition:opacity .2s;max-width:80%;text-align:center}
   .toast.show{opacity:1}
 </style>
@@ -384,30 +393,41 @@
   function addHist(text){ hist.push({id:nid(),text:text,ts:Date.now()}); saveH(); }
   function dstr(ts){ var d=new Date(ts),n=new Date(); if(d.toDateString()===n.toDateString())return'היום'; var y=new Date(n-86400000); if(d.toDateString()===y.toDateString())return'אתמול'; return d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear(); }
   function tstr(ts){ var d=new Date(ts); return d.getHours()+':'+('0'+d.getMinutes()).slice(-2); }
-  var histFilter='', histDateF='';
+  var histFilter='', histDateF='', expanded=null;
   function renderHist(){
     var el=document.getElementById('histList');
-    var arr=hist.slice().sort(function(a,b){return a.ts-b.ts;});
+    var arr=hist.slice().sort(function(a,b){return b.ts-a.ts;});
     if(histFilter){ var f=histFilter.toLowerCase(); arr=arr.filter(function(x){return (x.text||'').toLowerCase().indexOf(f)>=0;}); }
     if(histDateF){ arr=arr.filter(function(x){var d=new Date(x.ts); var s=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); return s===histDateF;}); }
     if(!arr.length){ el.innerHTML='<div class="empty">אין תמלולים תואמים.</div>'; return; }
-    var h='',last='';
-    arr.forEach(function(x){ var ds=dstr(x.ts); if(ds!==last){ h+='<div class="datehdr">'+ds+'</div>'; last=ds; }
-      h+='<div class="hitem'+(selSet.has(x.id)?' sel':'')+'" data-id="'+x.id+'"><button class="htrash" data-del="'+x.id+'" aria-label="מחק"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13"/></svg></button><div class="hcheck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5 9-11"/></svg></div><div class="t">'+esc(x.text)+'</div><div class="d">'+tstr(x.ts)+'</div></div>'; });
-    el.innerHTML=h; el.scrollTop=el.scrollHeight;
+    var groups=[],gmap={};
+    arr.forEach(function(x){ var ds=dstr(x.ts); if(!gmap[ds]){ gmap[ds]={ds:ds,items:[]}; groups.push(gmap[ds]); } gmap[ds].items.push(x); });
+    if(expanded===null){ expanded=new Set(); if(groups.length)expanded.add(groups[0].ds); }
+    var forceOpen=!!(histFilter||histDateF);
+    var trSvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13"/></svg>';
+    var lkSvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+    var ckSvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5 9-11"/></svg>';
+    var h='';
+    groups.forEach(function(g){ var open=forceOpen||expanded.has(g.ds);
+      h+='<div class="datehdr'+(open?' open':'')+'" data-grp="'+esc(g.ds)+'"><span class="dchev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span><span class="dlabel">'+esc(g.ds)+'</span><span class="dcount">'+g.items.length+'</span><button class="dgtrash" data-delgrp="'+esc(g.ds)+'" aria-label="מחק תאריך">'+trSvg+'</button></div>';
+      h+='<div class="grpitems"'+(open?'':' hidden')+'>';
+      g.items.forEach(function(x){ h+='<div class="hitem'+(selSet.has(x.id)?' sel':'')+(x.locked?' locked':'')+'" data-id="'+x.id+'"><button class="htrash" data-del="'+x.id+'" aria-label="מחק">'+trSvg+'</button><button class="hlock" data-lock="'+x.id+'" aria-label="נעל">'+lkSvg+'</button><div class="hcheck">'+ckSvg+'</div><div class="t">'+esc(x.text)+'</div><div class="d">'+tstr(x.ts)+'</div></div>'; });
+      h+='</div>';
+    });
+    el.innerHTML=h;
   }
   document.getElementById('histSearch').addEventListener('input',function(e){ histFilter=e.target.value.trim(); renderHist(); });
   document.getElementById('histDate').addEventListener('change',function(e){ histDateF=e.target.value; renderDateChip(); renderHist(); });
   function renderDateChip(){ var w=document.getElementById('dateChipWrap'); w.innerHTML = histDateF? '<span class="datechip">'+histDateF+' <button data-cleardate style="background:none;border:none;color:#fff;font-weight:700">✕</button></span>':''; }
   document.getElementById('dateChipWrap').addEventListener('click',function(e){ if(e.target.closest('[data-cleardate]')){ histDateF=''; document.getElementById('histDate').value=''; renderDateChip(); renderHist(); } });
-  document.getElementById('histList').addEventListener('click',function(e){ var dl=e.target.closest('[data-del]'); if(dl){ delIds([dl.getAttribute('data-del')]); return; } var it=e.target.closest('.hitem'); if(!it)return; var id=it.getAttribute('data-id'); if(selMode){ toggleSel(id); } else { var x=hist.find(function(z){return z.id===id;}); if(x) openDetail(x.text); } });
+  document.getElementById('histList').addEventListener('click',function(e){ var lk=e.target.closest('[data-lock]'); if(lk){ var lid=lk.getAttribute('data-lock'); var li=hist.find(function(x){return x.id===lid;}); if(li){ li.locked=!li.locked; saveH(); renderHist(); toast(li.locked?'ההקלטה ננעלה':'הנעילה בוטלה'); } return; } var dg=e.target.closest('[data-delgrp]'); if(dg){ var gds=dg.getAttribute('data-delgrp'); delIds(hist.filter(function(x){return dstr(x.ts)===gds;}).map(function(x){return x.id;})); return; } var hd=e.target.closest('.datehdr'); if(hd){ var ds2=hd.getAttribute('data-grp'); if(!expanded)expanded=new Set(); if(expanded.has(ds2))expanded.delete(ds2); else expanded.add(ds2); renderHist(); return; } var dl=e.target.closest('[data-del]'); if(dl){ delIds([dl.getAttribute('data-del')]); return; } var it=e.target.closest('.hitem'); if(!it)return; var id=it.getAttribute('data-id'); if(selMode){ toggleSel(id); } else { var x=hist.find(function(z){return z.id===id;}); if(x) openDetail(x.text); } });
   // ---- selection + gestures ----
   var selMode=false, selSet=new Set();
   function updateSelCount(){ var c=document.getElementById('selCount'); if(c)c.textContent=selSet.size; }
   function enterSel(id){ selMode=true; document.body.classList.add('selmode'); if(id)selSet.add(id); updateSelCount(); renderHist(); if(navigator.vibrate)navigator.vibrate(12); }
   function exitSel(){ selMode=false; document.body.classList.remove('selmode'); selSet.clear(); updateSelCount(); }
   function toggleSel(id){ if(selSet.has(id))selSet.delete(id); else selSet.add(id); updateSelCount(); var el=document.querySelector('.hitem[data-id=\"'+id+'\"]'); if(el)el.classList.toggle('sel',selSet.has(id)); }
-  function delIds(ids){ ids.forEach(function(id){ var el=document.querySelector('.hitem[data-id=\"'+id+'\"]'); if(el)el.classList.add('deleting'); }); setTimeout(function(){ hist=hist.filter(function(x){return ids.indexOf(x.id)<0;}); saveH(); exitSel(); renderHist(); },430); }
+  function delIds(ids){ ids=ids.filter(function(id){ var li=hist.find(function(x){return x.id===id;}); return !(li&&li.locked); }); if(!ids.length){ toast('פריטים נעולים — בטל נעילה כדי למחוק'); exitSel(); return; } ids.forEach(function(id){ var el=document.querySelector('.hitem[data-id=\"'+id+'\"]'); if(el)el.classList.add('deleting'); }); setTimeout(function(){ hist=hist.filter(function(x){return ids.indexOf(x.id)<0;}); saveH(); exitSel(); renderHist(); },430); }
   document.getElementById('selAll').addEventListener('click',function(){ document.querySelectorAll('.hitem').forEach(function(el){ selSet.add(el.getAttribute('data-id')); el.classList.add('sel'); }); updateSelCount(); });
   document.getElementById('delSel').addEventListener('click',function(){ if(selSet.size)delIds(Array.from(selSet)); else exitSel(); });
   document.getElementById('selCancel').addEventListener('click',exitSel);
