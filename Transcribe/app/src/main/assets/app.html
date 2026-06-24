@@ -28,7 +28,7 @@
   .scroll{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;padding:6px 16px 14px}
   .sp{flex:1 0 auto;min-height:0}
 
-  .box{background:var(--card);border-radius:18px;box-shadow:var(--shCard);padding:14px 15px;margin-bottom:14px}
+  .box{position:relative;background:var(--card);border-radius:18px;box-shadow:var(--shCard);padding:14px 15px;margin-bottom:14px}
   .box .tx{font-size:15.5px;line-height:1.7;color:var(--ink);text-align:right;-webkit-user-select:text;user-select:text;white-space:pre-wrap}
   .box .acts{display:flex;justify-content:flex-end;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
   body.hand-right .box .acts{justify-content:flex-start}
@@ -182,24 +182,27 @@
   .ovlclose{margin-top:12px;background:var(--page);border:1px solid var(--line);color:var(--mut);border-radius:18px;padding:11px;font-size:14px}
   .botfade{position:fixed;left:0;right:0;bottom:0;height:140px;pointer-events:none;z-index:25;background:linear-gradient(to top, rgba(12,28,20,.32), rgba(12,28,20,0))}
   @keyframes rubberDel{0%{transform:translateX(0)}16%{transform:translateX(16px)}100%{transform:translateX(-130%);opacity:0}}
-  .hitem.deleting{animation:rubberDel .42s cubic-bezier(.5,0,.7,.3) forwards}
+  .hitem.deleting,.box.deleting{animation:rubberDel .42s cubic-bezier(.5,0,.7,.3) forwards}
   .step .lk{text-align:left;margin-top:8px}
   .step .lk .openlink{margin-top:0}
   .bbback{width:54px;height:54px;border-radius:50%;background:var(--card);border:none;box-shadow:var(--shFab);color:var(--acc);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
-  .bbback svg{width:22px;height:22px}
+  .bbback svg{width:22px;height:22px;transition:transform .3s}
+  body.hand-right .bbback svg{transform:scaleX(-1)}
   .bbspace{width:54px;flex:0 0 auto}
   .bbcenter{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;min-width:0;padding:0 8px}
   .bbcenter .sin{flex:1;min-width:0;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:11px 14px;font-size:14px;color:var(--ink);box-shadow:var(--shCard)}
-  .selbar{position:absolute;left:0;right:0;bottom:78px;display:none;align-items:center;justify-content:space-around;gap:8px;padding:8px 16px;z-index:31}
+  .selbar{position:fixed;left:0;right:0;bottom:84px;display:none;align-items:center;justify-content:space-around;gap:8px;padding:8px 16px;z-index:70}
+  #shareSheetFavs .favstrip{margin-top:0}
   body.selmode .selbar{display:flex}
   .selb{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:10px 16px;font-size:13.5px;font-weight:600;color:var(--ink);box-shadow:var(--shCard)}
   .selb.danger{background:var(--del);color:#fff;border:none}
-  .hitem.sel{outline:2px solid var(--acc);outline-offset:-1px}
-  .hcheck{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:none;align-items:center;justify-content:center;color:#fff}
-  .hcheck svg{width:14px;height:14px;opacity:0}
+  .hitem.sel,.box.sel{outline:2px solid var(--acc);outline-offset:-1px}
+  .hcheck{position:absolute;left:10px;top:14px;width:24px;height:24px;border-radius:7px;border:2px solid var(--line);display:none;align-items:center;justify-content:center;color:#fff;background:var(--page);z-index:3}
+  .hcheck svg{width:15px;height:15px;opacity:0}
   body.selmode .hitem{padding-left:46px}
+  body.selmode .box{padding-left:46px}
   body.selmode .hcheck{display:flex}
-  .hitem.sel .hcheck{background:var(--acc);border-color:var(--acc)} .hitem.sel .hcheck svg{opacity:1}
+  .sel .hcheck{background:var(--acc);border-color:var(--acc)} .sel .hcheck svg{opacity:1}
   .htrash{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:10px;background:var(--page);border:1px solid var(--line);color:var(--del);display:flex;align-items:center;justify-content:center}
   .htrash svg{width:17px;height:17px}
   body.selmode .htrash{display:none}
@@ -248,7 +251,6 @@
   <div class="head"><span style="width:40px"></span><div class="t">היסטוריה</div><span style="width:40px"></span></div>
   <div id="dateChipWrap"></div>
   <div class="histlist" id="histList"></div>
-  <div class="selbar" id="selbar"><button class="selb" id="selAll">בחר הכל</button><button class="selb danger" id="delSel">מחק (<span id="selCount">0</span>)</button><button class="selb" id="selCancel">בטל</button></div>
   <div class="botbar">
     <span class="bbspace"></span>
     <div class="bbcenter"><input class="sin" id="histSearch" placeholder="חפש מילים בתמלולים…"><button class="datebtn" aria-label="תאריך"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9h16M8 3v4M16 3v4"/></svg><input type="date" id="histDate"></button></div>
@@ -313,6 +315,8 @@
 
 <button class="fab-menu" id="menuFab" aria-label="תפריט"></button>
 <div class="botfade"></div>
+<div class="selbar" id="selbar"><button class="selb" id="selAll">הכל</button><button class="selb" id="shareSel">שתף</button><button class="selb danger" id="delSel">מחק (<span id="selCount">0</span>)</button><button class="selb" id="selCancel">בטל</button></div>
+<div class="ovl" id="shareSheet"><div class="ovlcard"><div class="ovlh">שיתוף הנבחרים</div><div id="shareSheetFavs"></div><button class="save" id="shareSysBtn" style="margin-top:8px">שתף דרך המערכת</button><button class="ovlclose" data-closeovl>סגור</button></div></div>
 <div class="ovl" id="exitOvl"><div class="ovlcard"><div class="ovlh">לצאת מהאפליקציה?</div><div style="display:flex;gap:10px;margin-top:4px"><button class="save" id="exitYes" style="flex:1;margin:0">צא</button><button class="ovlclose" id="exitNo" style="flex:1;margin:0">הישאר</button></div></div></div>
 <div class="toast" id="toast"></div>
 
@@ -323,15 +327,15 @@
   var screens=['main','recording','history','detail','settings','help','favs'];
   var navStack=['main'], curScreen='main';
   function show(id){ screens.forEach(function(s){document.getElementById(s).classList.toggle('on',s===id);}); curScreen=id; var mf=document.getElementById('menuFab'); if(mf)mf.style.display=(id==='recording')?'none':''; closeHbarSafe(); }
-  function navTo(id){ if(navStack[navStack.length-1]!==id) navStack.push(id); show(id); }
-  function navHome(){ navStack=['main']; show('main'); }
+  function navTo(id){ if(selMode){exitSel();rerenderSel();} if(navStack[navStack.length-1]!==id) navStack.push(id); show(id); }
+  function navHome(){ if(selMode){exitSel();rerenderSel();} navStack=['main']; show('main'); }
   function doBack(){
     var ap=document.getElementById('appPicker'); if(ap&&ap.classList.contains('on')){ ap.classList.remove('on'); return; }
     var wf=document.getElementById('waForm'); if(wf&&wf.classList.contains('on')){ wf.classList.remove('on'); return; }
     var ex=document.getElementById('exitOvl'); if(ex&&ex.classList.contains('on')){ ex.classList.remove('on'); return; }
     if(document.querySelector('.hbar-backdrop')){ closeHbar(); return; }
     if(curScreen==='recording'){ var cb=document.getElementById('cancelBtn'); if(cb)cb.click(); return; }
-    if(typeof selMode!=='undefined' && selMode){ exitSel(); renderHist(); return; }
+    if(typeof selMode!=='undefined' && selMode){ exitSel(); rerenderSel(); return; }
     if(navStack.length>1){ navStack.pop(); show(navStack[navStack.length-1]); } else { document.getElementById('exitOvl').classList.add('on'); }
   }
 
@@ -373,7 +377,7 @@
     var el=document.getElementById('boxes'); var h='<div class="sp"></div>';
     boxes.forEach(function(b){
       if(b.state==='busy'){ h+='<div class="box busy"><div class="tx"><span class="spin"></span>מתמלל… רגע אחד</div></div>'; }
-      else { h+='<div class="box" data-id="'+b.id+'"><div class="tx">'+esc(b.text)+'</div>'+favStripHtml()+'<div class="acts">'
+      else { h+='<div class="box'+(selSet.has(b.id)?' sel':'')+'" data-id="'+b.id+'"><div class="hcheck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5 9-11"/></svg></div><div class="tx">'+esc(b.text)+'</div>'+favStripHtml()+'<div class="acts">'
         +'<button class="ibtn" data-act="copy" data-id="'+b.id+'">'+IC.copy+'</button>'
         +'<button class="ibtn" data-act="share" data-id="'+b.id+'">'+IC.share+'</button>'
         +'<button class="ibtn del" data-act="del" data-id="'+b.id+'">'+IC.del+'</button></div></div>'; }
@@ -386,6 +390,7 @@
   function allText(){ return boxes.filter(function(b){return b.state!=='busy'&&b.text;}).map(function(b){return b.text;}).join('\n\n'); }
 
   document.getElementById('boxes').addEventListener('click',function(e){
+    if(selMode && selCtx==='main'){ var sbx=e.target.closest('.box'); if(sbx && !sbx.classList.contains('busy')) toggleSel(sbx.getAttribute('data-id')); return; }
     var fc=e.target.closest('[data-fav]'); if(fc){ if(fc.getAttribute('data-fav')==='__add'){ openFavEdit(); return; } var bx=e.target.closest('.box'); if(bx){ var bb=boxes.find(function(x){return x.id===bx.getAttribute('data-id');}); if(bb) shareFav(favById(fc.getAttribute('data-fav')), bb.text); } return; }
     if(e.target.closest('#langTog')){ cycleLang(); e.stopPropagation(); return; }
     if(e.target.closest('#recAdd')){ startRecordFlow(); return; }
@@ -396,6 +401,11 @@
     if(act==='share'){ if(A&&A.share)A.share(box.text); }
     if(act==='del'){ boxes=boxes.filter(function(x){return x.id!==id;}); saveB(); render(); }
   });
+  (function(){ var bl=document.getElementById('boxes'); var lp=null,cur=null,sx=0,sy=0;
+    bl.addEventListener('touchstart',function(e){ var it=e.target.closest('.box'); if(!it||it.classList.contains('busy'))return; cur=it; sx=e.touches[0].clientX; sy=e.touches[0].clientY; if(!selMode){ lp=setTimeout(function(){ lp=null; if(cur) enterSel('main', cur.getAttribute('data-id')); },480); } },{passive:true});
+    bl.addEventListener('touchmove',function(e){ if(lp){ var dx=Math.abs(e.touches[0].clientX-sx), dy=Math.abs(e.touches[0].clientY-sy); if(dx>8||dy>8){ clearTimeout(lp); lp=null; } } },{passive:true});
+    bl.addEventListener('touchend',function(){ if(lp){clearTimeout(lp);lp=null;} cur=null; });
+  })();
   function cycleLang(){ var order=['','he','en']; var cur=br('getLang',''); var nx=order[(order.indexOf(cur)+1)%3]; if(A&&A.setLang)A.setLang(nx); document.getElementById('langTog').textContent=LANGLBL[nx]; toast(nx===''?'זיהוי אוטומטי':(nx==='he'?'עברית — זיהוי כפוי':'אנגלית — פלט באנגלית')); }
   document.getElementById('copyAll').addEventListener('click',function(){ var t=allText(); if(!t){toast('אין מה להעתיק');return;} if(A&&A.copy)A.copy(t); toast('הכל הועתק'); });
   document.getElementById('shareAll').addEventListener('click',function(){ var t=allText(); if(!t){toast('אין מה לשתף');return;} if(A&&A.share)A.share(t); });
@@ -436,17 +446,26 @@
   document.getElementById('dateChipWrap').addEventListener('click',function(e){ if(e.target.closest('[data-cleardate]')){ histDateF=''; document.getElementById('histDate').value=''; renderDateChip(); renderHist(); } });
   document.getElementById('histList').addEventListener('click',function(e){ var lk=e.target.closest('[data-lock]'); if(lk){ var lid=lk.getAttribute('data-lock'); var li=hist.find(function(x){return x.id===lid;}); if(li){ li.locked=!li.locked; saveH(); renderHist(); toast(li.locked?'ההקלטה ננעלה':'הנעילה בוטלה'); } return; } var dg=e.target.closest('[data-delgrp]'); if(dg){ var gds=dg.getAttribute('data-delgrp'); delIds(hist.filter(function(x){return dstr(x.ts)===gds;}).map(function(x){return x.id;})); return; } var hd=e.target.closest('.datehdr'); if(hd){ var ds2=hd.getAttribute('data-grp'); if(!expanded)expanded=new Set(); if(expanded.has(ds2))expanded.delete(ds2); else expanded.add(ds2); renderHist(); return; } var dl=e.target.closest('[data-del]'); if(dl){ delIds([dl.getAttribute('data-del')]); return; } var it=e.target.closest('.hitem'); if(!it)return; var id=it.getAttribute('data-id'); if(selMode){ toggleSel(id); } else { var x=hist.find(function(z){return z.id===id;}); if(x) openDetail(x.text, id); } });
   // ---- selection + gestures ----
-  var selMode=false, selSet=new Set();
+  var selMode=false, selSet=new Set(), selCtx='history';
   function updateSelCount(){ var c=document.getElementById('selCount'); if(c)c.textContent=selSet.size; }
-  function enterSel(id){ selMode=true; document.body.classList.add('selmode'); if(id)selSet.add(id); updateSelCount(); renderHist(); if(navigator.vibrate)navigator.vibrate(12); }
+  function rerenderSel(){ if(selCtx==='history') renderHist(); else render(); }
+  function enterSel(ctx,id){ selCtx=ctx; selMode=true; document.body.classList.add('selmode'); if(id)selSet.add(id); updateSelCount(); rerenderSel(); if(navigator.vibrate)navigator.vibrate(12); }
   function exitSel(){ selMode=false; document.body.classList.remove('selmode'); selSet.clear(); updateSelCount(); }
-  function toggleSel(id){ if(selSet.has(id))selSet.delete(id); else selSet.add(id); updateSelCount(); var el=document.querySelector('.hitem[data-id=\"'+id+'\"]'); if(el)el.classList.toggle('sel',selSet.has(id)); }
-  function delIds(ids){ ids=ids.filter(function(id){ var li=hist.find(function(x){return x.id===id;}); return !(li&&li.locked); }); if(!ids.length){ toast('פריטים נעולים — בטל נעילה כדי למחוק'); exitSel(); return; } ids.forEach(function(id){ var el=document.querySelector('.hitem[data-id=\"'+id+'\"]'); if(el)el.classList.add('deleting'); }); setTimeout(function(){ hist=hist.filter(function(x){return ids.indexOf(x.id)<0;}); saveH(); exitSel(); renderHist(); },430); }
-  document.getElementById('selAll').addEventListener('click',function(){ document.querySelectorAll('.hitem').forEach(function(el){ selSet.add(el.getAttribute('data-id')); el.classList.add('sel'); }); updateSelCount(); });
-  document.getElementById('delSel').addEventListener('click',function(){ if(selSet.size)delIds(Array.from(selSet)); else exitSel(); });
-  document.getElementById('selCancel').addEventListener('click',exitSel);
+  function toggleSel(id){ var add=!selSet.has(id); if(add)selSet.add(id); else selSet.delete(id); updateSelCount(); var cont=selCtx==='history'?document.getElementById('histList'):document.getElementById('boxes'); var el=cont&&cont.querySelector('[data-id=\"'+id+'\"]'); if(el)el.classList.toggle('sel',add); }
+  function delIds(ids){ ids=ids.filter(function(id){ var li=hist.find(function(x){return x.id===id;}); return !(li&&li.locked); }); if(!ids.length){ toast('פריטים נעולים — בטל נעילה כדי למחוק'); exitSel(); renderHist(); return; } ids.forEach(function(id){ var el=document.querySelector('.hitem[data-id=\"'+id+'\"]'); if(el)el.classList.add('deleting'); }); setTimeout(function(){ hist=hist.filter(function(x){return ids.indexOf(x.id)<0;}); saveH(); exitSel(); renderHist(); },430); }
+  function selItemsText(){ var out=[]; selSet.forEach(function(id){ var o=selCtx==='history'?hist.find(function(x){return x.id===id;}):boxes.find(function(x){return x.id===id;}); if(o&&o.text)out.push(o.text); }); return out.join('\n\n'); }
+  function delSelected(){ if(!selSet.size){ exitSel(); rerenderSel(); return; } if(selCtx==='history'){ delIds(Array.from(selSet)); } else { var ids=Array.from(selSet); ids.forEach(function(id){ var el=document.querySelector('.box[data-id=\"'+id+'\"]'); if(el)el.classList.add('deleting'); }); setTimeout(function(){ boxes=boxes.filter(function(b){return ids.indexOf(b.id)<0;}); saveB(); exitSel(); render(); },320); } }
+  var shareSheetText='';
+  function openShareSheet(text){ shareSheetText=text; document.getElementById('shareSheetFavs').innerHTML=favStripHtml(); document.getElementById('shareSheet').classList.add('on'); }
+  function shareSelected(){ var t=selItemsText(); if(!t){ toast('לא נבחר כלום'); return; } openShareSheet(t); }
+  document.getElementById('selAll').addEventListener('click',function(){ var s=selCtx==='history'?'.hitem[data-id]':'.box[data-id]'; document.querySelectorAll(s).forEach(function(el){ selSet.add(el.getAttribute('data-id')); el.classList.add('sel'); }); updateSelCount(); });
+  document.getElementById('delSel').addEventListener('click',delSelected);
+  document.getElementById('shareSel').addEventListener('click',shareSelected);
+  document.getElementById('selCancel').addEventListener('click',function(){ exitSel(); rerenderSel(); });
+  document.getElementById('shareSysBtn').addEventListener('click',function(){ if(A&&A.share)A.share(shareSheetText); document.getElementById('shareSheet').classList.remove('on'); exitSel(); rerenderSel(); });
+  document.getElementById('shareSheetFavs').addEventListener('click',function(e){ var fc=e.target.closest('[data-fav]'); if(!fc)return; document.getElementById('shareSheet').classList.remove('on'); if(fc.getAttribute('data-fav')==='__add'){ openFavEdit(); return; } shareFav(favById(fc.getAttribute('data-fav')), shareSheetText); exitSel(); rerenderSel(); });
   (function(){ var hl=document.getElementById('histList'); var lp=null,sx=0,sy=0,cur=null,cid=null,mv=false;
-    hl.addEventListener('touchstart',function(e){ var it=e.target.closest('.hitem'); if(!it)return; cur=it; cid=it.getAttribute('data-id'); sx=e.touches[0].clientX; sy=e.touches[0].clientY; mv=false; if(!selMode){ lp=setTimeout(function(){ lp=null; enterSel(cid); },480); } },{passive:true});
+    hl.addEventListener('touchstart',function(e){ var it=e.target.closest('.hitem'); if(!it)return; cur=it; cid=it.getAttribute('data-id'); sx=e.touches[0].clientX; sy=e.touches[0].clientY; mv=false; if(!selMode){ lp=setTimeout(function(){ lp=null; enterSel('history',cid); },480); } },{passive:true});
     hl.addEventListener('touchmove',function(e){ if(!cur)return; var dx=e.touches[0].clientX-sx, dy=e.touches[0].clientY-sy; if((Math.abs(dx)>8||Math.abs(dy)>8)&&lp){clearTimeout(lp);lp=null;} if(!selMode&&Math.abs(dx)>Math.abs(dy)&&dx<0){ mv=true; cur.style.transform='translateX('+dx+'px)'; cur.style.opacity=String(Math.max(0.3,1+dx/220)); } },{passive:true});
     hl.addEventListener('touchend',function(e){ if(lp){clearTimeout(lp);lp=null;} if(cur&&mv){ var dx=e.changedTouches[0].clientX-sx; if(dx<-70){ var id=cid; cur.style.transform=''; cur.style.opacity=''; delIds([id]); } else { var c=cur; c.style.transition='transform .2s,opacity .2s'; c.style.transform=''; c.style.opacity=''; setTimeout(function(){ c.style.transition=''; },220); } } cur=null; });
   })();
