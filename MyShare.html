@@ -998,7 +998,7 @@ const menuFab=document.createElement('button');
 menuFab.className='fab-menu';menuFab.id='menuFab';menuFab.setAttribute('aria-label','תפריט');
 const DM_HALF=2.5;
 let fabRot=(cfg.hand==='left')?90:0;
-let flipping=false;
+let flipping=false;let barCollapsing=false;
 const DM_OPEN=[[20,34],[27,27],[34,20],[20,20],[27,27],[34,34]];
 const DM_CLOSED=[[20,34],[27,27],[34,20],[20,34],[27,27],[34,20]];
 function dmTr(p){return 'translate('+Math.round(p[0]-DM_HALF)+'px,'+Math.round(p[1]-DM_HALF)+'px)';}
@@ -1018,25 +1018,27 @@ function hfOnHome(){
   const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');
   return !screenOpen&&!searchOn&&!sheetOpen;
 }
-function botbarCollapse(){            // collapse the bar into the icon = exact time-reverse of botbarReopen
+function botbarCollapse(){            // collapse the bar into the menu icon — mirrors the 45° menu close (hmOut)
   if(!hfOnHome())return;
+  barCollapsing=true;
   botbar.classList.remove('bar-hidden','collapsed');
   const btns=[...botbar.querySelectorAll('.bb-btn')];
-  btns.forEach(b=>{b.style.transition='none';b.style.transform='';b.style.opacity='1';});
+  btns.forEach(b=>{b.style.animation='none';b.style.transition='none';b.style.transform='';b.style.opacity='1';});
   void botbar.offsetWidth;
   const fr=menuFab.getBoundingClientRect();
   const fcx=fr.left+fr.width/2, fcy=fr.top+fr.height/2;
   const meas=btns.map(b=>{const r=b.getBoundingClientRect();return{b,dx:Math.round(fcx-(r.left+r.width/2)),dy:Math.round(fcy-(r.top+r.height/2))};});
   void botbar.offsetWidth;
   const N=meas.length;
-  // reopen: out from icon, i*0.05 stagger, cubic-bezier(.34,1.45,.5,1)
-  // reverse: into icon, (N-1-i)*0.05 stagger (last-out goes first), time-reversed easing
-  meas.forEach((m,i)=>{const d=((N-1-i)*0.05).toFixed(2);m.b.style.transition='transform .55s cubic-bezier(.5,0,.66,-.45) '+d+'s, opacity .3s ease '+(((N-1-i)*0.05)+0.25).toFixed(2)+'s';m.b.style.transform='translate('+m.dx+'px,'+m.dy+'px) scale(.4)';m.b.style.opacity='0';});
+  // same converge-into-icon motion as the 45° fan close: reuse the hmOut keyframe + its easing.
+  // outermost button leaves first (stagger by reverse index) so they pull into the icon like the fan.
+  meas.forEach((m,i)=>{m.b.style.setProperty('--sx',m.dx+'px');m.b.style.setProperty('--sy',m.dy+'px');m.b.style.animation='hmOut .42s cubic-bezier(.5,.04,.7,.32) '+(((N-1-i)*0.05).toFixed(2))+'s both';});
   setTimeout(()=>{                    // settle into the hidden resting state once collapsed
-    if(!document.querySelector('.hbar-backdrop'))return;   // menu already closed -> bar restored elsewhere
+    barCollapsing=false;
+    if(!document.querySelector('.hbar-backdrop')){updateBar();return;}   // menu already closed -> restore elsewhere
     botbar.classList.add('bar-hidden');
-    btns.forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});
-  },550+(N-1)*50+120);
+    btns.forEach(b=>{b.style.animation='';b.style.transition='';b.style.transform='';b.style.opacity='';b.style.removeProperty('--sx');b.style.removeProperty('--sy');});
+  },420+(N-1)*50+120);
 }
 function botbarReopen(){              // spring the bar buttons back out of the icon
   botbar.classList.remove('bar-hidden','collapsed');
@@ -1130,7 +1132,7 @@ botbar.querySelector('#bbAdd').onclick=()=>openAddContact();
 botbar.querySelector('#bbSearch').onclick=()=>openSearch();
 botbar.querySelector('#bbDial').onclick=()=>openDialer();
 botbar.querySelector('#bbBack').onclick=()=>navBack();
-function updateBar(){if(flipping)return;const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||sheetOpen||flipping);botbar.classList.toggle('collapsed',!(onHome&&!menuOpen&&!welcomeOn));if(!botbar.classList.contains('bar-hidden')){botbar.querySelectorAll('.bb-btn').forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});}}
+function updateBar(){if(flipping||barCollapsing)return;const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||sheetOpen||flipping);botbar.classList.toggle('collapsed',!(onHome&&!menuOpen&&!welcomeOn));if(!botbar.classList.contains('bar-hidden')){botbar.querySelectorAll('.bb-btn').forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});}}
 function appBack(){
   const np=document.querySelector('.numpad-ov.show');if(np){np.classList.remove('show');setTimeout(()=>np.remove(),200);return true;}
   const mp=[...document.querySelectorAll('.mpovl.show:not(.exit-dlg)')].pop();if(mp){mp.classList.remove('show');setTimeout(()=>mp.remove(),260);return true;}

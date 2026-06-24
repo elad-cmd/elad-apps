@@ -125,7 +125,7 @@
 
   /* detail */
   .dbody{flex:1;overflow-y:auto;padding:8px 18px 100px}
-  .dtx{background:var(--card);border-radius:16px;box-shadow:var(--shCard);padding:16px;font-size:16px;line-height:1.75;color:var(--ink);text-align:right;-webkit-user-select:text;user-select:text;white-space:pre-wrap}
+  .dtx{width:100%;display:block;border:none;outline:none;resize:none;overflow:hidden;font-family:inherit;direction:rtl;background:var(--card);border-radius:16px;box-shadow:var(--shCard);padding:16px;font-size:16px;line-height:1.75;color:var(--ink);text-align:right;-webkit-user-select:text;user-select:text}
 
   /* settings / help */
   .top{display:flex;align-items:center;padding:16px 18px 8px}
@@ -262,7 +262,7 @@
     <div class="t">תמלול</div>
     <span style="width:40px"></span>
   </div>
-  <div class="dbody"><div class="dtx" id="detailTx"></div><div id="detailFavs"></div></div>
+  <div class="dbody"><textarea class="dtx" id="detailTx" spellcheck="false" placeholder="התמלול…"></textarea><div id="detailFavs"></div></div>
   <div class="botbar">
     <span class="bbspace"></span>
     <div class="bbcenter" style="gap:24px"><button class="sharebtn" id="detCopy" aria-label="העתק"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h9"/></svg></button>
@@ -376,6 +376,7 @@
     var fc=e.target.closest('[data-fav]'); if(fc){ if(fc.getAttribute('data-fav')==='__add'){ openFavEdit(); return; } var bx=e.target.closest('.box'); if(bx){ var bb=boxes.find(function(x){return x.id===bx.getAttribute('data-id');}); if(bb) shareFav(favById(fc.getAttribute('data-fav')), bb.text); } return; }
     if(e.target.closest('#langTog')){ cycleLang(); e.stopPropagation(); return; }
     if(e.target.closest('#recAdd')){ startRecordFlow(); return; }
+    if(!e.target.closest('button')){ var obx=e.target.closest('.box'); if(obx && !obx.classList.contains('busy')){ var ob=boxes.find(function(x){return x.id===obx.getAttribute('data-id');}); if(ob){ openDetail(ob.text, ob.histId); return; } } }
     var b=e.target.closest('[data-act]'); if(!b) return;
     var id=b.getAttribute('data-id'), act=b.getAttribute('data-act'); var box=boxes.find(function(x){return x.id===id;}); if(!box) return;
     if(act==='copy'){ if(A&&A.copy)A.copy(box.text); toast('הועתק'); }
@@ -390,7 +391,7 @@
   var hist=[];
   function loadH(){ try{hist=JSON.parse(localStorage.getItem('tx_history')||'[]');}catch(e){hist=[];} }
   function saveH(){ try{localStorage.setItem('tx_history',JSON.stringify(hist.slice(-500)));}catch(e){} }
-  function addHist(text){ hist.push({id:nid(),text:text,ts:Date.now()}); saveH(); }
+  function addHist(text){ var id=nid(); hist.push({id:id,text:text,ts:Date.now()}); saveH(); return id; }
   function dstr(ts){ var d=new Date(ts),n=new Date(); if(d.toDateString()===n.toDateString())return'היום'; var y=new Date(n-86400000); if(d.toDateString()===y.toDateString())return'אתמול'; return d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear(); }
   function tstr(ts){ var d=new Date(ts); return d.getHours()+':'+('0'+d.getMinutes()).slice(-2); }
   var histFilter='', histDateF='', expanded=null;
@@ -420,7 +421,7 @@
   document.getElementById('histDate').addEventListener('change',function(e){ histDateF=e.target.value; renderDateChip(); renderHist(); });
   function renderDateChip(){ var w=document.getElementById('dateChipWrap'); w.innerHTML = histDateF? '<span class="datechip">'+histDateF+' <button data-cleardate style="background:none;border:none;color:#fff;font-weight:700">✕</button></span>':''; }
   document.getElementById('dateChipWrap').addEventListener('click',function(e){ if(e.target.closest('[data-cleardate]')){ histDateF=''; document.getElementById('histDate').value=''; renderDateChip(); renderHist(); } });
-  document.getElementById('histList').addEventListener('click',function(e){ var lk=e.target.closest('[data-lock]'); if(lk){ var lid=lk.getAttribute('data-lock'); var li=hist.find(function(x){return x.id===lid;}); if(li){ li.locked=!li.locked; saveH(); renderHist(); toast(li.locked?'ההקלטה ננעלה':'הנעילה בוטלה'); } return; } var dg=e.target.closest('[data-delgrp]'); if(dg){ var gds=dg.getAttribute('data-delgrp'); delIds(hist.filter(function(x){return dstr(x.ts)===gds;}).map(function(x){return x.id;})); return; } var hd=e.target.closest('.datehdr'); if(hd){ var ds2=hd.getAttribute('data-grp'); if(!expanded)expanded=new Set(); if(expanded.has(ds2))expanded.delete(ds2); else expanded.add(ds2); renderHist(); return; } var dl=e.target.closest('[data-del]'); if(dl){ delIds([dl.getAttribute('data-del')]); return; } var it=e.target.closest('.hitem'); if(!it)return; var id=it.getAttribute('data-id'); if(selMode){ toggleSel(id); } else { var x=hist.find(function(z){return z.id===id;}); if(x) openDetail(x.text); } });
+  document.getElementById('histList').addEventListener('click',function(e){ var lk=e.target.closest('[data-lock]'); if(lk){ var lid=lk.getAttribute('data-lock'); var li=hist.find(function(x){return x.id===lid;}); if(li){ li.locked=!li.locked; saveH(); renderHist(); toast(li.locked?'ההקלטה ננעלה':'הנעילה בוטלה'); } return; } var dg=e.target.closest('[data-delgrp]'); if(dg){ var gds=dg.getAttribute('data-delgrp'); delIds(hist.filter(function(x){return dstr(x.ts)===gds;}).map(function(x){return x.id;})); return; } var hd=e.target.closest('.datehdr'); if(hd){ var ds2=hd.getAttribute('data-grp'); if(!expanded)expanded=new Set(); if(expanded.has(ds2))expanded.delete(ds2); else expanded.add(ds2); renderHist(); return; } var dl=e.target.closest('[data-del]'); if(dl){ delIds([dl.getAttribute('data-del')]); return; } var it=e.target.closest('.hitem'); if(!it)return; var id=it.getAttribute('data-id'); if(selMode){ toggleSel(id); } else { var x=hist.find(function(z){return z.id===id;}); if(x) openDetail(x.text, id); } });
   // ---- selection + gestures ----
   var selMode=false, selSet=new Set();
   function updateSelCount(){ var c=document.getElementById('selCount'); if(c)c.textContent=selSet.size; }
@@ -439,8 +440,10 @@
   document.getElementById('toHist').addEventListener('click',function(){ exitSel(); renderHist(); renderDateChip(); show('history'); });
 
   // ---- detail ----
-  var detTxt='';
-  function openDetail(text){ detTxt=text; document.getElementById('detailTx').textContent=text; document.getElementById('detailFavs').innerHTML=favStripHtml(); show('detail'); }
+  var detTxt='', detId=null;
+  function autoGrowDet(){ var ta=document.getElementById('detailTx'); ta.style.height='auto'; ta.style.height=Math.max(120,ta.scrollHeight)+'px'; }
+  function openDetail(text,id){ detTxt=text; detId=id||null; var ta=document.getElementById('detailTx'); ta.value=text; document.getElementById('detailFavs').innerHTML=favStripHtml(); show('detail'); setTimeout(autoGrowDet,30); }
+  document.getElementById('detailTx').addEventListener('input',function(){ var v=this.value; detTxt=v; autoGrowDet(); if(detId){ var hi=hist.find(function(x){return x.id===detId;}); if(hi){ hi.text=v; saveH(); } var bb2=boxes.find(function(x){return x.histId===detId;}); if(bb2){ bb2.text=v; saveB(); } } });
   document.getElementById('detCopy').addEventListener('click',function(){ if(A&&A.copy)A.copy(detTxt); toast('הועתק'); });
   document.getElementById('detShare').addEventListener('click',function(){ if(A&&A.share)A.share(detTxt); });
 
@@ -492,12 +495,12 @@
 
   // ---- native -> JS ----
   function fillBusy(id,text,err){ var b=boxes.find(function(x){return x.id===id;});
-    if(err){ boxes=boxes.filter(function(x){return x.id!==id;}); toast(err); } else if(b){ b.state='done'; b.text=text; addHist(text); } saveB(); render(); }
+    if(err){ boxes=boxes.filter(function(x){return x.id!==id;}); toast(err); } else if(b){ b.state='done'; b.text=text; b.histId=addHist(text); } saveB(); render(); }
   var sharePendId=null;
   window.TX={
     onResult:function(text,err){ if(recId){ fillBusy(recId,text,err); recId=null; } },
     onSharedStart:function(n){ show('main'); boxes=[]; sharePendId=nid(); boxes.push({id:sharePendId,state:'busy'}); saveB(); render(); },
-    onShared:function(text,err){ if(err){ toast(err); return; } boxes.push({id:nid(),state:'done',text:text}); addHist(text); saveB(); render(); },
+    onShared:function(text,err){ if(err){ toast(err); return; } var _hid=addHist(text); boxes.push({id:nid(),state:'done',text:text,histId:_hid}); saveB(); render(); },
     onSharedDone:function(){ if(sharePendId){ boxes=boxes.filter(function(x){return x.id!==sharePendId;}); sharePendId=null; saveB(); render(); } },
     onMicPermission:function(g){ if(g){ var r=A&&A.startRecording?A.startRecording():'error'; if(r==='ok') beginUI(); } else toast('צריך הרשאת מיקרופון'); },
     onAuth:function(purpose,ok){ if(ok!=='1'){ toast('האימות בוטל'); return; } authPurpose=purpose; onAuthLocal(); }
