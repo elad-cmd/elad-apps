@@ -77,6 +77,11 @@ class MainActivity : Activity() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        web.evaluateJavascript("window.TX && window.TX.onBack && window.TX.onBack()", null)
+    }
+
     private fun handleIntent(intent: Intent?) {
         val uris = sharedAudioUris(intent)
         if (uris.isEmpty()) return
@@ -254,6 +259,8 @@ class MainActivity : Activity() {
         @JavascriptInterface fun openUrl(url: String) {
             try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) } catch (e: Exception) {}
         }
+
+        @JavascriptInterface fun exitApp() { runOnUiThread { finishAffinity() } }
 
         /** Share text directly to a specific app package. Returns false if it could not. */
         @JavascriptInterface fun shareToApp(pkg: String, text: String): Boolean {
