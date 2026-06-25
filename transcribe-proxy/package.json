@@ -1,0 +1,6 @@
+{
+  "name": "transcribe-proxy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Serverless proxy that forwards audio to OpenAI transcription using a server-side key."
+}

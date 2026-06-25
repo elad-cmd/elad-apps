@@ -40,6 +40,18 @@ jobs:
         with:
           gradle-version: '8.9'
 
+      - name: Inject app shared secret
+        working-directory: Transcribe
+        env:
+          APP_SHARED_SECRET: ${{ secrets.APP_SHARED_SECRET }}
+        run: |
+          if [ -n "$APP_SHARED_SECRET" ]; then
+            sed -i "s|__APP_SECRET__|$APP_SHARED_SECRET|g" app/src/main/java/com/transcribe/app/OpenAiTranscriber.kt
+            echo "shared secret injected"
+          else
+            echo "WARNING: APP_SHARED_SECRET secret not set — proxy auth will fail until configured"
+          fi
+
       - name: Build debug APK
         working-directory: Transcribe
         run: gradle assembleDebug --no-daemon --stacktrace

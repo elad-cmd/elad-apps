@@ -119,7 +119,7 @@ class MainActivity : Activity() {
                     if (bytes == null) err(R.string.err_no_file)
                     else {
                         val mime = contentResolver.getType(uri) ?: "audio/ogg"
-                        OpenAiTranscriber.transcribe(Prefs.getKey(this), bytes, "audio." + extFor(mime, uri), mime, Prefs.getLang(this))
+                        txAuto(bytes, "audio." + extFor(mime, uri), mime, Prefs.getLang(this))
                     }
                 } catch (e: Exception) { err(R.string.err_generic) }
                 when (res) {
@@ -134,7 +134,7 @@ class MainActivity : Activity() {
     private fun transcribeFile(f: File) {
         Thread {
             val res = try {
-                OpenAiTranscriber.transcribe(Prefs.getKey(this), f.readBytes(), "audio.m4a", "audio/m4a", Prefs.getLang(this))
+                txAuto(f.readBytes(), "audio.m4a", "audio/m4a", Prefs.getLang(this))
             } catch (e: Exception) { err(R.string.err_generic) }
             f.delete()
             when (res) {
@@ -145,6 +145,13 @@ class MainActivity : Activity() {
     }
 
     private fun err(res: Int) = OpenAiTranscriber.Result.Err(res)
+
+    /** Transcribe via the user's own key if set, otherwise via the server-side proxy. */
+    private fun txAuto(bytes: ByteArray, name: String, mime: String?, lang: String): OpenAiTranscriber.Result {
+        val key = Prefs.getKey(this)
+        return if (key.isNotEmpty()) OpenAiTranscriber.transcribe(key, bytes, name, mime, lang)
+        else OpenAiTranscriber.transcribeViaProxy(bytes, name, mime, lang)
+    }
 
     private fun extFor(mime: String, uri: Uri): String {
         val m = mime.lowercase()

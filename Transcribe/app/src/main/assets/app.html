@@ -126,6 +126,9 @@
   /* detail */
   .dbody{flex:1;min-height:0;overflow-y:auto;padding:8px 18px 16px}
   .dtx{width:100%;display:block;border:none;outline:none;resize:none;overflow:hidden;font-family:inherit;direction:rtl;background:var(--card);border-radius:16px;box-shadow:var(--shCard);padding:16px;font-size:16px;line-height:1.75;color:var(--ink);text-align:right;-webkit-user-select:text;user-select:text}
+  .editbar{display:flex;gap:10px;margin-top:10px}
+  .editbar .dsave{flex:1;background:var(--acc);color:#fff;border:none;border-radius:14px;padding:13px;font-size:15px;font-weight:700;box-shadow:var(--shBtn)}
+  .editbar .dcancel{flex:1;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:13px;font-size:15px;font-weight:600;box-shadow:var(--shCard)}
 
   /* settings / help */
   .top{display:flex;align-items:center;padding:16px 18px 8px}
@@ -264,7 +267,7 @@
     <div class="t">תמלול</div>
     <span style="width:40px"></span>
   </div>
-  <div class="dbody"><textarea class="dtx" id="detailTx" spellcheck="false" placeholder="התמלול…"></textarea><div id="detailFavs"></div></div>
+  <div class="dbody"><textarea class="dtx" id="detailTx" spellcheck="false" placeholder="התמלול…"></textarea><div class="editbar"><button class="dsave" id="detSave">שמור</button><button class="dcancel" id="detCancel">בטל</button></div><div id="detailFavs"></div></div>
   <div class="botbar">
     <span class="bbspace"></span>
     <div class="bbcenter" style="gap:24px"><button class="sharebtn" id="detCopy" aria-label="העתק"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V5a2 2 0 0 1 2-2h9"/></svg></button>
@@ -279,7 +282,7 @@
     <div class="lbl">מפתח OpenAI</div>
     <div id="keyArea"></div>
     <div class="savemsg" id="saveMsg">המפתח נשמר ✓</div>
-    <p class="help-txt">המפתח נשמר רק במכשיר שלך ונשלח ישירות ל-OpenAI. צפייה או העתקה דורשות אימות מסך הנעילה של הטלפון.</p>
+    <p class="help-txt">אופציונלי (מצב מתקדם): האפליקציה עובדת בלי מפתח. אם תזין מפתח משלך — התמלול יעבור דרכו במקום דרך השרת. המפתח נשמר רק במכשיר; פעולות עליו דורשות אימות מסך הנעילה.</p>
     <button class="ghostbtn" id="toHelp">איך משיגים מפתח?</button>
     <button class="save" id="toHomeBtn">חזור למסך הבית</button>
   </div>
@@ -472,10 +475,12 @@
   document.getElementById('toHist').addEventListener('click',function(){ exitSel(); renderHist(); renderDateChip(); navTo('history'); });
 
   // ---- detail ----
-  var detTxt='', detId=null;
+  var detTxt='', detId=null, detOrig='';
   function autoGrowDet(){ var ta=document.getElementById('detailTx'); ta.style.height='auto'; ta.style.height=Math.max(120,ta.scrollHeight)+'px'; }
-  function openDetail(text,id){ detTxt=text; detId=id||null; var ta=document.getElementById('detailTx'); ta.value=text; document.getElementById('detailFavs').innerHTML=favStripHtml(); navTo('detail'); setTimeout(autoGrowDet,30); }
-  document.getElementById('detailTx').addEventListener('input',function(){ var v=this.value; detTxt=v; autoGrowDet(); if(detId){ var hi=hist.find(function(x){return x.id===detId;}); if(hi){ hi.text=v; saveH(); } var bb2=boxes.find(function(x){return x.histId===detId;}); if(bb2){ bb2.text=v; saveB(); } } });
+  function openDetail(text,id){ detTxt=text; detOrig=text; detId=id||null; var ta=document.getElementById('detailTx'); ta.value=text; document.getElementById('detailFavs').innerHTML=favStripHtml(); navTo('detail'); setTimeout(autoGrowDet,30); }
+  document.getElementById('detailTx').addEventListener('input',function(){ detTxt=this.value; autoGrowDet(); });
+  document.getElementById('detSave').addEventListener('click',function(){ var v=document.getElementById('detailTx').value; detTxt=v; detOrig=v; if(detId){ var hi=hist.find(function(x){return x.id===detId;}); if(hi){ hi.text=v; saveH(); } var bb2=boxes.find(function(x){return x.histId===detId;}); if(bb2){ bb2.text=v; saveB(); } } render(); renderHist(); toast('נשמר'); });
+  document.getElementById('detCancel').addEventListener('click',function(){ detTxt=detOrig; var ta=document.getElementById('detailTx'); ta.value=detOrig; autoGrowDet(); toast('השינוי בוטל'); });
   document.getElementById('detCopy').addEventListener('click',function(){ if(A&&A.copy)A.copy(detTxt); toast('הועתק'); });
   document.getElementById('detShare').addEventListener('click',function(){ if(A&&A.share)A.share(detTxt); });
 
@@ -483,7 +488,7 @@
   var tInt=null,t0=0,acc=0,paused=false,recId=null;
   function fmt(s){return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2);}
   function tick(){ var s=acc+(paused?0:Math.floor((Date.now()-t0)/1000)); document.getElementById('timer').textContent=fmt(s); }
-  function startRecordFlow(){ if(!br('hasKey',false)){ toast('קודם צריך מפתח'); renderKey(); navTo('settings'); return; }
+  function startRecordFlow(){
     var r=A&&A.startRecording?A.startRecording():'error'; if(r==='ok')beginUI(); else if(r==='need_permission'){} else toast('לא ניתן להקליט'); }
   function beginUI(){ acc=0;t0=Date.now();paused=false; document.getElementById('timer').textContent='0:00'; document.getElementById('rstate').textContent='מקליט…'; document.getElementById('wave').classList.remove('paused'); setPauseIcon(false); show('recording'); tInt=setInterval(tick,400); }
   function stopTimer(){ if(tInt){clearInterval(tInt);tInt=null;} }
@@ -525,6 +530,10 @@
     var m=document.getElementById('saveMsg'); m.classList.remove('show'); void m.offsetWidth; m.classList.add('show'); }
   document.getElementById('toHelp').addEventListener('click',function(){ navTo('help'); });
   document.getElementById('toHomeBtn').addEventListener('click',function(){ navHome(); });
+  (function(){ var t=document.querySelector('#main .head .t'); if(!t)return; var lp=null;
+    t.addEventListener('touchstart',function(){ lp=setTimeout(function(){ renderKey(); renderSwatches(); navTo('settings'); },700); },{passive:true});
+    t.addEventListener('touchend',function(){ if(lp){clearTimeout(lp);lp=null;} });
+    t.addEventListener('touchmove',function(){ if(lp){clearTimeout(lp);lp=null;} },{passive:true}); })();
 
   // ---- native -> JS ----
   function fillBusy(id,text,err){ var b=boxes.find(function(x){return x.id===id;});
@@ -605,7 +614,6 @@
     var items=[
       {ic:ICONM.home,label:'בית',fn:function(){navHome();}},
       {ic:ICONM.search,label:'היסטוריה',fn:function(){exitSel();renderHist();renderDateChip();navTo('history');}},
-      {ic:ICONM.key,label:'מפתח',fn:function(){renderKey();renderSwatches();navTo('settings');}},
       {ic:ICONM.palette,label:'פלטת צבעים',pal:true},
       {ic:(curHand()==='left'?ICONM.phoneL:ICONM.phoneR),label:(curHand()==='left'?'יד ימין':'יד שמאל'),hand:1},
       {ic:ICONM.help,label:'עזרה',fn:function(){navTo('help');}}
