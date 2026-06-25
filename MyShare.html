@@ -310,7 +310,8 @@
   .listbar .cap-edit{background:transparent;border:1.4px solid rgba(255,255,255,.35);color:#cfeae8;display:flex;align-items:center;justify-content:center;padding:6px 11px;}
   .listbar .cap-edit svg{width:15px;height:15px;}
   .lm-list{display:flex;flex-direction:column;gap:7px;margin:6px 0 14px;}
-  .lm-row{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border-radius:12px;padding:8px 11px;}
+  .lm-row{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border-radius:12px;padding:8px 11px;position:relative;}
+  .lm-row.dragging{opacity:.97;box-shadow:0 10px 26px -8px rgba(0,0,0,.5);}
   .lm-name{flex:1;font-weight:700;font-size:14px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .lm-cnt{font-size:12px;color:rgba(255,255,255,.6);}
   .lm-b{width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;}
@@ -772,15 +773,48 @@ function openListManage(){
   document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
   const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),260);};
   ov.querySelector('.sheet-x').onclick=close;ov.addEventListener('click',e=>{if(e.target===ov)close();});
+  const lmBox=ov.querySelector('#lmList');
   function paint(){
-    const box=ov.querySelector('#lmList');
+    const box=lmBox;
     if(!cfg.lists||!cfg.lists.length){box.innerHTML='<p class="mp-hint">אין רשימות עדיין. צור רשימה ראשונה למטה.</p>';return;}
     box.innerHTML=cfg.lists.map(L=>'<div class="lm-row"><span class="lm-name">'+escapeHtml(L.name)+'</span><span class="lm-cnt">'+L.members.length+'</span><button class="lm-b lm-members" data-id="'+L.id+'" aria-label="חברים">'+ICON.check+'</button><button class="lm-b lm-ren" data-id="'+L.id+'" aria-label="שם">'+ICON.edit+'</button><button class="lm-b lm-del" data-id="'+L.id+'" aria-label="מחק">'+ICON.archive+'</button></div>').join('');
     box.querySelectorAll('.lm-members').forEach(b=>b.onclick=()=>{close();openMemberPicker(b.dataset.id);});
     box.querySelectorAll('.lm-ren').forEach(b=>b.onclick=()=>{const L=cfg.lists.find(x=>x.id===b.dataset.id);if(!L)return;promptListName(L.name,function(nm){if(nm){L.name=nm;saveCfg();renderLists();paint();}});});
     box.querySelectorAll('.lm-del').forEach(b=>b.onclick=()=>{const id=b.dataset.id;cfg.lists=cfg.lists.filter(x=>x.id!==id);if(activeList===id)activeList=null;saveCfg();renderLists();renderList();paint();});
+    [...box.querySelectorAll('.lm-row')].forEach((r,i)=>{r.dataset.li=i;});
   }
   ov.querySelector('#lmNew').onclick=()=>{promptListName('',function(nm){if(nm){const L={id:'L'+Date.now(),name:nm,members:[]};cfg.lists.push(L);saveCfg();renderLists();close();openMemberPicker(L.id);}});};
+  let lmDrag=null,lmIdx=0,lmStartY=0,lmStep=0;
+  function lmEnd(){
+    if(!lmDrag)return;
+    const ni=lmDrag._ni,oi=lmIdx;
+    [...lmBox.querySelectorAll('.lm-row')].forEach(r=>{r.style.transition='';r.style.transform='';r.style.zIndex='';r.classList.remove('dragging');});
+    lmDrag=null;
+    if(ni!=null&&ni!==oi&&cfg.lists[oi]){const moved=cfg.lists.splice(oi,1)[0];cfg.lists.splice(ni,0,moved);saveCfg();renderLists();if(navigator.vibrate)navigator.vibrate(10);}
+    paint();
+  }
+  lmBox.addEventListener('pointerdown',e=>{
+    if(e.target.closest('.lm-b'))return;
+    const row=e.target.closest('.lm-row');if(!row)return;
+    e.preventDefault();
+    lmDrag=row;lmIdx=+row.dataset.li;lmStartY=e.clientY;lmDrag._ni=lmIdx;
+    const rows=[...lmBox.querySelectorAll('.lm-row')];if(rows.length>1)lmStep=rows[1].offsetTop-rows[0].offsetTop;
+    rows.forEach(r=>{if(r!==row)r.style.transition='transform .15s ease';});
+    row.style.transition='none';row.style.zIndex='5';row.classList.add('dragging');
+    if(navigator.vibrate)navigator.vibrate(15);
+    try{lmBox.setPointerCapture(e.pointerId);}catch(_){}
+  });
+  lmBox.addEventListener('pointermove',e=>{
+    if(!lmDrag)return;e.preventDefault();
+    const dy=e.clientY-lmStartY;lmDrag.style.transform='translateY('+dy+'px)';
+    const rows=[...lmBox.querySelectorAll('.lm-row')];
+    let ni=Math.round(lmIdx+dy/(lmStep||1));ni=Math.max(0,Math.min(rows.length-1,ni));
+    if(ni!==lmDrag._ni&&navigator.vibrate)navigator.vibrate(5);
+    lmDrag._ni=ni;
+    rows.forEach((r,i)=>{if(r===lmDrag)return;let sh=0;if(lmIdx<ni&&i>lmIdx&&i<=ni)sh=-lmStep;else if(lmIdx>ni&&i<lmIdx&&i>=ni)sh=lmStep;r.style.transform=sh?('translateY('+sh+'px)'):'';});
+  });
+  lmBox.addEventListener('pointerup',lmEnd);
+  lmBox.addEventListener('pointercancel',lmEnd);
   paint();
 }
 function openMemberPicker(listId){
@@ -812,6 +846,7 @@ function openMemberPicker(listId){
   const origBack=sc._back;
   sc._back=()=>{L.members=[...sel];saveCfg();renderLists();renderList();origBack();};
 }
+if(BRIDGE){try{var _fk=JSON.parse(localStorage.getItem('myshare_favkeys')||'null');if(_fk){PEOPLE.forEach(p=>{if(_fk[fKey(p)])p.fav=true;});localStorage.removeItem('myshare_favkeys');}}catch(e){}}
 renderSeg();renderList();renderLists();layoutList();
 window.addEventListener('resize',layoutList);
 
@@ -966,11 +1001,37 @@ function openSettings(){
     const app=byId(id);
     return `<button class="fav-coin fav3-${i}" data-i="${i}"><span class="fav-c${app?'':' add'}">${app?app.ic:ICON.plus}</span><span class="fav-lbl">${app?escapeHtml(app.label):'ריק'}</span></button>`;
   }).join('');
-  showSheet(`<div class="sheet-head"><h2 style="margin:0;text-align:center;width:100%;">אפליקציות שיתוף</h2></div><div class="favdiag">${coins}</div><p class="cr-hint">לוחצים על נקודה כדי להחליף אפליקציה. נשמר במכשיר.</p><div class="set-toggle" id="dblTog"><span>דאבל קליק לחיוג</span><span class="sw-tog${cfg.dblCall?' on':''}"><span class="sw-knob"></span></span></div><button class="sheet-x sheet-x-bottom" aria-label="סגור"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`);
+  showSheet(`<div class="sheet-head"><h2 style="margin:0;text-align:center;width:100%;">אפליקציות שיתוף</h2></div><div class="favdiag">${coins}</div><p class="cr-hint">לוחצים על נקודה כדי להחליף אפליקציה. נשמר במכשיר.</p><div class="set-toggle" id="dblTog"><span>דאבל קליק לחיוג</span><span class="sw-tog${cfg.dblCall?' on':''}"><span class="sw-knob"></span></span></div><div class="bk-row" style="display:flex;gap:10px;margin:14px 0 2px;"><button id="bkSave" style="flex:1;padding:11px;border:none;border-radius:12px;background:#fff;color:var(--tq-ink);font:inherit;font-weight:700;font-size:15px;cursor:pointer;">גבה</button><button id="bkLoad" style="flex:1;padding:11px;border:none;border-radius:12px;background:#fff;color:var(--tq-ink);font:inherit;font-weight:700;font-size:15px;cursor:pointer;">שחזר</button></div><p class="cr-hint" style="margin:6px 0 0;">גיבוי/שחזור של רשימות, מועדפים, ארכיון והגדרות. אנשי הקשר עצמם נקראים מהטלפון.</p><button class="sheet-x sheet-x-bottom" aria-label="סגור"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`);
   ovl.classList.add('bare');
   const xb=sheet.querySelector('.sheet-x');if(xb)xb.onclick=closeSheet;
   const dt=sheet.querySelector('#dblTog');if(dt)dt.onclick=()=>{cfg.dblCall=!cfg.dblCall;saveCfg();openSettings();};
   sheet.querySelectorAll('.fav-coin').forEach(b=>b.onclick=()=>openPicker(+b.dataset.i));
+  const bs=sheet.querySelector('#bkSave');if(bs)bs.onclick=doBackup;
+  const bl=sheet.querySelector('#bkLoad');if(bl)bl.onclick=doRestore;
+}
+const BK_KEYS=['myshare_cfg','myshare_favorder','myshare_dec','myshare_stats','contacts_view','myshare_people','myshare_onboarded','myshare_favkeys'];
+function sweepBackupBuild(){
+  const data={};BK_KEYS.forEach(k=>{const v=localStorage.getItem(k);if(v!=null)data[k]=v;});
+  try{const f={};PEOPLE.forEach(p=>{if(p&&p.fav)f[fKey(p)]=1;});data.myshare_favkeys=JSON.stringify(f);}catch(e){}
+  const d=new Date(),pad=n=>String(n).padStart(2,'0');
+  const stamp=''+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate());
+  return {json:JSON.stringify({app:'sweep',kind:'backup',version:1,date:d.toISOString(),data:data},null,2),filename:'sweep-backup-'+stamp+'.json'};
+}
+async function doBackup(){
+  const b=sweepBackupBuild();const blob=new Blob([b.json],{type:'application/json'});
+  try{const file=new File([blob],b.filename,{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:b.filename});return;}}catch(e){if(e&&e.name==='AbortError')return;}
+  try{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=b.filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);toast('הגיבוי נשמר');return;}catch(e){}
+  try{window.open('data:application/json;charset=utf-8,'+encodeURIComponent(b.json),'_blank');toast('נפתח לשמירה');}catch(e){toast('שמירה נכשלה');}
+}
+function sweepRestoreApply(payload){
+  if(!payload||payload.app!=='sweep'||!payload.data){toast('קובץ גיבוי לא תקין');return;}
+  const data=payload.data;BK_KEYS.forEach(k=>{if(typeof data[k]==='string'){try{localStorage.setItem(k,data[k]);}catch(e){}}});
+  toast('משחזר…');setTimeout(()=>{try{location.reload();}catch(e){}},450);
+}
+function doRestore(){
+  const inp=document.createElement('input');inp.type='file';inp.accept='application/json,.json,application/octet-stream';inp.style.position='fixed';inp.style.left='-9999px';inp.style.top='0';
+  inp.onchange=()=>{const f=inp.files&&inp.files[0];if(!f){inp.remove();return;}const rd=new FileReader();rd.onload=()=>{let payload=null;try{payload=JSON.parse(String(rd.result||''));}catch(e){toast('קובץ לא תקין');inp.remove();return;}uiConfirm('שחזור ידרוס את כל המידע המקומי הנוכחי. להמשיך?',function(){sweepRestoreApply(payload);});inp.remove();};rd.onerror=()=>{toast('קריאת הקובץ נכשלה');inp.remove();};rd.readAsText(f,'utf-8');};
+  document.body.appendChild(inp);inp.click();
 }
 
 

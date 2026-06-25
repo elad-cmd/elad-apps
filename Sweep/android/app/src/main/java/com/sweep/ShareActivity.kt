@@ -11,6 +11,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.webkit.JavascriptInterface
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.widget.Toast
 import org.json.JSONArray
@@ -29,6 +31,8 @@ class ShareActivity : Activity() {
     private lateinit var web: WebView
     private var sharedText: String = ""
     private val REQ_CONTACTS = 101
+    private val REQ_FILE = 201
+    private var filePathCallback: ValueCallback<Array<Uri>>? = null
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,6 +44,28 @@ class ShareActivity : Activity() {
         web.settings.javaScriptEnabled = true
         web.settings.domStorageEnabled = true
         web.addJavascriptInterface(Bridge(), "AndroidShare")
+        // מאפשר ל-<input type=file> בתוך ה-WebView לפתוח בורר קבצים (לשחזור גיבוי)
+        web.webChromeClient = object : WebChromeClient() {
+            override fun onShowFileChooser(
+                view: WebView?,
+                callback: ValueCallback<Array<Uri>>?,
+                params: FileChooserParams?
+            ): Boolean {
+                filePathCallback?.onReceiveValue(null)
+                filePathCallback = callback
+                val intent = (try { params?.createIntent() } catch (e: Exception) { null })
+                    ?: Intent(Intent.ACTION_GET_CONTENT).apply {
+                        type = "application/json"; addCategory(Intent.CATEGORY_OPENABLE)
+                    }
+                return try {
+                    startActivityForResult(Intent.createChooser(intent, "בחר קובץ גיבוי"), REQ_FILE)
+                    true
+                } catch (e: Exception) {
+                    filePathCallback = null
+                    false
+                }
+            }
+        }
         setContentView(web)
         web.loadUrl("file:///android_asset/myshare.html")
 
@@ -54,6 +80,17 @@ class ShareActivity : Activity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQ_CONTACTS) web.reload()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQ_FILE) {
+            val cb = filePathCallback
+            filePathCallback = null
+            val uris = if (resultCode == Activity.RESULT_OK)
+                WebChromeClient.FileChooserParams.parseResult(resultCode, data) else null
+            cb?.onReceiveValue(uris)
+        }
     }
 
     /**
