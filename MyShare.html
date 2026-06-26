@@ -312,6 +312,8 @@
   .lm-list{display:flex;flex-direction:column;gap:7px;margin:6px 0 14px;}
   .lm-row{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border-radius:12px;padding:8px 11px;position:relative;}
   .lm-row.dragging{opacity:.97;box-shadow:0 10px 26px -8px rgba(0,0,0,.5);}
+  .lm-ic{width:30px;height:30px;border-radius:50%;background:rgba(8,50,50,.10);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .lm-ic svg{width:17px;height:17px;}
   .lm-name{flex:1;font-weight:700;font-size:14px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .lm-cnt{font-size:12px;color:rgba(255,255,255,.6);}
   .lm-b{width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;}
@@ -506,7 +508,7 @@
 <body>
   <div id="home" class="home">
   <div class="top">
-    <h1 class="brand"><svg class="brandlogo" viewBox="30.9 -26.7 542.1 246.8" xmlns="http://www.w3.org/2000/svg"><path d="M87.75999999999999 171.2Q80.08 171.2 73.12 168.8Q66.16 166.4 61.0 162.07999999999998Q55.84 157.76 53.44 152.12Q52.24 149.6 53.5 147.44Q54.76 145.28 57.76 144.68Q59.92 144.2 62.02 145.33999999999997Q64.12 146.48 65.2 148.76Q66.64 151.76 69.94 154.28Q73.24 156.8 77.91999999999999 158.36Q82.6 159.92 87.75999999999999 159.92Q93.52 159.92 98.38 158.12Q103.24 156.32 106.24 152.89999999999998Q109.24 149.48 109.24 144.44Q109.24 138.08 104.25999999999999 133.04000000000002Q99.28 128.0 87.88 126.80000000000001Q73.0 125.36 64.48 118.03999999999999Q55.96 110.72 55.96 99.92Q55.96 92.0 60.400000000000006 86.48Q64.84 80.96000000000001 72.46000000000001 78.08000000000001Q80.08 75.2 89.44 75.2Q96.75999999999999 75.2 102.22 77.24000000000001Q107.68 79.28 111.76 82.88Q115.84 86.48 118.84 91.4Q120.52 94.04 120.22 96.38Q119.92 98.72 117.88 100.04Q115.6 101.48 112.96 100.64Q110.32 99.8 109.0 97.52Q107.08 94.04 104.32 91.64000000000001Q101.56 89.24000000000001 97.84 87.86000000000001Q94.12 86.48 89.08 86.48Q80.19999999999999 86.36 74.19999999999999 89.78Q68.2 93.2 68.2 100.28Q68.2 103.88 70.06 107.18Q71.92 110.48 76.9 112.88Q81.88 115.28 91.24 116.24000000000001Q105.52 117.68 113.5 124.94Q121.48 132.2 121.48 144.08Q121.48 150.92000000000002 118.66 155.96Q115.84 161.0 111.1 164.42000000000002Q106.36 167.84 100.3 169.51999999999998Q94.24 171.2 87.75999999999999 171.2ZM154.48 170.0Q152.56 170.0 150.94 168.86Q149.32 167.72 148.72 166.04L130.96 112.76Q130.0 109.03999999999999 131.01999999999998 106.69999999999999Q132.04 104.36 135.52 104.36Q137.8 104.36 139.3 105.62Q140.8 106.88 141.76 109.88L154.72 150.32L166.96 108.92Q167.56 106.88 169.0 105.62Q170.44 104.36 172.96 104.36Q175.36 104.36 176.86 105.62Q178.36 106.88 178.84 108.92L189.64 151.16L202.84 109.88Q204.51999999999998 104.36 209.07999999999998 104.36Q212.44 104.36 213.64 106.69999999999999Q214.84 109.03999999999999 213.51999999999998 112.76L195.76 166.04Q195.28 167.72 193.72 168.86Q192.16 170.0 190.12 170.0Q188.2 170.0 186.51999999999998 168.86Q184.84 167.72 184.36 166.04L172.6 122.48L160.24 166.04Q159.76 167.72 158.14 168.86Q156.52 170.0 154.48 170.0ZM257.56 170.48Q247.6 170.48 239.85999999999999 166.22Q232.11999999999998 161.96 227.73999999999998 154.46Q223.35999999999999 146.96 223.35999999999999 137.24Q223.35999999999999 127.4 227.5 119.9Q231.64 112.4 238.95999999999998 108.14Q246.27999999999997 103.88 255.76 103.88Q265.12 103.88 271.84000000000003 108.02Q278.56 112.16 282.1 119.42Q285.64 126.68 285.64 136.16Q285.64 138.44 284.08 139.94Q282.52 141.44 280.12 141.44H234.51999999999998Q235.11999999999998 145.52 237.16 149.0Q240.16 154.16 245.44 157.16Q250.71999999999997 160.16 257.56 160.16Q261.28 160.16 265.17999999999995 158.78Q269.08 157.4 271.47999999999996 155.6Q273.28 154.28 275.38 154.22Q277.47999999999996 154.16 279.03999999999996 155.48Q281.08 157.28 281.2 159.44Q281.32 161.6 279.28 163.16Q275.2 166.4 269.14 168.44Q263.08 170.48 257.56 170.48ZM234.64 131.84H274.59999999999997Q274.12 127.88 272.44 124.4Q270.15999999999997 119.72 265.96 116.96000000000001Q261.76 114.2 255.76 114.2Q248.92 114.2 244.06 117.2Q239.2 120.2 236.67999999999998 125.36Q235.23999999999998 128.36 234.64 131.84ZM332.08 170.48Q322.12 170.48 314.38 166.22Q306.64 161.96 302.26 154.46Q297.88 146.96 297.88 137.24Q297.88 127.4 302.02 119.9Q306.15999999999997 112.4 313.48 108.14Q320.8 103.88 330.28 103.88Q339.64 103.88 346.36 108.02Q353.08 112.16 356.62 119.42Q360.15999999999997 126.68 360.15999999999997 136.16Q360.15999999999997 138.44 358.59999999999997 139.94Q357.03999999999996 141.44 354.64 141.44H309.04Q309.64 145.52 311.68 149.0Q314.68 154.16 319.96000000000004 157.16Q325.24 160.16 332.08 160.16Q335.8 160.16 339.70000000000005 158.78Q343.6 157.4 346.0 155.6Q347.8 154.28 349.9 154.22Q352.0 154.16 353.56 155.48Q355.6 157.28 355.72 159.44Q355.84 161.6 353.8 163.16Q349.72 166.4 343.66 168.44Q337.6 170.48 332.08 170.48ZM309.15999999999997 131.84H349.12Q348.64 127.88 346.96 124.4Q344.68 119.72 340.48 116.96000000000001Q336.28 114.2 330.28 114.2Q323.44 114.2 318.58 117.2Q313.71999999999997 120.2 311.2 125.36Q309.76 128.36 309.15999999999997 131.84ZM381.88 191.08Q379.24 191.08 377.5 189.34Q375.76 187.6 375.76 184.96V130.24Q375.88 120.76 380.2 113.2Q384.52 105.64 391.96 101.26Q399.4 96.88 408.76 96.88Q418.24 96.88 425.68 101.26Q433.12 105.64 437.5 113.2Q441.88 120.76 441.88 130.24Q441.88 139.72 437.86 147.22Q433.84 154.72 426.88 159.1Q419.92 163.48 411.16 163.48Q404.08 163.48 398.14 160.54Q392.2 157.6 388 152.56V184.96Q388 187.6 386.32 189.34Q384.64 191.08 381.88 191.08ZM408.76 152.68Q414.88 152.68 419.68 149.74Q424.48 146.8 427.3 141.7Q430.12 136.6 430.12 130.24Q430.12 123.76 427.3 118.66Q424.48 113.56 419.68 110.62Q414.88 107.68 408.76 107.68Q402.76 107.68 397.9 110.62Q393.04 113.56 390.28 118.66Q387.52 123.76 387.52 130.24Q387.52 136.6 390.28 141.7Q393.04 146.8 397.9 149.74Q402.76 152.68 408.76 152.68Z" fill="#fff"/><circle cx="463.6" cy="75.6" r="27.4" fill="none" stroke="#fff" stroke-width="10.92"/><circle cx="518.1" cy="21.1" r="27.4" fill="none" stroke="#fff" stroke-width="10.92"/></svg></h1>
+    <h1 class="brand"><svg class="brandlogo" viewBox="-61 63 512 140" xmlns="http://www.w3.org/2000/svg"><path d="M87.75999999999999 171.2Q80.08 171.2 73.12 168.8Q66.16 166.4 61.0 162.07999999999998Q55.84 157.76 53.44 152.12Q52.24 149.6 53.5 147.44Q54.76 145.28 57.76 144.68Q59.92 144.2 62.02 145.33999999999997Q64.12 146.48 65.2 148.76Q66.64 151.76 69.94 154.28Q73.24 156.8 77.91999999999999 158.36Q82.6 159.92 87.75999999999999 159.92Q93.52 159.92 98.38 158.12Q103.24 156.32 106.24 152.89999999999998Q109.24 149.48 109.24 144.44Q109.24 138.08 104.25999999999999 133.04000000000002Q99.28 128.0 87.88 126.80000000000001Q73.0 125.36 64.48 118.03999999999999Q55.96 110.72 55.96 99.92Q55.96 92.0 60.400000000000006 86.48Q64.84 80.96000000000001 72.46000000000001 78.08000000000001Q80.08 75.2 89.44 75.2Q96.75999999999999 75.2 102.22 77.24000000000001Q107.68 79.28 111.76 82.88Q115.84 86.48 118.84 91.4Q120.52 94.04 120.22 96.38Q119.92 98.72 117.88 100.04Q115.6 101.48 112.96 100.64Q110.32 99.8 109.0 97.52Q107.08 94.04 104.32 91.64000000000001Q101.56 89.24000000000001 97.84 87.86000000000001Q94.12 86.48 89.08 86.48Q80.19999999999999 86.36 74.19999999999999 89.78Q68.2 93.2 68.2 100.28Q68.2 103.88 70.06 107.18Q71.92 110.48 76.9 112.88Q81.88 115.28 91.24 116.24000000000001Q105.52 117.68 113.5 124.94Q121.48 132.2 121.48 144.08Q121.48 150.92000000000002 118.66 155.96Q115.84 161.0 111.1 164.42000000000002Q106.36 167.84 100.3 169.51999999999998Q94.24 171.2 87.75999999999999 171.2ZM154.48 170.0Q152.56 170.0 150.94 168.86Q149.32 167.72 148.72 166.04L130.96 112.76Q130.0 109.03999999999999 131.01999999999998 106.69999999999999Q132.04 104.36 135.52 104.36Q137.8 104.36 139.3 105.62Q140.8 106.88 141.76 109.88L154.72 150.32L166.96 108.92Q167.56 106.88 169.0 105.62Q170.44 104.36 172.96 104.36Q175.36 104.36 176.86 105.62Q178.36 106.88 178.84 108.92L189.64 151.16L202.84 109.88Q204.51999999999998 104.36 209.07999999999998 104.36Q212.44 104.36 213.64 106.69999999999999Q214.84 109.03999999999999 213.51999999999998 112.76L195.76 166.04Q195.28 167.72 193.72 168.86Q192.16 170.0 190.12 170.0Q188.2 170.0 186.51999999999998 168.86Q184.84 167.72 184.36 166.04L172.6 122.48L160.24 166.04Q159.76 167.72 158.14 168.86Q156.52 170.0 154.48 170.0ZM257.56 170.48Q247.6 170.48 239.85999999999999 166.22Q232.11999999999998 161.96 227.73999999999998 154.46Q223.35999999999999 146.96 223.35999999999999 137.24Q223.35999999999999 127.4 227.5 119.9Q231.64 112.4 238.95999999999998 108.14Q246.27999999999997 103.88 255.76 103.88Q265.12 103.88 271.84000000000003 108.02Q278.56 112.16 282.1 119.42Q285.64 126.68 285.64 136.16Q285.64 138.44 284.08 139.94Q282.52 141.44 280.12 141.44H234.51999999999998Q235.11999999999998 145.52 237.16 149.0Q240.16 154.16 245.44 157.16Q250.71999999999997 160.16 257.56 160.16Q261.28 160.16 265.17999999999995 158.78Q269.08 157.4 271.47999999999996 155.6Q273.28 154.28 275.38 154.22Q277.47999999999996 154.16 279.03999999999996 155.48Q281.08 157.28 281.2 159.44Q281.32 161.6 279.28 163.16Q275.2 166.4 269.14 168.44Q263.08 170.48 257.56 170.48ZM234.64 131.84H274.59999999999997Q274.12 127.88 272.44 124.4Q270.15999999999997 119.72 265.96 116.96000000000001Q261.76 114.2 255.76 114.2Q248.92 114.2 244.06 117.2Q239.2 120.2 236.67999999999998 125.36Q235.23999999999998 128.36 234.64 131.84ZM332.08 170.48Q322.12 170.48 314.38 166.22Q306.64 161.96 302.26 154.46Q297.88 146.96 297.88 137.24Q297.88 127.4 302.02 119.9Q306.15999999999997 112.4 313.48 108.14Q320.8 103.88 330.28 103.88Q339.64 103.88 346.36 108.02Q353.08 112.16 356.62 119.42Q360.15999999999997 126.68 360.15999999999997 136.16Q360.15999999999997 138.44 358.59999999999997 139.94Q357.03999999999996 141.44 354.64 141.44H309.04Q309.64 145.52 311.68 149.0Q314.68 154.16 319.96000000000004 157.16Q325.24 160.16 332.08 160.16Q335.8 160.16 339.70000000000005 158.78Q343.6 157.4 346.0 155.6Q347.8 154.28 349.9 154.22Q352.0 154.16 353.56 155.48Q355.6 157.28 355.72 159.44Q355.84 161.6 353.8 163.16Q349.72 166.4 343.66 168.44Q337.6 170.48 332.08 170.48ZM309.15999999999997 131.84H349.12Q348.64 127.88 346.96 124.4Q344.68 119.72 340.48 116.96000000000001Q336.28 114.2 330.28 114.2Q323.44 114.2 318.58 117.2Q313.71999999999997 120.2 311.2 125.36Q309.76 128.36 309.15999999999997 131.84ZM381.88 191.08Q379.24 191.08 377.5 189.34Q375.76 187.6 375.76 184.96V130.24Q375.88 120.76 380.2 113.2Q384.52 105.64 391.96 101.26Q399.4 96.88 408.76 96.88Q418.24 96.88 425.68 101.26Q433.12 105.64 437.5 113.2Q441.88 120.76 441.88 130.24Q441.88 139.72 437.86 147.22Q433.84 154.72 426.88 159.1Q419.92 163.48 411.16 163.48Q404.08 163.48 398.14 160.54Q392.2 157.6 388 152.56V184.96Q388 187.6 386.32 189.34Q384.64 191.08 381.88 191.08ZM408.76 152.68Q414.88 152.68 419.68 149.74Q424.48 146.8 427.3 141.7Q430.12 136.6 430.12 130.24Q430.12 123.76 427.3 118.66Q424.48 113.56 419.68 110.62Q414.88 107.68 408.76 107.68Q402.76 107.68 397.9 110.62Q393.04 113.56 390.28 118.66Q387.52 123.76 387.52 130.24Q387.52 136.6 390.28 141.7Q393.04 146.8 397.9 149.74Q402.76 152.68 408.76 152.68Z" fill="#fff"/><circle cx="-37" cy="157" r="14" fill="#fff"/><circle cx="-3" cy="123" r="14" fill="#fff"/><circle cx="31" cy="89" r="14" fill="#fff"/></svg></h1>
     <div class="seg" id="seg"></div>
     <div class="listbar" id="listbar"></div>
     <div class="chip" id="chip" style="display:none"></div>
@@ -531,7 +533,7 @@
 function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
 const ICON={
-  whatsapp:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M.06 24l1.7-6.2A11.9 11.9 0 1 1 12 24a11.9 11.9 0 0 1-5.7-1.45L.06 24zM6.6 20.1l.37.22a9.9 9.9 0 1 0-3.3-3.3l.24.38-1 3.66 3.7-.96zM17.5 14.3c-.15-.25-.55-.4-1.15-.7s-1.36-.67-1.57-.74-.36-.11-.5.11-.58.73-.71.88-.26.17-.5.06a8.1 8.1 0 0 1-2.38-1.47 9 9 0 0 1-1.65-2.05c-.17-.3 0-.45.13-.6s.25-.26.37-.4a1.6 1.6 0 0 0 .25-.41.46.46 0 0 0 0-.43c-.06-.11-.5-1.2-.68-1.65s-.36-.37-.5-.38h-.43a.83.83 0 0 0-.6.28A2.5 2.5 0 0 0 5 6.86a4.34 4.34 0 0 0 .9 2.3 9.9 9.9 0 0 0 3.8 3.36 12.7 12.7 0 0 0 1.27.47 3 3 0 0 0 1.4.09 2.3 2.3 0 0 0 1.5-1.06 1.86 1.86 0 0 0 .13-1.06z"/></svg>',
+  whatsapp:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>',
   mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>',
   sms:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.6 8.6 0 0 1-3.8-.9L3 20.5l1.4-5.4A8.4 8.4 0 0 1 3.5 11 8.4 8.4 0 0 1 12 2.5 8.4 8.4 0 0 1 21 11.5z"/></svg>',
   plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
@@ -654,7 +656,8 @@ if(!PEOPLE.length){try{const _sp=JSON.parse(localStorage.getItem('myshare_people
 function savePeople(){try{localStorage.setItem('myshare_people',JSON.stringify(PEOPLE));}catch(e){}}
 
 const DEF={hand:'right',palette:0,share:['call','whatsapp','mail'],sharev:3,dblCall:false};
-function loadCfg(){const c={hand:DEF.hand,palette:DEF.palette,share:DEF.share.slice(),sharev:DEF.sharev,dblCall:DEF.dblCall,lists:[]};try{const s=JSON.parse(localStorage.getItem('myshare_cfg')||'{}');if(s.sharev===DEF.sharev&&Array.isArray(s.share)&&s.share.length)c.share=s.share.slice(0,3);if(s.hand==='left'||s.hand==='right')c.hand=s.hand;if(typeof s.palette==='number')c.palette=s.palette;if(typeof s.dblCall==='boolean')c.dblCall=s.dblCall;if(Array.isArray(s.lists))c.lists=s.lists.map(L=>({id:String(L.id),name:String(L.name||''),members:Array.isArray(L.members)?L.members:[]}));}catch(e){}return c;}
+const DEF_BANK=['whatsapp','call','sms','mail','copy','telegram','messenger','savecontact'];
+function loadCfg(){const c={hand:DEF.hand,palette:DEF.palette,share:DEF.share.slice(),sharev:DEF.sharev,dblCall:DEF.dblCall,lists:[],bank:DEF_BANK.slice()};try{const s=JSON.parse(localStorage.getItem('myshare_cfg')||'{}');if(s.sharev===DEF.sharev&&Array.isArray(s.share)&&s.share.length)c.share=s.share.slice(0,3);if(s.hand==='left'||s.hand==='right')c.hand=s.hand;if(typeof s.palette==='number')c.palette=s.palette;if(typeof s.dblCall==='boolean')c.dblCall=s.dblCall;if(Array.isArray(s.lists))c.lists=s.lists.map(L=>({id:String(L.id),name:String(L.name||''),members:Array.isArray(L.members)?L.members:[]}));if(Array.isArray(s.bank))c.bank=s.bank.filter(id=>byId(id));}catch(e){}return c;}
 function saveCfg(){try{localStorage.setItem('myshare_cfg',JSON.stringify(cfg));}catch(e){}}
 let cfg=loadCfg();saveCfg();
 function statKey(p){return (p&&(p.phone||p.name))||'';}
@@ -670,7 +673,7 @@ if(MODE==='share'){const snip=SHARED.length>40?SHARED.slice(0,40)+'…':(SHARED|
 
 const listEl=document.getElementById('list');
 const VIEWS=[{id:'fav',label:'מועדפים',ic:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.8 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z"/></svg>'},{id:'abc',label:'לפי א״ב',ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>'},{id:'recent',label:'שימוש אחרון',ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'}];
-let VIEW=localStorage.getItem('contacts_view')||'recent';
+let VIEW='recent';
 let CURRENT=PEOPLE.slice();
 function byName(a,b){return String(a.name).localeCompare(String(b.name),'he');}
 let editMode=false;
@@ -923,7 +926,25 @@ function fire(appId,person){
   const app=byId(appId);
   if(BRIDGE&&BRIDGE.shareTo){
     try{BRIDGE.shareTo(appId,JSON.stringify({name:person.name||'',phone:person.phone||'',email:person.email||''}),SHARED);}catch(e){}
-  }else{toast(`${app?app.label:appId} ← ${person.name||''}`);}
+  }else{fireWeb(appId,person);}
+}
+function intlDigits(p){let d=String(p||'').replace(/\D/g,'');if(d.charAt(0)==='0')d='972'+d.slice(1);return d;}
+function fireWeb(appId,person){
+  const text=(typeof SHARED!=='undefined'&&SHARED)?SHARED:'';
+  const phoneRaw=(person.phone||((person.phones&&person.phones[0])||'')).replace(/[^0-9+]/g,'');
+  const email=person.email||((person.emails&&person.emails[0])||'');
+  const enc=encodeURIComponent;
+  const go=u=>{try{location.href=u;}catch(e){}};
+  const openTab=u=>{let w=null;try{w=window.open(u,'_blank','noopener');}catch(e){}if(!w)go(u);};
+  switch(appId){
+    case 'whatsapp':{const n=intlDigits(phoneRaw);if(!n){toast('אין מספר טלפון');return;}openTab('https://wa.me/'+n+(text?('?text='+enc(text)):''));return;}
+    case 'telegram':{openTab(text?('https://t.me/share/url?url='+enc(text)):'https://t.me');return;}
+    case 'sms':{if(!phoneRaw){toast('אין מספר טלפון');return;}const sep=/android/i.test(navigator.userAgent)?'?':'&';go('sms:'+phoneRaw+(text?(sep+'body='+enc(text)):''));return;}
+    case 'mail':{go('mailto:'+email+(text?('?body='+enc(text)):''));return;}
+    case 'call':{if(!phoneRaw){toast('אין מספר טלפון');return;}go('tel:'+phoneRaw);return;}
+    case 'copy':{const c=text||[person.name,phoneRaw,email].filter(Boolean).join(' · ');if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(c).then(()=>toast('הועתק')).catch(()=>toast('לא ניתן להעתיק'));}else{toast('לא ניתן להעתיק');}return;}
+    default:{const data={text:text||[person.name,phoneRaw,email].filter(Boolean).join(' · '),title:'שיתוף'};if(navigator.share){navigator.share(data).catch(()=>{});}else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(data.text).then(()=>toast('הועתק (אין שיתוף ישיר בדפדפן)')).catch(()=>toast('שיתוף לא נתמך'));}else{toast('שיתוף לא נתמך בדפדפן');}return;}
+  }
 }
 
 let pendRow=null,pendX=0,pendY=0,pendTimer=0,pendStarted=false;
@@ -1244,6 +1265,7 @@ let _barRAF=0;function _schedBar(){if(_barRAF)return;_barRAF=requestAnimationFra
 function updateSearchFab(){updateBar();}
 const favEditBtn=document.createElement('button');favEditBtn.className='fav-edit';favEditBtn.id='favEdit';favEditBtn.setAttribute('aria-label','עריכת סדר');favEditBtn.innerHTML=ICON.edit;favEditBtn.onclick=()=>setEdit(!editMode);document.body.appendChild(favEditBtn);
 const listAddBtn=document.createElement('button');listAddBtn.className='list-add';listAddBtn.id='listAdd';listAddBtn.setAttribute('aria-label','הוסף אנשי קשר לרשימה');listAddBtn.innerHTML=ICON.plus;listAddBtn.onclick=()=>{if(activeList)openMemberPicker(activeList);};document.body.appendChild(listAddBtn);
+updateFavEdit();updateListAdd();
 function updateListAdd(){const b=document.getElementById('listAdd');if(!b)return;b.classList.toggle('show',!!activeList);}
 function updateFavEdit(){const b=document.getElementById('favEdit');if(!b)return;const show=(VIEW==='fav'&&!activeList);b.classList.toggle('show',show);if(!show&&editMode){editMode=false;document.body.classList.remove('editing');}b.classList.toggle('on',editMode);}
 function setEdit(on){editMode=on&&(VIEW==='fav');document.body.classList.toggle('editing',editMode);favEditBtn.classList.toggle('on',editMode);renderList();}
@@ -1517,16 +1539,79 @@ function openArchive(){
   }
   render();
 }
+function bankIds(){return (cfg.bank&&cfg.bank.length)?cfg.bank.filter(id=>byId(id)):[];}
 function openShareBank(person){
   if(!person)return;
   const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
-  const cells=CATALOG.map(a=>'<button class="gi" data-app="'+a.id+'"><span class="c">'+a.ic+'</span><span>'+escapeHtml(a.label)+'</span></button>').join('');
+  const cells=bankIds().map(id=>{const a=byId(id);return '<button class="gi" data-app="'+id+'"><span class="c">'+a.ic+'</span><span>'+escapeHtml(a.label)+'</span></button>';}).join('')+'<button class="gi" data-add="1"><span class="c none">'+ICON.plus+'</span><span>ערוך</span></button>';
   const ov=document.createElement('div');ov.className='mpovl';ov.style.zIndex='100';
-  ov.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xsvg+'</button><h2 style="flex:1;margin:0;text-align:center;">שיתוף לאפליקציה</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="grid">'+cells+'</div></div>';
+  ov.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xsvg+'</button><h2 style="flex:1;margin:0;text-align:center;">שיתוף לאפליקציה</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="grid">'+cells+'</div><p class="cr-hint" style="margin:10px 0 0;">לחיצה ארוכה על אפליקציה לעריכה וסידור.</p></div>';
   document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
   const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),260);};
   ov.querySelector('.sheet-x').onclick=close;ov.addEventListener('click',e=>{if(e.target===ov)close();});
-  ov.querySelectorAll('.gi').forEach(b=>b.onclick=()=>{if(b.dataset.more){close();openShareBank(person);}else{fire(b.dataset.app,person);close();}});
+  ov.querySelectorAll('.gi').forEach(b=>{
+    if(b.dataset.add){b.onclick=()=>{close();openBankEdit(person);};return;}
+    let lt=0,lsx=0,lsy=0;
+    b.addEventListener('pointerdown',e=>{b._lp=false;lsx=e.clientX;lsy=e.clientY;lt=setTimeout(()=>{lt=0;b._lp=true;if(navigator.vibrate)navigator.vibrate(15);close();openBankEdit(person);},450);});
+    b.addEventListener('pointermove',e=>{if(lt&&Math.hypot(e.clientX-lsx,e.clientY-lsy)>10){clearTimeout(lt);lt=0;}});
+    const clr=()=>{if(lt){clearTimeout(lt);lt=0;}};
+    b.addEventListener('pointerup',clr);b.addEventListener('pointercancel',clr);
+    b.onclick=()=>{if(b._lp){b._lp=false;return;}fire(b.dataset.app,person);close();};
+  });
+}
+function openBankAdd(onAdd){
+  const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  const have=bankIds();const avail=CATALOG.filter(a=>a.id!=='more'&&have.indexOf(a.id)<0);
+  const cells=avail.length?avail.map(a=>'<button class="gi" data-app="'+a.id+'"><span class="c">'+a.ic+'</span><span>'+escapeHtml(a.label)+'</span></button>').join(''):'<p class="mp-hint">כל האפליקציות כבר בבנק.</p>';
+  const ov=document.createElement('div');ov.className='mpovl';ov.style.zIndex='116';
+  ov.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xsvg+'</button><h2 style="flex:1;margin:0;text-align:center;">הוסף אפליקציה</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="grid">'+cells+'</div></div>';
+  document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
+  const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),260);};
+  ov.querySelector('.sheet-x').onclick=close;ov.addEventListener('click',e=>{if(e.target===ov)close();});
+  ov.querySelectorAll('.gi[data-app]').forEach(b=>b.onclick=()=>{const arr=bankIds();arr.push(b.dataset.app);cfg.bank=arr;saveCfg();if(navigator.vibrate)navigator.vibrate(6);close();if(onAdd)onAdd();});
+}
+function openBankEdit(person){
+  const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  if(!cfg.bank)cfg.bank=DEF_BANK.slice();
+  const ov=document.createElement('div');ov.className='mpovl';ov.style.zIndex='112';
+  ov.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xsvg+'</button><h2 style="flex:1;margin:0;text-align:center;">עריכת אפליקציות שיתוף</h2><span style="width:32px;flex:0 0 auto;"></span></div><p class="mp-hint" style="margin:0 0 8px;">גרירה לסידור · הסרה ב‑✕ · הוספה למטה</p><div class="lm-list" id="bankList"></div><button class="mp-confirm" id="bankAdd">+ הוסף אפליקציה</button></div>';
+  document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
+  const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),260);};
+  ov.querySelector('.sheet-x').onclick=close;ov.addEventListener('click',e=>{if(e.target===ov)close();});
+  const lmBox=ov.querySelector('#bankList');
+  function paint(){
+    const ids=bankIds();
+    if(!ids.length){lmBox.innerHTML='<p class="mp-hint">אין אפליקציות. הוסף מהכפתור למטה.</p>';return;}
+    lmBox.innerHTML=ids.map((id,i)=>{const a=byId(id);return '<div class="lm-row" data-li="'+i+'"><span class="lm-ic">'+a.ic+'</span><span class="lm-name">'+escapeHtml(a.label)+'</span><button class="lm-b lm-delapp" data-id="'+id+'" aria-label="הסר">'+xsvg+'</button></div>';}).join('');
+    lmBox.querySelectorAll('.lm-delapp').forEach(b=>b.onclick=()=>{const id=b.dataset.id;cfg.bank=bankIds().filter(x=>x!==id);saveCfg();if(navigator.vibrate)navigator.vibrate(8);paint();});
+    [...lmBox.querySelectorAll('.lm-row')].forEach((r,i)=>{r.dataset.li=i;});
+  }
+  ov.querySelector('#bankAdd').onclick=()=>openBankAdd(paint);
+  let lmDrag=null,lmIdx=0,lmStartY=0,lmStep=0;
+  function lmEnd(){
+    if(!lmDrag)return;const ni=lmDrag._ni,oi=lmIdx;
+    [...lmBox.querySelectorAll('.lm-row')].forEach(r=>{r.style.transition='';r.style.transform='';r.style.zIndex='';r.classList.remove('dragging');});
+    lmDrag=null;
+    if(ni!=null&&ni!==oi){const arr=bankIds();const moved=arr.splice(oi,1)[0];arr.splice(ni,0,moved);cfg.bank=arr;saveCfg();if(navigator.vibrate)navigator.vibrate(10);}
+    paint();
+  }
+  lmBox.addEventListener('pointerdown',e=>{
+    if(e.target.closest('.lm-b'))return;const row=e.target.closest('.lm-row');if(!row)return;e.preventDefault();
+    lmDrag=row;lmIdx=+row.dataset.li;lmStartY=e.clientY;lmDrag._ni=lmIdx;
+    const rows=[...lmBox.querySelectorAll('.lm-row')];if(rows.length>1)lmStep=rows[1].offsetTop-rows[0].offsetTop;
+    rows.forEach(r=>{if(r!==row)r.style.transition='transform .15s ease';});
+    row.style.transition='none';row.style.zIndex='5';row.classList.add('dragging');
+    if(navigator.vibrate)navigator.vibrate(15);
+    try{lmBox.setPointerCapture(e.pointerId);}catch(_){}
+  });
+  lmBox.addEventListener('pointermove',e=>{
+    if(!lmDrag)return;e.preventDefault();const dy=e.clientY-lmStartY;lmDrag.style.transform='translateY('+dy+'px)';
+    const rows=[...lmBox.querySelectorAll('.lm-row')];let ni=Math.round(lmIdx+dy/(lmStep||1));ni=Math.max(0,Math.min(rows.length-1,ni));
+    if(ni!==lmDrag._ni&&navigator.vibrate)navigator.vibrate(5);lmDrag._ni=ni;
+    rows.forEach((r,i)=>{if(r===lmDrag)return;let sh=0;if(lmIdx<ni&&i>lmIdx&&i<=ni)sh=-lmStep;else if(lmIdx>ni&&i<lmIdx&&i>=ni)sh=lmStep;r.style.transform=sh?('translateY('+sh+'px)'):'';});
+  });
+  lmBox.addEventListener('pointerup',lmEnd);lmBox.addEventListener('pointercancel',lmEnd);
+  paint();
 }
 function shareTriad(person){
   if(!person)return;
