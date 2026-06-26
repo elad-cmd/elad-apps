@@ -489,6 +489,7 @@
   function fmt(s){return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2);}
   function tick(){ var s=acc+(paused?0:Math.floor((Date.now()-t0)/1000)); document.getElementById('timer').textContent=fmt(s); }
   function startRecordFlow(){
+    if(br('needsKey',false)){ toast('צריך מפתח כדי לתמלל'); renderKey(); renderSwatches(); navTo('settings'); return; }
     var r=A&&A.startRecording?A.startRecording():'error'; if(r==='ok')beginUI(); else if(r==='need_permission'){} else toast('לא ניתן להקליט'); }
   function beginUI(){ acc=0;t0=Date.now();paused=false; document.getElementById('timer').textContent='0:00'; document.getElementById('rstate').textContent='מקליט…'; document.getElementById('wave').classList.remove('paused'); setPauseIcon(false); show('recording'); tInt=setInterval(tick,400); }
   function stopTimer(){ if(tInt){clearInterval(tInt);tInt=null;} }
@@ -537,12 +538,12 @@
 
   // ---- native -> JS ----
   function fillBusy(id,text,err){ var b=boxes.find(function(x){return x.id===id;});
-    if(err){ boxes=boxes.filter(function(x){return x.id!==id;}); toast(err); } else if(b){ b.state='done'; b.text=text; b.histId=addHist(text); } saveB(); render(); }
+    if(err){ boxes=boxes.filter(function(x){return x.id!==id;}); toast(err); if(err.indexOf('מפתח')>=0){ renderKey(); renderSwatches(); navTo('settings'); } } else if(b){ b.state='done'; b.text=text; b.histId=addHist(text); } saveB(); render(); }
   var sharePendId=null;
   window.TX={
     onResult:function(text,err){ if(recId){ fillBusy(recId,text,err); recId=null; } },
     onSharedStart:function(n){ navHome(); boxes=[]; sharePendId=nid(); boxes.push({id:sharePendId,state:'busy'}); saveB(); render(); },
-    onShared:function(text,err){ if(err){ toast(err); return; } var _hid=addHist(text); boxes.push({id:nid(),state:'done',text:text,histId:_hid}); saveB(); render(); },
+    onShared:function(text,err){ if(err){ toast(err); if(err.indexOf('מפתח')>=0){ renderKey(); renderSwatches(); navTo('settings'); } return; } var _hid=addHist(text); boxes.push({id:nid(),state:'done',text:text,histId:_hid}); saveB(); render(); },
     onSharedDone:function(){ if(sharePendId){ boxes=boxes.filter(function(x){return x.id!==sharePendId;}); sharePendId=null; saveB(); render(); } },
     onMicPermission:function(g){ if(g){ var r=A&&A.startRecording?A.startRecording():'error'; if(r==='ok') beginUI(); } else toast('צריך הרשאת מיקרופון'); },
     onAuth:function(purpose,ok){ if(ok!=='1'){ toast('האימות בוטל'); return; } authPurpose=purpose; onAuthLocal(); },

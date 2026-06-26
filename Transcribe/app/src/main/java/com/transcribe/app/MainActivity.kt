@@ -149,8 +149,11 @@ class MainActivity : Activity() {
     /** Transcribe via the user's own key if set, otherwise via the server-side proxy. */
     private fun txAuto(bytes: ByteArray, name: String, mime: String?, lang: String): OpenAiTranscriber.Result {
         val key = Prefs.getKey(this)
-        return if (key.isNotEmpty()) OpenAiTranscriber.transcribe(key, bytes, name, mime, lang)
-        else OpenAiTranscriber.transcribeViaProxy(bytes, name, mime, lang)
+        return when {
+            key.isNotEmpty() -> OpenAiTranscriber.transcribe(key, bytes, name, mime, lang)
+            OpenAiTranscriber.isProxyConfigured() -> OpenAiTranscriber.transcribeViaProxy(bytes, name, mime, lang)
+            else -> OpenAiTranscriber.Result.Err(R.string.err_no_key)
+        }
     }
 
     private fun extFor(mime: String, uri: Uri): String {
@@ -216,6 +219,7 @@ class MainActivity : Activity() {
     // ---- bridge ----
     inner class Bridge {
         @JavascriptInterface fun hasKey(): Boolean = Prefs.hasKey(this@MainActivity)
+        @JavascriptInterface fun needsKey(): Boolean = Prefs.getKey(this@MainActivity).isEmpty() && !OpenAiTranscriber.isProxyConfigured()
         @JavascriptInterface fun getKey(): String = Prefs.getKey(this@MainActivity)
         @JavascriptInterface fun setKey(value: String) { Prefs.setKey(this@MainActivity, value) }
         @JavascriptInterface fun getLang(): String = Prefs.getLang(this@MainActivity)
