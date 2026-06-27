@@ -615,6 +615,7 @@
     var items=[
       {ic:ICONM.home,label:'בית',fn:function(){navHome();}},
       {ic:ICONM.search,label:'היסטוריה',fn:function(){exitSel();renderHist();renderDateChip();navTo('history');}},
+      {ic:ICONM.key,label:'מפתח',fn:function(){renderKey();renderSwatches();navTo('settings');}},
       {ic:ICONM.palette,label:'פלטת צבעים',pal:true},
       {ic:(curHand()==='left'?ICONM.phoneL:ICONM.phoneR),label:(curHand()==='left'?'יד ימין':'יד שמאל'),hand:1},
       {ic:ICONM.help,label:'עזרה',fn:function(){navTo('help');}}

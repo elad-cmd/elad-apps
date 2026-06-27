@@ -1054,18 +1054,20 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
+function doUpdate(){if(typeof toast==='function')toast('מעדכן לגרסה האחרונה…');try{const base=location.href.split('#')[0].split('?')[0];location.replace(base+'?v='+Date.now());}catch(e){try{location.reload();}catch(_){}}}
 function openSettings(){
   const coins=cfg.share.map((id,i)=>{
     const app=byId(id);
     return `<button class="fav-coin fav3-${i}" data-i="${i}"><span class="fav-c${app?'':' add'}">${app?app.ic:ICON.plus}</span><span class="fav-lbl">${app?escapeHtml(app.label):'ריק'}</span></button>`;
   }).join('');
-  showSheet(`<div class="sheet-head"><h2 style="margin:0;text-align:center;width:100%;">אפליקציות שיתוף</h2></div><div class="favdiag">${coins}</div><p class="cr-hint">לוחצים על נקודה כדי להחליף אפליקציה. נשמר במכשיר.</p><div class="set-toggle" id="dblTog"><span>דאבל קליק לחיוג</span><span class="sw-tog${cfg.dblCall?' on':''}"><span class="sw-knob"></span></span></div><div class="bk-row" style="display:flex;gap:10px;margin:14px 0 2px;"><button id="bkSave" style="flex:1;padding:11px;border:none;border-radius:12px;background:#fff;color:var(--tq-ink);font:inherit;font-weight:700;font-size:15px;cursor:pointer;">גבה</button><button id="bkLoad" style="flex:1;padding:11px;border:none;border-radius:12px;background:#fff;color:var(--tq-ink);font:inherit;font-weight:700;font-size:15px;cursor:pointer;">שחזר</button></div><p class="cr-hint" style="margin:6px 0 0;">גיבוי/שחזור של רשימות, מועדפים, ארכיון והגדרות. אנשי הקשר עצמם נקראים מהטלפון.</p><button class="sheet-x sheet-x-bottom" aria-label="סגור"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`);
+  showSheet(`<div class="sheet-head"><h2 style="margin:0;text-align:center;width:100%;">אפליקציות שיתוף</h2></div><div class="favdiag">${coins}</div><p class="cr-hint">לוחצים על נקודה כדי להחליף אפליקציה. נשמר במכשיר.</p><div class="set-toggle" id="dblTog"><span>דאבל קליק לחיוג</span><span class="sw-tog${cfg.dblCall?' on':''}"><span class="sw-knob"></span></span></div><div class="bk-row" style="display:flex;gap:10px;margin:14px 0 2px;"><button id="bkSave" style="flex:1;padding:11px;border:none;border-radius:12px;background:#fff;color:var(--tq-ink);font:inherit;font-weight:700;font-size:15px;cursor:pointer;">גבה</button><button id="bkLoad" style="flex:1;padding:11px;border:none;border-radius:12px;background:#fff;color:var(--tq-ink);font:inherit;font-weight:700;font-size:15px;cursor:pointer;">שחזר</button></div><p class="cr-hint" style="margin:6px 0 0;">גיבוי/שחזור של רשימות, מועדפים, ארכיון והגדרות. אנשי הקשר עצמם נקראים מהטלפון.</p><button id="appUpdate" style="width:100%;margin-top:12px;padding:11px;border:none;border-radius:12px;background:var(--tq-deep);color:#fff;font:inherit;font-weight:700;font-size:15px;cursor:pointer;">עדכן אפליקציה לגרסה האחרונה</button><button class="sheet-x sheet-x-bottom" aria-label="סגור"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`);
   ovl.classList.add('bare');
   const xb=sheet.querySelector('.sheet-x');if(xb)xb.onclick=closeSheet;
   const dt=sheet.querySelector('#dblTog');if(dt)dt.onclick=()=>{cfg.dblCall=!cfg.dblCall;saveCfg();openSettings();};
   sheet.querySelectorAll('.fav-coin').forEach(b=>b.onclick=()=>openPicker(+b.dataset.i));
   const bs=sheet.querySelector('#bkSave');if(bs)bs.onclick=doBackup;
   const bl=sheet.querySelector('#bkLoad');if(bl)bl.onclick=doRestore;
+  const ub=sheet.querySelector('#appUpdate');if(ub)ub.onclick=doUpdate;
 }
 const BK_KEYS=['myshare_cfg','myshare_favorder','myshare_dec','myshare_stats','contacts_view','myshare_people','myshare_onboarded','myshare_favkeys','myshare_days','myshare_addr','myshare_fields'];
 function sweepBackupBuild(){
