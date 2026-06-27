@@ -28,10 +28,13 @@
   .scroll{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;padding:6px 16px 14px}
   .sp{flex:1 0 auto;min-height:0}
 
-  .box{position:relative;background:var(--card);border-radius:18px;box-shadow:var(--shCard);padding:14px 15px;margin-bottom:14px}
+  .box{position:relative;background:var(--card);border-radius:18px;box-shadow:var(--shCard);padding:14px 15px;margin-bottom:14px;display:flex;flex-direction:row;align-items:flex-start;gap:10px;direction:ltr}
+  .bxbody{flex:1;min-width:0;direction:rtl}
   .box .tx{font-size:15.5px;line-height:1.7;color:var(--ink);text-align:right;-webkit-user-select:text;user-select:text;white-space:pre-wrap}
-  .box .acts{display:flex;justify-content:flex-end;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
-  body.hand-right .box .acts{justify-content:flex-start}
+  .box .acts{display:flex;flex-direction:column;justify-content:flex-start;gap:8px;flex:0 0 auto}
+  .box .acts .ibtn{width:36px;height:36px;border-radius:10px}
+  .box .acts .ibtn svg{width:18px;height:18px}
+  body.selmode .box .acts{display:none}
   .ibtn{width:40px;height:40px;border-radius:12px;background:var(--page);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--mut)}
   .ibtn svg{width:20px;height:20px}
   .ibtn.del{color:var(--del)}
@@ -109,7 +112,7 @@
   .searchwrap .sin{flex:1;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 14px;font-size:14px;color:var(--ink);box-shadow:var(--shCard)}
   .datebtn{width:46px;height:46px;border-radius:14px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shCard);color:var(--acc);display:flex;align-items:center;justify-content:center;flex:0 0 auto;position:relative}
   .datebtn svg{width:20px;height:20px}
-  .datebtn input{position:absolute;inset:0;opacity:0}
+  .bbcenter #histDate{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
   .datechip{display:inline-flex;align-items:center;gap:6px;background:var(--acc);color:#fff;border-radius:14px;padding:6px 12px;font-size:12.5px;margin:4px 16px 0}
   .histlist{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;padding:4px 16px 16px}
   .datehdr{display:flex;align-items:center;gap:8px;align-self:stretch;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin:8px 0 6px}
@@ -174,8 +177,8 @@
   .favrow .rb.del{color:var(--del)} .favrow .rb svg{width:17px;height:17px}
   .addrow{display:flex;gap:10px;padding:0 18px 6px;flex:0 0 auto}
   .addrow .ghostbtn{margin:0;flex:1}
-  .ovl{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px}
-  .ovl.on{display:flex}
+  .ovl{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px}
+  .ovl.on{display:flex!important}
   .ovlcard{background:var(--card);border-radius:20px;box-shadow:var(--shFab);padding:18px;width:100%;max-width:360px;max-height:80%;display:flex;flex-direction:column}
   .ovlh{font-size:16px;font-weight:700;margin-bottom:12px;text-align:center}
   .applist{overflow-y:auto;flex:1;min-height:0}
@@ -188,7 +191,7 @@
   .hitem.deleting,.box.deleting{animation:rubberDel .42s cubic-bezier(.5,0,.7,.3) forwards}
   .step .lk{text-align:left;margin-top:8px}
   .step .lk .openlink{margin-top:0}
-  .bbback{width:54px;height:54px;border-radius:50%;background:var(--card);border:none;box-shadow:var(--shFab);color:var(--acc);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .bbback{position:relative;z-index:60;width:54px;height:54px;border-radius:50%;background:var(--card);border:none;box-shadow:var(--shFab);color:var(--acc);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
   .bbback svg{width:22px;height:22px;transition:transform .3s}
   body.hand-right .bbback svg{transform:scaleX(-1)}
   .bbspace{width:54px;flex:0 0 auto}
@@ -256,7 +259,7 @@
   <div class="histlist" id="histList"></div>
   <div class="botbar">
     <span class="bbspace"></span>
-    <div class="bbcenter"><input class="sin" id="histSearch" placeholder="חפש מילים בתמלולים…"><button class="datebtn" aria-label="תאריך"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9h16M8 3v4M16 3v4"/></svg><input type="date" id="histDate"></button></div>
+    <div class="bbcenter"><input class="sin" id="histSearch" placeholder="חפש מילים בתמלולים…"><button class="datebtn" id="dateBtn" aria-label="תאריך"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9h16M8 3v4M16 3v4"/></svg></button><input type="date" id="histDate"></div>
     <button class="bbback" data-back-to="main" aria-label="חזרה"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
   </div>
 </section>
@@ -380,10 +383,11 @@
     var el=document.getElementById('boxes'); var h='<div class="sp"></div>';
     boxes.forEach(function(b){
       if(b.state==='busy'){ h+='<div class="box busy"><div class="tx"><span class="spin"></span>מתמלל… רגע אחד</div></div>'; }
-      else { h+='<div class="box'+(selSet.has(b.id)?' sel':'')+'" data-id="'+b.id+'"><div class="hcheck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5 9-11"/></svg></div><div class="tx">'+esc(b.text)+'</div>'+favStripHtml()+'<div class="acts">'
+      else { h+='<div class="box'+(selSet.has(b.id)?' sel':'')+'" data-id="'+b.id+'"><div class="hcheck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5 9-11"/></svg></div><div class="acts">'
+        +'<button class="ibtn del" data-act="del" data-id="'+b.id+'">'+IC.del+'</button>'
         +'<button class="ibtn" data-act="copy" data-id="'+b.id+'">'+IC.copy+'</button>'
-        +'<button class="ibtn" data-act="share" data-id="'+b.id+'">'+IC.share+'</button>'
-        +'<button class="ibtn del" data-act="del" data-id="'+b.id+'">'+IC.del+'</button></div></div>'; }
+        +'<button class="ibtn" data-act="share" data-id="'+b.id+'">'+IC.share+'</button></div>'
+        +'<div class="bxbody"><div class="tx">'+esc(b.text)+'</div>'+favStripHtml()+'</div></div>'; }
     });
     var lm=br('getLang','');
     h+='<div class="recbox" id="recAdd"><button class="langtog" id="langTog">'+LANGLBL[lm]+'</button>'
@@ -445,6 +449,7 @@
   }
   document.getElementById('histSearch').addEventListener('input',function(e){ histFilter=e.target.value.trim(); renderHist(); });
   document.getElementById('histDate').addEventListener('change',function(e){ histDateF=e.target.value; renderDateChip(); renderHist(); });
+  document.getElementById('dateBtn').addEventListener('click',function(){ var d=document.getElementById('histDate'); try{ if(d.showPicker) d.showPicker(); else d.click(); }catch(e){ d.click(); } });
   function renderDateChip(){ var w=document.getElementById('dateChipWrap'); w.innerHTML = histDateF? '<span class="datechip">'+histDateF+' <button data-cleardate style="background:none;border:none;color:#fff;font-weight:700">✕</button></span>':''; }
   document.getElementById('dateChipWrap').addEventListener('click',function(e){ if(e.target.closest('[data-cleardate]')){ histDateF=''; document.getElementById('histDate').value=''; renderDateChip(); renderHist(); } });
   document.getElementById('histList').addEventListener('click',function(e){ var lk=e.target.closest('[data-lock]'); if(lk){ var lid=lk.getAttribute('data-lock'); var li=hist.find(function(x){return x.id===lid;}); if(li){ li.locked=!li.locked; saveH(); renderHist(); toast(li.locked?'ההקלטה ננעלה':'הנעילה בוטלה'); } return; } var dg=e.target.closest('[data-delgrp]'); if(dg){ var gds=dg.getAttribute('data-delgrp'); delIds(hist.filter(function(x){return dstr(x.ts)===gds;}).map(function(x){return x.id;})); return; } var hd=e.target.closest('.datehdr'); if(hd){ var ds2=hd.getAttribute('data-grp'); if(!expanded)expanded=new Set(); if(expanded.has(ds2))expanded.delete(ds2); else expanded.add(ds2); renderHist(); return; } var dl=e.target.closest('[data-del]'); if(dl){ delIds([dl.getAttribute('data-del')]); return; } var it=e.target.closest('.hitem'); if(!it)return; var id=it.getAttribute('data-id'); if(selMode){ toggleSel(id); } else { var x=hist.find(function(z){return z.id===id;}); if(x) openDetail(x.text, id); } });
@@ -479,7 +484,7 @@
   function autoGrowDet(){ var ta=document.getElementById('detailTx'); ta.style.height='auto'; ta.style.height=Math.max(120,ta.scrollHeight)+'px'; }
   function openDetail(text,id){ detTxt=text; detOrig=text; detId=id||null; var ta=document.getElementById('detailTx'); ta.value=text; document.getElementById('detailFavs').innerHTML=favStripHtml(); navTo('detail'); setTimeout(autoGrowDet,30); }
   document.getElementById('detailTx').addEventListener('input',function(){ detTxt=this.value; autoGrowDet(); });
-  document.getElementById('detSave').addEventListener('click',function(){ var v=document.getElementById('detailTx').value; detTxt=v; detOrig=v; if(detId){ var hi=hist.find(function(x){return x.id===detId;}); if(hi){ hi.text=v; saveH(); } var bb2=boxes.find(function(x){return x.histId===detId;}); if(bb2){ bb2.text=v; saveB(); } } render(); renderHist(); toast('נשמר'); });
+  document.getElementById('detSave').addEventListener('click',function(){ var v=document.getElementById('detailTx').value; detTxt=v; detOrig=v; if(detId){ var hi=hist.find(function(x){return x.id===detId;}); if(hi){ hi.text=v; saveH(); } var bb2=boxes.find(function(x){return x.histId===detId;}); if(bb2){ bb2.text=v; saveB(); } } render(); renderHist(); toast('נשמר'); doBack(); });
   document.getElementById('detCancel').addEventListener('click',function(){ detTxt=detOrig; var ta=document.getElementById('detailTx'); ta.value=detOrig; autoGrowDet(); toast('השינוי בוטל'); });
   document.getElementById('detCopy').addEventListener('click',function(){ if(A&&A.copy)A.copy(detTxt); toast('הועתק'); });
   document.getElementById('detShare').addEventListener('click',function(){ if(A&&A.share)A.share(detTxt); });
@@ -670,7 +675,7 @@
     var rm=e.target.closest('[data-rm]'); if(rm){ favs=favs.filter(function(f){return f.id!==rm.getAttribute('data-rm');}); saveF(); renderFavList(); return; }
     var mv=e.target.closest('[data-mv]'); if(mv){ var id=mv.getAttribute('data-id'); var i=favs.findIndex(function(f){return f.id===id;}); var j=mv.getAttribute('data-mv')==='up'?i-1:i+1; if(j>=0&&j<favs.length){ var t=favs[i];favs[i]=favs[j];favs[j]=t; saveF(); renderFavList(); } } });
   document.getElementById('detailFavs').addEventListener('click',function(e){ var fc=e.target.closest('[data-fav]'); if(!fc)return; if(fc.getAttribute('data-fav')==='__add'){ openFavEdit(); return; } shareFav(favById(fc.getAttribute('data-fav')), detTxt); });
-  document.getElementById('addApp').addEventListener('click',function(){ var list=[]; try{ list=JSON.parse((A&&A.listShareApps)?A.listShareApps():'[]'); }catch(e){list=[];}
+  document.getElementById('addApp').addEventListener('click',function(){ var list=[]; try{ list=JSON.parse((A&&A.listShareApps)?A.listShareApps():'[]'); }catch(e){list=[];} if(!Array.isArray(list))list=[];
     document.getElementById('appList').innerHTML = list.length ? list.map(function(a){ return '<div class="appitem" data-pkg="'+a.pkg+'" data-label="'+esc(a.label)+'" data-icon="'+a.icon+'"><img src="'+a.icon+'"><span class="al">'+esc(a.label)+'</span></div>'; }).join('') : '<div class="empty">לא נמצאו אפליקציות שיתוף.</div>';
     document.getElementById('appPicker').classList.add('on'); });
   document.getElementById('appList').addEventListener('click',function(e){ var it=e.target.closest('[data-pkg]'); if(!it)return; favs.push({id:nid(),type:'app',pkg:it.getAttribute('data-pkg'),label:it.getAttribute('data-label'),icon:it.getAttribute('data-icon')}); saveF(); document.getElementById('appPicker').classList.remove('on'); renderFavList(); });
