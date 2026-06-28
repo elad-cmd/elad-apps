@@ -180,7 +180,7 @@
   .cr-hint{font-size:12.5px;color:#7a9a9b;text-align:center;margin-top:8px;}
   .favdiag{position:relative;width:200px;height:200px;margin:4px auto 2px;}
   .fav-coin{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;}
-  .fav-c{width:46px;height:46px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -8px rgba(8,50,50,.45);transition:transform .12s;}
+  .fav-c{position:relative;width:46px;height:46px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -8px rgba(8,50,50,.45);transition:transform .12s;}
   .fav-c svg{width:23px;height:23px;}
   .fav-c.add{border:1.7px dashed var(--tq-deep);color:var(--tq-deep);}
   .fav-coin:active .fav-c{transform:scale(.9);}
@@ -578,6 +578,17 @@
   .mh-chk input{width:16px;height:16px;accent-color:#15b89f;}
   @keyframes mhR{0%,100%{transform:translate(15px,-15px)}50%{transform:translate(-15px,15px)}}
   @keyframes mhL{0%,100%{transform:translate(-15px,-15px)}50%{transform:translate(15px,15px)}}
+  #voiceFab{position:fixed;top:14px;right:14px;z-index:96;width:44px;height:44px;border-radius:50%;border:none;background:var(--tq-deep);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(0,0,0,.4);cursor:pointer;}
+  #voiceFab svg{width:22px;height:22px;}
+  #voiceFab:active{transform:scale(.9);}
+  .vc-ov{position:fixed;inset:0;z-index:140;background:rgba(8,22,23,0);transition:background .2s;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+  .vc-ov.show{background:rgba(8,22,23,.93);pointer-events:auto;}
+  .vc-box{display:flex;flex-direction:column;align-items:center;gap:20px;padding:24px;}
+  .vc-mic{width:92px;height:92px;border-radius:50%;background:var(--tq-deep);color:#fff;display:flex;align-items:center;justify-content:center;animation:vcPulse 1.3s ease-in-out infinite;}
+  .vc-mic svg{width:42px;height:42px;}
+  @keyframes vcPulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(0,194,168,.45)}50%{transform:scale(1.06);box-shadow:0 0 0 20px rgba(0,194,168,0)}}
+  .vc-txt{color:#fff;font-size:17px;font-weight:600;max-width:82%;text-align:center;min-height:24px;line-height:1.5;}
+  .vc-cancel{background:rgba(255,255,255,.14);border:none;color:#fff;padding:9px 26px;border-radius:22px;font:inherit;font-size:14px;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -1284,7 +1295,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.28.2313';
+const APP_VERSION='2026.06.29.0000';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1308,14 +1319,14 @@ function doUpdate(){
 function openSettings(){
   const coins=cfg.share.map((id,i)=>{
     const app=byId(id);
-    return `<button class="fav-row" data-i="${i}"><span class="fav-cc">${app?app.ic:ICON.plus}<span class="fav-edit">${ICON.edit}</span></span><span class="fav-rlbl">${app?escapeHtml(app.label):'בחר אפליקציה'}</span></button>`;
+    return `<button class="fav-coin fav3-${i}" data-i="${i}"><span class="fav-c${app?'':' add'}">${app?app.ic:ICON.plus}<span class="fav-edit">${ICON.edit}</span></span><span class="fav-lbl">${app?escapeHtml(app.label):'ריק'}</span></button>`;
   }).join('');
   const SECH='text-align:center;color:#fff;font-size:12px;font-weight:700;letter-spacing:.6px;opacity:.6;margin:0 0 9px;';
   const DIV='<div style="height:1px;background:rgba(255,255,255,.13);margin:22px 8px;"></div>';
   showSheet(`<div class="sheet-head"><h2 style="margin:0;text-align:center;width:100%;">הגדרות</h2></div>`+
     `<div style="${SECH}">ערכת צבעים</div><div class="swatches" id="setSwatches">${PALETTES.map((p,i)=>'<button class="sw'+(i===(cfg.palette||0)?' on':'')+'" data-i="'+i+'" style="background:linear-gradient(180deg,'+p.top+','+p.bot+')" aria-label="'+escapeHtml(p.name)+'"></button>').join('')}</div>`+
     DIV+
-    `<div style="${SECH}">אפליקציות שיתוף</div><div class="fav-list">${coins}</div><div class="set-toggle" id="dblTog"><span>דאבל קליק לחיוג</span><span class="sw-tog${cfg.dblCall?' on':''}"><span class="sw-knob"></span></span></div>`+
+    `<div style="${SECH}">אפליקציות שיתוף</div><div class="favdiag">${coins}</div><div class="set-toggle" id="dblTog"><span>דאבל קליק לחיוג</span><span class="sw-tog${cfg.dblCall?' on':''}"><span class="sw-knob"></span></span></div>`+
     DIV+
     `<div style="${SECH}">גרסה ועדכון</div><div style="text-align:center;font-size:16px;font-weight:700;color:#fff;letter-spacing:.3px;">גרסה ${APP_VERSION}</div><div id="updStatus" style="text-align:center;font-size:13px;font-weight:700;margin:4px 0 2px;min-height:17px;"></div><div style="text-align:center;width:100%;margin-top:10px;"><button id="appUpdate" style="display:inline-block;padding:7px 18px;border:1px solid rgba(255,255,255,.28);border-radius:18px;background:rgba(255,255,255,.07);color:#fff;font:inherit;font-weight:600;font-size:13px;opacity:.8;cursor:pointer;">עדכן אפליקציה לגרסה האחרונה</button></div>`+
     DIV+
@@ -1323,7 +1334,7 @@ function openSettings(){
   ovl.classList.add('bare');
   const xb=sheet.querySelector('.sheet-x');if(xb)xb.onclick=closeSheet;
   const dt=sheet.querySelector('#dblTog');if(dt)dt.onclick=()=>{cfg.dblCall=!cfg.dblCall;saveCfg();openSettings();};
-  sheet.querySelectorAll('.fav-row').forEach(b=>b.onclick=()=>openPicker(+b.dataset.i));
+  sheet.querySelectorAll('.fav-coin').forEach(b=>b.onclick=()=>openPicker(+b.dataset.i));
   const bs=sheet.querySelector('#bkSave');if(bs)bs.onclick=doBackup;
   const bl=sheet.querySelector('#bkLoad');if(bl)bl.onclick=doRestore;
   const ub=sheet.querySelector('#appUpdate');if(ub)ub.onclick=doUpdate;
@@ -2240,6 +2251,39 @@ window.addEventListener('appinstalled',function(){installed=true;deferredPrompt=
 if(navigator.getInstalledRelatedApps){navigator.getInstalledRelatedApps().then(function(apps){if(apps&&apps.length){installed=true;try{localStorage.setItem('myshare_installed','1');}catch(e){}render();}}).catch(function(){});}
 render();
 })();
+/* ===== כפתור קול גלובלי (שלב 1) ===== */
+function voiceFindContact(q){q=(q||'').trim();if(!q)return null;let p=PEOPLE.find(x=>String(x.name||'').trim()===q);if(!p)p=PEOPLE.find(x=>x.name&&String(x.name).indexOf(q)>=0);if(!p)p=PEOPLE.find(x=>x.name&&q.indexOf(String(x.name).trim())>=0);return p||null;}
+function voiceAfter(t,keys){let s=(t||'').trim();for(const k of keys){const i=s.indexOf(k);if(i>=0){s=s.slice(i+k.length).trim();break;}}return s.replace(/^(ל|אל|את|ה)\s+/,'').trim();}
+function voiceParseNL(t){const pm=t.match(/\+?\d[\d\-\s]{6,}\d/);const phone=pm?normIL(pm[0]):'';const em=t.match(/[\w.\-]+@[\w.\-]+\.\w+/);const email=em?em[0]:'';let rest=t;if(pm)rest=rest.replace(pm[0],' ');if(em)rest=rest.replace(em[0],' ');rest=rest.replace(/^\s*(הוסף|הוספת|תוסיף)\s+/,'').replace(/^\s*איש קשר\s*(חדש)?/,'').trim();const name=rest.split(/[,،]/)[0].trim();return {name:name,phone:phone,email:email};}
+function handleVoice(txt){const t=(txt||'').trim();if(!t){toast('לא שמעתי');return;}
+  if(/(^|\s)(חייג|התקשר|טלפן)/.test(t)){const q=voiceAfter(t,['חייג ל','חייג','התקשר ל','התקשר','טלפן ל','טלפן']);const p=voiceFindContact(q);if(p){fireAction('call',p);toast('מחייג ל'+(p.name||''));}else toast('לא מצאתי "'+q+'"');return;}
+  if(/(וואטסאפ|וטסאפ)/i.test(t)){const q=voiceAfter(t,['וואטסאפ ל','וואטסאפ','וטסאפ ל','וטסאפ']);const p=voiceFindContact(q);if(p){fireAction('wa',p);toast('וואטסאפ ל'+(p.name||''));}else toast('לא מצאתי "'+q+'"');return;}
+  if(/^\s*(הוסף|תוסיף|הוספת)/.test(t)||/איש קשר חדש/.test(t)){openAddContact(voiceParseNL(t));return;}
+  if(/(חפש|חיפוש)/.test(t)){const q=voiceAfter(t,['חפש את','חפש','חיפוש']);openSearch();setTimeout(()=>{try{searchInput.value=q;renderSearch(q);if(typeof updSrchClear==='function')updSrchClear();}catch(e){}},140);return;}
+  if(/הגדרות/.test(t)){openSettings();return;}
+  if(/(ימי הולדת|יום הולדת)/.test(t)){openBirthdays();return;}
+  if(/חייגן/.test(t)){openDialer();return;}
+  if(/כרטיס שלי/.test(t)){openMyCard();return;}
+  if(/(שלח לרשימה|רשימת|רשימה)/.test(t)){const q=voiceAfter(t,['שלח לרשימה','רשימת','רשימה']);const L=(cfg.lists||[]).find(x=>String(x.name).indexOf(q)>=0);if(L){openSendList(L.id);}else toast('לא מצאתי רשימה "'+q+'"');return;}
+  openSearch();setTimeout(()=>{try{searchInput.value=t;renderSearch(t);if(typeof updSrchClear==='function')updSrchClear();}catch(e){}},140);
+}
+function startVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast('זיהוי דיבור לא נתמך בדפדפן הזה');return;}
+  const ov=document.createElement('div');ov.className='vc-ov';
+  ov.innerHTML='<div class="vc-box"><div class="vc-mic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div><div class="vc-txt" id="vcTxt">מקשיב…</div><button class="vc-cancel" id="vcCancel">ביטול</button></div>';
+  document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
+  const txtEl=ov.querySelector('#vcTxt');let finalTxt='',done=false;
+  const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),200);};
+  let rec;try{rec=new SR();}catch(e){close();toast('זיהוי דיבור נכשל');return;}
+  rec.lang='he-IL';rec.interimResults=true;rec.maxAlternatives=1;
+  rec.onresult=e=>{let inter='',fin='';for(let i=0;i<e.results.length;i++){const r=e.results[i];if(r.isFinal)fin+=r[0].transcript;else inter+=r[0].transcript;}finalTxt=(fin||inter).trim();txtEl.textContent=finalTxt||'מקשיב…';};
+  rec.onerror=()=>{};
+  rec.onend=()=>{if(done)return;done=true;close();if(finalTxt)handleVoice(finalTxt);else toast('לא שמעתי');};
+  ov.querySelector('#vcCancel').onclick=()=>{done=true;try{rec.stop();}catch(e){}close();};
+  try{rec.start();}catch(e){close();toast('לא ניתן להפעיל מיקרופון');}
+}
+(function(){const b=document.createElement('button');b.id='voiceFab';b.setAttribute('aria-label','דיבור');b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';b.onclick=startVoice;document.body.appendChild(b);})();
 updateSearchFab();
 </script>
 </body>
