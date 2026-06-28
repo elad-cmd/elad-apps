@@ -835,6 +835,59 @@ function promptListName(initial,cb){
   ov.querySelector('#lnOk').onclick=ok;
   inp.addEventListener('keydown',e=>{if(e.key==='Enter')ok();});
 }
+/* ===== רשימות לפי כלל ===== */
+function personText(p){
+  const parts=[p.name,p.org,p.msg];
+  if(p.phones&&p.phones.length)parts.push(p.phones.join(' '));else if(p.phone)parts.push(p.phone);
+  if(p.emails&&p.emails.length)parts.push(p.emails.join(' '));else if(p.email)parts.push(p.email);
+  parts.push(getAddr(p));
+  try{getFields(p).forEach(f=>{parts.push(f.l);parts.push(f.v);});}catch(e){}
+  return parts.filter(Boolean).join(' ').toLowerCase();
+}
+function ruleMatch(L,p){if(!L||!L.rule||!L.rule.q)return false;const q=String(L.rule.q).trim().toLowerCase();if(!q)return false;return personText(p).indexOf(q)>=0;}
+function recomputeRule(L){if(!L||!L.rule||!L.rule.q)return 0;L.members=PEOPLE.filter(p=>FDEC[fKey(p)]!=='delete'&&ruleMatch(L,p)).map(fKey);return L.members.length;}
+function recomputeAllRules(){let ch=false;(cfg.lists||[]).forEach(L=>{if(L&&L.rule&&L.rule.q){recomputeRule(L);ch=true;}});if(ch){try{saveCfg();}catch(e){}}}
+function openRuleEdit(listId,onChange){
+  const L=(cfg.lists||[]).find(x=>x.id===listId);if(!L)return;
+  const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  const ov=document.createElement('div');ov.className='mpovl';ov.style.zIndex='112';
+  const has=!!(L.rule&&L.rule.q);
+  ov.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xsvg+'</button><h2 style="flex:1;margin:0;text-align:center;">כלל לרשימה «'+escapeHtml(L.name)+'»</h2><span style="width:32px;flex:0 0 auto;"></span></div><p class="mp-hint" style="margin:0 0 8px;">כל מי שהמילה מופיעה אצלו (שם, חברה, הערה, כתובת, טלפון או אימייל) ייכנס לרשימה אוטומטית — בכל פתיחת האפליקציה ובלחיצה על עדכן.</p><input class="ct-inp" id="ruInp" placeholder="מילה — למשל: מכבי" style="margin:2px 0 10px;text-align:right;"><div id="ruCount" class="mp-hint" style="margin:0 0 12px;"></div><button class="mp-confirm" id="ruOk">'+(has?'עדכן והחל':'שמור והחל')+'</button>'+(has?'<button class="mp-confirm" id="ruClear" style="background:#fff;color:var(--tq-ink);margin-top:8px;">הסר כלל — הרשימה תחזור לידנית</button>':'')+'</div>';
+  document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
+  const inp=ov.querySelector('#ruInp');inp.value=(L.rule&&L.rule.q)||'';setTimeout(()=>{try{inp.focus();}catch(e){}},80);
+  const cnt=ov.querySelector('#ruCount');
+  const preview=()=>{const q=inp.value.trim().toLowerCase();if(!q){cnt.textContent='';return;}const n=PEOPLE.filter(p=>FDEC[fKey(p)]!=='delete'&&personText(p).indexOf(q)>=0).length;cnt.textContent=n+' אנשי קשר תואמים כעת';};
+  inp.addEventListener('input',preview);preview();
+  const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),260);};
+  ov.querySelector('.sheet-x').onclick=close;ov.addEventListener('click',e=>{if(e.target===ov)close();});
+  ov.querySelector('#ruOk').onclick=()=>{const q=inp.value.trim();if(!q){toast('הקלד מילה לכלל');return;}L.rule={q:q};const n=recomputeRule(L);saveCfg();renderLists();renderList();close();toast(n+' אנשי קשר ברשימה לפי הכלל');if(onChange)onChange();};
+  const cl=ov.querySelector('#ruClear');if(cl)cl.onclick=()=>{delete L.rule;saveCfg();close();toast('הכלל הוסר — הרשימה ידנית');if(onChange)onChange();};
+}
+/* ===== איכות נתונים (רשימות מיוחדות) ===== */
+function dqPhones(p){return (p.phones&&p.phones.length)?p.phones:(p.phone?[p.phone]:[]);}
+function dqEmails(p){return (p.emails&&p.emails.length)?p.emails:(p.email?[p.email]:[]);}
+function dqNoName(p){const n=String(p.name||'').trim();return !n||n==='(ללא שם)';}
+function dqNoPhone(p){return !dqPhones(p).filter(x=>String(x).trim()).length;}
+function dqNoEmail(p){return !dqEmails(p).filter(x=>String(x).trim()).length;}
+function dqBadPhone(p){const ph=dqPhones(p).filter(x=>String(x).trim());if(!ph.length)return false;return ph.every(x=>{const d=String(x).replace(/\D/g,'');return d.length<9||d.length>15;});}
+function openSpecialLists(){
+  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>רשימות מיוחדות</h2></div><div class="scr-body" id="slBody"></div>');sc._reopen=openSpecialLists;
+  let tab='noname';
+  const defs=[{k:'noname',t:'חסר שם',f:dqNoName},{k:'nophone',t:'חסר טלפון',f:dqNoPhone},{k:'noemail',t:'חסר אימייל',f:dqNoEmail},{k:'badphone',t:'טלפון לא תקין',f:dqBadPhone}];
+  function render(){
+    const body=sc.querySelector('#slBody');if(!body)return;
+    const cur=defs.find(d=>d.k===tab)||defs[0];
+    const tabs='<div class="flt-tabs">'+defs.map(d=>{const c=PEOPLE.filter(p=>FDEC[fKey(p)]!=='delete'&&d.f(p)).length;return '<button class="vtab'+(d.k===tab?' on':'')+'" data-k="'+d.k+'"><b>'+c+'</b><span>'+d.t+'</span></button>';}).join('')+'</div>';
+    const list=PEOPLE.filter(p=>FDEC[fKey(p)]!=='delete'&&cur.f(p)).sort(byName);
+    let html=tabs+'<p class="cr-hint" style="text-align:right;margin:10px 2px;">נוצר עכשיו לפי הנתונים — לא נשמר ולא מופיע באנשי הקשר הרגילים. לחיצה פותחת את הכרטיס לתיקון.</p>';
+    if(!list.length){html+='<div class="flt-done">אין אנשי קשר כאלה 🎉</div>';}
+    else{html+='<div class="flt-list">'+list.map((p,i)=>{const det=personDetails(p);return '<div class="arc-row sl-row" data-i="'+i+'"><span class="li-av">'+escapeHtml(initials(p.name)||'?')+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(det.length?'<div class="s">'+escapeHtml(det.join(' · '))+'</div>':'')+'</div></div>';}).join('')+'</div>';}
+    body.innerHTML=html;
+    body.querySelectorAll('.vtab').forEach(b=>b.onclick=()=>{tab=b.dataset.k;render();});
+    body.querySelectorAll('.sl-row').forEach(rw=>rw.onclick=()=>openContact(list[+rw.dataset.i]));
+  }
+  render();
+}
 function listMembersPeople(L){return ((L&&L.members)||[]).map(k=>PEOPLE.find(p=>fKey(p)===k)).filter(Boolean);}
 function openSendList(listId){
   const L=(cfg.lists||[]).find(x=>x.id===listId);if(!L)return;
@@ -902,8 +955,10 @@ function openListManage(){
   function paint(){
     const box=lmBox;
     if(!cfg.lists||!cfg.lists.length){box.innerHTML='<p class="mp-hint">אין רשימות עדיין. צור רשימה ראשונה למטה.</p>';return;}
-    box.innerHTML=cfg.lists.map(L=>'<div class="lm-row"><span class="lm-name">'+escapeHtml(L.name)+'</span><span class="lm-cnt">'+L.members.length+'</span><button class="lm-b lm-send" data-id="'+L.id+'" aria-label="שלח לרשימה">'+ICON.send+'</button><button class="lm-b lm-members" data-id="'+L.id+'" aria-label="חברים">'+ICON.check+'</button><button class="lm-b lm-ren" data-id="'+L.id+'" aria-label="שם">'+ICON.edit+'</button><button class="lm-b lm-del" data-id="'+L.id+'" aria-label="מחק">'+ICON.archive+'</button></div>').join('');
+    const FUNNEL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 8v5l-4 2v-7z"/></svg>';
+    box.innerHTML=cfg.lists.map(L=>{const ruled=!!(L.rule&&L.rule.q);return '<div class="lm-row"><span class="lm-name">'+escapeHtml(L.name)+(ruled?'<span style="font-size:11px;font-weight:700;opacity:.55;margin-inline-start:6px;">לפי כלל</span>':'')+'</span><span class="lm-cnt">'+L.members.length+'</span><button class="lm-b lm-send" data-id="'+L.id+'" aria-label="שלח לרשימה">'+ICON.send+'</button><button class="lm-b lm-members" data-id="'+L.id+'" aria-label="חברים">'+ICON.check+'</button><button class="lm-b lm-rule" data-id="'+L.id+'" aria-label="כלל"'+(ruled?' style="color:var(--tq-deep)"':'')+'>'+FUNNEL+'</button><button class="lm-b lm-ren" data-id="'+L.id+'" aria-label="שם">'+ICON.edit+'</button><button class="lm-b lm-del" data-id="'+L.id+'" aria-label="מחק">'+ICON.archive+'</button></div>';}).join('');
     box.querySelectorAll('.lm-send').forEach(b=>b.onclick=()=>{close();openSendList(b.dataset.id);});
+    box.querySelectorAll('.lm-rule').forEach(b=>b.onclick=()=>{openRuleEdit(b.dataset.id,()=>{renderLists();renderList();paint();});});
     box.querySelectorAll('.lm-members').forEach(b=>b.onclick=()=>{close();openMemberPicker(b.dataset.id);});
     box.querySelectorAll('.lm-ren').forEach(b=>b.onclick=()=>{const L=cfg.lists.find(x=>x.id===b.dataset.id);if(!L)return;promptListName(L.name,function(nm){if(nm){L.name=nm;saveCfg();renderLists();paint();}});});
     box.querySelectorAll('.lm-del').forEach(b=>b.onclick=()=>{const id=b.dataset.id;cfg.lists=cfg.lists.filter(x=>x.id!==id);if(activeList===id)activeList=null;saveCfg();renderLists();renderList();paint();});
@@ -973,7 +1028,7 @@ function openMemberPicker(listId){
   sc._back=()=>{L.members=[...sel];saveCfg();renderLists();renderList();origBack();};
 }
 if(BRIDGE){try{var _fk=JSON.parse(localStorage.getItem('myshare_favkeys')||'null');if(_fk){PEOPLE.forEach(p=>{if(_fk[fKey(p)])p.fav=true;});localStorage.removeItem('myshare_favkeys');}}catch(e){}}
-renderSeg();renderList();renderLists();layoutList();
+recomputeAllRules();renderSeg();renderList();renderLists();layoutList();
 window.addEventListener('resize',layoutList);
 
 const TRIGGER=30, INF=140, MAXB=0, SELECT=80;
@@ -1141,7 +1196,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.27';
+const APP_VERSION='2026.06.28';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1467,12 +1522,14 @@ function openSeder(){
     '<button class="opt" id="optMerge"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 7h3a4 4 0 0 1 0 8H8M16 17h-3a4 4 0 0 1 0-8h3\"/></svg></span><span><span class="otitle">מיזוג כפילויות</span><span class="odesc">איחוד אנשי קשר שמופיעים פעמיים</span></span><span class="ostep">שלב 1</span></button>'+
     '<button class="opt" id="optFilter"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 5h16l-6 8v5l-4 2v-7z\"/></svg></span><span><span class="otitle">סינון רשימה</span><span class="odesc">החלקה: שומר / ארכיון / לבדיקה</span></span><span class="ostep">שלב 2</span></button>'+
     '<button class="opt" id="optArchive"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"4\" rx=\"1\"/><path d=\"M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8\"/><path d=\"M10 12h4\"/></svg></span><span><span class="otitle">ארכיון</span><span class="odesc">אנשי קשר שהוסרו מהתצוגה</span></span></button>'+
+    '<button class="opt" id="optSpecial"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 5h16l-6 8v5l-4 2v-7z\"/></svg></span><span><span class="otitle">רשימות מיוחדות</span><span class="odesc">חסרי שם / טלפון / אימייל — בזמן אמת</span></span></button>'+
     '<button class="opt" id="optReset"><span class="oic" style="background:#fde8e6;color:#c0392b;"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 12a9 9 0 1 0 3-6.7L3 8\"/><path d=\"M3 3v5h5\"/></svg></span><span><span class="otitle">איפוס האפליקציה</span><span class="odesc">מחיקת כל ההגדרות והנתונים</span></span></button>'+
     '</div>');
   sc.classList.add('scr-bottom');
   sc._reopen=openSeder;sc.querySelector('#optMerge').onclick=()=>openMerge();
   sc.querySelector('#optFilter').onclick=()=>openFilter();
   sc.querySelector('#optArchive').onclick=()=>openArchive();
+  sc.querySelector('#optSpecial').onclick=()=>openSpecialLists();
   sc.querySelector('#optReset').onclick=()=>openResetConfirm();
 }
 function normEmail(e){return String(e||'').trim().toLowerCase();}
@@ -1898,7 +1955,7 @@ function parseVBlock(block){
   rec.email=rec.emails[0]||'';rec.phone=rec.phones[0]||'';return rec;
 }
 function parseVCards(t){const out=[];splitVCards(t).forEach(b=>{const r=parseVBlock(b);if(r.name||r.phone||r.email)out.push({name:r.name||'(ללא שם)',phone:r.phone,email:r.email,org:r.org,phones:r.phones,emails:r.emails,msg:'',fav:false,last:0});});return out;}
-function loadContactsFile(file){const rd=new FileReader();rd.onload=()=>{const t=String(rd.result||'');const arr=/BEGIN:VCARD/i.test(t)?parseVCards(t):parseCSVContacts(t);if(!arr.length){toast('לא נמצאו אנשי קשר בקובץ');return;}PEOPLE=arr;FAVORDER=[];FDEC={};try{saveDec();}catch(e){}savePeople();try{localStorage.setItem('myshare_onboarded','1');}catch(e){}hideWelcome();renderSeg();renderList();layoutList();toast('נטענו '+arr.length+' אנשי קשר');};rd.readAsText(file,'utf-8');}
+function loadContactsFile(file){const rd=new FileReader();rd.onload=()=>{const t=String(rd.result||'');const arr=/BEGIN:VCARD/i.test(t)?parseVCards(t):parseCSVContacts(t);if(!arr.length){toast('לא נמצאו אנשי קשר בקובץ');return;}PEOPLE=arr;FAVORDER=[];FDEC={};try{saveDec();}catch(e){}savePeople();try{localStorage.setItem('myshare_onboarded','1');}catch(e){}hideWelcome();recomputeAllRules();renderSeg();renderList();layoutList();toast('נטענו '+arr.length+' אנשי קשר');};rd.readAsText(file,'utf-8');}
 document.getElementById('welUpload').onclick=()=>document.getElementById('welFile').click();
 document.getElementById('welFile').onchange=e=>{const f=e.target.files&&e.target.files[0];if(f)loadContactsFile(f);};
 
