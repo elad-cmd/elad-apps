@@ -52,6 +52,14 @@ jobs:
             echo "WARNING: APP_SHARED_SECRET secret not set — proxy auth will fail until configured"
           fi
 
+      - name: Inject app version + write version.json
+        working-directory: Transcribe
+        run: |
+          VER=$(date -u +%Y.%m.%d.%H%M)
+          sed -i "s|__APP_VERSION__|$VER|g" app/src/main/assets/app.html
+          printf '{"version":"%s","apk":"https://github.com/elad-cmd/elad-apps/releases/download/transcribe-latest/Transcribe.apk"}\n' "$VER" > version.json
+          echo "App version: $VER"
+
       - name: Build debug APK
         working-directory: Transcribe
         run: gradle assembleDebug --no-daemon --stacktrace
@@ -72,4 +80,6 @@ jobs:
         with:
           tag_name: transcribe-latest
           name: תמלול — אפליקציה
-          files: Transcribe/app/build/outputs/apk/debug/Transcribe.apk
+          files: |
+            Transcribe/app/build/outputs/apk/debug/Transcribe.apk
+            Transcribe/version.json

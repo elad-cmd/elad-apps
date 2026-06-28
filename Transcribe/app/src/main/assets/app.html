@@ -37,6 +37,7 @@
   body.selmode .box .acts{display:none}
   .arcbadge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--acc);background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;padding:2px 8px;margin-bottom:7px}
   .arcbadge svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2}
+  .verstat{font-size:13px;font-weight:700;text-align:center;min-height:17px;margin-top:6px;color:var(--mut)}
   .ibtn{width:40px;height:40px;border-radius:12px;background:var(--page);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--mut)}
   .ibtn svg{width:20px;height:20px}
   .ibtn.del{color:var(--del)}
@@ -300,7 +301,11 @@
     <div class="savemsg" id="saveMsg">המפתח נשמר ✓</div>
     <p class="help-txt">אופציונלי (מצב מתקדם): האפליקציה עובדת בלי מפתח. אם תזין מפתח משלך — התמלול יעבור דרכו במקום דרך השרת. המפתח נשמר רק במכשיר; פעולות עליו דורשות אימות מסך הנעילה.</p>
     <button class="ghostbtn" id="toHelp">איך משיגים מפתח?</button>
-    <button class="save" id="toHomeBtn">חזור למסך הבית</button>
+    <div class="lbl" style="margin-top:18px">גרסה</div>
+    <div id="verNum" class="help-txt" style="margin:2px 0 0"></div>
+    <div id="updStatus" class="verstat"></div>
+    <button class="ghostbtn" id="appUpdate" style="display:none;margin-top:6px">עדכן לגרסה האחרונה</button>
+    <button class="save" id="toHomeBtn" style="margin-top:14px">חזור למסך הבית</button>
   </div>
   <div class="botbar"><span class="bbspace"></span><div class="bbcenter"></div><button class="bbback" data-back-to="main" aria-label="חזרה"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div>
 </section>
@@ -344,9 +349,20 @@
 (function(){
   var A=window.Android||null;
   function br(fn,d){ try{return A?A[fn]():d;}catch(e){return d;} }
+  // ---- version / update check (mirrors Sweep) ----
+  var APP_VERSION='__APP_VERSION__';
+  var VERSION_URL='https://github.com/elad-cmd/elad-apps/releases/download/transcribe-latest/version.json';
+  var APK_URL='https://github.com/elad-cmd/elad-apps/releases/download/transcribe-latest/Transcribe.apk';
+  function appVerLabel(){ return (APP_VERSION.indexOf('__')>=0)?'פיתוח':APP_VERSION; }
+  function refreshUpdStatus(){ var vn=document.getElementById('verNum'); if(vn)vn.textContent='גרסה נוכחית: '+appVerLabel(); var el=document.getElementById('updStatus'); if(el){ el.textContent='בודק עדכון…'; el.style.color=''; } var b=document.getElementById('appUpdate'); if(b)b.style.display='none'; if(A&&A.checkVersion)A.checkVersion(VERSION_URL+'?t='+Date.now()); else if(el){ el.textContent=''; } }
+  function versionResult(raw){ var el=document.getElementById('updStatus'), b=document.getElementById('appUpdate'); var sv=null; try{ var j=JSON.parse(raw); sv=j&&j.version; }catch(e){} if(!el)return;
+    if(!sv){ el.textContent='לא ניתן לבדוק עדכון כרגע'; el.style.color=''; if(b)b.style.display=''; return; }
+    if(sv===APP_VERSION){ el.textContent='מעודכן לגרסה האחרונה ✓'; el.style.color='#2BD0A0'; if(b)b.style.display='none'; }
+    else { el.textContent='עדכון זמין — גרסה '+sv; el.style.color='#F0A23A'; if(b){ b.style.display=''; b.textContent='עדכן לגרסה '+sv; } } }
+  function doUpdate(){ if(A&&A.openUrl)A.openUrl(APK_URL); toast('מוריד את הגרסה האחרונה…'); }
   var screens=['main','recording','history','detail','settings','help','favs','archive'];
   var navStack=['main'], curScreen='main';
-  function show(id){ screens.forEach(function(s){document.getElementById(s).classList.toggle('on',s===id);}); curScreen=id; var mf=document.getElementById('menuFab'); if(mf)mf.style.display=(id==='recording')?'none':''; closeHbarSafe(); }
+  function show(id){ screens.forEach(function(s){document.getElementById(s).classList.toggle('on',s===id);}); curScreen=id; var mf=document.getElementById('menuFab'); if(mf)mf.style.display=(id==='recording')?'none':''; closeHbarSafe(); if(id==='settings'){ try{refreshUpdStatus();}catch(e){} } }
   function navTo(id){ if(selMode){exitSel();rerenderSel();} if(navStack[navStack.length-1]!==id) navStack.push(id); show(id); }
   function navHome(){ if(selMode){exitSel();rerenderSel();} navStack=['main']; show('main'); }
   function doBack(){
@@ -405,7 +421,7 @@
         +'<button class="ibtn" data-act="menu" data-id="'+b.id+'">'+IC.dots+'</button>'
         +'<button class="ibtn" data-act="copy" data-id="'+b.id+'">'+IC.copy+'</button>'
         +'<button class="ibtn" data-act="share" data-id="'+b.id+'">'+IC.share+'</button></div>'
-        +'<div class="bxbody">'+(b.archived?'<span class="arcbadge">'+IC.arch+'בארכיון</span>':'')+'<div class="tx">'+esc(b.text)+'</div>'+favStripHtml()+'</div></div>'; }
+        +'<div class="bxbody">'+(b.archived?'<span class="arcbadge">'+IC.arch+'בארכיון</span>':'')+'<div class="tx">'+esc(heNumToDigits(b.text))+'</div>'+favStripHtml()+'</div></div>'; }
     });
     var lm=br('getLang','');
     h+='<div class="recbox" id="recAdd"><button class="langtog" id="langTog">'+LANGLBL[lm]+'</button>'
@@ -428,15 +444,15 @@
 
   document.getElementById('boxes').addEventListener('click',function(e){
     if(selMode && selCtx==='main'){ var sbx=e.target.closest('.box'); if(sbx && !sbx.classList.contains('busy')) toggleSel(sbx.getAttribute('data-id')); return; }
-    var fc=e.target.closest('[data-fav]'); if(fc){ if(fc.getAttribute('data-fav')==='__add'){ openFavEdit(); return; } var bx=e.target.closest('.box'); if(bx){ var bb=boxes.find(function(x){return x.id===bx.getAttribute('data-id');}); if(bb) shareFav(favById(fc.getAttribute('data-fav')), bb.text); } return; }
+    var fc=e.target.closest('[data-fav]'); if(fc){ if(fc.getAttribute('data-fav')==='__add'){ openFavEdit(); return; } var bx=e.target.closest('.box'); if(bx){ var bb=boxes.find(function(x){return x.id===bx.getAttribute('data-id');}); if(bb) shareFav(favById(fc.getAttribute('data-fav')), heNumToDigits(bb.text)); } return; }
     if(e.target.closest('#langTog')){ cycleLang(); e.stopPropagation(); return; }
     if(e.target.closest('#recAdd')){ startRecordFlow(); return; }
     if(!e.target.closest('button')){ var obx=e.target.closest('.box'); if(obx && !obx.classList.contains('busy')){ var ob=boxes.find(function(x){return x.id===obx.getAttribute('data-id');}); if(ob){ openDetail(ob.text, ob.histId); return; } } }
     var b=e.target.closest('[data-act]'); if(!b) return;
     var id=b.getAttribute('data-id'), act=b.getAttribute('data-act'); var box=boxes.find(function(x){return x.id===id;}); if(!box) return;
     if(act==='menu'){ openCardMenu(id); return; }
-    if(act==='copy'){ if(A&&A.copy)A.copy(box.text); toast('הועתק'); }
-    if(act==='share'){ if(A&&A.share)A.share(box.text); }
+    if(act==='copy'){ if(A&&A.copy)A.copy(heNumToDigits(box.text)); toast('הועתק'); }
+    if(act==='share'){ if(A&&A.share)A.share(heNumToDigits(box.text)); }
     if(act==='del'){ boxes=boxes.filter(function(x){return x.id!==id;}); saveB(); render(); }
   });
   (function(){ var bl=document.getElementById('boxes'); var lp=null,cur=null,cid=null,sx=0,sy=0,mv=false;
@@ -445,8 +461,8 @@
     bl.addEventListener('touchend',function(e){ if(lp){clearTimeout(lp);lp=null;} if(cur&&mv){ var dx=e.changedTouches[0].clientX-sx, c=cur, id=cid; if(dx<-70){ c.style.transform=''; c.style.opacity=''; swipeDelBox(id,c); } else if(dx>70){ c.style.transition='transform .2s,opacity .2s'; c.style.transform=''; c.style.opacity=''; setTimeout(function(){c.style.transition='';},220); archiveBox(id); } else { c.style.transition='transform .2s,opacity .2s'; c.style.transform=''; c.style.opacity=''; setTimeout(function(){c.style.transition='';},220); } } cur=null; });
   })();
   function cycleLang(){ var order=['','he','en']; var cur=br('getLang',''); var nx=order[(order.indexOf(cur)+1)%3]; if(A&&A.setLang)A.setLang(nx); document.getElementById('langTog').textContent=LANGLBL[nx]; toast(nx===''?'זיהוי אוטומטי':(nx==='he'?'עברית — זיהוי כפוי':'אנגלית — פלט באנגלית')); }
-  document.getElementById('copyAll').addEventListener('click',function(){ var t=allText(); if(!t){toast('אין מה להעתיק');return;} if(A&&A.copy)A.copy(t); toast('הכל הועתק'); });
-  document.getElementById('shareAll').addEventListener('click',function(){ var t=allText(); if(!t){toast('אין מה לשתף');return;} if(A&&A.share)A.share(t); });
+  document.getElementById('copyAll').addEventListener('click',function(){ var t=heNumToDigits(allText()); if(!t){toast('אין מה להעתיק');return;} if(A&&A.copy)A.copy(t); toast('הכל הועתק'); });
+  document.getElementById('shareAll').addEventListener('click',function(){ var t=heNumToDigits(allText()); if(!t){toast('אין מה לשתף');return;} if(A&&A.share)A.share(t); });
 
   // ---- history archive ----
   var hist=[];
@@ -473,7 +489,7 @@
     groups.forEach(function(g){ var open=forceOpen||expanded.has(g.ds);
       h+='<div class="datehdr'+(open?' open':'')+'" data-grp="'+esc(g.ds)+'"><span class="dchev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span><span class="dlabel">'+esc(g.ds)+'</span><span class="dcount">'+g.items.length+'</span><button class="dgtrash" data-delgrp="'+esc(g.ds)+'" aria-label="מחק תאריך">'+trSvg+'</button></div>';
       h+='<div class="grpitems"'+(open?'':' hidden')+'>';
-      g.items.forEach(function(x){ h+='<div class="hitem'+(selSet.has(x.id)?' sel':'')+(x.locked?' locked':'')+'" data-id="'+x.id+'"><button class="htrash" data-del="'+x.id+'" aria-label="מחק">'+trSvg+'</button><button class="hlock" data-lock="'+x.id+'" aria-label="נעל">'+lkSvg+'</button><div class="hcheck">'+ckSvg+'</div><div class="t">'+esc(x.text)+'</div><div class="d">'+tstr(x.ts)+'</div></div>'; });
+      g.items.forEach(function(x){ h+='<div class="hitem'+(selSet.has(x.id)?' sel':'')+(x.locked?' locked':'')+'" data-id="'+x.id+'"><button class="htrash" data-del="'+x.id+'" aria-label="מחק">'+trSvg+'</button><button class="hlock" data-lock="'+x.id+'" aria-label="נעל">'+lkSvg+'</button><div class="hcheck">'+ckSvg+'</div><div class="t">'+esc(heNumToDigits(x.text))+'</div><div class="d">'+tstr(x.ts)+'</div></div>'; });
       h+='</div>';
     });
     el.innerHTML=h;
@@ -492,7 +508,7 @@
   function exitSel(){ selMode=false; document.body.classList.remove('selmode'); selSet.clear(); updateSelCount(); }
   function toggleSel(id){ var add=!selSet.has(id); if(add)selSet.add(id); else selSet.delete(id); updateSelCount(); var cont=selCtx==='history'?document.getElementById('histList'):document.getElementById('boxes'); var el=cont&&cont.querySelector('[data-id=\"'+id+'\"]'); if(el)el.classList.toggle('sel',add); }
   function delIds(ids){ ids=ids.filter(function(id){ var li=hist.find(function(x){return x.id===id;}); return !(li&&li.locked); }); if(!ids.length){ toast('פריטים נעולים — בטל נעילה כדי למחוק'); exitSel(); renderHist(); return; } ids.forEach(function(id){ var el=document.querySelector('.hitem[data-id=\"'+id+'\"]'); if(el)el.classList.add('deleting'); }); setTimeout(function(){ hist=hist.filter(function(x){return ids.indexOf(x.id)<0;}); saveH(); exitSel(); renderHist(); },430); }
-  function selItemsText(){ var out=[]; selSet.forEach(function(id){ var o=selCtx==='history'?hist.find(function(x){return x.id===id;}):boxes.find(function(x){return x.id===id;}); if(o&&o.text)out.push(o.text); }); return out.join('\n\n'); }
+  function selItemsText(){ var out=[]; selSet.forEach(function(id){ var o=selCtx==='history'?hist.find(function(x){return x.id===id;}):boxes.find(function(x){return x.id===id;}); if(o&&o.text)out.push(heNumToDigits(o.text)); }); return out.join('\n\n'); }
   function delSelected(){ if(!selSet.size){ exitSel(); rerenderSel(); return; } if(selCtx==='history'){ delIds(Array.from(selSet)); } else { var ids=Array.from(selSet); ids.forEach(function(id){ var el=document.querySelector('.box[data-id=\"'+id+'\"]'); if(el)el.classList.add('deleting'); }); setTimeout(function(){ boxes=boxes.filter(function(b){return ids.indexOf(b.id)<0;}); saveB(); exitSel(); render(); },320); } }
   var shareSheetText='';
   function openShareSheet(text){ shareSheetText=text; document.getElementById('shareSheetFavs').innerHTML=favStripHtml(); document.getElementById('shareSheet').classList.add('on'); }
@@ -527,7 +543,7 @@
     groups.forEach(function(g){
       h+='<div class="datehdr open" style="cursor:default"><span class="dlabel">'+esc(g.ds)+'</span><span class="dcount">'+g.items.length+'</span></div>';
       h+='<div class="grpitems">';
-      g.items.forEach(function(x){ h+='<div class="hitem" data-id="'+x.id+'"><button class="htrash" data-arcdel="'+x.id+'" aria-label="הסר מהארכיון">'+trSvg+'</button><div class="t">'+esc(x.text)+'</div><div class="d">'+tstr(x.ts)+'</div></div>'; });
+      g.items.forEach(function(x){ h+='<div class="hitem" data-id="'+x.id+'"><button class="htrash" data-arcdel="'+x.id+'" aria-label="הסר מהארכיון">'+trSvg+'</button><div class="t">'+esc(heNumToDigits(x.text))+'</div><div class="d">'+tstr(x.ts)+'</div></div>'; });
       h+='</div>';
     });
     el.innerHTML=h;
@@ -547,7 +563,7 @@
   // ---- detail ----
   var detTxt='', detId=null, detOrig='';
   function autoGrowDet(){ var ta=document.getElementById('detailTx'); ta.style.height='auto'; ta.style.height=Math.max(120,ta.scrollHeight)+'px'; }
-  function openDetail(text,id){ detTxt=text; detOrig=text; detId=id||null; var ta=document.getElementById('detailTx'); ta.value=text; document.getElementById('detailFavs').innerHTML=favStripHtml(); navTo('detail'); setTimeout(autoGrowDet,30); }
+  function openDetail(text,id){ text=heNumToDigits(text); detTxt=text; detOrig=text; detId=id||null; var ta=document.getElementById('detailTx'); ta.value=text; document.getElementById('detailFavs').innerHTML=favStripHtml(); navTo('detail'); setTimeout(autoGrowDet,30); }
   document.getElementById('detailTx').addEventListener('input',function(){ detTxt=this.value; autoGrowDet(); });
   document.getElementById('detSave').addEventListener('click',function(){ var v=document.getElementById('detailTx').value; detTxt=v; detOrig=v; if(detId){ var hi=hist.find(function(x){return x.id===detId;}); if(hi){ hi.text=v; saveH(); } var bb2=boxes.find(function(x){return x.histId===detId;}); if(bb2){ bb2.text=v; saveB(); } var ar=archive.find(function(x){return x.id===detId;}); if(ar){ ar.text=v; saveAr(); } } render(); renderHist(); renderArc(); toast('נשמר'); doBack(); });
   document.getElementById('detCancel').addEventListener('click',function(){ detTxt=detOrig; var ta=document.getElementById('detailTx'); ta.value=detOrig; autoGrowDet(); toast('השינוי בוטל'); });
@@ -653,8 +669,10 @@
     onSharedDone:function(){ if(sharePendId){ boxes=boxes.filter(function(x){return x.id!==sharePendId;}); sharePendId=null; saveB(); render(); } },
     onMicPermission:function(g){ if(g){ var r=A&&A.startRecording?A.startRecording():'error'; if(r==='ok') beginUI(); } else toast('צריך הרשאת מיקרופון'); },
     onAuth:function(purpose,ok){ if(ok!=='1'){ toast('האימות בוטל'); return; } authPurpose=purpose; onAuthLocal(); },
-    onBack:function(){ doBack(); }
+    onBack:function(){ doBack(); },
+    onVersion:function(raw){ try{ versionResult(raw); }catch(e){} }
   };
+  document.getElementById('appUpdate').addEventListener('click',doUpdate);
 
   // ---- Sweep menu (ported 1:1) ----
   var ICONM={

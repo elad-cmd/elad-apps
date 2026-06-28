@@ -270,6 +270,20 @@ class MainActivity : Activity() {
         @JavascriptInterface fun openUrl(url: String) {
             try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) } catch (e: Exception) {}
         }
+        /** Async version check: fetches the server version.json off the UI thread and calls window.TX.onVersion. */
+        @JavascriptInterface fun checkVersion(url: String) {
+            Thread {
+                val body = try {
+                    val client = okhttp3.OkHttpClient.Builder()
+                        .connectTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+                        .readTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+                        .build()
+                    val req = okhttp3.Request.Builder().url(url).header("Cache-Control", "no-cache").build()
+                    client.newCall(req).execute().use { resp -> if (resp.isSuccessful) resp.body?.string().orEmpty() else "" }
+                } catch (e: Exception) { "" }
+                callJs("onVersion", body)
+            }.start()
+        }
 
         @JavascriptInterface fun exitApp() { runOnUiThread { finishAffinity() } }
 

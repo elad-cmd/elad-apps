@@ -9,6 +9,7 @@
 <link rel="icon" type="image/png" sizes="64x64" href="myshare-favicon-64.png">
 <link rel="icon" type="image/png" sizes="192x192" href="myshare-192.png">
 <link rel="apple-touch-icon" href="myshare-apple-180.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Z_Sweep">
@@ -1232,7 +1233,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.28.1346';
+const APP_VERSION='2026.06.28.1359';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1926,12 +1927,63 @@ function closeHbar(cb){
   bd.classList.remove('show');
   setTimeout(()=>{bd.remove();menuFab.classList.remove('open');setFab(false);if(!flipping&&hfOnHome()){botbarReopen();}else{updateSearchFab();}if(typeof cb==='function')cb();},780);
 }
+/* ===== הכרטיס שלי (QR אישי) ===== */
+function loadMyCard(){try{return JSON.parse(localStorage.getItem('myshare_mycard')||'{}')||{};}catch(e){return {};}}
+function saveMyCard(c){try{localStorage.setItem('myshare_mycard',JSON.stringify(c));}catch(e){}}
+function buildMyVcard(c){
+  const esc=s=>String(s||'').replace(/([\\;,])/g,'\\$1').replace(/\n/g,'\\n');
+  let v='BEGIN:VCARD\nVERSION:3.0\n';
+  if(c.name){v+='FN:'+esc(c.name)+'\nN:'+esc(c.name)+';;;\n';}
+  if(c.org)v+='ORG:'+esc(c.org)+'\n';
+  if(c.title)v+='TITLE:'+esc(c.title)+'\n';
+  if(c.phone)v+='TEL;TYPE=CELL:'+String(c.phone).replace(/[^0-9+]/g,'')+'\n';
+  if(c.email)v+='EMAIL:'+esc(c.email)+'\n';
+  if(c.site)v+='URL:'+esc(c.site)+'\n';
+  v+='END:VCARD';return v;
+}
+function openMyCardEdit(after){
+  const c=loadMyCard();
+  const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  const ov=document.createElement('div');ov.className='mpovl';ov.style.zIndex='112';
+  const f=(id,ph,val,ltr)=>'<input class="ct-inp" id="'+id+'" placeholder="'+ph+'" value="'+escapeHtml(val||'')+'"'+(ltr?' dir="ltr"':'')+' style="margin-bottom:9px;'+(ltr?'':'text-align:right;')+'">';
+  ov.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xsvg+'</button><h2 style="flex:1;margin:0;text-align:center;">הכרטיס שלי</h2><span style="width:32px;flex:0 0 auto;"></span></div><p class="mp-hint" style="margin:0 0 10px;">הפרטים שיופיעו בקוד שאחרים סורקים. נשמר במכשיר בלבד.</p>'+f('mcName','שם מלא',c.name)+f('mcPhone','טלפון',c.phone,1)+f('mcEmail','אימייל',c.email,1)+f('mcOrg','חברה',c.org)+f('mcTitle','תפקיד',c.title)+f('mcSite','אתר',c.site,1)+'<button class="mp-confirm" id="mcSave">שמור</button></div>';
+  document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
+  const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),260);};
+  ov.querySelector('.sheet-x').onclick=close;ov.addEventListener('click',e=>{if(e.target===ov)close();});
+  ov.querySelector('#mcSave').onclick=()=>{
+    const g=id=>(ov.querySelector('#'+id).value||'').trim();
+    const nc={name:g('mcName'),phone:g('mcPhone'),email:g('mcEmail'),org:g('mcOrg'),title:g('mcTitle'),site:g('mcSite')};
+    saveMyCard(nc);close();toast('הכרטיס נשמר');if(after)after();
+  };
+}
+function openMyCard(){
+  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>הכרטיס שלי</h2></div><div class="scr-body" id="mcBody"></div>');sc._reopen=openMyCard;
+  function render(){
+    const c=loadMyCard();const body=sc.querySelector('#mcBody');if(!body)return;
+    if(!c.name&&!c.phone&&!c.email){body.innerHTML='<p class="cr-hint" style="text-align:center;margin:18px 0;">עדיין לא הגדרת את הכרטיס שלך.</p><button class="mp-confirm" id="mcEdit">הגדר את הכרטיס שלי</button>';body.querySelector('#mcEdit').onclick=()=>openMyCardEdit(render);return;}
+    const v=buildMyVcard(c);let imgHtml='';
+    try{if(typeof qrcode!=='undefined'){const qr=qrcode(0,'M');qr.addData(v);qr.make();imgHtml='<img alt="QR" src="'+qr.createDataURL(6,10)+'" style="width:236px;height:236px;display:block;margin:0 auto;image-rendering:pixelated;">';}else{imgHtml='<div style="color:#4A4F5A;padding:40px 10px;">דרוש חיבור לאינטרנט פעם אחת ליצירת הקוד.</div>';}}catch(e){imgHtml='<div style="color:#4A4F5A;padding:40px 10px;">לא ניתן ליצור קוד.</div>';}
+    body.innerHTML='<div style="background:#fff;border-radius:18px;padding:18px;margin:8px auto 16px;max-width:300px;text-align:center;">'+imgHtml+'<div style="color:#16181D;font-weight:700;font-size:18px;margin-top:12px;">'+escapeHtml(c.name||'')+'</div>'+((c.title||c.org)?'<div style="color:#4A4F5A;font-size:13px;margin-top:2px;">'+escapeHtml([c.title,c.org].filter(Boolean).join(' · '))+'</div>':'')+'</div>'+
+      '<p class="cr-hint" style="text-align:center;margin:0 0 14px;">הצג את הקוד — סריקה תוסיף אותך כאיש קשר.</p>'+
+      '<button class="mp-confirm" id="mcShare">שתף כרטיס</button>'+
+      '<button class="mp-confirm" id="mcEdit" style="background:#fff;color:var(--tq-ink);margin-top:8px;">ערוך פרטים</button>';
+    body.querySelector('#mcEdit').onclick=()=>openMyCardEdit(render);
+    body.querySelector('#mcShare').onclick=async ()=>{
+      const v2=buildMyVcard(loadMyCard());
+      try{const file=new File([v2],'my-card.vcf',{type:'text/vcard'});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});return;}}catch(e){if(e&&e.name==='AbortError')return;}
+      try{if(navigator.share){await navigator.share({text:v2});return;}}catch(e){if(e&&e.name==='AbortError')return;}
+      try{await navigator.clipboard.writeText(v2);toast('הכרטיס הועתק');}catch(e){toast('שיתוף לא נתמך');}
+    };
+  }
+  render();
+}
 function openHbar(){
   if(document.querySelector('.hbar-backdrop'))return;
   const items=[
     {ic:ICON.home,     label:'בית',              fn:goHome},
     {ic:ICON.search,   label:'חיפוש',            fn:openSearch},
     {ic:ICON.gear,     label:'הגדרות',          fn:openSettings},
+    {ic:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h7v7H3V3zm2 2v3h3V5H5zm-2 9h7v7H3v-7zm2 2v3h3v-3H5zM14 3h7v7h-7V3zm2 2v3h3V5h-3zM14 14h3v3h-3v-3zm5 0h2v2h-2v-2zm-5 5h3v2h-3v-2zm5 0h2v2h-2v-2z"/></svg>', label:'הכרטיס שלי', fn:openMyCard},
     {ic:ICON.palette,  label:'פלטת צבעים',       pal:true},
     {ic:(cfg.hand==='left'?ICON.phoneL:ICON.phoneR), label:(cfg.hand==='left'?'יד ימין':'יד שמאל'), hand:1},
     {ic:'<svg viewBox="72 34 102 102" fill="none" stroke="currentColor"><g transform="translate(96 86) rotate(28) scale(0.8)" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><line x1="0" y1="-52" x2="0" y2="-4"/><path d="M-12 4 H12 L22 42 Q0 50 -22 42 Z" stroke-width="6"/><line x1="-4" y1="9" x2="-8" y2="44" stroke-width="4"/><line x1="6" y1="9" x2="10" y2="44" stroke-width="4"/></g><rect x="86.5" y="79" width="18" height="9" rx="4" transform="rotate(28 95 83)" fill="currentColor"/><g fill="currentColor"><circle cx="110" cy="126" r="6"/><circle cx="128" cy="126" r="5"/><circle cx="146" cy="126" r="4"/></g></svg>', label:'סדר פסח', fn:openSeder, big:1}
