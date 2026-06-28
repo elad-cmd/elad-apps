@@ -46,7 +46,7 @@ export default async function handler(req, res) {
   fd.append('response_format', 'text');
   if (!translate && lang) fd.append('language', lang);
   if (!translate && (lang === 'he' || !lang)) {
-    fd.append('prompt', 'תמלול הקלטה קולית. שמור על פיסוק תקין.');
+    fd.append('prompt', 'תמלול הקלטה קולית בעברית. כתוב את כל המספרים בספרות ולא במילים. למשל: שישים ושלוש = 63, מאה עשרים = 120, אלף חמש מאות = 1500, רחוב הרצל שתים עשרה = רחוב הרצל 12, קומה שלוש = קומה 3. שמור על פיסוק תקין.');
   }
 
   const url = translate

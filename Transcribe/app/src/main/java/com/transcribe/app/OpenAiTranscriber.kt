@@ -60,7 +60,7 @@ object OpenAiTranscriber {
             builder.addFormDataPart("language", lang)
         }
         if (!translate && (lang == "he" || lang.isEmpty())) {
-            builder.addFormDataPart("prompt", "תמלול הקלטה קולית. שמור על פיסוק תקין.")
+            builder.addFormDataPart("prompt", "תמלול הקלטה קולית בעברית. כתוב את כל המספרים בספרות ולא במילים. למשל: שישים ושלוש = 63, מאה עשרים = 120, אלף חמש מאות = 1500, רחוב הרצל שתים עשרה = רחוב הרצל 12, קומה שלוש = קומה 3. שמור על פיסוק תקין.")
         }
 
         val request = Request.Builder()
