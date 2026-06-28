@@ -36,7 +36,7 @@
   .scr{position:fixed;inset:0;z-index:70;background:linear-gradient(180deg,var(--tq-top),var(--tq-bot));color:#fff;transform:translateX(100%);transition:transform .52s cubic-bezier(.34,1.45,.5,1);display:flex;flex-direction:column;}
   .scr.show{transform:none;}
   .scr-head{display:flex;align-items:center;gap:10px;padding:16px 18px 8px;}
-  .scr-head h2{font-size:18px;font-weight:700;flex:1;}
+  .scr-head h2{font-size:18px;font-weight:700;flex:1;text-align:center;padding:0 52px;}
   .scr-back{position:absolute;z-index:12;bottom:33px;width:46px;height:46px;border-radius:50%;border:none;background:rgba(255,255,255,.16);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;}
   body.hand-right .scr-back{right:18px;left:auto;}
   body.hand-left .scr-back{left:18px;right:auto;}
@@ -409,6 +409,9 @@
   .flt-body{display:flex;flex-direction:column;}
   .scr-body.flt-body{padding-bottom:104px;}
   .flt-tabs{display:flex;gap:6px;margin-bottom:12px;}
+  .flt-cattabs{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:8px;scrollbar-width:none;}
+  .flt-cattabs::-webkit-scrollbar{display:none;}
+  .flt-cattabs .vtab{flex:0 0 auto;min-width:78px;padding-left:10px;padding-right:10px;}
   .vtab{flex:1;display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,.08);border:none;border-radius:12px;padding:7px 0;color:rgba(255,255,255,.82);cursor:pointer;font-family:inherit;}
   .vtab b{font-size:16px;font-weight:800;}
   .vtab span{font-size:10.5px;}
@@ -479,6 +482,23 @@
   .li-tag.keep{background:rgba(0,194,168,.22);color:#7fe9d8;}
   .li-tag.maybe{background:rgba(255,255,255,.14);color:rgba(255,255,255,.82);}
   .li-tag.del{background:rgba(224,138,122,.22);color:#e7a79e;}
+  .sl-viewtog{display:flex;gap:8px;margin:10px 2px 2px;}
+  .sl-vt{flex:0 0 auto;padding:6px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.06);color:#fff;font-size:13px;cursor:pointer;}
+  .sl-vt.on{background:var(--tq);border-color:var(--tq);color:#fff;font-weight:700;}
+  .flt-row.sel .flt-row-fg{box-shadow:inset 0 0 0 2px var(--tq);background:rgba(0,194,168,.18);}
+  .arc-row.sel{box-shadow:inset 0 0 0 2px var(--tq);background:rgba(0,194,168,.18);}
+  .selbar{position:fixed;left:12px;right:12px;bottom:18px;z-index:97;display:flex;align-items:center;gap:10px;background:var(--tq-deep,#0c3b38);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:8px 12px;box-shadow:0 12px 34px rgba(0,0,0,.45);transform:translateY(150%);opacity:0;transition:transform .26s cubic-bezier(.2,.9,.3,1),opacity .2s ease;}
+  .selbar.show{transform:translateY(0);opacity:1;}
+  .selbar-x{background:rgba(255,255,255,.12);border:none;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
+  .selbar-x svg{width:18px;height:18px;}
+  .selbar-cnt{color:#fff;font-weight:700;font-size:14px;flex:1;text-align:right;}
+  .selbar-acts{display:flex;gap:8px;flex:0 0 auto;}
+  .selbar-btn{border:none;border-radius:12px;padding:8px 14px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;background:var(--tq);display:flex;align-items:center;gap:6px;}
+  .selbar-btn svg{width:17px;height:17px;}
+  .selbar-btn.danger{background:#d23b30;}
+  .selbar-btn.ghost{background:rgba(255,255,255,.16);}
+  body.selecting #botbar{opacity:0!important;pointer-events:none!important;}
+  body.selecting .bot-shade{opacity:0!important;}
   .arc-row{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.1);border-radius:12px;padding:10px 12px;margin-bottom:8px;}
   .arc-restore{margin-inline-start:auto;background:rgba(255,255,255,.14);color:#fff;border:none;border-radius:10px;padding:6px 13px;font-family:inherit;font-weight:600;font-size:12.5px;cursor:pointer;flex:0 0 auto;}
   .set-toggle{display:flex;align-items:center;justify-content:center;gap:12px;width:fit-content;max-width:86%;margin:10px auto 22px;padding:9px 16px;background:rgba(255,255,255,.1);border-radius:14px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;}
@@ -515,14 +535,16 @@
   #botbar .bb-btn:active{transform:scale(.9);}
   #botbar.collapsed .bb-mid{display:none;}
   #botbar.bar-hidden{opacity:0;pointer-events:none;}
+  body.picking #botbar{opacity:0!important;pointer-events:none!important;}
+  body.picking .bot-shade{opacity:0!important;}
   body.hand-left #bbBack svg{transform:scaleX(-1);}
   .scr-back{display:none;}
   .dial-body{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:10px;padding-bottom:104px;}
-  .dial-res{display:flex;flex-direction:column;gap:8px;width:100%;max-width:340px;max-height:48vh;overflow-y:auto;margin-bottom:2px;transition:max-height .38s cubic-bezier(.4,0,.2,1);}
+  .dial-res{display:flex;flex-direction:column;gap:8px;width:100%;max-width:340px;max-height:48vh;overflow-y:auto;margin-bottom:2px;transform-origin:center bottom;transition:max-height .2s cubic-bezier(.4,0,.2,1),opacity .2s ease,transform .2s cubic-bezier(.4,0,.2,1);}
   .dial-numrow{display:flex;align-items:center;justify-content:center;gap:14px;direction:ltr;}
   .dial-num{font-size:30px;font-weight:700;color:#fff;min-height:38px;direction:ltr;letter-spacing:2px;}
   .dial-bksp{width:44px;height:44px;border-radius:50%;border:none;background:rgba(255,255,255,.12);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
-  .dial-padrow{display:flex;align-items:flex-end;justify-content:center;gap:12px;direction:ltr;width:100%;overflow:hidden;max-height:52vh;transform-origin:center bottom;transition:max-height .38s cubic-bezier(.4,0,.2,1),opacity .3s ease,transform .38s cubic-bezier(.4,0,.2,1);}
+  .dial-padrow{display:flex;align-items:flex-end;justify-content:center;gap:12px;direction:ltr;width:100%;overflow:hidden;max-height:52vh;transform-origin:center bottom;transition:max-height .2s cubic-bezier(.4,0,.2,1),opacity .2s ease,transform .2s cubic-bezier(.4,0,.2,1);}
   .dial-grid{display:grid;grid-template-columns:repeat(3,58px);gap:11px;justify-content:center;}
   .dial-key{width:58px;height:58px;border-radius:50%;border:none;background:rgba(255,255,255,.12);color:#fff;font-size:23px;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;}
   .dial-key:active{background:rgba(255,255,255,.25);}
@@ -534,7 +556,7 @@
   .dial-handle:active{background:rgba(255,255,255,.26);}
   .dial-handle svg{width:24px;height:24px;transition:transform .22s ease;}
   .dial-collapsed .dial-padrow{max-height:0;opacity:0;transform:translateY(26px) scaleY(.5);pointer-events:none;margin-top:-10px;}
-  .dial-collapsed .dial-res{max-height:64vh;}
+  .dial-collapsed .dial-res{max-height:0;opacity:0;transform:translateY(22px) scaleY(.6);pointer-events:none;overflow:hidden;margin-bottom:0;}
   .dial-collapsed .dial-handle svg{transform:rotate(180deg);}
   .dial-res-row{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.1);border-radius:14px;padding:7px 11px;cursor:pointer;}
   .dial-res-row.dial-res-new{background:var(--tq-deep);}
@@ -584,11 +606,15 @@
   .vc-ov{position:fixed;inset:0;z-index:140;background:rgba(8,22,23,0);transition:background .2s;display:flex;align-items:center;justify-content:center;pointer-events:none;}
   .vc-ov.show{background:rgba(8,22,23,.93);pointer-events:auto;}
   .vc-box{display:flex;flex-direction:column;align-items:center;gap:20px;padding:24px;}
-  .vc-mic{width:92px;height:92px;border-radius:50%;background:var(--tq-deep);color:#fff;display:flex;align-items:center;justify-content:center;animation:vcPulse 1.3s ease-in-out infinite;}
+  .vc-mic{width:92px;height:92px;border-radius:50%;background:var(--tq-deep);color:#fff;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .vc-mic.listening{animation:vcPulse 1.3s ease-in-out infinite;}
   .vc-mic svg{width:42px;height:42px;}
   @keyframes vcPulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(0,194,168,.45)}50%{transform:scale(1.06);box-shadow:0 0 0 20px rgba(0,194,168,0)}}
-  .vc-txt{color:#fff;font-size:17px;font-weight:600;max-width:82%;text-align:center;min-height:24px;line-height:1.5;}
-  .vc-cancel{background:rgba(255,255,255,.14);border:none;color:#fff;padding:9px 26px;border-radius:22px;font:inherit;font-size:14px;cursor:pointer;}
+  .vc-txt{color:#fff;font-size:16px;font-weight:600;max-width:82%;text-align:center;min-height:22px;line-height:1.5;}
+  .vc-act{color:#7fe3cf;font-size:15.5px;font-weight:700;text-align:center;max-width:82%;line-height:1.5;}
+  .vc-btns{display:flex;gap:12px;margin-top:2px;}
+  .vc-ok{background:#15b89f;border:none;color:#06322d;padding:10px 30px;border-radius:22px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+  .vc-cancel{background:rgba(255,255,255,.14);border:none;color:#fff;padding:10px 26px;border-radius:22px;font:inherit;font-size:14px;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -652,7 +678,7 @@ const ICON={
   trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/></svg>',
   clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
   viewlist:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>',
-  viewcards:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M3 8v8M21 8v8"/></svg>',
+  viewcards:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="4.5" width="10.5" height="15" rx="2.5" transform="rotate(15 13.25 12)"/></svg>',
   undo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-4-4 4-4"/><path d="M5 10h11a4 4 0 0 1 0 8h-1"/></svg>',
   gear:'<svg viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path transform="translate(4.29 19.71) scale(0.46)" d="M6.74 -2.79L9.84 -1.76L9.84 1.76L6.74 2.79L8.2 5.72L5.72 8.2L2.79 6.74L1.76 9.84L-1.76 9.84L-2.79 6.74L-5.72 8.2L-8.2 5.72L-6.74 2.79L-9.84 1.76L-9.84 -1.76L-6.74 -2.79L-8.2 -5.72L-5.72 -8.2L-2.79 -6.74L-1.76 -9.84L1.76 -9.84L2.79 -6.74L5.72 -8.2L8.2 -5.72L6.74 -2.79ZM3.70 1.53L3.70 -1.53L1.53 -3.70L-1.53 -3.70L-3.70 -1.53L-3.70 1.53L-1.53 3.70L1.53 3.70Z"/><path transform="translate(12 12) scale(0.46)" d="M6.74 -2.79L9.84 -1.76L9.84 1.76L6.74 2.79L8.2 5.72L5.72 8.2L2.79 6.74L1.76 9.84L-1.76 9.84L-2.79 6.74L-5.72 8.2L-8.2 5.72L-6.74 2.79L-9.84 1.76L-9.84 -1.76L-6.74 -2.79L-8.2 -5.72L-5.72 -8.2L-2.79 -6.74L-1.76 -9.84L1.76 -9.84L2.79 -6.74L5.72 -8.2L8.2 -5.72L6.74 -2.79ZM3.70 1.53L3.70 -1.53L1.53 -3.70L-1.53 -3.70L-3.70 -1.53L-3.70 1.53L-1.53 3.70L1.53 3.70Z"/><path transform="translate(19.71 4.29) scale(0.46)" d="M6.74 -2.79L9.84 -1.76L9.84 1.76L6.74 2.79L8.2 5.72L5.72 8.2L2.79 6.74L1.76 9.84L-1.76 9.84L-2.79 6.74L-5.72 8.2L-8.2 5.72L-6.74 2.79L-9.84 1.76L-9.84 -1.76L-6.74 -2.79L-8.2 -5.72L-5.72 -8.2L-2.79 -6.74L-1.76 -9.84L1.76 -9.84L2.79 -6.74L5.72 -8.2L8.2 -5.72L6.74 -2.79ZM3.70 1.53L3.70 -1.53L1.53 -3.70L-1.53 -3.70L-3.70 -1.53L-3.70 1.53L-1.53 3.70L1.53 3.70Z"/></svg>',
   edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
@@ -771,6 +797,8 @@ const STAR='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.1 
 let FAVORDER=(function(){try{return JSON.parse(localStorage.getItem('myshare_favorder')||'[]')||[];}catch(e){return[];}})();
 function saveFavOrder(){try{localStorage.setItem('myshare_favorder',JSON.stringify(FAVORDER));}catch(e){}}
 let FDEC=loadDec();
+let MGDONE={};try{MGDONE=JSON.parse(localStorage.getItem('myshare_mgdone')||'{}')||{};}catch(e){MGDONE={};}
+function saveMgDone(){try{localStorage.setItem('myshare_mgdone',JSON.stringify(MGDONE));}catch(e){}}
 function peopleFor(v){let a=PEOPLE.slice().filter(p=>FDEC[fKey(p)]!=='delete');if(v==='fav'){a=a.filter(p=>p.fav);a.sort((x,y)=>{const ix=FAVORDER.indexOf(fKey(x)),iy=FAVORDER.indexOf(fKey(y));if(ix<0&&iy<0)return byName(x,y);if(ix<0)return 1;if(iy<0)return -1;return ix-iy;});}else if(v==='abc')a.sort(byName);else a.sort((x,y)=>(STATS[statKey(y)]||0)-(STATS[statKey(x)]||0)||(y.last||0)-(x.last||0));return a;}
 const DAY_LET=['א','ב','ג','ד','ה','ו','ש'];
 function loadDays(){try{return JSON.parse(localStorage.getItem('myshare_days')||'{}')||{};}catch(e){return{};}}
@@ -801,6 +829,19 @@ let FIELDS=loadFields();
 function saveFields(){try{localStorage.setItem('myshare_fields',JSON.stringify(FIELDS));}catch(e){}}
 function getFields(p){const v=FIELDS[fKey(p)];return Array.isArray(v)?v:[];}
 function setFields(p,arr){const k=fKey(p);arr=(arr||[]).filter(f=>f&&((String(f.l||'').trim())||(String(f.v||'').trim())));if(arr.length)FIELDS[k]=arr;else delete FIELDS[k];saveFields();}
+function healKeys(){
+  if(!PEOPLE||!PEOPLE.length)return;
+  const valid={},byPhone={},byName={};
+  PEOPLE.forEach(p=>{const k=fKey(p);if(!k)return;valid[k]=1;
+    const np=normIL(p.phone||(p.phones&&p.phones[0])||'');if(np&&!(np in byPhone))byPhone[np]=k;
+    if(p.name&&!(p.name in byName))byName[p.name]=k;});
+  function resolve(k){if(!k||valid[k])return k;const np=normIL(k);if(np&&byPhone[np])return byPhone[np];if(byName[k])return byName[k];return k;}
+  let cfgCh=false;
+  (cfg.lists||[]).forEach(L=>{if(!L||!Array.isArray(L.members))return;const seen={},nm=[];L.members.forEach(k=>{const r=resolve(k);if(!seen[r]){seen[r]=1;nm.push(r);}});if(nm.join('')!==L.members.join('')){L.members=nm;cfgCh=true;}});
+  if(cfgCh)saveCfg();
+  function remap(obj,save){let ch=false;const out={};Object.keys(obj).forEach(k=>{const r=resolve(k);if(r!==k)ch=true;if(!(r in out))out[r]=obj[k];});if(ch){Object.keys(obj).forEach(k=>delete obj[k]);Object.assign(obj,out);save();}}
+  remap(BDAY,saveBday);remap(ADDR,saveAddr);remap(FIELDS,saveFields);remap(DAYS,saveDays);remap(STATS,saveStats);
+}
 function dayMiniHTML(p){const v=getDays(p);if(!v.some(Boolean))return '';return '<div class="ml"><span class="daymini">'+v.map((on,i)=>'<i class="'+(on?'on':'')+'"></i>').join('')+'</span></div>';}
 function rowHTML(c,sub){sub=(sub!==undefined?sub:c.msg)||'';return `<span class="av">${escapeHtml(initials(c.name))}${c.fav?'<span class="favstar">'+STAR+'</span>':''}</span><div class="meta"><div class="ml"><span class="nm">${escapeHtml(c.name)}</span></div>${sub?`<div class="ml"><span class="sub">${escapeHtml(sub)}</span></div>`:""}${dayMiniHTML(c)}</div>`;}
 function renderList(){CURRENT=peopleFor(VIEW);if(activeList){const _L=(cfg.lists||[]).find(x=>x.id===activeList);CURRENT=_L?CURRENT.filter(p=>_L.members.indexOf(fKey(p))>=0):CURRENT;}listEl.innerHTML='';CURRENT.forEach((c,i)=>{const row=document.createElement('div');row.className='row';row.dataset.i=i;row._person=c;row.innerHTML=rowHTML(c);listEl.appendChild(row);});if(activeList){if(!CURRENT.length){const em=document.createElement('div');em.className='list-empty';em.textContent='אין עדיין אנשי קשר ברשימה הזו — הוסף מהכפתור הירוק שבצד';listEl.appendChild(em);}}buildAZ();updateFavEdit();updateListAdd();}
@@ -927,24 +968,39 @@ function dqBadPhone(p){const ph=dqPhones(p).filter(x=>String(x).trim());if(!ph.l
 function bulkNormalizePhones(){
   let n=0;
   PEOPLE.forEach(p=>{let ch=false;if(p.phone){const v=normIL(p.phone);if(v!==p.phone){p.phone=v;ch=true;}}if(p.phones&&p.phones.length){p.phones=p.phones.map(x=>{const v=normIL(x);if(v!==x)ch=true;return v;});}if(ch)n++;});
-  if(n){savePeople();renderList();}
+  if(n){savePeople();healKeys();renderLists();renderList();}
   toast(n?('נוקו '+n+' מספרים'):'אין מה לנקות');
 }
 function openSpecialLists(){
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>רשימות מיוחדות</h2></div><div class="scr-body" id="slBody"></div>');sc._reopen=openSpecialLists;
-  let tab='noname';
+  let tab='noname',slView='all';
   const defs=[{k:'noname',t:'חסר שם',f:dqNoName},{k:'nophone',t:'חסר טלפון',f:dqNoPhone},{k:'noemail',t:'חסר אימייל',f:dqNoEmail},{k:'badphone',t:'טלפון לא תקין',f:dqBadPhone}];
   function render(){
     const body=sc.querySelector('#slBody');if(!body)return;
     const cur=defs.find(d=>d.k===tab)||defs[0];
     const tabs='<div class="flt-tabs">'+defs.map(d=>{const c=PEOPLE.filter(p=>FDEC[fKey(p)]!=='delete'&&d.f(p)).length;return '<button class="vtab'+(d.k===tab?' on':'')+'" data-k="'+d.k+'"><b>'+c+'</b><span>'+d.t+'</span></button>';}).join('')+'</div>';
-    const list=PEOPLE.filter(p=>FDEC[fKey(p)]!=='delete'&&cur.f(p)).sort(byName);
-    let html=tabs+'<p class="cr-hint" style="text-align:right;margin:10px 2px;">נוצר עכשיו לפי הנתונים — לא נשמר ולא מופיע באנשי הקשר הרגילים. לחיצה פותחת את הכרטיס לתיקון.</p>';
-    if(!list.length){html+='<div class="flt-done">אין אנשי קשר כאלה 🎉</div>';}
-    else{html+='<div class="flt-list">'+list.map((p,i)=>{const det=personDetails(p);return '<div class="arc-row sl-row" data-i="'+i+'"><span class="li-av">'+escapeHtml(initials(p.name)||'?')+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(det.length?'<div class="s">'+escapeHtml(det.join(' · '))+'</div>':'')+'</div></div>';}).join('')+'</div>';}
+    const savedC=PEOPLE.filter(p=>FDEC[fKey(p)]==='keep'&&cur.f(p)).length;
+    const viewTog='<div class="sl-viewtog"><button class="sl-vt'+(slView==='all'?' on':'')+'" data-v="all">הכל</button><button class="sl-vt'+(slView==='saved'?' on':'')+'" data-v="saved">שמורים'+(savedC?' · '+savedC:'')+'</button></div>';
+    let list=PEOPLE.filter(p=>FDEC[fKey(p)]!=='delete'&&cur.f(p));
+    if(slView==='saved')list=list.filter(p=>FDEC[fKey(p)]==='keep');
+    list.sort(byName);
+    let html=tabs+viewTog+'<p class="cr-hint" style="text-align:right;margin:8px 2px;">החלקה ימינה — שמירה · החלקה שמאלה — לארכיון · לחיצה לפתיחת הכרטיס.</p>';
+    if(!list.length){html+='<div class="flt-done">'+(slView==='saved'?'אין פריטים שמורים':'אין אנשי קשר כאלה 🎉')+'</div>';}
+    else{html+='<div class="flt-list">'+list.map((p,i)=>{const det=personDetails(p);const kept=FDEC[fKey(p)]==='keep';return '<div class="flt-row" data-i="'+i+'"><div class="flt-row-bg"></div><div class="flt-row-fg"><span class="li-av">'+escapeHtml(initials(p.name)||'?')+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(det.length?'<div class="s">'+escapeHtml(det.join(' · '))+'</div>':'')+'</div>'+(kept?'<span class="li-tag keep">שמור</span>':'')+'</div></div>';}).join('')+'</div>';}
     body.innerHTML=html;
     body.querySelectorAll('.vtab').forEach(b=>b.onclick=()=>{tab=b.dataset.k;render();});
-    body.querySelectorAll('.sl-row').forEach(rw=>rw.onclick=()=>openContact(list[+rw.dataset.i]));
+    body.querySelectorAll('.sl-vt').forEach(b=>b.onclick=()=>{slView=b.dataset.v;render();});
+    function rowOutSL(rw,dir){const fg=rw.querySelector('.flt-row-fg');fg.style.transition='transform .25s';fg.style.transform='translateX('+(dir>0?'115%':'-115%')+')';if(navigator.vibrate)navigator.vibrate(8);setTimeout(render,260);}
+    body.querySelectorAll('.flt-row').forEach(rw=>{
+      const fg=rw.querySelector('.flt-row-fg');const bg=rw.querySelector('.flt-row-bg');const p=list[+rw.dataset.i];
+      let sx=0,sy=0,dx=0,dy=0,drag=false,moved=false,d0=0;
+      const setDir=(sg)=>{if(sg===d0)return;d0=sg;if(sg>0){bg.className='flt-row-bg keepbg';bg.innerHTML=ICON.check;}else if(sg<0){bg.className='flt-row-bg delbg';bg.innerHTML=ICON.archive;}else{bg.className='flt-row-bg';bg.innerHTML='';}};
+      const settle=()=>{fg.style.transition='transform .2s';fg.style.transform='';setDir(0);};
+      fg.addEventListener('pointerdown',e=>{e.stopPropagation();drag=true;moved=false;sx=e.clientX;sy=e.clientY;dx=0;dy=0;d0=0;fg.style.transition='none';});
+      fg.addEventListener('pointermove',e=>{if(!drag)return;dx=e.clientX-sx;dy=e.clientY-sy;if(!moved&&Math.abs(dy)>8&&Math.abs(dy)>=Math.abs(dx)){drag=false;settle();return;}if(Math.abs(dx)>6)moved=true;if(moved){setDir(Math.sign(dx));fg.style.transform='translateX('+dx+'px)';}});
+      fg.addEventListener('pointerup',e=>{if(!drag)return;e.stopPropagation();drag=false;if(dx>80){FDEC[fKey(p)]='keep';saveDec();if(navigator.vibrate)navigator.vibrate(6);toast('סומן כשמור');render();}else if(dx<-80){FDEC[fKey(p)]='delete';saveDec();toast('הועבר לארכיון');rowOutSL(rw,-1);}else{settle();if(!moved&&Math.abs(dy)<8)openContact(p);}});
+      fg.addEventListener('pointercancel',()=>{if(!drag)return;drag=false;settle();});
+    });
   }
   render();
 }
@@ -1028,13 +1084,7 @@ function openSendList(listId){
       const note=(body.querySelector('#caNote').value||'').trim();
       const start=new Date(dv+'T'+tv);if(isNaN(start.getTime())){toast('תאריך לא תקין');return;}
       const end=new Date(start.getTime()+dur*60000);
-      const z=n=>String(n).padStart(2,'0');
-      const fmt=dt=>''+dt.getUTCFullYear()+z(dt.getUTCMonth()+1)+z(dt.getUTCDate())+'T'+z(dt.getUTCHours())+z(dt.getUTCMinutes())+'00Z';
-      let url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(title)+'&dates='+fmt(start)+'/'+fmt(end);
-      if(note)url+='&details='+encodeURIComponent(note);
-      if(loc)url+='&location='+encodeURIComponent(loc);
-      if(ems.length)url+='&add='+encodeURIComponent(ems.join(','));
-      try{var w=window.open(url,'_blank');if(!w)location.href=url;}catch(e){location.href=url;}
+      openCalendar({title:title,start:start,end:end,location:loc,description:note,emails:ems});
       toast(ems.length?('נפתח יומן עם '+ems.length+' מוזמנים'):'נפתח יומן');
     };
   }
@@ -1124,7 +1174,7 @@ function openMemberPicker(listId){
   sc._back=()=>{L.members=[...sel];saveCfg();renderLists();renderList();origBack();};
 }
 if(BRIDGE){try{var _fk=JSON.parse(localStorage.getItem('myshare_favkeys')||'null');if(_fk){PEOPLE.forEach(p=>{if(_fk[fKey(p)])p.fav=true;});localStorage.removeItem('myshare_favkeys');}}catch(e){}}
-recomputeAllRules();renderSeg();renderList();renderLists();layoutList();
+healKeys();recomputeAllRules();renderSeg();renderList();renderLists();layoutList();
 setTimeout(()=>{try{const t=upcomingBdays().filter(o=>o.n===0);if(t.length){const nm=t.map(o=>o.p.name||'').filter(Boolean).slice(0,3).join(', ');toast('🎂 היום יום הולדת ל'+(nm||t.length+' אנשי קשר'));}}catch(e){}},1600);
 window.addEventListener('resize',layoutList);
 
@@ -1295,7 +1345,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.29.0108';
+const APP_VERSION='2026.06.29.0224';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1533,13 +1583,21 @@ function appBack(){
   if(document.querySelector('.ovl.show')){closeSheet();return true;}
   if(document.querySelector('.hbar-backdrop')){closeHbar();return true;}
   if(srch.classList.contains('show')){closeSearch();return true;}
-  const scrs=[...document.querySelectorAll('.scr')];const top=scrs[scrs.length-1];
+  const sb=document.getElementById('selBar');if(sb&&sb.classList.contains('show')&&_selCancel){_selCancel();return true;}
+  const scrs=[...document.querySelectorAll('.scr.show')];const top=scrs[scrs.length-1];
   if(top&&top._back){top._back();return true;}
   return false;
 }
 function navBack(){if(!appBack()){if(MODE==='share')doExit();else openExitConfirm();}}
 let exitDlgOpen=false,allowExit=false;
-function doExit(){if(BRIDGE&&BRIDGE.close){try{BRIDGE.close();return;}catch(e){}}allowExit=true;try{window.close();}catch(e){}try{history.go(-2);}catch(e){}setTimeout(()=>{allowExit=false;},1200);}
+function doExit(){
+  try{if(BRIDGE){if(typeof BRIDGE.close==='function'){BRIDGE.close();return;}if(typeof BRIDGE.exit==='function'){BRIDGE.exit();return;}if(typeof BRIDGE.finish==='function'){BRIDGE.finish();return;}if(typeof BRIDGE.exitApp==='function'){BRIDGE.exitApp();return;}}}catch(e){}
+  allowExit=true;
+  try{window.close();}catch(e){}
+  if(/android/i.test(navigator.userAgent)){try{location.href='intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.HOME;end';return;}catch(e){}}
+  try{history.go(-(history.length>1?history.length-1:1));}catch(e){}
+  setTimeout(()=>{allowExit=false;},1200);
+}
 function openExitConfirm(){
   if(exitDlgOpen)return;exitDlgOpen=true;
   const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
@@ -1635,18 +1693,16 @@ function openContact(person,fromSearch){
 function openSeder(){
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>סדר פסח — ניקוי הרשימה</h2></div>'+
     '<div class="scr-body"><div class="seder-intro">ננקה את אנשי הקשר בשני שלבים: קודם מאחדים כפילויות, ואז עוברים אחד-אחד ומסננים. אפשר לעשות רק את מה שצריך.</div>'+
-    '<button class="opt" id="optMerge"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 7h3a4 4 0 0 1 0 8H8M16 17h-3a4 4 0 0 1 0-8h3\"/></svg></span><span><span class="otitle">מיזוג כפילויות</span><span class="odesc">איחוד אנשי קשר שמופיעים פעמיים</span></span><span class="ostep">שלב 1</span></button>'+
-    '<button class="opt" id="optFilter"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 5h16l-6 8v5l-4 2v-7z\"/></svg></span><span><span class="otitle">סינון רשימה</span><span class="odesc">החלקה: שומר / ארכיון / לבדיקה</span></span><span class="ostep">שלב 2</span></button>'+
-    '<button class="opt" id="optArchive"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"4\" rx=\"1\"/><path d=\"M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8\"/><path d=\"M10 12h4\"/></svg></span><span><span class="otitle">ארכיון</span><span class="odesc">אנשי קשר שהוסרו מהתצוגה</span></span></button>'+
-    '<button class="opt" id="optSpecial"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 5h16l-6 8v5l-4 2v-7z\"/></svg></span><span><span class="otitle">רשימות מיוחדות</span><span class="odesc">חסרי שם / טלפון / אימייל — בזמן אמת</span></span></button>'+
+    '<button class="opt" id="optMerge"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 7h3a4 4 0 0 1 0 8H8M16 17h-3a4 4 0 0 1 0-8h3\"/></svg></span><span><span class="otitle">מיזוג כפילויות</span><span class="odesc">איחוד אנשי קשר שמופיעים פעמיים</span></span></button>'+
+    '<button class="opt" id="optFilter"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 5h16l-6 8v5l-4 2v-7z\"/></svg></span><span><span class="otitle">סינון רשימה</span><span class="odesc">החלקה: שומר / ארכיון / לבדיקה</span></span></button>'+
     '<button class="opt" id="optNorm"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 7h11M5 12h14M5 17h8\"/></svg></span><span><span class="otitle">ניקוי מספרי טלפון</span><span class="odesc">הסרת +972 והוספת 0, בלי מקפים — לכל המספרים</span></span></button>'+
+    '<button class="opt" id="optArchive"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"4\" rx=\"1\"/><path d=\"M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8\"/><path d=\"M10 12h4\"/></svg></span><span><span class="otitle">ארכיון</span><span class="odesc">אנשי קשר שהוסרו מהתצוגה</span></span></button>'+
     '<button class="opt" id="optReset"><span class="oic" style="background:#fde8e6;color:#c0392b;"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 12a9 9 0 1 0 3-6.7L3 8\"/><path d=\"M3 3v5h5\"/></svg></span><span><span class="otitle">איפוס האפליקציה</span><span class="odesc">מחיקת כל ההגדרות והנתונים</span></span></button>'+
     '</div>');
   sc.classList.add('scr-bottom');
   sc._reopen=openSeder;sc.querySelector('#optMerge').onclick=()=>openMerge();
   sc.querySelector('#optFilter').onclick=()=>openFilter();
   sc.querySelector('#optArchive').onclick=()=>openArchive();
-  sc.querySelector('#optSpecial').onclick=()=>openSpecialLists();
   sc.querySelector('#optNorm').onclick=()=>uiConfirm('לנקות את כל המספרים? יוסר +972 ויתווסף 0, בלי מקפים.',bulkNormalizePhones);
   sc.querySelector('#optReset').onclick=()=>openResetConfirm();
 }
@@ -1654,8 +1710,9 @@ function normEmail(e){return String(e||'').trim().toLowerCase();}
 function normPhone(p){const d=String(p||'').replace(/\D/g,'');return d.length>=7?d.slice(-9):'';}
 function normName(n){try{return String(n||'').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu,'').trim().split(/\s+/).filter(Boolean).sort().join(' ');}catch(e){return String(n||'').toLowerCase().replace(/[^a-z0-9\u0590-\u05ff\s]/g,'').trim().split(/\s+/).filter(Boolean).sort().join(' ');}}
 function personDetails(p){const ph=(p.phones&&p.phones.length)?p.phones:(p.phone?[p.phone]:[]);const em=(p.emails&&p.emails.length)?p.emails:(p.email?[p.email]:[]);return [...new Set([...ph,...em].filter(Boolean))];}
+function mgSig(g){return g.map(p=>{const ph=normPhone((p.phones&&p.phones[0])||p.phone||'');const em=normEmail((p.emails&&p.emails[0])||p.email||'');const nm=normName(p.name||'');return ph||em||('n:'+nm);}).filter(Boolean).sort().join('|');}
 function computeMergeGroups(){
-  const recs=PEOPLE.slice();
+  const recs=PEOPLE.slice().filter(p=>FDEC[fKey(p)]!=='delete');
   const parent=recs.map((_,i)=>i);
   const find=x=>{while(parent[x]!==x){parent[x]=parent[parent[x]];x=parent[x];}return x;};
   const uni=(a,b)=>{parent[find(a)]=find(b);};
@@ -1670,7 +1727,7 @@ function computeMergeGroups(){
   });
   const groups={};
   recs.forEach((r,i)=>{const root=find(i);(groups[root]=groups[root]||[]).push(r);});
-  return Object.values(groups).filter(g=>g.length>=2);
+  return Object.values(groups).filter(g=>g.length>=2).filter(g=>!MGDONE[mgSig(g)]);
 }
 function mgUpdateSel(groupEl,person){[...groupEl.querySelectorAll('.dup-member')].forEach(mm=>mm.classList.toggle('selected',mm._person===person));}
 function mgDone(sc){const body=sc.querySelector('#dupBody');if(!body)return;body.innerHTML='<div class="mg-donewrap"><button class="mg-home">חזור למסך הבית</button></div>';const b=body.querySelector('.mg-home');if(b)b.onclick=goHome;}
@@ -1692,7 +1749,7 @@ function openMerge(){
     card.innerHTML='<div class="dg-bg">'+ICON.broom+'<span class="dg-arrow">\u2039</span></div><div class="dg-fg"><button class="dg-del" aria-label="הסר">'+ICON.broom+'<span class="dg-arrow">\u2039</span></button>'+members+'<div class="dup-acts"><button class="mbtn merge">מזג</button><button class="mbtn cancel">בטל</button></div></div>';
     const fg=card.querySelector('.dg-fg');
     [...card.querySelectorAll('.dup-member')].forEach((el,idx)=>el._person=g[idx]);
-    const dismiss=()=>{fg.style.transition='transform .25s ease-out';fg.style.transform='translateX(-115%)';const h0=card.offsetHeight;card.style.maxHeight=h0+'px';void card.offsetWidth;card.style.transition='opacity .25s, max-height .3s ease, margin .3s';card.style.maxHeight='0';card.style.opacity='0';card.style.marginBottom='0';if(navigator.vibrate)navigator.vibrate(12);setTimeout(()=>{card.remove();mgRefresh(sc);toast('הוסר');},300);};
+    const dismiss=()=>{try{MGDONE[mgSig(g)]=1;saveMgDone();}catch(e){}fg.style.transition='transform .25s ease-out';fg.style.transform='translateX(-115%)';const h0=card.offsetHeight;card.style.maxHeight=h0+'px';void card.offsetWidth;card.style.transition='opacity .25s, max-height .3s ease, margin .3s';card.style.maxHeight='0';card.style.opacity='0';card.style.marginBottom='0';if(navigator.vibrate)navigator.vibrate(12);setTimeout(()=>{card.remove();mgRefresh(sc);toast('הוסר');},300);};
     card.querySelector('.mbtn.merge').onclick=()=>{openMergePicker(g,sel.get(gi),()=>{card.style.transition='opacity .25s, transform .25s';card.style.opacity='0';card.style.transform='translateY(-8px)';setTimeout(()=>{card.remove();mgRefresh(sc);},260);});};
     card.querySelector('.mbtn.cancel').onclick=dismiss;
     card.querySelector('.dg-del').onclick=(e)=>{e.stopPropagation();dismiss();};
@@ -1723,6 +1780,7 @@ function openMergePicker(group,keep,onDone){
   ov.querySelector('#mpDo').onclick=()=>{
     const sp=phones.filter(v=>sel.phones.has(v)),se=emails.filter(v=>sel.emails.has(v));
     keep.phone=sp[0]||'';keep.phones=sp;keep.email=se[0]||'';keep.emails=se;
+    try{MGDONE[mgSig(group)]=1;saveMgDone();}catch(e){}
     group.forEach(p=>{if(p!==keep)mgRemovePerson(p);});
     renderList();close();if(navigator.vibrate)navigator.vibrate(10);toast('מוזג');if(onDone)onDone();
   };
@@ -1734,12 +1792,31 @@ function fCounts(){let k=0,d=0,m=0,left=0;PEOPLE.forEach(p=>{const v=FDEC[fKey(p
 function fViewIds(vf){if(vf==='undecided')return PEOPLE.filter(p=>!FDEC[fKey(p)]);return PEOPLE.filter(p=>FDEC[fKey(p)]===vf);}
 function openFilter(){
   let vf='undecided',vm='cards',hist=[],introSeen=false,fq='';
+  let slCat='all';
+  const SLDEFS=[{k:'all',t:'הכל',f:null},{k:'noname',t:'חסר שם',f:dqNoName},{k:'nophone',t:'חסר טלפון',f:dqNoPhone},{k:'noemail',t:'חסר אימייל',f:dqNoEmail},{k:'badphone',t:'טלפון לא תקין',f:dqBadPhone}];
+  function catMatch(p){const d=SLDEFS.find(x=>x.k===slCat);return !d||!d.f||d.f(p);}
+  function catTabs(){const base=fViewIds(vf);return '<div class="flt-tabs flt-cattabs">'+SLDEFS.map(d=>{const c=d.f?base.filter(d.f).length:base.length;return '<button class="vtab vtab-cat'+(slCat===d.k?' on':'')+'" data-c="'+d.k+'"><b>'+c+'</b><span>'+d.t+'</span></button>';}).join('')+'</div>';}
+  let selMode=false;const selSet=new Set();
+  function fltSelPeople(){return fViewIds(vf).filter(fMatch).filter(catMatch).filter(p=>selSet.has(fKey(p)));}
+  function fltExitSel(){selMode=false;selSet.clear();hideSelBar();render();}
+  function fltGroupApply(d){const ppl=fltSelPeople();if(!ppl.length){fltExitSel();return;}ppl.forEach(p=>decide(p,d));selMode=false;selSet.clear();hideSelBar();if(navigator.vibrate)navigator.vibrate(12);toast(d==='keep'?('נשמרו '+ppl.length):('אורכבו '+ppl.length));render();}
+  function fltSelUpdate(){if(!selMode)return;if(!selSet.size){fltExitSel();return;}showSelBar(selSet.size,[{html:ICON.check+' שמור',fn:()=>fltGroupApply('keep')},{html:ICON.archive+' ארכב',cls:'danger',fn:()=>fltGroupApply('delete')}],fltExitSel);}
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>סינון רשימה</h2></div><div class="scr-body flt-body" id="fltBody"></div>');sc._reopen=openFilter;
   const body=sc.querySelector('#fltBody');
+  let _pOff=0;const _pMax=Math.max(120,Math.min(280,Math.round(window.innerHeight*0.33)));
+  function pullReset(){_pOff=0;body.style.transition='';body.style.transform='';}
+  (function(){
+    let plY=0,plBase=0,plOn=false,plArmed=false,plVel=0,plLastY=0,plLastT=0,plRAF=0;
+    const setP=v=>{_pOff=Math.max(0,Math.min(_pMax,v));body.style.transform=_pOff?('translateY('+_pOff+'px)'):'';};
+    body.addEventListener('touchstart',e=>{if(plRAF){cancelAnimationFrame(plRAF);plRAF=0;}plArmed=(body.scrollTop<=0||_pOff>0);plOn=false;plY=e.touches[0].clientY;plLastY=plY;plLastT=Date.now();plVel=0;plBase=_pOff;},{passive:true});
+    body.addEventListener('touchmove',e=>{if(!plArmed)return;const cy=e.touches[0].clientY;const dy=cy-plY;if(!plOn){if((dy>4&&body.scrollTop<=0)||_pOff>0){plOn=true;body.style.transition='none';}else{if(dy<-2||body.scrollTop>0)plArmed=false;return;}}const now=Date.now();const dt=(now-plLastT)||16;plVel=(cy-plLastY)/dt*16;plLastY=cy;plLastT=now;const target=plBase+dy;if(target<=0){setP(0);plOn=false;plArmed=false;return;}e.preventDefault();setP(target);},{passive:false});
+    const plEnd=()=>{if(!plOn)return;plOn=false;plArmed=false;let v=plVel;if(plRAF)cancelAnimationFrame(plRAF);const step=()=>{v*=0.95;if(Math.abs(v)<0.4){plRAF=0;return;}const nv=_pOff+v;if(nv<=0){setP(0);plRAF=0;return;}if(nv>=_pMax){setP(_pMax);plRAF=0;return;}setP(nv);plRAF=requestAnimationFrame(step);};plRAF=requestAnimationFrame(step);};
+    body.addEventListener('touchend',plEnd);body.addEventListener('touchcancel',plEnd);
+  })();
   function tabs(){
     const c=fCounts();
     const t=(k,l,n)=>'<button class="vtab'+(vf===k?' on':'')+'" data-f="'+k+'"><b>'+n+'</b><span>'+l+'</span></button>';
-    return '<div class="flt-tabs">'+t('undecided','לא נבדקו',c.left)+t('keep','נשמרו',c.keep)+t('delete','ארכיון',c.del)+t('maybe','לבדיקה',c.maybe)+'<button class="vtab-toggle" id="vtog" aria-label="תצוגה">'+(vm==='cards'?ICON.viewlist:ICON.viewcards)+'</button></div>';
+    return '<div class="flt-tabs">'+t('undecided','לא נבדקו',c.left)+t('keep','נשמרו',c.keep)+t('maybe','לבדיקה',c.maybe)+t('delete','נמחקו',c.del)+'<button class="vtab-toggle" id="vtog" aria-label="תצוגה">'+(vm==='cards'?ICON.viewlist:ICON.viewcards)+'</button></div>';
   }
   function fMatch(p){if(!fq)return true;const q=fq.trim().toLowerCase();if(!q)return true;const hay=[(p.name||''),(p.phone||''),(p.email||'')].concat(p.phones||[]).concat(p.emails||[]).join(' ').toLowerCase();return hay.indexOf(q)>=0;}
   const X_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
@@ -1756,8 +1833,10 @@ function openFilter(){
     si.addEventListener('blur',()=>{if(vv)vv.removeEventListener('resize',lift);body.style.paddingBottom='';});
   }
   function render(){
-    const ou=sc.querySelector('.flt-undo');if(ou)ou.remove();body.innerHTML=tabs()+'<div id="fltView" class="flt-view"></div>'+searchBarHTML();
-    body.querySelectorAll('.vtab').forEach(t=>t.onclick=()=>{vf=t.dataset.f;fq='';render();});
+    pullReset();
+    const ou=sc.querySelector('.flt-undo');if(ou)ou.remove();body.innerHTML=catTabs()+tabs()+'<div id="fltView" class="flt-view"></div>'+searchBarHTML();
+    body.querySelectorAll('.flt-cattabs .vtab').forEach(t=>t.onclick=()=>{slCat=t.dataset.c;render();});
+    body.querySelectorAll('.flt-tabs:not(.flt-cattabs) .vtab').forEach(t=>t.onclick=()=>{vf=t.dataset.f;fq='';render();});
     body.querySelector('#vtog').onclick=()=>{vm=(vm==='cards')?'list':'cards';render();};
     wireSearch();
     renderView();
@@ -1783,8 +1862,8 @@ function openFilter(){
     card.addEventListener('pointerup',end);card.addEventListener('pointercancel',end);
   }
   function cards(view){
-    if(vf==='undecided'&&!introSeen&&!fq&&fViewIds('undecided').length){introCard(view);return;}
-    const q=fViewIds(vf).filter(fMatch).sort(byName);
+    if(vf==='undecided'&&slCat==='all'&&!introSeen&&!fq&&fViewIds('undecided').length){introCard(view);return;}
+    const q=fViewIds(vf).filter(fMatch).filter(catMatch).sort(byName);
     if(!q.length){if(fq){view.innerHTML='<div class="flt-done">לא נמצאו תוצאות</div>';}else if(vf==='undecided'){const c=fCounts();view.innerHTML='<div class="flt-done">עברת על כל אנשי הקשר 🎉<div class="sm">נשמרו '+c.keep+' · לבדיקה '+c.maybe+' · בארכיון '+c.del+'</div><button class="mg-home">חזור למסך הבית</button></div>';const hb=view.querySelector('.mg-home');if(hb)hb.onclick=goHome;}else{view.innerHTML='<div class="flt-done">'+(vf==='keep'?'אין נשמרים עדיין':vf==='maybe'?'אין אנשי קשר לבדיקה':'אין בארכיון')+'</div>';}return;}
     const p=q[0];const det=personDetails(p);
     const ph=p.phone||((p.phones&&p.phones[0])||'');const em=p.email||((p.emails&&p.emails[0])||'');
@@ -1794,7 +1873,7 @@ function openFilter(){
     attach(p);
   }
   function commit(d){
-    const card=body.querySelector('#fcard');const p=fViewIds(vf).filter(fMatch).sort(byName)[0];if(!p)return;
+    const card=body.querySelector('#fcard');const p=fViewIds(vf).filter(fMatch).filter(catMatch).sort(byName)[0];if(!p)return;
     if(d===vf){if(card){card.style.transition='transform .2s';card.style.transform='';card.style.opacity='';}return;}
     let tx='0',ty='0',rot=0;
     if(d==='keep'){tx='130%';rot=18;}else if(d==='delete'){tx='-130%';rot=-18;}else{ty='130%';}
@@ -1835,38 +1914,73 @@ function openFilter(){
     card.addEventListener('pointerup',end);card.addEventListener('pointercancel',end);
   }
   function list(view){
-    const ids=fViewIds(vf).filter(fMatch).sort(byName);
+    const ids=fViewIds(vf).filter(fMatch).filter(catMatch).sort(byName);
     if(!ids.length){if(fq){view.innerHTML='<div class="flt-done">לא נמצאו תוצאות</div>';}else{view.innerHTML='<div class="flt-done">'+(vf==='undecided'?'עברת על כל אנשי הקשר 🎉':vf==='keep'?'אין נשמרים עדיין':vf==='maybe'?'אין אנשי קשר לבדיקה':'אין בארכיון')+'</div>';}return;}
     view.innerHTML='<div class="flt-list">'+ids.map((p,i)=>{
       const det=personDetails(p);const d=FDEC[fKey(p)];
       const tag=d==='keep'?'<span class="li-tag keep">נשמר</span>':d==='maybe'?'<span class="li-tag maybe">לבדיקה</span>':d==='delete'?'<span class="li-tag del">בארכיון</span>':'';
-      return '<div class="flt-row" data-i="'+i+'"><div class="flt-row-bg"></div><div class="flt-row-fg"><span class="li-av">'+escapeHtml(initials(p.name))+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(det.length?'<div class="s">'+escapeHtml(det.join(' · '))+'</div>':'')+'</div>'+tag+'</div></div>';
+      return '<div class="flt-row'+(selSet.has(fKey(p))?' sel':'')+'" data-i="'+i+'"><div class="flt-row-bg"></div><div class="flt-row-fg"><span class="li-av">'+escapeHtml(initials(p.name))+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(det.length?'<div class="s">'+escapeHtml(det.join(' · '))+'</div>':'')+'</div>'+tag+'</div></div>';
     }).join('')+'</div>';
     view.querySelectorAll('.flt-row').forEach(rw=>{
       const fg=rw.querySelector('.flt-row-fg');const bg=rw.querySelector('.flt-row-bg');const p=ids[+rw.dataset.i];
-      let sx=0,sy=0,dx=0,dy=0,drag=false,moved=false,d0=0;
+      let sx=0,sy=0,dx=0,dy=0,drag=false,moved=false,d0=0,lpT=0;
+      const clearLP=()=>{if(lpT){clearTimeout(lpT);lpT=0;}};
+      const toggleSel=()=>{const k=fKey(p);if(selSet.has(k)){selSet.delete(k);rw.classList.remove('sel');}else{selSet.add(k);rw.classList.add('sel');}fltSelUpdate();};
       const setDir=(sg)=>{if(sg===d0)return;d0=sg;if(sg>0){bg.className='flt-row-bg keepbg';bg.innerHTML=ICON.check;}else if(sg<0){bg.className='flt-row-bg delbg';bg.innerHTML=ICON.archive;}else{bg.className='flt-row-bg';bg.innerHTML='';}};
       const settle=()=>{fg.style.transition='transform .2s';fg.style.transform='';setDir(0);};
-      fg.addEventListener('pointerdown',e=>{e.stopPropagation();drag=true;moved=false;sx=e.clientX;sy=e.clientY;dx=0;dy=0;d0=0;fg.style.transition='none';});
-      fg.addEventListener('pointermove',e=>{if(!drag)return;dx=e.clientX-sx;dy=e.clientY-sy;if(!moved&&Math.abs(dy)>8&&Math.abs(dy)>=Math.abs(dx)){drag=false;settle();return;}if(Math.abs(dx)>6)moved=true;if(moved){setDir(Math.sign(dx));fg.style.transform='translateX('+dx+'px)';}});
-      fg.addEventListener('pointerup',e=>{if(!drag)return;e.stopPropagation();drag=false;if(dx>80&&vf!=='keep'){decide(p,'keep');rowOut(rw,1);}else if(dx<-80&&vf!=='delete'){decide(p,'delete');rowOut(rw,-1);}else{settle();if(!moved&&Math.abs(dy)<8)openContact(p);}});
-      fg.addEventListener('pointercancel',()=>{if(!drag)return;drag=false;settle();});
+      fg.addEventListener('pointerdown',e=>{e.stopPropagation();drag=true;moved=false;sx=e.clientX;sy=e.clientY;dx=0;dy=0;d0=0;fg.style.transition='none';clearLP();lpT=setTimeout(()=>{lpT=0;drag=false;settle();if(!selMode)selMode=true;selSet.add(fKey(p));rw.classList.add('sel');if(navigator.vibrate)navigator.vibrate(15);fltSelUpdate();},420);});
+      fg.addEventListener('pointermove',e=>{if(!drag&&!lpT)return;dx=e.clientX-sx;dy=e.clientY-sy;if((Math.abs(dx)>6||Math.abs(dy)>6))clearLP();if(!drag)return;if(!moved&&Math.abs(dy)>8&&Math.abs(dy)>=Math.abs(dx)){drag=false;settle();return;}if(Math.abs(dx)>6)moved=true;if(moved){setDir(Math.sign(dx));fg.style.transform='translateX('+dx+'px)';}});
+      fg.addEventListener('pointerup',e=>{clearLP();if(!drag)return;e.stopPropagation();drag=false;
+        if(selMode){if(moved){if(dx>80&&vf!=='keep'){fltGroupApply('keep');}else if(dx<-80&&vf!=='delete'){fltGroupApply('delete');}else settle();}else if(Math.abs(dy)<8){settle();toggleSel();}else settle();return;}
+        if(dx>80&&vf!=='keep'){decide(p,'keep');rowOut(rw,1);}else if(dx<-80&&vf!=='delete'){decide(p,'delete');rowOut(rw,-1);}else{settle();if(!moved&&Math.abs(dy)<8)openContact(p);}});
+      fg.addEventListener('pointercancel',()=>{clearLP();if(!drag)return;drag=false;settle();});
     });
+    if(selMode)fltSelUpdate();
   }
   function rowOut(rw,dir){const fg=rw.querySelector('.flt-row-fg');fg.style.transition='transform .25s';fg.style.transform='translateX('+(dir>0?'115%':'-115%')+')';if(navigator.vibrate)navigator.vibrate(8);setTimeout(render,260);}
   render();
 
 }
+let _selCancel=null;
+function showSelBar(count,actions,onCancel){
+  _selCancel=onCancel||null;
+  let bar=document.getElementById('selBar');
+  if(!bar){bar=document.createElement('div');bar.id='selBar';bar.className='selbar';document.body.appendChild(bar);}
+  const X='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  bar.innerHTML='<button class="selbar-x" aria-label="בטל">'+X+'</button><span class="selbar-cnt">'+count+' נבחרו</span><div class="selbar-acts"></div>';
+  const acts=bar.querySelector('.selbar-acts');
+  (actions||[]).forEach(a=>{const b=document.createElement('button');b.className='selbar-btn '+(a.cls||'');b.innerHTML=a.html||a.label;b.onclick=a.fn;acts.appendChild(b);});
+  bar.querySelector('.selbar-x').onclick=()=>{if(_selCancel)_selCancel();};
+  document.body.classList.add('selecting');
+  requestAnimationFrame(()=>bar.classList.add('show'));
+}
+function hideSelBar(){const bar=document.getElementById('selBar');document.body.classList.remove('selecting');if(bar){bar.classList.remove('show');setTimeout(()=>{if(bar&&!bar.classList.contains('show'))bar.remove();},280);}_selCancel=null;}
 function openArchive(){
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>ארכיון</h2></div><div class="scr-body" id="arcBody"></div>');sc._reopen=openArchive;
+  let aSelMode=false;const aSel=new Set();
+  function aArch(){return PEOPLE.filter(p=>FDEC[fKey(p)]==='delete');}
+  function aExit(){aSelMode=false;aSel.clear();hideSelBar();render();}
+  function aRestoreAll(){const ppl=aArch().filter(p=>aSel.has(fKey(p)));ppl.forEach(p=>{delete FDEC[fKey(p)];});saveDec();aSelMode=false;aSel.clear();hideSelBar();renderList();render();toast('שוחזרו '+ppl.length);}
+  function aDeleteAll(){const ppl=aArch().filter(p=>aSel.has(fKey(p)));if(!ppl.length){aExit();return;}uiConfirm('למחוק סופית '+ppl.length+' אנשי קשר? פעולה בלתי הפיכה.',()=>{ppl.forEach(p=>{const i=PEOPLE.indexOf(p);if(i>=0)PEOPLE.splice(i,1);delete FDEC[fKey(p)];});saveDec();savePeople();aSelMode=false;aSel.clear();hideSelBar();renderList();render();toast('נמחקו '+ppl.length);});}
+  function aSelUpdate(){if(!aSelMode)return;if(!aSel.size){aExit();return;}showSelBar(aSel.size,[{html:'שחזר הכל',cls:'ghost',fn:aRestoreAll},{html:'מחק הכל',cls:'danger',fn:aDeleteAll}],aExit);}
   function render(){
-    const arch=PEOPLE.filter(p=>FDEC[fKey(p)]==='delete');
+    const arch=aArch();
     const body=sc.querySelector('#arcBody');if(!body)return;
-    if(!arch.length){body.innerHTML='<div class="dup-empty">הארכיון ריק</div>';return;}
-    body.innerHTML='<p class="cr-hint" style="text-align:right;margin:0 0 12px;">אנשי קשר בארכיון אינם מוצגים ברשימה (ולא נמחקים מהטלפון). אפשר לשחזר, או לנקות סופית.</p><div class="flt-list">'+arch.map((p,i)=>{const det=personDetails(p);return '<div class="arc-row"><span class="li-av">'+escapeHtml(initials(p.name))+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(det.length?'<div class="s">'+escapeHtml(det.join(' · '))+'</div>':'')+'</div><button class="arc-restore" data-i="'+i+'">שחזר</button></div>';}).join('')+'</div><button class="mp-confirm" id="arcClear" style="background:#d23b30;margin-top:18px;">נקה ארכיון סופית</button>';
-    body.querySelectorAll('.arc-restore').forEach(b=>b.onclick=()=>{const p=arch[+b.dataset.i];delete FDEC[fKey(p)];saveDec();renderList();render();toast('שוחזר');});
+    if(!arch.length){body.innerHTML='<div class="dup-empty">הארכיון ריק</div>';if(aSelMode)aExit();return;}
+    body.innerHTML='<p class="cr-hint" style="text-align:right;margin:0 0 12px;">אנשי קשר בארכיון אינם מוצגים ברשימה (ולא נמחקים מהטלפון). לחיצה ארוכה לבחירה מרובה · אפשר לשחזר או לנקות סופית.</p><div class="flt-list">'+arch.map((p,i)=>{const det=personDetails(p);return '<div class="arc-row'+(aSel.has(fKey(p))?' sel':'')+'" data-i="'+i+'"><span class="li-av">'+escapeHtml(initials(p.name))+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(det.length?'<div class="s">'+escapeHtml(det.join(' · '))+'</div>':'')+'</div><button class="arc-restore" data-i="'+i+'">שחזר</button></div>';}).join('')+'</div><button class="mp-confirm" id="arcClear" style="background:#d23b30;margin-top:18px;">נקה ארכיון סופית</button>';
+    body.querySelectorAll('.arc-restore').forEach(b=>b.onclick=(e)=>{e.stopPropagation();const p=arch[+b.dataset.i];if(aSelMode){const k=fKey(p);if(aSel.has(k))aSel.delete(k);else aSel.add(k);b.closest('.arc-row').classList.toggle('sel',aSel.has(k));aSelUpdate();return;}delete FDEC[fKey(p)];saveDec();renderList();render();toast('שוחזר');});
+    body.querySelectorAll('.arc-row').forEach(rw=>{
+      const p=arch[+rw.dataset.i];let lpT=0,sx=0,sy=0,moved=false;
+      const clearLP=()=>{if(lpT){clearTimeout(lpT);lpT=0;}};
+      const toggle=()=>{const k=fKey(p);if(aSel.has(k)){aSel.delete(k);rw.classList.remove('sel');}else{aSel.add(k);rw.classList.add('sel');}aSelUpdate();};
+      rw.addEventListener('pointerdown',e=>{if(e.target.closest('.arc-restore'))return;sx=e.clientX;sy=e.clientY;moved=false;clearLP();lpT=setTimeout(()=>{lpT=0;if(!aSelMode)aSelMode=true;aSel.add(fKey(p));rw.classList.add('sel');if(navigator.vibrate)navigator.vibrate(15);aSelUpdate();},420);});
+      rw.addEventListener('pointermove',e=>{if(Math.abs(e.clientX-sx)>8||Math.abs(e.clientY-sy)>8){moved=true;clearLP();}});
+      rw.addEventListener('pointerup',e=>{if(e.target.closest('.arc-restore'))return;clearLP();if(aSelMode&&!moved){e.stopPropagation();toggle();}});
+      rw.addEventListener('pointercancel',clearLP);
+    });
     const cb=body.querySelector('#arcClear');let st=1;
     if(cb)cb.onclick=()=>{if(st===1){st=2;cb.textContent='בטוח? פעולה בלתי הפיכה';}else{arch.forEach(p=>{const i=PEOPLE.indexOf(p);if(i>=0)PEOPLE.splice(i,1);delete FDEC[fKey(p)];});saveDec();savePeople();renderList();render();toast('הארכיון נוקה');}};
+    if(aSelMode)aSelUpdate();
   }
   render();
 }
@@ -1974,11 +2088,11 @@ function openResetConfirm(){
   ov.querySelector('#rsBtn').onclick=()=>{if(stage===1){stage=2;ov.querySelector('#rsHint').textContent='בטוח לחלוטין? הפעולה בלתי הפיכה.';ov.querySelector('#rsBtn').textContent='כן, אפס סופית';}else{doReset();}};
 }
 function homeEnter(){const h=document.getElementById('home');if(!h)return;h.style.zIndex='75';h.classList.remove('enter');void h.offsetWidth;h.classList.add('enter');setTimeout(()=>{h.classList.remove('enter');h.style.zIndex='';},560);}
-function closeScreen(sc){if(!sc)return;sc.classList.remove('show');setTimeout(()=>sc.remove(),560);const others=[...document.querySelectorAll('.scr')].filter(x=>x!==sc);if(!others.length)homeEnter();updateSearchFab();}
+function closeScreen(sc){if(!sc)return;try{hideSelBar();}catch(e){}sc.classList.remove('show');setTimeout(()=>sc.remove(),560);const others=[...document.querySelectorAll('.scr.show')].filter(x=>x!==sc);if(!others.length)homeEnter();updateSearchFab();}
 function goHome(){
   const scr=document.querySelectorAll('.scr');
   if(scr.length){const _t=scr[scr.length-1];if(_t&&_t._reopen)HIST.push(_t._reopen);scr.forEach(s=>{s.classList.remove('show');setTimeout(()=>s.remove(),560);});homeEnter();}
-  closeSheet();closeSearch();
+  closeSheet();closeSearch();try{hideSelBar();}catch(e){}
 }
 function foldPaletteRow(pb){const sw=[...pb.querySelectorAll('.pal-sw')];const n=sw.length;sw.forEach((s,i)=>{s.style.transitionDelay=((n-1-i)*0.04).toFixed(2)+'s';s.style.transform='scale(0)';});setTimeout(()=>{if(pb&&pb.parentNode)pb.remove();},60+n*40+300);}
 function openPaletteRow(itemEl){
@@ -2061,18 +2175,44 @@ function openMyCard(){
 /* ===== ימי הולדת ===== */
 function bdayLabel(n){return n===0?'היום! 🎂':n===1?'מחר':('בעוד '+n+' ימים');}
 function fmtBdayDate(ds){const m=String(ds).match(/-?(\d{2})-(\d{2})$/);return m?(m[2]+'/'+m[1]):String(ds);}
+function openCalendar(o){
+  o=o||{};const title=o.title||'אירוע';
+  const bt=o.start?o.start.getTime():Date.now();
+  const et=o.end?o.end.getTime():(bt+3600000);
+  if(BRIDGE&&BRIDGE.addEvent){try{BRIDGE.addEvent(JSON.stringify({title:title,location:o.location||'',description:o.description||'',begin:bt,end:et,allDay:!!o.allDay,rrule:o.recurYearly?'FREQ=YEARLY':'',emails:o.emails||[]}));return true;}catch(e){}}
+  if(/android/i.test(navigator.userAgent)){
+    let u='intent:#Intent;action=android.intent.action.INSERT;type=vnd.android.cursor.item/event;';
+    u+='S.title='+encodeURIComponent(title)+';';
+    if(o.location)u+='S.eventLocation='+encodeURIComponent(o.location)+';';
+    if(o.description)u+='S.description='+encodeURIComponent(o.description)+';';
+    u+='l.beginTime='+bt+';l.endTime='+et+';';
+    if(o.allDay)u+='B.allDay=true;';
+    if(o.recurYearly)u+='S.rrule='+encodeURIComponent('FREQ=YEARLY')+';';
+    if(o.emails&&o.emails.length)u+='S.android.intent.extra.EMAIL='+encodeURIComponent(o.emails.join(','))+';';
+    u+='end';
+    try{location.href=u;return true;}catch(e){}
+  }
+  const z=n=>String(n).padStart(2,'0');
+  const fmt=dt=>''+dt.getUTCFullYear()+z(dt.getUTCMonth()+1)+z(dt.getUTCDate())+'T'+z(dt.getUTCHours())+z(dt.getUTCMinutes())+'00Z';
+  let url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(title)+'&dates='+fmt(new Date(bt))+'/'+fmt(new Date(et));
+  if(o.description)url+='&details='+encodeURIComponent(o.description);
+  if(o.location)url+='&location='+encodeURIComponent(o.location);
+  if(o.emails&&o.emails.length)url+='&add='+encodeURIComponent(o.emails.join(','));
+  if(o.recurYearly)url+='&recur='+encodeURIComponent('RRULE:FREQ=YEARLY');
+  try{var w=window.open(url,'_blank');if(!w)location.href=url;}catch(e){location.href=url;}
+  return true;
+}
 function upcomingBdays(){
   const out=[];PEOPLE.forEach(p=>{if(FDEC[fKey(p)]==='delete')return;const ds=getBday(p);if(!ds)return;const n=bdayNext(ds);if(n==null)return;out.push({p:p,ds:ds,n:n});});
   out.sort((a,b)=>a.n-b.n);return out;
 }
 function addBdayToCal(name,ds){
   const m=String(ds).match(/(\d{4})?-?(\d{2})-(\d{2})$/);if(!m){toast('תאריך לידה לא תקין');return;}
-  const mo=m[2],da=m[3],z=n=>String(n).padStart(2,'0');
+  const mo=+m[2],da=+m[3];
   const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-  let y=now.getFullYear();if(new Date(y,+mo-1,+da)<today)y++;
-  const start=''+y+mo+da;const e=new Date(y,+mo-1,+da+1);const end=''+e.getFullYear()+z(e.getMonth()+1)+z(e.getDate());
-  let url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('יום הולדת — '+(name||''))+'&dates='+start+'/'+end+'&recur='+encodeURIComponent('RRULE:FREQ=YEARLY');
-  try{var w=window.open(url,'_blank');if(!w)location.href=url;}catch(e2){location.href=url;}
+  let y=now.getFullYear();if(new Date(y,mo-1,da)<today)y++;
+  const start=new Date(y,mo-1,da);const end=new Date(y,mo-1,da+1);
+  openCalendar({title:'יום הולדת — '+(name||''),start:start,end:end,allDay:true,recurYearly:true});
 }
 function openBdayWheel(initial,onSave){
   const IT=36, months=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
@@ -2267,20 +2407,37 @@ function handleVoice(txt){const t=(txt||'').trim();if(!t){toast('לא שמעתי
   if(/(שלח לרשימה|רשימת|רשימה)/.test(t)){const q=voiceAfter(t,['שלח לרשימה','רשימת','רשימה']);const L=(cfg.lists||[]).find(x=>String(x.name).indexOf(q)>=0);if(L){openSendList(L.id);}else toast('לא מצאתי רשימה "'+q+'"');return;}
   openSearch();setTimeout(()=>{try{searchInput.value=t;renderSearch(t);if(typeof updSrchClear==='function')updSrchClear();}catch(e){}},140);
 }
+function interpretVoice(t){t=(t||'').trim();if(!t)return {label:'לא נקלט טקסט',run:null};
+  if(/(וואטסאפ|וטסאפ)/i.test(t)){const q=voiceAfter(t,['וואטסאפ ל','וואטסאפ','וטסאפ ל','וטסאפ']);const p=voiceFindContact(q);return p?{label:'אשלח וואטסאפ ל: '+(p.name||''),run:()=>fireAction('wa',p)}:{label:'לא מצאתי איש קשר: "'+q+'"',run:null};}
+  if(/(^|\s)(חייג|התקשר|טלפן)/.test(t)){const q=voiceAfter(t,['חייג ל','חייג','התקשר ל','התקשר','טלפן ל','טלפן']);const p=voiceFindContact(q);return p?{label:'אחייג ל: '+(p.name||''),run:()=>fireAction('call',p)}:{label:'לא מצאתי איש קשר: "'+q+'"',run:null};}
+  if(/^\s*(הוסף|תוסיף|הוספת)/.test(t)||/איש קשר חדש/.test(t)){const pf=voiceParseNL(t);return {label:'אוסיף איש קשר: '+(pf.name||'(ללא שם)')+(pf.phone?(' · '+pf.phone):''),run:()=>openAddContact(pf)};}
+  if(/(חפש|חיפוש)/.test(t)){const q=voiceAfter(t,['חפש את','חפש','חיפוש']);return {label:'אחפש: "'+q+'"',run:()=>{openSearch();setTimeout(()=>{try{searchInput.value=q;renderSearch(q);if(typeof updSrchClear==='function')updSrchClear();}catch(e){}},140);}};}
+  if(/הגדרות/.test(t))return {label:'אפתח: הגדרות',run:openSettings};
+  if(/(ימי הולדת|יום הולדת)/.test(t))return {label:'אפתח: ימי הולדת',run:openBirthdays};
+  if(/חייגן/.test(t))return {label:'אפתח: חייגן',run:openDialer};
+  if(/כרטיס שלי/.test(t))return {label:'אפתח: הכרטיס שלי',run:openMyCard};
+  if(/(שלח לרשימה|רשימת|רשימה)/.test(t)){const q=voiceAfter(t,['שלח לרשימה','רשימת','רשימה']);const L=(cfg.lists||[]).find(x=>String(x.name).indexOf(q)>=0);return L?{label:'אשלח לרשימה: '+L.name,run:()=>openSendList(L.id)}:{label:'לא מצאתי רשימה: "'+q+'"',run:null};}
+  return {label:'אחפש: "'+t+'"',run:()=>{openSearch();setTimeout(()=>{try{searchInput.value=t;renderSearch(t);if(typeof updSrchClear==='function')updSrchClear();}catch(e){}},140);}};
+}
 function startVoice(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){toast('זיהוי דיבור לא נתמך בדפדפן הזה');return;}
   const ov=document.createElement('div');ov.className='vc-ov';
-  ov.innerHTML='<div class="vc-box"><div class="vc-mic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div><div class="vc-txt" id="vcTxt">מקשיב…</div><button class="vc-cancel" id="vcCancel">ביטול</button></div>';
+  ov.innerHTML='<div class="vc-box"><button class="vc-mic listening" id="vcMic" aria-label="עצור הקלטה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><div class="vc-txt" id="vcTxt">מקשיב… (הקש על המיקרופון לעצירה)</div><div class="vc-act" id="vcAct" style="display:none;"></div><div class="vc-btns"><button class="vc-cancel" id="vcCancel">ביטול</button><button class="vc-ok" id="vcOk" style="display:none;">אישור</button></div></div>';
   document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
-  const txtEl=ov.querySelector('#vcTxt');let finalTxt='',done=false;
+  const txtEl=ov.querySelector('#vcTxt'),actEl=ov.querySelector('#vcAct'),okBtn=ov.querySelector('#vcOk'),micEl=ov.querySelector('#vcMic');
+  let finalTxt='',stopped=false,action=null;
   const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),200);};
   let rec;try{rec=new SR();}catch(e){close();toast('זיהוי דיבור נכשל');return;}
   rec.lang='he-IL';rec.interimResults=true;rec.maxAlternatives=1;
-  rec.onresult=e=>{let inter='',fin='';for(let i=0;i<e.results.length;i++){const r=e.results[i];if(r.isFinal)fin+=r[0].transcript;else inter+=r[0].transcript;}finalTxt=(fin||inter).trim();txtEl.textContent=finalTxt||'מקשיב…';};
+  rec.onresult=e=>{let inter='',fin='';for(let i=0;i<e.results.length;i++){const r=e.results[i];if(r.isFinal)fin+=r[0].transcript;else inter+=r[0].transcript;}finalTxt=(fin||inter).trim();if(!stopped)txtEl.textContent=finalTxt||'מקשיב…';};
   rec.onerror=()=>{};
-  rec.onend=()=>{if(done)return;done=true;close();if(finalTxt)handleVoice(finalTxt);else toast('לא שמעתי');};
-  ov.querySelector('#vcCancel').onclick=()=>{done=true;try{rec.stop();}catch(e){}close();};
+  function showResult(){micEl.classList.remove('listening');action=interpretVoice(finalTxt);txtEl.textContent=finalTxt?('שמעתי: "'+finalTxt+'"'):'לא נקלט טקסט';actEl.style.display='';actEl.textContent=action.label;okBtn.style.display=(action&&action.run)?'':'none';}
+  function stopListening(){if(stopped)return;stopped=true;try{rec.stop();}catch(e){}showResult();}
+  rec.onend=()=>{if(!stopped){stopped=true;showResult();}};
+  micEl.onclick=stopListening;
+  okBtn.onclick=()=>{const a=action;close();if(a&&a.run)a.run();};
+  ov.querySelector('#vcCancel').onclick=()=>{stopped=true;try{rec.stop();}catch(e){}close();};
   try{rec.start();}catch(e){close();toast('לא ניתן להפעיל מיקרופון');}
 }
 (function(){const s=document.createElement('div');s.className='bot-shade';document.body.appendChild(s);})();

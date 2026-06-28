@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8"><title>Sweep · עורך</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Assistant:wght@400;600;700&display=swap">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#2b3036;font-family:'Assistant',system-ui,sans-serif;color:#e7ecf0;overflow:hidden}
+.app{display:flex;height:100vh}
+/* ===== side toolbar ===== */
+.side{width:226px;flex:0 0 226px;background:#21262b;border-left:1px solid #14171a;display:flex;flex-direction:column;height:100vh}
+.side .brand{padding:12px 14px;font-family:'Poppins';font-weight:800;font-size:18px;color:#fff;letter-spacing:.5px;border-bottom:1px solid #14171a}
+.side .brand small{font-family:'Assistant';font-weight:600;font-size:11px;color:#8b95a0;display:block;letter-spacing:0}
+.tabs{display:flex;gap:2px;padding:8px 8px 0}
+.tabs button{flex:1;background:#2b3036;color:#cfd6dd;border:1px solid #353c43;border-bottom:none;border-radius:8px 8px 0 0;padding:8px 4px;font-size:12.5px;cursor:pointer}
+.tabs button.on{background:#323a41;color:#fff;border-color:#46505a}
+.panel{flex:1;overflow:auto;padding:12px;border-top:1px solid #46505a;margin-top:-1px}
+.tabpane{display:none;flex-direction:column;gap:10px}
+.tabpane.on{display:flex}
+.grp{display:flex;flex-wrap:wrap;gap:6px}
+.lbl{font-size:11px;color:#8b95a0;margin:2px 0 -2px}
+button.tool{background:#323a41;color:#fff;border:1px solid #46505a;border-radius:8px;padding:8px 10px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px}
+button.tool:hover{background:#3a434b}
+button.tool.on{background:#2aa8ff;border-color:#2aa8ff;color:#fff}
+button.tool.wide{width:100%;justify-content:center}
+input[type=range]{width:100%;accent-color:#2aa8ff}
+input[type=color]{width:38px;height:30px;border:1px solid #46505a;border-radius:8px;background:#323a41;cursor:pointer;padding:2px}
+.row{display:flex;align-items:center;gap:8px}
+.foot{border-top:1px solid #14171a;padding:8px;display:flex;flex-direction:column;gap:8px}
+.foot .row{justify-content:space-between}
+.swatch{width:24px;height:24px;border-radius:6px;border:2px solid #fff;cursor:pointer}
+.swatches{display:flex;flex-wrap:wrap;gap:5px}
+/* ===== canvas ===== */
+.main{flex:1;display:flex;flex-direction:column;height:100vh;min-width:0}
+.topbar{height:42px;flex:0 0 42px;background:#262c31;border-bottom:1px solid #14171a;display:flex;align-items:center;gap:10px;padding:0 12px;font-size:13px;color:#aeb7bf}
+.topbar .sp{flex:1}
+.topbar button{background:#323a41;color:#fff;border:1px solid #46505a;border-radius:7px;padding:5px 10px;font-size:13px;cursor:pointer}
+.topbar button:hover{filter:brightness(1.12)}
+.wrap{flex:1;overflow:auto;display:flex;justify-content:safe center;align-items:flex-start;padding:24px;min-height:0}
+.zoomsizer{position:relative}
+.stage{position:absolute;top:0;left:0;width:1000px;height:700px;background:#fff;box-shadow:0 18px 50px rgba(0,0,0,.45);container-type:inline-size;overflow:hidden}
+.stage.draw{cursor:crosshair}
+.svglayer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+.obj{position:absolute;transform-origin:center;cursor:grab;z-index:5;user-select:none;-webkit-user-select:none;touch-action:none}
+.stage.draw .obj{pointer-events:none}
+.obj.sel{outline:1.5px solid #2aa8ff;outline-offset:2px;z-index:9998!important}
+.stage.multi .obj.sel .h{display:none}
+.obj .h{position:absolute;width:14px;height:14px;background:#2aa8ff;border:2px solid #fff;border-radius:3px;display:none;z-index:10000;touch-action:none;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.obj.sel .h{display:block}
+.h.n{top:-7px;left:50%;margin-left:-7px;cursor:ns-resize}.h.s{bottom:-7px;left:50%;margin-left:-7px;cursor:ns-resize}
+.h.e{top:50%;right:-7px;margin-top:-7px;cursor:ew-resize}.h.w{top:50%;left:-7px;margin-top:-7px;cursor:ew-resize}
+.h.ne{top:-7px;right:-7px;cursor:nesw-resize}.h.nw{top:-7px;left:-7px;cursor:nwse-resize}
+.h.se{bottom:-7px;right:-7px;cursor:nwse-resize}.h.sw{bottom:-7px;left:-7px;cursor:nesw-resize}
+.h.rot{top:-30px;left:50%;margin-left:-7px;cursor:grab;background:#2ecc71;border-radius:50%}
+.h.rot::before{content:"";position:absolute;left:50%;top:14px;width:2px;height:14px;background:#2ecc71;margin-left:-1px}
+.obj svg,.obj img{pointer-events:none;display:block;width:100%;height:100%}
+.txt{font-family:'Poppins','Assistant',sans-serif;font-weight:800;color:#1c2330;white-space:nowrap;line-height:1}
+.txt.edit{outline:2px dashed #2aa8ff;cursor:text}
+.marquee{position:absolute;border:1px solid #2aa8ff;background:rgba(42,168,255,.12);z-index:10002;pointer-events:none}
+.flash{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#2aa8ff;color:#fff;padding:8px 16px;border-radius:8px;z-index:99;font-size:14px}
+</style></head>
+<body>
+<div class="app">
+ <div class="side">
+  <div class="brand">Sweep<small>עורך עיצוב</small></div>
+  <div class="tabs">
+   <button data-tab="arrange" class="on">סדר</button>
+   <button data-tab="text">טקסט</button>
+   <button data-tab="shapes">צורות</button>
+   <button data-tab="draw">ציור</button>
+  </div>
+  <div class="panel">
+   <div class="tabpane on" id="pane-arrange">
+    <div class="lbl">בחירה</div>
+    <button class="tool wide on" id="tSelect">🖱 כלי בחירה</button>
+    <div class="lbl">יישור (2+ אובייקטים)</div>
+    <div class="grp">
+     <button class="tool" data-al="left" title="שמאל">⇤</button><button class="tool" data-al="cx" title="מרכז">↔</button><button class="tool" data-al="right" title="ימין">⇥</button>
+     <button class="tool" data-al="top" title="למעלה">⤒</button><button class="tool" data-al="cy" title="אמצע">↕</button><button class="tool" data-al="bottom" title="למטה">⤓</button>
+    </div>
+    <div class="lbl">סדר ופעולות</div>
+    <div class="grp">
+     <button class="tool" id="bFront">קדימה</button><button class="tool" id="bBack">אחורה</button>
+     <button class="tool" id="bDup">שכפל</button><button class="tool" id="bDel">מחק</button>
+    </div>
+   </div>
+   <div class="tabpane" id="pane-text">
+    <button class="tool wide" id="bAddText">＋ הוסף טקסט</button>
+    <div class="lbl">גודל גופן (אובייקט נבחר)</div>
+    <input type="range" id="fontRange" min="8" max="200" value="48">
+    <div class="lbl">צבע טקסט</div>
+    <div class="row"><input type="color" id="textColor" value="#1c2330"><button class="tool" id="textApply">החל על נבחר</button></div>
+   </div>
+   <div class="tabpane" id="pane-shapes">
+    <div class="lbl">הוסף צורה</div>
+    <div class="grp">
+     <button class="tool" data-shape="rect">⬛ ריבוע</button>
+     <button class="tool" data-shape="circle">⬤ עיגול</button>
+     <button class="tool" data-shape="tri">▲ משולש</button>
+    </div>
+    <div class="lbl">צבע מילוי</div>
+    <div class="row"><input type="color" id="shapeColor" value="#2aa8ff"><button class="tool" id="shapeApply">החל על נבחר</button></div>
+    <div class="lbl">קצוות: גרור פינות=פרופורציונלי, דפנות=מתיחת צלע</div>
+   </div>
+   <div class="tabpane" id="pane-draw">
+    <button class="tool wide" id="tPen">✏ עט</button>
+    <button class="tool wide" id="tErase">🩹 מחק ציור</button>
+    <div class="lbl">עובי עט</div>
+    <input type="range" id="penWidth" min="1" max="40" value="5">
+    <div class="lbl">צבע</div>
+    <div class="row">
+      <input type="color" id="penColor" value="#1c2330">
+      <button class="tool" id="tEyedrop" title="טפטפת">💧 טפטפת</button>
+    </div>
+    <div class="swatches" id="swatches"></div>
+    <button class="tool wide" id="clearDraw">נקה את כל הציור</button>
+   </div>
+  </div>
+  <div class="foot">
+   <div class="row">
+    <button class="tool" id="bUndo" title="בטל (Ctrl+Z)">↶ בטל</button>
+    <button class="tool" id="bRedo" title="חזור (Ctrl+Y)">↷ חזור</button>
+   </div>
+   <div class="row">
+    <button class="tool" id="bPNG">הורד PNG</button>
+    <button class="tool" id="bReset">אפס</button>
+   </div>
+  </div>
+ </div>
+ <div class="main">
+  <div class="topbar">
+   <button id="zOut">−</button><input type="range" id="zRange" min="20" max="300" value="100" style="flex:1;max-width:300px"><span id="zLabel">100%</span><button id="zIn">＋</button><button id="zFit">התאם</button>
+   <span class="sp"></span>
+   <span id="hint">בחר/גרור · Shift+קליק לבחירה מרובה · גרירת רקע = מלבן בחירה</span>
+  </div>
+  <div class="wrap" id="wrap"><div class="zoomsizer" id="zoomsizer"><div class="stage" id="stage">
+   <svg class="svglayer" id="svglayer" viewBox="0 0 1000 700" preserveAspectRatio="none"></svg>
+  </div></div></div>
+ </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const stage=$('stage'), svglayer=$('svglayer'), wrap=$('wrap');
+const SW=1000, SH=700;
+let objs=[], strokes=[], selected=[], sel=null, seq=1, zTop=10, zoom=1;
+let mode='select', pen={color:'#1c2330',width:5};
+
+const DEF_OBJS=[{"id": "dots", "kind": "svg", "x": 260.4, "y": 116.8, "w": 90.6, "h": 90.7, "r": 0, "z": 5, "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\" viewBox=\"-52.3182 74.9009 96.1883 96.2733\" preserveAspectRatio=\"none\"><circle cx=\"-39.0\" cy=\"158.2\" r=\"13.0\" fill=\"#2c2257\"/><circle cx=\"-4.0\" cy=\"123.2\" r=\"13.0\" fill=\"#2c2257\"/><circle cx=\"31.0\" cy=\"88.2\" r=\"13.0\" fill=\"#2c2257\"/></svg>"}, {"id": "S1", "kind": "svg", "x": 372.6, "y": 116.8, "w": 64.6, "h": 90.7, "r": 0, "z": 6, "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\" viewBox=\"66.7345 74.9009 68.5933 96.2733\" preserveAspectRatio=\"none\"><path d=\"M101.75999999999999 171.2Q94.08 171.2 87.12 168.8Q80.16 166.4 75.0 162.07999999999998Q69.84 157.76 67.44 152.12Q66.24 149.6 67.5 147.44Q68.76 145.28 71.76 144.68Q73.92 144.2 76.02000000000001 145.33999999999997Q78.12 146.48 79.2 148.76Q80.64 151.76 83.94 154.28Q87.24 156.8 91.91999999999999 158.36Q96.6 159.92 101.75999999999999 159.92Q107.52 159.92 112.38 158.12Q117.24 156.32 120.24 152.89999999999998Q123.24 149.48 123.24 144.44Q123.24 138.08 118.25999999999999 133.04000000000002Q113.28 128.0 101.88 126.80000000000001Q87.0 125.36 78.47999999999999 118.03999999999999Q69.96 110.72 69.96 99.92Q69.96 92.0 74.4 86.48Q78.84 80.96000000000001 86.46000000000001 78.08000000000001Q94.08 75.2 103.44 75.2Q110.75999999999999 75.2 116.22 77.24000000000001Q121.68 79.28 125.76 82.88Q129.84 86.48 132.84 91.4Q134.51999999999998 94.04 134.22 96.38Q133.92000000000002 98.72 131.88 100.04Q129.6 101.48 126.96 100.64Q124.32 99.8 123.0 97.52Q121.08 94.04 118.32 91.64000000000001Q115.56 89.24000000000001 111.84 87.86000000000001Q108.12 86.48 103.08 86.48Q94.19999999999999 86.36 88.19999999999999 89.78Q82.2 93.2 82.2 100.28Q82.2 103.88 84.06 107.18Q85.92 110.48 90.9 112.88Q95.88 115.28 105.24 116.24000000000001Q119.52 117.68 127.5 124.94Q135.48000000000002 132.2 135.48000000000002 144.08Q135.48000000000002 150.92000000000002 132.66000000000003 155.96Q129.84 161.0 125.1 164.42000000000002Q120.36 167.84 114.3 169.51999999999998Q108.24 171.2 101.75999999999999 171.2Z\" fill=\"#2c2257\"/></svg>"}, {"id": "weep1", "kind": "svg", "x": 445.8, "y": 144.0, "w": 293.4, "h": 88.8, "r": 0, "z": 5, "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\" viewBox=\"144.395 103.704 311.429 94.3005\" preserveAspectRatio=\"none\"><path d=\"M168.48 170.0Q166.56 170.0 164.94 168.86Q163.32 167.72 162.72 166.04L144.96 112.76Q144.0 109.03999999999999 145.01999999999998 106.69999999999999Q146.04 104.36 149.52 104.36Q151.8 104.36 153.3 105.62Q154.8 106.88 155.76 109.88L168.72 150.32L180.96 108.92Q181.56 106.88 183.0 105.62Q184.44 104.36 186.96 104.36Q189.36 104.36 190.86 105.62Q192.36 106.88 192.84 108.92L203.64 151.16L216.84 109.88Q218.51999999999998 104.36 223.07999999999998 104.36Q226.44 104.36 227.64 106.69999999999999Q228.84 109.03999999999999 227.51999999999998 112.76L209.76 166.04Q209.28 167.72 207.72 168.86Q206.16 170.0 204.12 170.0Q202.2 170.0 200.51999999999998 168.86Q198.84 167.72 198.36 166.04L186.6 122.48L174.24 166.04Q173.76 167.72 172.14 168.86Q170.52 170.0 168.48 170.0ZM271.56 170.48Q261.59999999999997 170.48 253.85999999999996 166.22Q246.11999999999998 161.96 241.73999999999998 154.46Q237.35999999999999 146.96 237.35999999999999 137.24Q237.35999999999999 127.4 241.5 119.9Q245.64 112.4 252.95999999999998 108.14Q260.28 103.88 269.76 103.88Q279.12 103.88 285.84000000000003 108.02Q292.56 112.16 296.1 119.42Q299.64 126.68 299.64 136.16Q299.64 138.44 298.08 139.94Q296.52 141.44 294.12 141.44H248.51999999999998Q249.11999999999998 145.52 251.16 149.0Q254.16 154.16 259.44 157.16Q264.71999999999997 160.16 271.56 160.16Q275.28 160.16 279.17999999999995 158.78Q283.08 157.4 285.47999999999996 155.6Q287.28 154.28 289.38 154.22Q291.47999999999996 154.16 293.03999999999996 155.48Q295.08 157.28 295.2 159.44Q295.32 161.6 293.28 163.16Q289.2 166.4 283.14 168.44Q277.08 170.48 271.56 170.48ZM248.64 131.84H288.59999999999997Q288.12 127.88 286.44 124.4Q284.15999999999997 119.72 279.96 116.96000000000001Q275.76 114.2 269.76 114.2Q262.91999999999996 114.2 258.05999999999995 117.2Q253.2 120.2 250.67999999999998 125.36Q249.23999999999998 128.36 248.64 131.84ZM346.08 170.48Q336.12 170.48 328.38 166.22Q320.64 161.96 316.26 154.46Q311.88 146.96 311.88 137.24Q311.88 127.4 316.02 119.9Q320.15999999999997 112.4 327.48 108.14Q334.8 103.88 344.28 103.88Q353.64 103.88 360.36 108.02Q367.08 112.16 370.62 119.42Q374.15999999999997 126.68 374.15999999999997 136.16Q374.15999999999997 138.44 372.59999999999997 139.94Q371.03999999999996 141.44 368.64 141.44H323.04Q323.64 145.52 325.68 149.0Q328.68 154.16 333.96000000000004 157.16Q339.24 160.16 346.08 160.16Q349.8 160.16 353.70000000000005 158.78Q357.6 157.4 360.0 155.6Q361.8 154.28 363.9 154.22Q366.0 154.16 367.56 155.48Q369.6 157.28 369.72 159.44Q369.84 161.6 367.8 163.16Q363.72 166.4 357.66 168.44Q351.6 170.48 346.08 170.48ZM323.15999999999997 131.84H363.12Q362.64 127.88 360.96 124.4Q358.68 119.72 354.48 116.96000000000001Q350.28 114.2 344.28 114.2Q337.44 114.2 332.58 117.2Q327.71999999999997 120.2 325.2 125.36Q323.76 128.36 323.15999999999997 131.84ZM395.88 198.07999999999998Q393.23999999999995 198.07999999999998 391.5 196.33999999999997Q389.76 194.6 389.76 191.96V137.24Q389.88 127.76 394.2 120.2Q398.52 112.64 405.96 108.25999999999999Q413.4 103.88 422.76 103.88Q432.24 103.88 439.68 108.25999999999999Q447.12 112.64 451.5 120.2Q455.88 127.76 455.88 137.24Q455.88 146.72 451.86 154.22Q447.84 161.72 440.88 166.1Q433.91999999999996 170.48 425.15999999999997 170.48Q418.08 170.48 412.14 167.54Q406.2 164.6 402.0 159.56V191.96Q402.0 194.6 400.32 196.33999999999997Q398.64 198.07999999999998 395.88 198.07999999999998ZM422.76 159.68Q428.88 159.68 433.67999999999995 156.74Q438.47999999999996 153.8 441.29999999999995 148.7Q444.12 143.6 444.12 137.24Q444.12 130.76 441.29999999999995 125.66Q438.47999999999996 120.56 433.67999999999995 117.62Q428.88 114.68 422.76 114.68Q416.76 114.68 411.9 117.62Q407.03999999999996 120.56 404.28 125.66Q401.52 130.76 401.52 137.24Q401.52 143.6 404.28 148.7Q407.03999999999996 153.8 411.9 156.74Q416.76 159.68 422.76 159.68Z\" fill=\"#2c2257\"/></svg>"}, {"id": "S2", "kind": "svg", "x": 260.8, "y": 479.4, "w": 65.7, "h": 92.2, "r": 0, "z": 6, "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\" viewBox=\"52.584 75.197 68.5369 96.0854\" preserveAspectRatio=\"none\"><path d=\"M87.75999999999999 171.2Q80.08 171.2 73.12 168.8Q66.16 166.4 61.0 162.07999999999998Q55.84 157.76 53.44 152.12Q52.24 149.6 53.5 147.44Q54.76 145.28 57.76 144.68Q59.92 144.2 62.02 145.33999999999997Q64.12 146.48 65.2 148.76Q66.64 151.76 69.94 154.28Q73.24 156.8 77.91999999999999 158.36Q82.6 159.92 87.75999999999999 159.92Q93.52 159.92 98.38 158.12Q103.24 156.32 106.24 152.89999999999998Q109.24 149.48 109.24 144.44Q109.24 138.08 104.25999999999999 133.04000000000002Q99.28 128.0 87.88 126.80000000000001Q73.0 125.36 64.48 118.03999999999999Q55.96 110.72 55.96 99.92Q55.96 92.0 60.400000000000006 86.48Q64.84 80.96000000000001 72.46000000000001 78.08000000000001Q80.08 75.2 89.44 75.2Q96.75999999999999 75.2 102.22 77.24000000000001Q107.68 79.28 111.76 82.88Q115.84 86.48 118.84 91.4Q120.52 94.04 120.22 96.38Q119.92 98.72 117.88 100.04Q115.6 101.48 112.96 100.64Q110.32 99.8 109.0 97.52Q107.08 94.04 104.32 91.64000000000001Q101.56 89.24000000000001 97.84 87.86000000000001Q94.12 86.48 89.08 86.48Q80.19999999999999 86.36 74.19999999999999 89.78Q68.2 93.2 68.2 100.28Q68.2 103.88 70.06 107.18Q71.92 110.48 76.9 112.88Q81.88 115.28 91.24 116.24000000000001Q105.52 117.68 113.5 124.94Q121.48 132.2 121.48 144.08Q121.48 150.92000000000002 118.66 155.96Q115.84 161.0 111.1 164.42000000000002Q106.36 167.84 100.3 169.51999999999998Q94.24 171.2 87.75999999999999 171.2Z\" fill=\"#2c2257\"/></svg>"}, {"id": "wee2", "kind": "svg", "x": 335.5, "y": 506.9, "w": 220.3, "h": 63.9, "r": 0, "z": 5, "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\" viewBox=\"130.414 103.868 229.618 66.6399\" preserveAspectRatio=\"none\"><path d=\"M154.48 170.0Q152.56 170.0 150.94 168.86Q149.32 167.72 148.72 166.04L130.96 112.76Q130.0 109.03999999999999 131.01999999999998 106.69999999999999Q132.04 104.36 135.52 104.36Q137.8 104.36 139.3 105.62Q140.8 106.88 141.76 109.88L154.72 150.32L166.96 108.92Q167.56 106.88 169.0 105.62Q170.44 104.36 172.96 104.36Q175.36 104.36 176.86 105.62Q178.36 106.88 178.84 108.92L189.64 151.16L202.84 109.88Q204.51999999999998 104.36 209.07999999999998 104.36Q212.44 104.36 213.64 106.69999999999999Q214.84 109.03999999999999 213.51999999999998 112.76L195.76 166.04Q195.28 167.72 193.72 168.86Q192.16 170.0 190.12 170.0Q188.2 170.0 186.51999999999998 168.86Q184.84 167.72 184.36 166.04L172.6 122.48L160.24 166.04Q159.76 167.72 158.14 168.86Q156.52 170.0 154.48 170.0ZM257.56 170.48Q247.6 170.48 239.85999999999999 166.22Q232.11999999999998 161.96 227.73999999999998 154.46Q223.35999999999999 146.96 223.35999999999999 137.24Q223.35999999999999 127.4 227.5 119.9Q231.64 112.4 238.95999999999998 108.14Q246.27999999999997 103.88 255.76 103.88Q265.12 103.88 271.84000000000003 108.02Q278.56 112.16 282.1 119.42Q285.64 126.68 285.64 136.16Q285.64 138.44 284.08 139.94Q282.52 141.44 280.12 141.44H234.51999999999998Q235.11999999999998 145.52 237.16 149.0Q240.16 154.16 245.44 157.16Q250.71999999999997 160.16 257.56 160.16Q261.28 160.16 265.17999999999995 158.78Q269.08 157.4 271.47999999999996 155.6Q273.28 154.28 275.38 154.22Q277.47999999999996 154.16 279.03999999999996 155.48Q281.08 157.28 281.2 159.44Q281.32 161.6 279.28 163.16Q275.2 166.4 269.14 168.44Q263.08 170.48 257.56 170.48ZM234.64 131.84H274.59999999999997Q274.12 127.88 272.44 124.4Q270.15999999999997 119.72 265.96 116.96000000000001Q261.76 114.2 255.76 114.2Q248.92 114.2 244.06 117.2Q239.2 120.2 236.67999999999998 125.36Q235.23999999999998 128.36 234.64 131.84ZM332.08 170.48Q322.12 170.48 314.38 166.22Q306.64 161.96 302.26 154.46Q297.88 146.96 297.88 137.24Q297.88 127.4 302.02 119.9Q306.15999999999997 112.4 313.48 108.14Q320.8 103.88 330.28 103.88Q339.64 103.88 346.36 108.02Q353.08 112.16 356.62 119.42Q360.15999999999997 126.68 360.15999999999997 136.16Q360.15999999999997 138.44 358.59999999999997 139.94Q357.03999999999996 141.44 354.64 141.44H309.04Q309.64 145.52 311.68 149.0Q314.68 154.16 319.96000000000004 157.16Q325.24 160.16 332.08 160.16Q335.8 160.16 339.70000000000005 158.78Q343.6 157.4 346.0 155.6Q347.8 154.28 349.9 154.22Q352.0 154.16 353.56 155.48Q355.6 157.28 355.72 159.44Q355.84 161.6 353.8 163.16Q349.72 166.4 343.66 168.44Q337.6 170.48 332.08 170.48ZM309.15999999999997 131.84H349.12Q348.64 127.88 346.96 124.4Q344.68 119.72 340.48 116.96000000000001Q336.28 114.2 330.28 114.2Q323.44 114.2 318.58 117.2Q313.71999999999997 120.2 311.2 125.36Q309.76 128.36 309.15999999999997 131.84Z\" fill=\"#2c2257\"/></svg>"}, {"id": "p2", "kind": "svg", "x": 570.6, "y": 506.9, "w": 63.5, "h": 90.3, "r": 0, "z": 6, "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\" viewBox=\"375.521 103.868 66.2136 94.1482\" preserveAspectRatio=\"none\"><path d=\"M381.88 198.07999999999998Q379.23999999999995 198.07999999999998 377.5 196.33999999999997Q375.76 194.6 375.76 191.96V137.24Q375.88 127.76 380.2 120.2Q384.52 112.64 391.96 108.25999999999999Q399.4 103.88 408.76 103.88Q418.24 103.88 425.68 108.25999999999999Q433.12 112.64 437.5 120.2Q441.88 127.76 441.88 137.24Q441.88 146.72 437.86 154.22Q433.84 161.72 426.88 166.1Q419.91999999999996 170.48 411.15999999999997 170.48Q404.08 170.48 398.14 167.54Q392.2 164.6 388.0 159.56V191.96Q388.0 194.6 386.32 196.33999999999997Q384.64 198.07999999999998 381.88 198.07999999999998ZM408.76 159.68Q414.88 159.68 419.67999999999995 156.74Q424.47999999999996 153.8 427.29999999999995 148.7Q430.12 143.6 430.12 137.24Q430.12 130.76 427.29999999999995 125.66Q424.47999999999996 120.56 419.67999999999995 117.62Q414.88 114.68 408.76 114.68Q402.76 114.68 397.9 117.62Q393.03999999999996 120.56 390.28 125.66Q387.52 130.76 387.52 137.24Q387.52 143.6 390.28 148.7Q393.03999999999996 153.8 397.9 156.74Q402.76 159.68 408.76 159.68Z\" fill=\"#2c2257\"/></svg>"}, {"id": "ring1", "kind": "svg", "x": 623.3, "y": 454.8, "w": 63.1, "h": 63.2, "r": 0, "z": 5, "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\" viewBox=\"430.505 49.6259 65.8264 65.865\" preserveAspectRatio=\"none\"><circle cx=\"463.6\" cy=\"82.6\" r=\"27.4\" fill=\"none\" stroke=\"#2c2257\" stroke-width=\"10.92\"/></svg>"}, {"id": "ring2", "kind": "svg", "x": 675.7, "y": 402.4, "w": 63.1, "h": 63.2, "r": 0, "z": 5, "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\" viewBox=\"485.102 -5.0033 65.8264 65.865\" preserveAspectRatio=\"none\"><circle cx=\"518.1\" cy=\"28.1\" r=\"27.4\" fill=\"none\" stroke=\"#2c2257\" stroke-width=\"10.92\"/></svg>"}];
+function clone(o){return JSON.parse(JSON.stringify(o));}
+function esc(t){return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function uid(p){return (p||'o')+'_'+(seq++);}
+
+/* ---------- render ---------- */
+const HND=['n','s','e','w','ne','nw','se','sw','rot'];
+function shapeSVG(o){const c=o.color;
+ if(o.shape==='rect')return '<svg viewBox="0 0 100 100" preserveAspectRatio="none"><rect width="100" height="100" fill="'+c+'"/></svg>';
+ if(o.shape==='circle')return '<svg viewBox="0 0 100 100" preserveAspectRatio="none"><ellipse cx="50" cy="50" rx="50" ry="50" fill="'+c+'"/></svg>';
+ return '<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,0 100,100 0,100" fill="'+c+'"/></svg>';}
+function objInner(o){
+ if(o.kind==='text')return '<div class="txt" style="font-size:'+o.fs+'px;color:'+o.color+'">'+esc(o.text)+'</div>';
+ if(o.kind==='svg')return o.svg;
+ return shapeSVG(o);
+}
+function render(){
+ [...stage.querySelectorAll('.obj')].forEach(e=>e.remove());
+ objs.forEach(o=>{
+  const d=document.createElement('div');d.className='obj';d.dataset.id=o.id;
+  d.style.left=o.x+'px';d.style.top=o.y+'px';d.style.zIndex=o.z||5;
+  d.style.transform='rotate('+(o.r||0)+'deg)';
+  if(o.kind==='shape'||o.kind==='svg'){d.style.width=o.w+'px';d.style.height=o.h+'px';}
+  d.innerHTML=objInner(o)+HND.map(h=>'<span class="h '+h+'"></span>').join('');
+  stage.appendChild(d);wire(d,o);
+ });
+ applySel();
+}
+function renderStrokes(){
+ svglayer.innerHTML=strokes.map(s=>'<path d="'+ptsPath(s.pts)+'" fill="none" stroke="'+s.color+'" stroke-width="'+s.width+'" stroke-linecap="round" stroke-linejoin="round"/>').join('');
+}
+function ptsPath(p){if(!p.length)return'';return 'M'+p.map(q=>q[0].toFixed(1)+' '+q[1].toFixed(1)).join(' L');}
+
+/* ---------- selection ---------- */
+function applySel(){[...stage.querySelectorAll('.obj')].forEach(e=>e.classList.toggle('sel',selected.includes(e.dataset.id)));stage.classList.toggle('multi',selected.length>1);sel=selected.length===1?objs.find(o=>o.id===selected[0]):null;}
+function selectOnly(id){selected=[id];applySel();}
+function toggleSel(id){const i=selected.indexOf(id);if(i>=0)selected.splice(i,1);else selected.push(id);applySel();}
+function clearSel(){selected=[];applySel();}
+
+/* ---------- history ---------- */
+let history=[], hi=-1;
+function snap(){return {objs:clone(objs),strokes:clone(strokes)};}
+function commit(){history=history.slice(0,hi+1);history.push(snap());hi=history.length-1;if(history.length>60){history.shift();hi--;}}
+function restore(st){objs=clone(st.objs);strokes=clone(st.strokes);selected=selected.filter(id=>objs.some(o=>o.id===id));render();renderStrokes();}
+function undo(){if(hi>0){hi--;restore(history[hi]);flash('בוטל');}}
+function redo(){if(hi<history.length-1){hi++;restore(history[hi]);flash('שוחזר');}}
+
+/* ---------- geometry helpers ---------- */
+function localPt(cx,cy){const r=stage.getBoundingClientRect();return [(cx-r.left)/r.width*SW,(cy-r.top)/r.height*SH];}
+function sx(dpx){const r=stage.getBoundingClientRect();return dpx/r.width*SW;}
+function sy(dpx){const r=stage.getBoundingClientRect();return dpx/r.height*SH;}
+
+/* ---------- wire object: drag / resize / rotate / edit ---------- */
+function wire(d,o){
+ d.addEventListener('mousedown',ev=>{
+  if(mode!=='select')return;
+  if(ev.target.classList.contains('h')||d.classList.contains('edit'))return;
+  ev.preventDefault();
+  if(ev.shiftKey){toggleSel(o.id);return;}
+  if(!selected.includes(o.id))selectOnly(o.id);
+  const px=ev.clientX,py=ev.clientY;
+  const grp=selected.map(id=>{const oo=objs.find(x=>x.id===id);return{oo,ox:oo.x,oy:oo.y};});
+  function mv(e){const dx=sx(e.clientX-px),dy=sy(e.clientY-py);grp.forEach(g=>{g.oo.x=g.ox+dx;g.oo.y=g.oy+dy;});render();}
+  function up(){document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);commit();}
+  document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+ });
+ d.querySelectorAll('.h').forEach(h=>{const dir=[...h.classList].find(c=>c!=='h');
+  h.addEventListener('mousedown',ev=>{ev.preventDefault();ev.stopPropagation();selectOnly(o.id);(dir==='rot'?startRotate:startResize)(d,o,dir,ev);});});
+ d.addEventListener('dblclick',ev=>{if(o.kind!=='text')return;const t=d.querySelector('.txt');t.contentEditable=true;t.classList.add('edit');d.classList.add('edit');t.focus();
+  const fin=()=>{t.contentEditable=false;t.classList.remove('edit');d.classList.remove('edit');o.text=t.textContent;commit();t.removeEventListener('blur',fin);};t.addEventListener('blur',fin);ev.stopPropagation();});
+}
+function startResize(d,o,dir,ev){
+ const rct=d.getBoundingClientRect();const startW=o.w,startH=o.h,startFs=o.fs,ox=o.x,oy=o.y,px=ev.clientX,py=ev.clientY;
+ const sW=Math.max(rct.width,10),sH=Math.max(rct.height,10);
+ function mv(e){const dx=e.clientX-px,dy=e.clientY-py;
+  if(o.kind==='text'){let f=1+((dir.includes('e')?dx:dir.includes('w')?-dx:0)+(dir.includes('s')?dy:dir.includes('n')?-dy:0))/Math.max(sW,sH,40)*1.6;o.fs=Math.max(6,startFs*f);}
+  else{if(dir.includes('e'))o.w=Math.max(6,startW+sx(dx));if(dir.includes('w')){o.w=Math.max(6,startW-sx(dx));o.x=ox+sx(dx);}if(dir.includes('s'))o.h=Math.max(6,startH+sy(dy));if(dir.includes('n')){o.h=Math.max(6,startH-sy(dy));o.y=oy+sy(dy);}}
+  render();}
+ function up(){document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);commit();}
+ document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+}
+function startRotate(d,o,ev){const rct=d.getBoundingClientRect();const cx=rct.left+rct.width/2,cy=rct.top+rct.height/2;
+ function mv(e){let a=Math.atan2(e.clientY-cy,e.clientX-cx)*180/Math.PI+90;if(e.shiftKey)a=Math.round(a/15)*15;o.r=Math.round(a);render();}
+ function up(){document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);commit();}
+ document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+}
+
+/* ---------- add objects ---------- */
+function addText(){const o={id:uid('t'),kind:'text',x:SW/2-60,y:SH/2,fs:54,color:$('textColor').value,r:0,z:++zTop,text:'טקסט'};objs.push(o);render();selectOnly(o.id);commit();}
+function addShape(shape){const o={id:uid('sh'),kind:'shape',shape,x:SW/2-70,y:SH/2-70,w:140,h:140,color:$('shapeColor').value,r:0,z:++zTop};objs.push(o);render();selectOnly(o.id);commit();}
+
+/* ---------- drawing ---------- */
+function startStroke(ev){ev.preventDefault();const s={color:pen.color,width:pen.width,pts:[localPt(ev.clientX,ev.clientY)]};strokes.push(s);
+ function mv(e){s.pts.push(localPt(e.clientX,e.clientY));renderStrokes();}
+ function up(){document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);if(s.pts.length<2)s.pts.push([s.pts[0][0]+0.5,s.pts[0][1]+0.5]);renderStrokes();commit();}
+ document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);}
+function startErase(ev){ev.preventDefault();
+ function hit(e){const[x,y]=localPt(e.clientX,e.clientY);const before=strokes.length;strokes=strokes.filter(s=>!s.pts.some(p=>Math.hypot(p[0]-x,p[1]-y)<(s.width/2+10)));if(strokes.length!==before)renderStrokes();}
+ hit(ev);
+ function mv(e){hit(e);}
+ function up(){document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);commit();}
+ document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);}
+
+/* ---------- marquee ---------- */
+stage.addEventListener('mousedown',ev=>{
+ if(mode==='pen'){startStroke(ev);return;}
+ if(mode==='erase'){startErase(ev);return;}
+ if(!(ev.target===stage||ev.target===svglayer))return;
+ ev.preventDefault();const base=ev.shiftKey?selected.slice():[];if(!ev.shiftKey)clearSel();
+ const r=stage.getBoundingClientRect(),px=ev.clientX,py=ev.clientY;
+ const box=document.createElement('div');box.className='marquee';stage.appendChild(box);
+ function mv(e){const x1=Math.min(px,e.clientX),y1=Math.min(py,e.clientY),x2=Math.max(px,e.clientX),y2=Math.max(py,e.clientY);
+  box.style.left=((x1-r.left)/r.width*SW)+'px';box.style.top=((y1-r.top)/r.height*SH)+'px';box.style.width=((x2-x1)/r.width*SW)+'px';box.style.height=((y2-y1)/r.height*SH)+'px';
+  const ns=base.slice();[...stage.querySelectorAll('.obj')].forEach(el=>{const b=el.getBoundingClientRect();if(b.right>=x1&&b.left<=x2&&b.bottom>=y1&&b.top<=y2&&!ns.includes(el.dataset.id))ns.push(el.dataset.id);});selected=ns;applySel();}
+ function up(){box.remove();document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);}
+ document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+});
+
+/* ---------- align ---------- */
+function alignSel(type){if(selected.length<2){flash('בחר 2+ אובייקטים');return;}
+ const items=selected.map(id=>({o:objs.find(x=>x.id===id),el:stage.querySelector('[data-id="'+id+'"]')})).map(it=>({...it,r:it.el.getBoundingClientRect()}));
+ const sr=stage.getBoundingClientRect();
+ const L=Math.min(...items.map(i=>i.r.left)),R=Math.max(...items.map(i=>i.r.right)),T=Math.min(...items.map(i=>i.r.top)),B=Math.max(...items.map(i=>i.r.bottom));
+ const cx=(L+R)/2,cy=(T+B)/2;
+ items.forEach(i=>{let d=0,v=false;
+  if(type==='left')d=L-i.r.left;else if(type==='right')d=R-i.r.right;else if(type==='cx')d=cx-(i.r.left+i.r.width/2);
+  else if(type==='top'){d=T-i.r.top;v=true;}else if(type==='bottom'){d=B-i.r.bottom;v=true;}else if(type==='cy'){d=cy-(i.r.top+i.r.height/2);v=true;}
+  if(v)i.o.y+=d/sr.height*SH;else i.o.x+=d/sr.width*SW;});
+ render();commit();}
+
+/* ---------- zoom ---------- */
+function setZoom(z){z=Math.max(.15,Math.min(3,z));zoom=z;const cb=$('zoomsizer');cb.style.transformOrigin='top left';cb.style.transform='scale('+z+')';cb.style.width=(SW*z)+'px';cb.style.height=(SH*z)+'px';$('zLabel').textContent=Math.round(z*100)+'%';$('zRange').value=Math.round(z*100);}
+function fitScreen(){const aw=wrap.clientWidth-30,ah=wrap.clientHeight-30;setZoom(Math.min(aw/SW,ah/SH));}
+
+/* ---------- tabs + tools ---------- */
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+ document.querySelectorAll('.tabpane').forEach(p=>p.classList.remove('on'));$('pane-'+b.dataset.tab).classList.add('on');
+ if(b.dataset.tab!=='draw')setMode('select');
+});
+function setMode(m){mode=m;stage.classList.toggle('draw',m==='pen'||m==='erase');
+ $('tPen').classList.toggle('on',m==='pen');$('tErase').classList.toggle('on',m==='erase');$('tSelect').classList.toggle('on',m==='select');
+ $('hint').textContent=m==='pen'?'מצב עט: גרור לציור':m==='erase'?'מצב מחק: גרור על קווים למחיקה':'בחר/גרור · Shift לבחירה מרובה';}
+$('tSelect').onclick=()=>setMode('select');
+$('tPen').onclick=()=>setMode(mode==='pen'?'select':'pen');
+$('tErase').onclick=()=>setMode(mode==='erase'?'select':'erase');
+$('bAddText').onclick=addText;
+document.querySelectorAll('[data-shape]').forEach(b=>b.onclick=()=>addShape(b.dataset.shape));
+document.querySelectorAll('[data-al]').forEach(b=>b.onclick=()=>alignSel(b.dataset.al));
+$('bFront').onclick=()=>{selected.forEach(id=>{objs.find(o=>o.id===id).z=++zTop;});render();commit();};
+$('bBack').onclick=()=>{selected.forEach(id=>{const o=objs.find(o2=>o2.id===id);o.z=1;});render();commit();};
+$('bDup').onclick=()=>{const n=[];selected.forEach(id=>{const o=clone(objs.find(o2=>o2.id===id));o.id=uid('c');o.x+=20;o.y+=20;o.z=++zTop;objs.push(o);n.push(o.id);});if(n.length){selected=n;render();commit();}};
+$('bDel').onclick=()=>{objs=objs.filter(o=>!selected.includes(o.id));clearSel();render();commit();};
+$('fontRange').oninput=e=>{if(sel&&sel.kind==='text'){sel.fs=+e.target.value;render();}};
+$('fontRange').onchange=()=>commit();
+$('textApply').onclick=()=>{if(sel&&sel.kind==='text'){sel.color=$('textColor').value;render();commit();}};
+$('shapeApply').onclick=()=>{selected.forEach(id=>{const o=objs.find(o2=>o2.id===id);if(o.kind==='shape')o.color=$('shapeColor').value;});render();commit();};
+$('penWidth').oninput=e=>pen.width=+e.target.value;
+$('penColor').oninput=e=>{pen.color=e.target.value;};
+$('clearDraw').onclick=()=>{if(strokes.length){strokes=[];renderStrokes();commit();}};
+$('tEyedrop').onclick=async()=>{if(!window.EyeDropper){flash('הטפטפת נתמכת ב-Chrome');return;}try{const r=await new EyeDropper().open();pen.color=r.sRGBHex;$('penColor').value=r.sRGBHex;flash('נבחר '+r.sRGBHex);}catch(e){}};
+$('bUndo').onclick=undo;$('bRedo').onclick=redo;
+$('bReset').onclick=()=>{if(confirm('לאפס הכל?')){objs=clone(DEF_OBJS);strokes=[];clearSel();render();renderStrokes();commit();fitScreen();}};
+$('zIn').onclick=()=>setZoom(zoom+0.05);$('zOut').onclick=()=>setZoom(zoom-0.05);$('zRange').oninput=e=>setZoom(e.target.value/100);$('zFit').onclick=fitScreen;
+window.addEventListener('resize',fitScreen);
+/* swatches */
+const SWCOLORS=['#1c2330','#2aa8ff','#ff5d5d','#2ecc71','#f1c40f','#9b59b6','#ff8c42','#ffffff'];
+$('swatches').innerHTML=SWCOLORS.map(c=>'<span class="swatch" style="background:'+c+'" data-c="'+c+'"></span>').join('');
+$('swatches').querySelectorAll('.swatch').forEach(s=>s.onclick=()=>{pen.color=s.dataset.c;$('penColor').value=s.dataset.c;});
+
+/* keyboard */
+document.addEventListener('keydown',e=>{
+ if(e.target.isContentEditable)return;
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo();return;}
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();redo();return;}
+ if(e.key==='Escape'){clearSel();return;}
+ if(!selected.length)return;
+ const step=e.shiftKey?10:1;
+ const A={ArrowLeft:[-step,0],ArrowRight:[step,0],ArrowUp:[0,-step],ArrowDown:[0,step]};
+ if(A[e.key]){const[dx,dy]=A[e.key];selected.forEach(id=>{const o=objs.find(o2=>o2.id===id);o.x+=dx;o.y+=dy;});render();e.preventDefault();}
+ else if(e.key==='Delete'){objs=objs.filter(o=>!selected.includes(o.id));clearSel();render();commit();}
+});
+function flash(t){const e=document.createElement('div');e.className='flash';e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),1200);}
+
+/* ---------- PNG export (browser-native, RTL-safe) ---------- */
+$('bPNG').onclick=()=>{clearSel();
+ const css=document.querySelector('style').textContent;
+ const clone2=stage.cloneNode(true);clone2.querySelectorAll('.h,.marquee').forEach(e=>e.remove());clone2.style.transform='none';
+ const xhtml=new XMLSerializer().serializeToString(clone2);
+ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+SW+'" height="'+SH+'"><foreignObject width="100%" height="100%"><div xmlns="http://www.w3.org/1999/xhtml" style="width:'+SW+'px;height:'+SH+'px;background:#fff"><style><![CDATA['+css+']]></style>'+xhtml+'</div></foreignObject></svg>';
+ const img=new Image();img.onload=()=>{const c=document.createElement('canvas');c.width=SW*2;c.height=SH*2;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.setTransform(2,0,0,2,0,0);x.drawImage(img,0,0);c.toBlob(b=>{const a=document.createElement('a');a.download='sweep.png';a.href=URL.createObjectURL(b);a.click();},'image/png');};
+ img.onerror=()=>flash('שגיאה ביצוא');img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);};
+
+/* ---------- init ---------- */
+objs=clone(DEF_OBJS);render();renderStrokes();commit();setTimeout(fitScreen,30);
+</script>
+</body></html>
