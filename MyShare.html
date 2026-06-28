@@ -188,6 +188,14 @@
   .fav3-0{left:80%;top:20%;}
   .fav3-1{left:50%;top:50%;}
   .fav3-2{left:20%;top:80%;}
+  .fav-list{display:flex;flex-direction:column;gap:12px;max-width:260px;margin:6px auto 6px;}
+  .fav-row{display:flex;align-items:center;gap:14px;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;width:100%;}
+  .fav-cc{position:relative;width:46px;height:46px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;flex:0 0 auto;box-shadow:0 8px 20px -8px rgba(8,50,50,.45);}
+  .fav-cc svg{width:23px;height:23px;}
+  .fav-edit{position:absolute;left:-5px;bottom:-5px;width:20px;height:20px;border-radius:50%;background:var(--tq-deep);color:#fff;display:flex;align-items:center;justify-content:center;border:2px solid #0c2a2b;}
+  .fav-edit svg{width:11px;height:11px;}
+  .fav-rlbl{color:#fff;font-size:14.5px;font-weight:600;}
+  .fav-row:active .fav-cc{transform:scale(.92);}
   .sheet-head{display:flex;align-items:center;gap:8px;margin:2px 0 12px;}
   .sheet-x{width:32px;height:32px;flex:0 0 auto;border:none;background:rgba(8,40,42,.08);border-radius:50%;color:var(--tq-ink);cursor:pointer;display:flex;align-items:center;justify-content:center;}
   .sheet-x svg{width:16px;height:16px;}
@@ -1276,7 +1284,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.28.2144';
+const APP_VERSION='2026.06.28.2217';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1300,14 +1308,14 @@ function doUpdate(){
 function openSettings(){
   const coins=cfg.share.map((id,i)=>{
     const app=byId(id);
-    return `<button class="fav-coin fav3-${i}" data-i="${i}"><span class="fav-c${app?'':' add'}">${app?app.ic:ICON.plus}</span><span class="fav-lbl">${app?escapeHtml(app.label):'ריק'}</span></button>`;
+    return `<button class="fav-row" data-i="${i}"><span class="fav-cc">${app?app.ic:ICON.plus}<span class="fav-edit">${ICON.edit}</span></span><span class="fav-rlbl">${app?escapeHtml(app.label):'בחר אפליקציה'}</span></button>`;
   }).join('');
   const SECH='text-align:center;color:#fff;font-size:12px;font-weight:700;letter-spacing:.6px;opacity:.6;margin:0 0 9px;';
   const DIV='<div style="height:1px;background:rgba(255,255,255,.13);margin:22px 8px;"></div>';
   showSheet(`<div class="sheet-head"><h2 style="margin:0;text-align:center;width:100%;">הגדרות</h2></div>`+
-    `<div style="${SECH}">אפליקציות שיתוף</div><div class="favdiag">${coins}</div><p class="cr-hint">לוחצים על נקודה כדי להחליף אפליקציה. נשמר במכשיר.</p><div class="set-toggle" id="dblTog"><span>דאבל קליק לחיוג</span><span class="sw-tog${cfg.dblCall?' on':''}"><span class="sw-knob"></span></span></div>`+
-    DIV+
     `<div style="${SECH}">ערכת צבעים</div><div class="swatches" id="setSwatches">${PALETTES.map((p,i)=>'<button class="sw'+(i===(cfg.palette||0)?' on':'')+'" data-i="'+i+'" style="background:linear-gradient(180deg,'+p.top+','+p.bot+')" aria-label="'+escapeHtml(p.name)+'"></button>').join('')}</div>`+
+    DIV+
+    `<div style="${SECH}">אפליקציות שיתוף</div><div class="fav-list">${coins}</div><div class="set-toggle" id="dblTog"><span>דאבל קליק לחיוג</span><span class="sw-tog${cfg.dblCall?' on':''}"><span class="sw-knob"></span></span></div>`+
     DIV+
     `<div style="${SECH}">גרסה ועדכון</div><div style="text-align:center;font-size:16px;font-weight:700;color:#fff;letter-spacing:.3px;">גרסה ${APP_VERSION}</div><div id="updStatus" style="text-align:center;font-size:13px;font-weight:700;margin:4px 0 2px;min-height:17px;"></div><div style="text-align:center;width:100%;margin-top:10px;"><button id="appUpdate" style="display:inline-block;padding:7px 18px;border:1px solid rgba(255,255,255,.28);border-radius:18px;background:rgba(255,255,255,.07);color:#fff;font:inherit;font-weight:600;font-size:13px;opacity:.8;cursor:pointer;">עדכן אפליקציה לגרסה האחרונה</button></div>`+
     DIV+
@@ -1315,7 +1323,7 @@ function openSettings(){
   ovl.classList.add('bare');
   const xb=sheet.querySelector('.sheet-x');if(xb)xb.onclick=closeSheet;
   const dt=sheet.querySelector('#dblTog');if(dt)dt.onclick=()=>{cfg.dblCall=!cfg.dblCall;saveCfg();openSettings();};
-  sheet.querySelectorAll('.fav-coin').forEach(b=>b.onclick=()=>openPicker(+b.dataset.i));
+  sheet.querySelectorAll('.fav-row').forEach(b=>b.onclick=()=>openPicker(+b.dataset.i));
   const bs=sheet.querySelector('#bkSave');if(bs)bs.onclick=doBackup;
   const bl=sheet.querySelector('#bkLoad');if(bl)bl.onclick=doRestore;
   const ub=sheet.querySelector('#appUpdate');if(ub)ub.onclick=doUpdate;
@@ -1406,13 +1414,13 @@ function botbarCollapse(){            // collapse the bar into the menu icon —
   const N=meas.length;
   // same converge-into-icon motion as the 45° fan close: reuse the hmOut keyframe + its easing.
   // outermost button leaves first (stagger by reverse index) so they pull into the icon like the fan.
-  meas.forEach((m,i)=>{m.b.style.setProperty('--sx',m.dx+'px');m.b.style.setProperty('--sy',m.dy+'px');m.b.style.animation='hmOut .42s cubic-bezier(.5,.04,.7,.32) '+(((N-1-i)*0.05).toFixed(2))+'s both';});
+  meas.forEach((m,i)=>{m.b.style.setProperty('--sx',m.dx+'px');m.b.style.setProperty('--sy',m.dy+'px');m.b.style.animation='hmOut .29s cubic-bezier(.5,.04,.7,.32) '+(((N-1-i)*0.035).toFixed(3))+'s both';});
   setTimeout(()=>{                    // settle into the hidden resting state once collapsed
     barCollapsing=false;
     if(!document.querySelector('.hbar-backdrop')){updateBar();return;}   // menu already closed -> restore elsewhere
     botbar.classList.add('bar-hidden');
     btns.forEach(b=>{b.style.animation='';b.style.transition='';b.style.transform='';b.style.opacity='';b.style.removeProperty('--sx');b.style.removeProperty('--sy');});
-  },420+(N-1)*50+120);
+  },290+(N-1)*35+120);
 }
 function botbarReopen(){              // spring the bar buttons back out of the icon
   barReopening=true;
@@ -2123,14 +2131,14 @@ function openHbar(){
     return `<button class="hm-item" style="${posProp}:${off}px;bottom:${bottom}px;--dur:${dur}s;--cdur:${cdur}s;--i:${i};--r:${n-1-i}" data-i="${i}"><span class="hm-ic${it.big?' big':''}">${it.ic}</span><span class="hm-label">${escapeHtml(it.label)}</span></button>`;
   }).join('');
   bd.appendChild(bar);document.body.appendChild(bd);updateSearchFab();botbarCollapse();
-  menuFab.classList.add('open');setFab(true);
   const fab=document.getElementById('menuFab');
   const fr=fab.getBoundingClientRect();
   const fcx=fr.left+fr.width/2, fcy=fr.top+fr.height/2;
   const _hm=[...bar.querySelectorAll('.hm-item')];
   const _meas=_hm.map(el=>{const ic=el.querySelector('.hm-ic');const ir=ic.getBoundingClientRect(),er=el.getBoundingClientRect();return{el,icx:ir.left+ir.width/2,icy:ir.top+ir.height/2,er};});
   _meas.forEach(m=>{m.el.style.setProperty('--sx',Math.round(fcx-m.icx)+'px');m.el.style.setProperty('--sy',Math.round(fcy-m.icy)+'px');m.el.style.transformOrigin=Math.round(m.icx-m.er.left)+'px '+Math.round(m.icy-m.er.top)+'px';});
-  requestAnimationFrame(()=>{bd.classList.add('show');bar.classList.add('run');});
+  requestAnimationFrame(()=>{bd.classList.add('show');});
+  setTimeout(()=>{menuFab.classList.add('open');setFab(true);bar.classList.add('run');},300);
   const close=cb=>closeHbar(cb);
   let dragMoved=false;
   bd.addEventListener('click',e=>{if(dragMoved){dragMoved=false;return;}if(e.target===bd||e.target===bar)close();});
