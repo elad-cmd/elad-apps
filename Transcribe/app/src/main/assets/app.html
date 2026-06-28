@@ -80,7 +80,7 @@
   .dotmorph{position:absolute;inset:0;transform-origin:50% 50%;transition:transform .55s cubic-bezier(.34,1.4,.5,1)}
   .dm{position:absolute;left:0;top:0;width:5px;height:5px;border-radius:50%;background:var(--coinink);transition:transform .5s cubic-bezier(.34,1.4,.5,1);will-change:transform}
   @keyframes fabHop{0%{transform:translate(0,0) scale(1,1)}8%{transform:translate(calc(var(--dx)*0.04),5px) scale(1.18,0.84)}26%{transform:translate(calc(var(--dx)*0.30),-32px) scale(0.86,1.16)}42%{transform:translate(calc(var(--dx)*0.52),3px) scale(1.18,0.84)}58%{transform:translate(calc(var(--dx)*0.70),-20px) scale(0.9,1.12)}72%{transform:translate(calc(var(--dx)*0.85),3px) scale(1.14,0.88)}87%{transform:translate(calc(var(--dx)*0.96),-9px) scale(0.96,1.05)}100%{transform:translate(var(--dx),0) scale(1,1)}}
-  .hbar-backdrop{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,0);transition:background .45s ease}
+  .hbar-backdrop{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,0);transition:background .45s ease;touch-action:none}
   .mh-hint{position:absolute;z-index:94;pointer-events:none}
   .mh-ar{position:absolute;color:#fff;opacity:.92}
   .mh-hand{position:absolute;left:50%;top:50%;margin:-17px 0 0 -17px;color:#fff}
@@ -425,8 +425,8 @@
     dots:'<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>',
     arch:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11h14V8M10 12h4"/></svg>'
   };
-  var SWEEP_ICON='<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="8.6" cy="15.4" r="2.15"/><circle cx="12" cy="12" r="2.15"/><circle cx="15.4" cy="8.6" r="2.15"/></svg>';
-  var WAZE_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="10" r="1.25" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.25" fill="currentColor" stroke="none"/><path d="M8.4 13.4c1.1 1.7 6.1 1.7 7.2 0"/></svg>';
+  var SWEEP_ICON='<svg viewBox="0 0 100 100" style="width:100%;height:100%;display:block" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="swg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1AB8A9"/><stop offset="1" stop-color="#0E7576"/></linearGradient></defs><rect x="2" y="2" width="96" height="96" rx="24" fill="url(#swg)"/><circle cx="30.14" cy="69.86" r="4.00" fill="#fff" fill-opacity="0.27"/><circle cx="36.00" cy="64.00" r="5.64" fill="#fff"/><circle cx="41.85" cy="58.15" r="7.28" fill="#fff" fill-opacity="0.43"/><circle cx="47.71" cy="52.29" r="8.92" fill="#fff"/><circle cx="55.88" cy="44.12" r="10.56" fill="#fff" fill-opacity="0.59"/><circle cx="64.06" cy="35.94" r="12.20" fill="#fff"/></svg>';
+  var WAZE_ICON='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>';
   function esc(s){return (s||'').replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
   function nid(){return 'b'+Date.now()+Math.floor(Math.random()*999);}
 
@@ -703,7 +703,7 @@
   var ICONM={
     home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="22"/></svg>',
     search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.2-4.2"/></svg>',
-    gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="4.29" cy="19.71" r="3.35" stroke-width="1.5"/><circle cx="12" cy="12" r="3.35" stroke-width="1.5"/><circle cx="19.71" cy="4.29" r="3.35" stroke-width="1.5"/></svg>',
+    gear:'<svg viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path transform="translate(4.29 19.71) scale(0.46)" d="M6.74 -2.79L9.84 -1.76L9.84 1.76L6.74 2.79L8.2 5.72L5.72 8.2L2.79 6.74L1.76 9.84L-1.76 9.84L-2.79 6.74L-5.72 8.2L-8.2 5.72L-6.74 2.79L-9.84 1.76L-9.84 -1.76L-6.74 -2.79L-8.2 -5.72L-5.72 -8.2L-2.79 -6.74L-1.76 -9.84L1.76 -9.84L2.79 -6.74L5.72 -8.2L8.2 -5.72L6.74 -2.79ZM3.70 1.53L3.70 -1.53L1.53 -3.70L-1.53 -3.70L-3.70 -1.53L-3.70 1.53L-1.53 3.70L1.53 3.70Z"/><path transform="translate(12 12) scale(0.46)" d="M6.74 -2.79L9.84 -1.76L9.84 1.76L6.74 2.79L8.2 5.72L5.72 8.2L2.79 6.74L1.76 9.84L-1.76 9.84L-2.79 6.74L-5.72 8.2L-8.2 5.72L-6.74 2.79L-9.84 1.76L-9.84 -1.76L-6.74 -2.79L-8.2 -5.72L-5.72 -8.2L-2.79 -6.74L-1.76 -9.84L1.76 -9.84L2.79 -6.74L5.72 -8.2L8.2 -5.72L6.74 -2.79ZM3.70 1.53L3.70 -1.53L1.53 -3.70L-1.53 -3.70L-3.70 -1.53L-3.70 1.53L-1.53 3.70L1.53 3.70Z"/><path transform="translate(19.71 4.29) scale(0.46)" d="M6.74 -2.79L9.84 -1.76L9.84 1.76L6.74 2.79L8.2 5.72L5.72 8.2L2.79 6.74L1.76 9.84L-1.76 9.84L-2.79 6.74L-5.72 8.2L-8.2 5.72L-6.74 2.79L-9.84 1.76L-9.84 -1.76L-6.74 -2.79L-8.2 -5.72L-5.72 -8.2L-2.79 -6.74L-1.76 -9.84L1.76 -9.84L2.79 -6.74L5.72 -8.2L8.2 -5.72L6.74 -2.79ZM3.70 1.53L3.70 -1.53L1.53 -3.70L-1.53 -3.70L-3.70 -1.53L-3.70 1.53L-1.53 3.70L1.53 3.70Z"/></svg>',
     palette:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1 0 1.6-.8 1.6-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.1 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-4.4-4-7.4-9-7.4z"/><circle cx="7.5" cy="11.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="8.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="16.5" cy="11.5" r="1.1" fill="currentColor" stroke="none"/></svg>',
     phoneR:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="18" rx="2.4"/><g fill="currentColor" stroke="none"><circle cx="14.5" cy="6" r="0.9"/><circle cx="14.5" cy="9.25" r="0.9"/><circle cx="14.5" cy="12.5" r="0.9"/><circle cx="14.5" cy="15.75" r="0.9"/><circle cx="14.5" cy="19" r="0.9"/></g><path d="M6 12 H2 M3.6 10.4 L2 12 L3.6 13.6"/></svg>',
     phoneL:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="18" rx="2.4"/><g fill="currentColor" stroke="none"><circle cx="9.5" cy="6" r="0.9"/><circle cx="9.5" cy="9.25" r="0.9"/><circle cx="9.5" cy="12.5" r="0.9"/><circle cx="9.5" cy="15.75" r="0.9"/><circle cx="9.5" cy="19" r="0.9"/></g><path d="M18 12 H22 M20.4 10.4 L22 12 L20.4 13.6"/></svg>',
@@ -766,7 +766,7 @@
       {ic:ICONM.home,label:'בית',fn:function(){navHome();}},
       {ic:ICONM.search,label:'היסטוריה',fn:function(){exitSel();renderHist();renderDateChip();navTo('history');}},
       {ic:ICONM.archive,label:'ארכיון',fn:function(){exitSel();renderArc();renderArcChip();navTo('archive');}},
-      {ic:ICONM.key,label:'הגדרות',fn:function(){renderKey();renderSwatches();navTo('settings');}},
+      {ic:ICONM.gear,label:'הגדרות',fn:function(){renderKey();renderSwatches();navTo('settings');}},
       {ic:ICONM.palette,label:'פלטת צבעים',pal:true},
       {ic:(curHand()==='left'?ICONM.phoneL:ICONM.phoneR),label:(curHand()==='left'?'יד ימין':'יד שמאל'),hand:1},
       {ic:ICONM.help,label:'עזרה',fn:function(){navTo('help');}}
@@ -839,9 +839,10 @@
   // ---- favorites ----
   var favs=[];
   function loadF(){ try{favs=JSON.parse(localStorage.getItem('tx_favs')||'null');}catch(e){favs=null;} if(!favs||!favs.length){ favs=[{id:'sweep',type:'sweep',label:'Sweep'},{id:'waze',type:'app',pkg:'com.waze',label:'Waze'}]; saveF(); } if(!localStorage.getItem('tx_favs_v2')){ if(!favs.some(function(f){return f.pkg==='com.waze'||f.id==='waze';})){ favs.push({id:'waze',type:'app',pkg:'com.waze',label:'Waze'}); saveF(); } try{localStorage.setItem('tx_favs_v2','1');}catch(e){} } }
+  function resolveAppIcons(){ if(!A||!A.getAppIcon)return; var changed=false; favs.forEach(function(f){ if(!f.icon && f.pkg){ try{ var ic=A.getAppIcon(f.pkg); if(ic){ f.icon=ic; changed=true; } }catch(e){} } }); if(changed)saveF(); }
   function saveF(){ try{localStorage.setItem('tx_favs',JSON.stringify(favs));}catch(e){} }
   function favById(id){ return favs.find(function(f){return f.id===id;}); }
-  function favAvatar(f){ if(f.icon) return '<img src="'+f.icon+'">'; var bg=f.type==='wa'?'#25D366':(f.type==='sweep'?'#0FB5A6':(f.pkg==='com.waze'?'#33CCFF':'#888')); var inner; if(f.type==='sweep') inner=SWEEP_ICON; else if(f.pkg==='com.waze') inner=WAZE_ICON; else inner=esc((f.label||'?').trim().charAt(0).toUpperCase()); return '<span style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:'+bg+'">'+inner+'</span>'; }
+  function favAvatar(f){ if(f.icon) return '<img src="'+f.icon+'">'; if(f.type==='sweep') return SWEEP_ICON; var bg=f.type==='wa'?'#25D366':(f.pkg==='com.waze'?'#33CCFF':'#888'); var inner=(f.pkg==='com.waze')?WAZE_ICON:esc((f.label||'?').trim().charAt(0).toUpperCase()); return '<span style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:'+bg+'">'+inner+'</span>'; }
   function favStripHtml(){ var h='<div class="favstrip">'; favs.forEach(function(f){ h+='<button class="favchip" data-fav="'+f.id+'" title="'+esc(f.label)+'"><span class="fa">'+favAvatar(f)+'</span></button>'; }); h+='<button class="favchip add" data-fav="__add" title="ערוך"><span class="fa">+</span></button></div>'; return h; }
   function shareFav(f,text){ if(!f||!text)return;
     if(f.type==='wa'){ if(A&&A.shareToWhatsApp)A.shareToWhatsApp(f.number,text); return; }
@@ -867,7 +868,7 @@
   document.getElementById('waSave').addEventListener('click',function(){ var nm=document.getElementById('waName').value.trim(); var nu=document.getElementById('waNum').value.replace(/[^0-9]/g,''); if(nu.length<8){ toast('מספר לא תקין'); return; } favs.push({id:nid(),type:'wa',label:nm||('וואטסאפ '+nu.slice(-4)),number:nu}); saveF(); document.getElementById('waForm').classList.remove('on'); renderFavList(); });
   document.body.addEventListener('click',function(e){ if(e.target.closest('[data-closeovl]')){ var o=e.target.closest('.ovl'); if(o)o.classList.remove('on'); } });
 
-  applyPal(curPal()); applyHand(curHand()); buildFabDots(); loadF(); loadAr(); boxes=[]; try{localStorage.removeItem('tx_boxes');}catch(e){} loadH(); render(); checkForUpdate();
+  applyPal(curPal()); applyHand(curHand()); buildFabDots(); loadF(); resolveAppIcons(); loadAr(); boxes=[]; try{localStorage.removeItem('tx_boxes');}catch(e){} loadH(); render(); checkForUpdate();
 })();
 </script>
 </body>

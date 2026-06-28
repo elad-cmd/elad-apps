@@ -285,6 +285,22 @@ class MainActivity : Activity() {
             }.start()
         }
 
+        /** Returns the launcher icon of an installed app as a base64 PNG data URI, or "" if not installed. */
+        @JavascriptInterface fun getAppIcon(pkg: String): String {
+            return try {
+                val d = packageManager.getApplicationIcon(pkg)
+                val w = if (d.intrinsicWidth > 0) d.intrinsicWidth else 96
+                val h = if (d.intrinsicHeight > 0) d.intrinsicHeight else 96
+                val bmp = android.graphics.Bitmap.createBitmap(w, h, android.graphics.Bitmap.Config.ARGB_8888)
+                val cv = android.graphics.Canvas(bmp)
+                d.setBounds(0, 0, w, h)
+                d.draw(cv)
+                val baos = java.io.ByteArrayOutputStream()
+                bmp.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, baos)
+                "data:image/png;base64," + android.util.Base64.encodeToString(baos.toByteArray(), android.util.Base64.NO_WRAP)
+            } catch (e: Exception) { "" }
+        }
+
         @JavascriptInterface fun exitApp() { runOnUiThread { finishAffinity() } }
 
         /** Share text directly to a specific app package. Returns false if it could not. */
