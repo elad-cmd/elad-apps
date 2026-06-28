@@ -532,21 +532,31 @@
   document.getElementById('histList').addEventListener('click',function(e){ var lk=e.target.closest('[data-lock]'); if(lk){ var lid=lk.getAttribute('data-lock'); var li=hist.find(function(x){return x.id===lid;}); if(li){ li.locked=!li.locked; saveH(); renderHist(); toast(li.locked?'ההקלטה ננעלה':'הנעילה בוטלה'); } return; } var dg=e.target.closest('[data-delgrp]'); if(dg){ var gds=dg.getAttribute('data-delgrp'); delIds(hist.filter(function(x){return dstr(x.ts)===gds;}).map(function(x){return x.id;})); return; } var hd=e.target.closest('.datehdr'); if(hd){ var ds2=hd.getAttribute('data-grp'); if(!expanded)expanded=new Set(); if(expanded.has(ds2))expanded.delete(ds2); else expanded.add(ds2); renderHist(); return; } var dl=e.target.closest('[data-del]'); if(dl){ delIds([dl.getAttribute('data-del')]); return; } var it=e.target.closest('.hitem'); if(!it)return; var id=it.getAttribute('data-id'); if(selMode){ toggleSel(id); } else { var x=hist.find(function(z){return z.id===id;}); if(x) openDetail(x.text, id); } });
   // ---- selection + gestures ----
   var selMode=false, selSet=new Set(), selCtx='history';
+  var CK_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5 9-11"/></svg>';
+  function selData(){ return selCtx==='history'?hist:(selCtx==='archive'?archive:(selCtx==='clipboard'?clips:boxes)); }
+  function selRender(){ if(selCtx==='history')renderHist(); else if(selCtx==='archive')renderArc(); else if(selCtx==='clipboard')renderClips(); else render(); }
+  function selContId(){ return selCtx==='history'?'histList':(selCtx==='archive'?'arcList':(selCtx==='clipboard'?'clipList':'boxes')); }
+  function selItemSel(){ return selCtx==='main'?'.box':'.hitem'; }
   function updateSelCount(){ var c=document.getElementById('selCount'); if(c)c.textContent=selSet.size; }
-  function rerenderSel(){ if(selCtx==='history') renderHist(); else render(); }
+  function rerenderSel(){ selRender(); }
   function enterSel(ctx,id){ selCtx=ctx; selMode=true; document.body.classList.add('selmode'); if(id)selSet.add(id); updateSelCount(); rerenderSel(); if(navigator.vibrate)navigator.vibrate(12); }
   function exitSel(){ selMode=false; document.body.classList.remove('selmode'); selSet.clear(); updateSelCount(); }
-  function toggleSel(id){ var add=!selSet.has(id); if(add)selSet.add(id); else selSet.delete(id); updateSelCount(); var cont=selCtx==='history'?document.getElementById('histList'):document.getElementById('boxes'); var el=cont&&cont.querySelector('[data-id=\"'+id+'\"]'); if(el)el.classList.toggle('sel',add); }
+  function toggleSel(id){ var add=!selSet.has(id); if(add)selSet.add(id); else selSet.delete(id); updateSelCount(); var cont=document.getElementById(selContId()); var el=cont&&cont.querySelector('[data-id=\"'+id+'\"]'); if(el)el.classList.toggle('sel',add); }
   function delIds(ids){ ids=ids.filter(function(id){ var li=hist.find(function(x){return x.id===id;}); return !(li&&li.locked); }); if(!ids.length){ toast('פריטים נעולים — בטל נעילה כדי למחוק'); exitSel(); renderHist(); return; } ids.forEach(function(id){ var el=document.querySelector('.hitem[data-id=\"'+id+'\"]'); if(el)el.classList.add('deleting'); }); setTimeout(function(){ hist=hist.filter(function(x){return ids.indexOf(x.id)<0;}); saveH(); exitSel(); renderHist(); },430); }
-  function selItemsText(){ var out=[]; selSet.forEach(function(id){ var o=selCtx==='history'?hist.find(function(x){return x.id===id;}):boxes.find(function(x){return x.id===id;}); if(o&&o.text)out.push(heNumToDigits(o.text)); }); return out.join('\n\n'); }
-  function delSelected(){ if(!selSet.size){ exitSel(); rerenderSel(); return; } if(selCtx==='history'){ delIds(Array.from(selSet)); } else { var ids=Array.from(selSet); ids.forEach(function(id){ var el=document.querySelector('.box[data-id=\"'+id+'\"]'); if(el)el.classList.add('deleting'); }); setTimeout(function(){ boxes=boxes.filter(function(b){return ids.indexOf(b.id)<0;}); saveB(); exitSel(); render(); },320); } }
+  function selItemsText(){ var out=[]; var data=selData(); selSet.forEach(function(id){ var o=data.find(function(x){return x.id===id;}); if(o&&o.text)out.push(heNumToDigits(o.text)); }); return out.join('\n\n'); }
+  function delSelected(){ if(!selSet.size){ exitSel(); rerenderSel(); return; } var ids=Array.from(selSet);
+    if(selCtx==='history'){ delIds(ids); return; }
+    if(selCtx==='main'){ ids.forEach(function(id){ var el=document.querySelector('.box[data-id=\"'+id+'\"]'); if(el)el.classList.add('deleting'); }); setTimeout(function(){ boxes=boxes.filter(function(b){return ids.indexOf(b.id)<0;}); saveB(); exitSel(); render(); },320); return; }
+    if(selCtx==='archive'){ archive=archive.filter(function(x){return ids.indexOf(x.id)<0;}); saveAr(); }
+    else if(selCtx==='clipboard'){ clips=clips.filter(function(x){return ids.indexOf(x.id)<0;}); saveClips(); }
+    exitSel(); rerenderSel(); }
   var shareSheetText='';
   function openShareSheet(text){ shareSheetText=text; document.getElementById('shareSheetFavs').innerHTML=favStripHtml(); document.getElementById('shareSheet').classList.add('on'); }
   function shareSelected(){ var t=selItemsText(); if(!t){ toast('לא נבחר כלום'); return; } openShareSheet(t); }
-  document.getElementById('selAll').addEventListener('click',function(){ var s=selCtx==='history'?'.hitem[data-id]':'.box[data-id]'; document.querySelectorAll(s).forEach(function(el){ selSet.add(el.getAttribute('data-id')); el.classList.add('sel'); }); updateSelCount(); });
+  document.getElementById('selAll').addEventListener('click',function(){ var cont=document.getElementById(selContId()); if(!cont)return; cont.querySelectorAll(selItemSel()+'[data-id]').forEach(function(el){ selSet.add(el.getAttribute('data-id')); el.classList.add('sel'); }); updateSelCount(); });
   document.getElementById('delSel').addEventListener('click',delSelected);
   document.getElementById('shareSel').addEventListener('click',shareSelected);
-  function archiveSelected(){ if(!selSet.size){ toast('לא נבחר כלום'); return; } var n=0; selSet.forEach(function(id){ var o=selCtx==='history'?hist.find(function(x){return x.id===id;}):boxes.find(function(x){return x.id===id;}); if(o&&o.text){ if(addArchive(o.text))n++; if(selCtx==='main')o.archived=true; } }); if(selCtx==='main')saveB(); exitSel(); rerenderSel(); toast(n?('נשמרו בארכיון: '+n):'כבר בארכיון'); }
+  function archiveSelected(){ if(!selSet.size){ toast('לא נבחר כלום'); return; } var n=0; var data=selData(); selSet.forEach(function(id){ var o=data.find(function(x){return x.id===id;}); if(o&&o.text){ if(addArchive(o.text))n++; if(selCtx==='main')o.archived=true; } }); if(selCtx==='main')saveB(); exitSel(); rerenderSel(); toast(n?('נשמרו בארכיון: '+n):'כבר בארכיון'); }
   document.getElementById('saveSel').addEventListener('click',archiveSelected);
   document.getElementById('selCancel').addEventListener('click',function(){ exitSel(); rerenderSel(); });
   document.getElementById('shareSysBtn').addEventListener('click',function(){ if(A&&A.share)A.share(shareSheetText); document.getElementById('shareSheet').classList.remove('on'); exitSel(); rerenderSel(); });
@@ -573,7 +583,7 @@
     groups.forEach(function(g){
       h+='<div class="datehdr open" style="cursor:default"><span class="dlabel">'+esc(g.ds)+'</span><span class="dcount">'+g.items.length+'</span></div>';
       h+='<div class="grpitems">';
-      g.items.forEach(function(x){ h+='<div class="hitem" data-id="'+x.id+'"><button class="htrash" data-arcdel="'+x.id+'" aria-label="הסר מהארכיון">'+trSvg+'</button><div class="t">'+esc(heNumToDigits(x.text))+'</div><div class="d">'+tstr(x.ts)+'</div></div>'; });
+      g.items.forEach(function(x){ h+='<div class="hitem'+(selSet.has(x.id)?' sel':'')+'" data-id="'+x.id+'"><button class="htrash" data-arcdel="'+x.id+'" aria-label="הסר מהארכיון">'+trSvg+'</button><div class="hcheck">'+CK_SVG+'</div><div class="t">'+esc(heNumToDigits(x.text))+'</div><div class="d">'+tstr(x.ts)+'</div></div>'; });
       h+='</div>';
     });
     el.innerHTML=h;
@@ -583,11 +593,16 @@
   document.getElementById('arcDateBtn').addEventListener('click',function(){ var d=document.getElementById('arcDate'); try{ if(d.showPicker) d.showPicker(); else d.click(); }catch(e){ d.click(); } });
   function renderArcChip(){ var w=document.getElementById('arcDateChipWrap'); w.innerHTML = arcDateF? '<span class="datechip">'+arcDateF+' <button data-arcclear style="background:none;border:none;color:#fff;font-weight:700">✕</button></span>':''; }
   document.getElementById('arcDateChipWrap').addEventListener('click',function(e){ if(e.target.closest('[data-arcclear]')){ arcDateF=''; document.getElementById('arcDate').value=''; renderArcChip(); renderArc(); } });
-  document.getElementById('arcList').addEventListener('click',function(e){ var rm=e.target.closest('[data-arcdel]'); if(rm){ var rid=rm.getAttribute('data-arcdel'); archive=archive.filter(function(x){return x.id!==rid;}); saveAr(); renderArc(); toast('הוסר מהארכיון'); return; } var it=e.target.closest('.hitem'); if(!it)return; var aid=it.getAttribute('data-id'); var x=archive.find(function(z){return z.id===aid;}); if(x) openDetail(x.text, aid); });
-  (function(){ var al=document.getElementById('arcList'); var sx=0,sy=0,cur=null,cid=null,mv=false;
-    al.addEventListener('touchstart',function(e){ var it=e.target.closest('.hitem'); if(!it)return; cur=it; cid=it.getAttribute('data-id'); sx=e.touches[0].clientX; sy=e.touches[0].clientY; mv=false; },{passive:true});
-    al.addEventListener('touchmove',function(e){ if(!cur)return; var dx=e.touches[0].clientX-sx, dy=e.touches[0].clientY-sy; if(Math.abs(dx)>Math.abs(dy)&&dx<0){ mv=true; cur.style.transform='translateX('+dx+'px)'; cur.style.opacity=String(Math.max(0.3,1+dx/220)); } },{passive:true});
-    al.addEventListener('touchend',function(e){ if(cur&&mv){ var dx=e.changedTouches[0].clientX-sx; if(dx<-70){ var id=cid; archive=archive.filter(function(x){return x.id!==id;}); saveAr(); renderArc(); toast('הוסר מהארכיון'); } else { var c=cur; c.style.transition='transform .2s,opacity .2s'; c.style.transform=''; c.style.opacity=''; setTimeout(function(){c.style.transition='';},220); } } cur=null; });
+  document.getElementById('arcList').addEventListener('click',function(e){ if(selMode&&selCtx==='archive'){ var sit=e.target.closest('.hitem'); if(sit)toggleSel(sit.getAttribute('data-id')); return; } var rm=e.target.closest('[data-arcdel]'); if(rm){ var rid=rm.getAttribute('data-arcdel'); archive=archive.filter(function(x){return x.id!==rid;}); saveAr(); renderArc(); toast('הוסר מהארכיון'); return; } var it=e.target.closest('.hitem'); if(!it)return; var aid=it.getAttribute('data-id'); var x=archive.find(function(z){return z.id===aid;}); if(x) openDetail(x.text, aid); });
+  (function(){ var al=document.getElementById('arcList'); var sx=0,sy=0,cur=null,cid=null,mv=false,lp=null;
+    al.addEventListener('touchstart',function(e){ var it=e.target.closest('.hitem'); if(!it)return; cur=it; cid=it.getAttribute('data-id'); sx=e.touches[0].clientX; sy=e.touches[0].clientY; mv=false; if(!selMode){ lp=setTimeout(function(){ lp=null; enterSel('archive',cid); },480); } },{passive:true});
+    al.addEventListener('touchmove',function(e){ if(!cur)return; var dx=e.touches[0].clientX-sx, dy=e.touches[0].clientY-sy; if((Math.abs(dx)>8||Math.abs(dy)>8)&&lp){clearTimeout(lp);lp=null;} if(!selMode&&Math.abs(dx)>Math.abs(dy)&&dx<0){ mv=true; cur.style.transform='translateX('+dx+'px)'; cur.style.opacity=String(Math.max(0.3,1+dx/220)); } },{passive:true});
+    al.addEventListener('touchend',function(e){ if(lp){clearTimeout(lp);lp=null;} if(cur&&mv){ var dx=e.changedTouches[0].clientX-sx; if(dx<-70){ var id=cid; archive=archive.filter(function(x){return x.id!==id;}); saveAr(); renderArc(); toast('הוסר מהארכיון'); } else { var c=cur; c.style.transition='transform .2s,opacity .2s'; c.style.transform=''; c.style.opacity=''; setTimeout(function(){c.style.transition='';},220); } } cur=null; });
+  })();
+  (function(){ var cl=document.getElementById('clipList'); var sx=0,sy=0,cid=null,lp=null;
+    cl.addEventListener('touchstart',function(e){ var it=e.target.closest('.clipitem'); if(!it)return; cid=it.getAttribute('data-id'); sx=e.touches[0].clientX; sy=e.touches[0].clientY; if(!selMode){ lp=setTimeout(function(){ lp=null; enterSel('clipboard',cid); },480); } },{passive:true});
+    cl.addEventListener('touchmove',function(e){ if(lp){ var dx=Math.abs(e.touches[0].clientX-sx),dy=Math.abs(e.touches[0].clientY-sy); if(dx>8||dy>8){clearTimeout(lp);lp=null;} } },{passive:true});
+    cl.addEventListener('touchend',function(){ if(lp){clearTimeout(lp);lp=null;} });
   })();
 
   // ---- clipboard log ----
@@ -598,7 +613,7 @@
   function addClip(t){ t=(t||'').trim(); if(!t)return; if(clips.length&&clips[0].text===t)return; var ex=-1; for(var i=0;i<clips.length;i++){ if(clips[i].text===t){ex=i;break;} } if(ex>=0){ var it=clips.splice(ex,1)[0]; it.ts=Date.now(); clips.unshift(it); } else { clips.unshift({id:nid(),text:t,ts:Date.now(),pinned:false}); } pruneClips(); saveClips(); if(curScreen==='clipboard')renderClips(); }
   var clipTr='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13"/></svg>';
   var clipPinIc='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6l-1 6 3 3v2H7v-2l3-3-1-6zM12 15v5"/></svg>';
-  function clipRow(c){ return '<div class="hitem clipitem'+(c.pinned?' pinned':'')+'" data-id="'+c.id+'"><button class="hlock'+(c.pinned?' on':'')+'" data-clippin="'+c.id+'" aria-label="קבע">'+clipPinIc+'</button><button class="htrash" data-clipdel="'+c.id+'" aria-label="מחק">'+clipTr+'</button><div class="t">'+esc(c.text)+'</div><div class="d">'+tstr(c.ts)+'</div></div>'; }
+  function clipRow(c){ return '<div class="hitem clipitem'+(c.pinned?' pinned':'')+(selSet.has(c.id)?' sel':'')+'" data-id="'+c.id+'"><button class="hlock'+(c.pinned?' on':'')+'" data-clippin="'+c.id+'" aria-label="קבע">'+clipPinIc+'</button><button class="htrash" data-clipdel="'+c.id+'" aria-label="מחק">'+clipTr+'</button><div class="hcheck">'+CK_SVG+'</div><div class="t">'+esc(c.text)+'</div><div class="d">'+tstr(c.ts)+'</div></div>'; }
   function renderClips(){ var el=document.getElementById('clipList'); if(!el)return; var pinned=clips.filter(function(c){return c.pinned;}); var recent=clips.filter(function(c){return !c.pinned;}); var h='';
     if(pinned.length){ h+='<div class="datehdr'+(clipPinOpen?' open':'')+'" data-clipacc><span class="dchev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span><span class="dlabel">מקובעים</span><span class="dcount">'+pinned.length+'</span></div>'; h+='<div class="grpitems"'+(clipPinOpen?'':' hidden')+'>'+pinned.map(clipRow).join('')+'</div>'; }
     if(recent.length){ h+=recent.map(clipRow).join(''); }
@@ -606,6 +621,7 @@
     el.innerHTML=h; }
   document.getElementById('clipList').addEventListener('click',function(e){
     if(e.target.closest('[data-clipacc]')){ clipPinOpen=!clipPinOpen; renderClips(); return; }
+    if(selMode&&selCtx==='clipboard'){ var sit=e.target.closest('.clipitem'); if(sit)toggleSel(sit.getAttribute('data-id')); return; }
     var pin=e.target.closest('[data-clippin]'); if(pin){ var id=pin.getAttribute('data-clippin'); var c=clips.find(function(x){return x.id===id;}); if(c){ c.pinned=!c.pinned; saveClips(); renderClips(); toast(c.pinned?'קובע ✓':'הקיבוע בוטל'); } return; }
     var del=e.target.closest('[data-clipdel]'); if(del){ var did=del.getAttribute('data-clipdel'); clips=clips.filter(function(x){return x.id!==did;}); saveClips(); renderClips(); return; }
     var it=e.target.closest('.clipitem'); if(it){ var c2=clips.find(function(x){return x.id===it.getAttribute('data-id');}); if(c2){ if(A&&A.copy)A.copy(c2.text); toast('הועתק'); } } });

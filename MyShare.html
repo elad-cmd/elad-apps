@@ -1284,7 +1284,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.28.2217';
+const APP_VERSION='2026.06.28.2313';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2127,7 +2127,7 @@ function openHbar(){
     const cx=cxFab+dirX*k*hStep, cy=cyFab+k*vStep;
     const off=Math.round(lh ? (cx-25) : (window.innerWidth-cx-25));
     const bottom=Math.round(cy-25);
-    const dur='0.52', cdur=(0.42+i*0.05).toFixed(2);
+    const dur='0.62', cdur=(0.42+i*0.05).toFixed(2);
     return `<button class="hm-item" style="${posProp}:${off}px;bottom:${bottom}px;--dur:${dur}s;--cdur:${cdur}s;--i:${i};--r:${n-1-i}" data-i="${i}"><span class="hm-ic${it.big?' big':''}">${it.ic}</span><span class="hm-label">${escapeHtml(it.label)}</span></button>`;
   }).join('');
   bd.appendChild(bar);document.body.appendChild(bd);updateSearchFab();botbarCollapse();
