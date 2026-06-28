@@ -742,6 +742,18 @@ let ADDR=loadAddr();
 function saveAddr(){try{localStorage.setItem('myshare_addr',JSON.stringify(ADDR));}catch(e){}}
 function getAddr(p){return ADDR[fKey(p)]||'';}
 function setAddr(p,v){const k=fKey(p);v=(v||'').trim();if(v)ADDR[k]=v;else delete ADDR[k];saveAddr();}
+function loadBday(){try{return JSON.parse(localStorage.getItem('myshare_bday')||'{}')||{};}catch(e){return{};}}
+let BDAY=loadBday();
+function saveBday(){try{localStorage.setItem('myshare_bday',JSON.stringify(BDAY));}catch(e){}}
+function getBday(p){return BDAY[fKey(p)]||'';}
+function setBday(p,v){const k=fKey(p);v=(v||'').trim();if(v)BDAY[k]=v;else delete BDAY[k];saveBday();}
+function bdayNext(ds){
+  if(!ds)return null;const m=String(ds).match(/(\d{4})?-?(\d{2})-(\d{2})$/);if(!m)return null;
+  const mo=+m[2],da=+m[3];if(!mo||!da)return null;
+  const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  let nx=new Date(now.getFullYear(),mo-1,da);if(nx<today)nx=new Date(now.getFullYear()+1,mo-1,da);
+  return Math.round((nx-today)/86400000);
+}
 function openWaze(addr){addr=(addr||'').trim();if(!addr){toast('אין כתובת לאיש הקשר');return;}const u='https://waze.com/ul?q='+encodeURIComponent(addr)+'&navigate=yes';try{var w=window.open(u,'_blank','noopener');if(!w)location.href=u;}catch(e){location.href=u;}}
 function loadFields(){try{return JSON.parse(localStorage.getItem('myshare_fields')||'{}')||{};}catch(e){return{};}}
 let FIELDS=loadFields();
@@ -1066,6 +1078,7 @@ function openMemberPicker(listId){
 }
 if(BRIDGE){try{var _fk=JSON.parse(localStorage.getItem('myshare_favkeys')||'null');if(_fk){PEOPLE.forEach(p=>{if(_fk[fKey(p)])p.fav=true;});localStorage.removeItem('myshare_favkeys');}}catch(e){}}
 recomputeAllRules();renderSeg();renderList();renderLists();layoutList();
+setTimeout(()=>{try{const t=upcomingBdays().filter(o=>o.n===0);if(t.length){const nm=t.map(o=>o.p.name||'').filter(Boolean).slice(0,3).join(', ');toast('🎂 היום יום הולדת ל'+(nm||t.length+' אנשי קשר'));}}catch(e){}},1600);
 window.addEventListener('resize',layoutList);
 
 const TRIGGER=30, INF=140, MAXB=0, SELECT=80;
@@ -1233,7 +1246,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.28.1359';
+const APP_VERSION='2026.06.28.1417';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1270,7 +1283,7 @@ function openSettings(){
   const ub=sheet.querySelector('#appUpdate');if(ub)ub.onclick=doUpdate;
   refreshUpdStatus();
 }
-const BK_KEYS=['myshare_cfg','myshare_favorder','myshare_dec','myshare_stats','contacts_view','myshare_people','myshare_onboarded','myshare_favkeys','myshare_days','myshare_addr','myshare_fields'];
+const BK_KEYS=['myshare_cfg','myshare_favorder','myshare_dec','myshare_stats','contacts_view','myshare_people','myshare_onboarded','myshare_favkeys','myshare_days','myshare_addr','myshare_fields','myshare_bday','myshare_mycard'];
 function sweepBackupBuild(){
   const data={};BK_KEYS.forEach(k=>{const v=localStorage.getItem(k);if(v!=null)data[k]=v;});
   try{const f={};PEOPLE.forEach(p=>{if(p&&p.fav)f[fKey(p)]=1;});data.myshare_favkeys=JSON.stringify(f);}catch(e){}
@@ -1537,6 +1550,7 @@ function openContact(person,fromSearch){
     '<div class="ct-frow"><div class="ct-acts"><button class="ct-act" data-act="call" aria-label="חיוג">'+ICON.call+'</button><button class="ct-act" data-act="wa" aria-label="וואטסאפ">'+ICON.whatsapp+'</button><button class="ct-act ct-waze" data-act="waze" aria-label="ניווט ב-Waze">'+ICON.waze+'</button></div><input class="ct-inp" data-key="phone" placeholder="טלפון" dir="ltr"></div>'+
     '<div class="ct-frow"><div class="ct-acts"><button class="ct-act" data-act="mail" aria-label="מייל">'+ICON.mail+'</button></div><input class="ct-inp" data-key="email" placeholder="מייל" dir="ltr"></div>'+
     '<div class="ct-frow"><input class="ct-inp" id="ctAddr" placeholder="כתובת (לניווט ב-Waze)" dir="rtl"></div>'+
+    '<div class="ct-frow"><div class="ct-acts"><span class="ct-act" style="cursor:default;" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16M5 21v-7a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v7M12 8V5M9 5h6"/><path d="M4 14c1.4 1 2.8 1 4.2 0s2.8-1 4.2 0 2.8 1 4.2 0"/></svg></span></div><input class="ct-inp" id="ctBday" type="date" dir="ltr" aria-label="תאריך לידה"></div>'+
     '<div class="ct-lists" id="ctLists"></div>'+
     '<div class="ct-fields" id="ctFields"></div>'+
     '<div class="ct-days" id="ctDays"></div>'+
@@ -1549,6 +1563,7 @@ function openContact(person,fromSearch){
   const fb=card.querySelector('#ctFav');if(fb){if(person.fav)fb.classList.add('on');fb.onclick=()=>{person.fav=!person.fav;fb.classList.toggle('on',!!person.fav);renderList();savePeople();};}
   (function(){const dbox=card.querySelector('#ctDays');if(!dbox)return;function paintDays(){const v=getDays(person);dbox.innerHTML='<div class="days-lbl">ימים פנויים</div><div class="days-row">'+DAY_LET.map((L,i)=>'<button class="dayc'+(v[i]?' on':'')+'" data-d="'+i+'">'+L+'</button>').join('')+'</div>';dbox.querySelectorAll('.dayc').forEach(b=>b.onclick=()=>{toggleDayP(person,+b.dataset.d);if(navigator.vibrate)navigator.vibrate(4);paintDays();renderList();});}paintDays();})();
   (function(){const ai=card.querySelector('#ctAddr');if(!ai)return;ai.value=getAddr(person);const sv=()=>{setAddr(person,ai.value);renderList();};ai.addEventListener('input',sv);ai.addEventListener('blur',sv);})();
+  (function(){const bi=card.querySelector('#ctBday');if(!bi)return;bi.value=getBday(person);const sv=()=>{setBday(person,bi.value);};bi.addEventListener('change',sv);bi.addEventListener('blur',sv);})();
   (function(){const fbox=card.querySelector('#ctFields');if(!fbox)return;let arr=getFields(person).map(f=>({l:String(f.l||''),v:String(f.v||'')}));const XS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';function persist(){setFields(person,arr);}function paint(){fbox.innerHTML='<div class="cf-hd">שדות מותאמים</div><div class="cf-list">'+arr.map((f,i)=>'<div class="cf-row" data-i="'+i+'"><input class="ct-inp cf-l" placeholder="תווית" value="'+escapeHtml(f.l)+'"><input class="ct-inp cf-v" placeholder="ערך" value="'+escapeHtml(f.v)+'"><button class="cf-del" data-i="'+i+'" aria-label="הסר">'+XS+'</button></div>').join('')+'</div><button class="cf-add" id="cfAdd">+ הוסף שדה</button>';fbox.querySelectorAll('.cf-row').forEach(r=>{const i=+r.dataset.i;const li=r.querySelector('.cf-l'),vi=r.querySelector('.cf-v');const upd=()=>{arr[i]={l:li.value,v:vi.value};persist();};li.addEventListener('input',upd);vi.addEventListener('input',upd);});fbox.querySelectorAll('.cf-del').forEach(b=>b.onclick=()=>{arr.splice(+b.dataset.i,1);persist();paint();});fbox.querySelector('#cfAdd').onclick=()=>{arr.push({l:'',v:''});paint();const ls=fbox.querySelectorAll('.cf-l');if(ls.length)ls[ls.length-1].focus();};}paint();})();
   function paintCtLists(){const box=sc.querySelector('#ctLists');if(!box)return;const mine=listsOf(person);box.innerHTML='<div class="ct-lists-row">'+mine.map(L=>'<button class="ct-lchip on" data-id="'+L.id+'">'+escapeHtml(L.name)+'</button>').join('')+'<button class="ct-addlist" id="ctAddList" aria-label="הוסף לרשימה">'+ICON.plus+'</button></div>';const ab=box.querySelector('#ctAddList');if(ab)ab.onclick=()=>openListAssign(person,paintCtLists);box.querySelectorAll('.ct-lchip[data-id]').forEach(b=>b.onclick=()=>{const L=(cfg.lists||[]).find(x=>x.id===b.dataset.id);if(!L)return;uiConfirm('להסיר את «'+(person.name||"איש הקשר")+'» מהרשימה «'+L.name+'»?',function(){const i=L.members.indexOf(fKey(person));if(i>=0)L.members.splice(i,1);saveCfg();renderLists();renderList();paintCtLists();});});}
   paintCtLists();
@@ -1977,6 +1992,34 @@ function openMyCard(){
   }
   render();
 }
+/* ===== ימי הולדת ===== */
+function bdayLabel(n){return n===0?'היום! 🎂':n===1?'מחר':('בעוד '+n+' ימים');}
+function fmtBdayDate(ds){const m=String(ds).match(/-?(\d{2})-(\d{2})$/);return m?(m[2]+'/'+m[1]):String(ds);}
+function upcomingBdays(){
+  const out=[];PEOPLE.forEach(p=>{if(FDEC[fKey(p)]==='delete')return;const ds=getBday(p);if(!ds)return;const n=bdayNext(ds);if(n==null)return;out.push({p:p,ds:ds,n:n});});
+  out.sort((a,b)=>a.n-b.n);return out;
+}
+function addBdayToCal(name,ds){
+  const m=String(ds).match(/(\d{4})?-?(\d{2})-(\d{2})$/);if(!m){toast('תאריך לידה לא תקין');return;}
+  const mo=m[2],da=m[3],z=n=>String(n).padStart(2,'0');
+  const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  let y=now.getFullYear();if(new Date(y,+mo-1,+da)<today)y++;
+  const start=''+y+mo+da;const e=new Date(y,+mo-1,+da+1);const end=''+e.getFullYear()+z(e.getMonth()+1)+z(e.getDate());
+  let url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('יום הולדת — '+(name||''))+'&dates='+start+'/'+end+'&recur='+encodeURIComponent('RRULE:FREQ=YEARLY');
+  try{var w=window.open(url,'_blank');if(!w)location.href=url;}catch(e2){location.href=url;}
+}
+function openBirthdays(){
+  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>ימי הולדת קרובים</h2></div><div class="scr-body" id="bdBody"></div>');sc._reopen=openBirthdays;
+  function render(){
+    const body=sc.querySelector('#bdBody');if(!body)return;
+    const list=upcomingBdays();
+    if(!list.length){body.innerHTML='<p class="cr-hint" style="text-align:center;margin:18px 0;">עדיין לא הוגדרו ימי הולדת. הוסף תאריך לידה בכרטיס איש קשר.</p>';return;}
+    body.innerHTML='<div class="flt-list">'+list.map((o,i)=>{const p=o.p;const soon=o.n<=7;return '<div class="arc-row bd-row" data-i="'+i+'"><span class="li-av">'+escapeHtml(initials(p.name)||'?')+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div><div class="s"'+(soon?' style="color:#ffd27a;"':'')+'>'+fmtBdayDate(o.ds)+' · '+bdayLabel(o.n)+'</div></div><button class="arc-restore bd-cal" data-i="'+i+'">ליומן</button></div>';}).join('')+'</div>';
+    body.querySelectorAll('.bd-cal').forEach(b=>b.onclick=(e)=>{e.stopPropagation();const o=list[+b.dataset.i];addBdayToCal(o.p.name||'',o.ds);});
+    body.querySelectorAll('.bd-row').forEach(rw=>rw.onclick=()=>openContact(list[+rw.dataset.i].p));
+  }
+  render();
+}
 function openHbar(){
   if(document.querySelector('.hbar-backdrop'))return;
   const items=[
@@ -1984,6 +2027,7 @@ function openHbar(){
     {ic:ICON.search,   label:'חיפוש',            fn:openSearch},
     {ic:ICON.gear,     label:'הגדרות',          fn:openSettings},
     {ic:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h7v7H3V3zm2 2v3h3V5H5zm-2 9h7v7H3v-7zm2 2v3h3v-3H5zM14 3h7v7h-7V3zm2 2v3h3V5h-3zM14 14h3v3h-3v-3zm5 0h2v2h-2v-2zm-5 5h3v2h-3v-2zm5 0h2v2h-2v-2z"/></svg>', label:'הכרטיס שלי', fn:openMyCard},
+    {ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16M5 21v-7a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v7M12 8V5M9 5h6"/><path d="M4 14c1.4 1 2.8 1 4.2 0s2.8-1 4.2 0 2.8 1 4.2 0"/></svg>', label:'ימי הולדת', fn:openBirthdays},
     {ic:ICON.palette,  label:'פלטת צבעים',       pal:true},
     {ic:(cfg.hand==='left'?ICON.phoneL:ICON.phoneR), label:(cfg.hand==='left'?'יד ימין':'יד שמאל'), hand:1},
     {ic:'<svg viewBox="72 34 102 102" fill="none" stroke="currentColor"><g transform="translate(96 86) rotate(28) scale(0.8)" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><line x1="0" y1="-52" x2="0" y2="-4"/><path d="M-12 4 H12 L22 42 Q0 50 -22 42 Z" stroke-width="6"/><line x1="-4" y1="9" x2="-8" y2="44" stroke-width="4"/><line x1="6" y1="9" x2="10" y2="44" stroke-width="4"/></g><rect x="86.5" y="79" width="18" height="9" rx="4" transform="rotate(28 95 83)" fill="currentColor"/><g fill="currentColor"><circle cx="110" cy="126" r="6"/><circle cx="128" cy="126" r="5"/><circle cx="146" cy="126" r="4"/></g></svg>', label:'סדר פסח', fn:openSeder, big:1}
