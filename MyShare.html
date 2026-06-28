@@ -906,7 +906,7 @@ function openSendList(listId){
       '<div class="sl-list">'+all.map((p,i)=>'<label class="sl-row"><input type="checkbox" class="sl-chk" data-i="'+i+'"'+(sel.has(fKey(p))?' checked':'')+'><span class="li-av">'+escapeHtml(initials(p.name))+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div><div class="s">'+escapeHtml(phoneOf(p)||emailOf(p)||'—')+'</div></div></label>').join('')+'</div>'+
       '<textarea class="sl-msg" id="slMsg" placeholder="כתוב הודעה…"></textarea>'+
       '<div class="sl-count" id="slCount"></div>'+
-      '<div class="sl-ch"><button class="sl-cbtn wa" data-ch="wa">'+ICON.whatsapp+'<span>וואטסאפ — תור רציף</span></button><button class="sl-cbtn" data-ch="sms">'+ICON.sms+'<span>SMS — לכולם בבת אחת</span></button><button class="sl-cbtn" data-ch="mail">'+ICON.mail+'<span>מייל — לכולם ב‑BCC</span></button></div>';
+      '<div class="sl-ch"><button class="sl-cbtn wa" data-ch="wa">'+ICON.whatsapp+'<span>וואטסאפ — תור רציף</span></button><button class="sl-cbtn" data-ch="sms">'+ICON.sms+'<span>SMS — לכולם בבת אחת</span></button><button class="sl-cbtn" data-ch="mail">'+ICON.mail+'<span>מייל — לכולם ב‑BCC</span></button><button class="sl-cbtn" data-ch="cal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><span>יומן — זימון לרשימה</span></button></div>';
     const mEl=body.querySelector('#slMsg');mEl.value=msg;mEl.oninput=()=>{msg=mEl.value;};
     const cnt=body.querySelector('#slCount');const upd=()=>{cnt.textContent=chosen().length+' מתוך '+all.length+' נבחרו';};
     body.querySelectorAll('.sl-chk').forEach(c=>c.onchange=()=>{const p=all[+c.dataset.i];if(c.checked)sel.add(fKey(p));else sel.delete(fKey(p));upd();});
@@ -915,6 +915,7 @@ function openSendList(listId){
   }
   function start(ch){
     const ppl=chosen();if(!ppl.length){toast('בחר לפחות נמען אחד');return;}
+    if(ch==='cal'){calForm();return;}
     if(ch==='sms'){const nums=ppl.map(phoneOf).filter(Boolean);if(!nums.length){toast('אין מספרי טלפון');return;}const sep=/android/i.test(navigator.userAgent)?'?':'&';location.href='sms:'+nums.join(',')+(msg?(sep+'body='+encodeURIComponent(msg)):'');return;}
     if(ch==='mail'){const ems=ppl.map(emailOf).filter(Boolean);if(!ems.length){toast('אין כתובות מייל');return;}location.href='mailto:?bcc='+encodeURIComponent(ems.join(','))+(msg?('&body='+encodeURIComponent(msg)):'');return;}
     const q=ppl.filter(p=>intlDigits(phoneOf(p)));if(!q.length){toast('אין מספרי טלפון לוואטסאפ');return;}waQueue(q);
@@ -941,6 +942,41 @@ function openSendList(listId){
       body.querySelector('#slStop').onclick=()=>{renderSelect();};
     }
     render();
+  }
+  function calForm(){
+    const ppl=chosen();if(!ppl.length){toast('בחר לפחות נמען אחד');return;}
+    const ems=ppl.map(emailOf).filter(Boolean);
+    const d=new Date(),pad=n=>String(n).padStart(2,'0');
+    const dDef=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+    body.innerHTML='<div class="sl-hint">זימון ביומן לחברי הרשימה. מי שיש לו אימייל יקבל הזמנה.</div>'+
+      '<input class="ct-inp" id="caTitle" placeholder="כותרת האירוע" style="text-align:right;margin-bottom:10px;">'+
+      '<div style="display:flex;gap:8px;margin-bottom:10px;"><input class="ct-inp" id="caDate" type="date" value="'+dDef+'" style="flex:1;"><input class="ct-inp" id="caTime" type="time" value="09:00" style="flex:1;"></div>'+
+      '<div style="display:flex;gap:8px;margin-bottom:10px;align-items:center;"><span style="font-size:13px;opacity:.7;white-space:nowrap;">משך</span><select class="ct-inp" id="caDur" style="flex:1;"><option value="30">חצי שעה</option><option value="60" selected>שעה</option><option value="90">שעה וחצי</option><option value="120">שעתיים</option></select></div>'+
+      '<input class="ct-inp" id="caLoc" placeholder="מיקום (לא חובה)" style="text-align:right;margin-bottom:10px;">'+
+      '<textarea class="sl-msg" id="caNote" placeholder="פרטים (לא חובה)">'+escapeHtml(msg||'')+'</textarea>'+
+      '<div class="sl-count">'+ems.length+' מתוך '+ppl.length+' יוזמנו לפי אימייל'+(ems.length<ppl.length?' · לאחרים אין אימייל':'')+'</div>'+
+      '<button class="sl-big" id="caGo">צור זימון ביומן</button>'+
+      '<div class="sl-acts"><button class="sl-min" id="caBack">חזרה</button></div>';
+    body.querySelector('#caTitle').value=L.name?('מפגש '+L.name):'';
+    body.querySelector('#caBack').onclick=()=>renderSelect();
+    body.querySelector('#caGo').onclick=()=>{
+      const title=(body.querySelector('#caTitle').value||'').trim()||'אירוע';
+      const dv=body.querySelector('#caDate').value,tv=body.querySelector('#caTime').value||'09:00';
+      if(!dv){toast('בחר תאריך');return;}
+      const dur=+body.querySelector('#caDur').value||60;
+      const loc=(body.querySelector('#caLoc').value||'').trim();
+      const note=(body.querySelector('#caNote').value||'').trim();
+      const start=new Date(dv+'T'+tv);if(isNaN(start.getTime())){toast('תאריך לא תקין');return;}
+      const end=new Date(start.getTime()+dur*60000);
+      const z=n=>String(n).padStart(2,'0');
+      const fmt=dt=>''+dt.getUTCFullYear()+z(dt.getUTCMonth()+1)+z(dt.getUTCDate())+'T'+z(dt.getUTCHours())+z(dt.getUTCMinutes())+'00Z';
+      let url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(title)+'&dates='+fmt(start)+'/'+fmt(end);
+      if(note)url+='&details='+encodeURIComponent(note);
+      if(loc)url+='&location='+encodeURIComponent(loc);
+      if(ems.length)url+='&add='+encodeURIComponent(ems.join(','));
+      try{var w=window.open(url,'_blank');if(!w)location.href=url;}catch(e){location.href=url;}
+      toast(ems.length?('נפתח יומן עם '+ems.length+' מוזמנים'):'נפתח יומן');
+    };
   }
   renderSelect();
 }
@@ -1196,7 +1232,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.28';
+const APP_VERSION='2026.06.28.2';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
