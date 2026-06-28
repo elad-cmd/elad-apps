@@ -116,7 +116,7 @@
   }
 
   .hbar-backdrop{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,0);transition:background .45s ease;}
-  .hbar-backdrop.show{background:rgba(0,0,0,.87);}
+  .hbar-backdrop.show{background:rgba(0,0,0,.92);}
   .hbar{position:fixed;inset:0;z-index:91;pointer-events:none;}
   .hm-item{position:absolute;pointer-events:auto;background:none;border:none;cursor:pointer;width:50px;height:50px;padding:0;opacity:0;}
   .hbar.run .hm-item{animation:hmIn var(--dur,.5s) linear both;}
@@ -1276,7 +1276,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.28.2010';
+const APP_VERSION='2026.06.28.2018';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1302,7 +1302,7 @@ function openSettings(){
     const app=byId(id);
     return `<button class="fav-coin fav3-${i}" data-i="${i}"><span class="fav-c${app?'':' add'}">${app?app.ic:ICON.plus}</span><span class="fav-lbl">${app?escapeHtml(app.label):'ריק'}</span></button>`;
   }).join('');
-  showSheet(`<div class="sheet-head"><h2 style="margin:0;text-align:center;width:100%;">אפליקציות שיתוף</h2></div><div class="favdiag">${coins}</div><p class="cr-hint">לוחצים על נקודה כדי להחליף אפליקציה. נשמר במכשיר.</p><div class="set-toggle" id="dblTog"><span>דאבל קליק לחיוג</span><span class="sw-tog${cfg.dblCall?' on':''}"><span class="sw-knob"></span></span></div><div class="bk-row" style="display:flex;gap:12px;justify-content:center;margin:34px 0 4px;"><button id="bkSave" style="padding:6px 16px;border:1px solid rgba(255,255,255,.32);border-radius:18px;background:rgba(255,255,255,.07);color:#fff;font:inherit;font-weight:600;font-size:12.5px;opacity:.82;cursor:pointer;">גיבוי</button><button id="bkLoad" style="padding:6px 16px;border:1px solid rgba(255,255,255,.32);border-radius:18px;background:rgba(255,255,255,.07);color:#fff;font:inherit;font-weight:600;font-size:12.5px;opacity:.82;cursor:pointer;">שחזור</button></div><p class="cr-hint" style="margin:6px 0 0;">גיבוי/שחזור של רשימות, מועדפים, ארכיון והגדרות. אנשי הקשר עצמם נקראים מהטלפון.</p><div style="margin-top:16px;text-align:center;font-size:16px;font-weight:700;color:#ffffff;letter-spacing:.3px;">גרסה ${APP_VERSION}</div><div id="updStatus" style="text-align:center;font-size:13px;font-weight:700;margin:4px 0 2px;min-height:17px;"></div><button id="appUpdate" style="display:block;width:fit-content;max-width:80%;margin:10px auto 0;padding:7px 18px;border:1px solid rgba(255,255,255,.28);border-radius:18px;background:rgba(255,255,255,.07);color:#fff;font:inherit;font-weight:600;font-size:13px;opacity:.8;cursor:pointer;text-align:center;">עדכן אפליקציה לגרסה האחרונה</button><button class="sheet-x sheet-x-bottom" aria-label="סגור"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`);
+  showSheet(`<div class="sheet-head"><h2 style="margin:0;text-align:center;width:100%;">אפליקציות שיתוף</h2></div><div class="favdiag">${coins}</div><p class="cr-hint">לוחצים על נקודה כדי להחליף אפליקציה. נשמר במכשיר.</p><div class="set-toggle" id="dblTog"><span>דאבל קליק לחיוג</span><span class="sw-tog${cfg.dblCall?' on':''}"><span class="sw-knob"></span></span></div><div class="bk-row" style="display:flex;gap:12px;justify-content:center;margin:34px 0 4px;"><button id="bkSave" style="padding:6px 16px;border:1px solid rgba(255,255,255,.32);border-radius:18px;background:rgba(255,255,255,.07);color:#fff;font:inherit;font-weight:600;font-size:12.5px;opacity:.82;cursor:pointer;">גיבוי</button><button id="bkLoad" style="padding:6px 16px;border:1px solid rgba(255,255,255,.32);border-radius:18px;background:rgba(255,255,255,.07);color:#fff;font:inherit;font-weight:600;font-size:12.5px;opacity:.82;cursor:pointer;">שחזור</button></div><p class="cr-hint" style="margin:6px 0 0;">גיבוי/שחזור של רשימות, מועדפים, ארכיון והגדרות. אנשי הקשר עצמם נקראים מהטלפון.</p><div style="margin-top:16px;text-align:center;font-size:16px;font-weight:700;color:#ffffff;letter-spacing:.3px;">גרסה ${APP_VERSION}</div><div id="updStatus" style="text-align:center;font-size:13px;font-weight:700;margin:4px 0 2px;min-height:17px;"></div><div style="text-align:center;width:100%;margin-top:10px;"><button id="appUpdate" style="display:inline-block;padding:7px 18px;border:1px solid rgba(255,255,255,.28);border-radius:18px;background:rgba(255,255,255,.07);color:#fff;font:inherit;font-weight:600;font-size:13px;opacity:.8;cursor:pointer;">עדכן אפליקציה לגרסה האחרונה</button></div><button class="sheet-x sheet-x-bottom" aria-label="סגור"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`);
   ovl.classList.add('bare');
   const xb=sheet.querySelector('.sheet-x');if(xb)xb.onclick=closeSheet;
   const dt=sheet.querySelector('#dblTog');if(dt)dt.onclick=()=>{cfg.dblCall=!cfg.dblCall;saveCfg();openSettings();};
@@ -2144,17 +2144,17 @@ function openHbar(){
       const _up=()=>{dr=false;};bd.addEventListener('pointerup',_up);bd.addEventListener('pointercancel',_up);
       let muted=false;try{muted=localStorage.getItem('myshare_menuhint2')==='1';}catch(e){}
       if(!muted){
-        const FINGER='<svg viewBox="0 0 24 24" fill="currentColor" width="34" height="34"><path d="M9 11.5V5a1.5 1.5 0 0 1 3 0v5.5h1V6.5a1.5 1.5 0 0 1 3 0v4h1V8.5a1.5 1.5 0 0 1 3 0v6a6 6 0 0 1-6 6h-2a4 4 0 0 1-3.2-1.6L6 15s-.9-1.2.3-2.1c1.1-.8 2.2.2 2.2.2z"/></svg>';
+        const FINGER='<svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-4 0"/><path d="M14 10V9a2 2 0 0 0-4 0v1"/><path d="M10 9.5V4a2 2 0 0 0-4 0v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>';
         const AR_UR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" width="30" height="30"><path d="M7 17L17 7M9 7h8v8"/></svg>';
         const AR_DL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" width="30" height="30"><path d="M17 7L7 17M15 17H7V9"/></svg>';
         const AR_UL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" width="30" height="30"><path d="M17 17L7 7M15 7H7v8"/></svg>';
         const AR_DR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" width="30" height="30"><path d="M7 7l10 10M9 17h8V9"/></svg>';
         const HW=130;
-        const h=document.createElement('div');h.className='mh-hint';h.style.top='118px';h.style.width=HW+'px';h.style.height=HW+'px';if(lh){h.style.right='18px';}else{h.style.left='18px';}
+        const h=document.createElement('div');h.className='mh-hint';h.style.top='300px';h.style.width=HW+'px';h.style.height=HW+'px';if(lh){h.style.right='18px';}else{h.style.left='18px';}
         const a1=lh?AR_UL:AR_UR, a2=lh?AR_DR:AR_DL, rot=lh?45:-45, anim=lh?'mhL':'mhR';
         h.innerHTML='<span class="mh-ar" style="top:4px;'+(lh?'left:4px;':'right:4px;')+'">'+a1+'</span><span class="mh-ar" style="bottom:4px;'+(lh?'right:4px;':'left:4px;')+'">'+a2+'</span><span class="mh-hand" style="animation:'+anim+' 1.8s ease-in-out infinite;"><span style="display:inline-block;transform:rotate('+rot+'deg);">'+FINGER+'</span></span>';
         bd.appendChild(h);
-        const chk=document.createElement('label');chk.className='mh-chk';chk.style.top=(118+HW+8)+'px';if(lh){chk.style.right='18px';}else{chk.style.left='18px';}chk.innerHTML='<input type="checkbox"> אל תציג יותר';
+        const chk=document.createElement('label');chk.className='mh-chk';chk.style.top=(300+HW+8)+'px';if(lh){chk.style.right='18px';}else{chk.style.left='18px';}chk.innerHTML='<input type="checkbox"> אל תציג יותר';
         chk.querySelector('input').onchange=function(ev){if(ev.target.checked){try{localStorage.setItem('myshare_menuhint2','1');}catch(_){}if(h.parentNode)h.remove();if(chk.parentNode)chk.remove();}};
         bd.appendChild(chk);
       }
