@@ -38,6 +38,7 @@
   .arcbadge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--acc);background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;padding:2px 8px;margin-bottom:7px}
   .arcbadge svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2}
   .verstat{font-size:13px;font-weight:700;text-align:center;min-height:17px;margin-top:6px;color:var(--mut)}
+  .clipitem .hlock.on{color:var(--acc)}
   .updbar{display:none;align-items:center;gap:10px;margin:0 14px 10px;padding:9px 12px;background:var(--card);border:1px solid var(--acc);border-radius:14px;box-shadow:var(--shCard)}
   .updbar.on{display:flex}
   .updbar #updBarTxt{flex:1;font-size:13px;font-weight:700;color:var(--acc);text-align:right}
@@ -295,6 +296,12 @@
   </div>
 </section>
 
+<section id="clipboard" class="screen">
+  <div class="head"><span style="width:40px"></span><div class="t">לוח הדבקות</div><span style="width:40px"></span></div>
+  <div class="histlist" id="clipList"></div>
+  <div class="botbar"><span class="bbspace"></span><div class="bbcenter"></div><button class="bbback" data-back-to="main" aria-label="חזרה"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div>
+</section>
+
 <section id="detail" class="screen">
   <div class="head">
     <span style="width:40px"></span>
@@ -380,7 +387,7 @@
     if(sv===APP_VERSION){ el.textContent='מעודכן לגרסה האחרונה ✓'; el.style.color='#2BD0A0'; if(b)b.style.display='none'; }
     else { el.textContent='עדכון זמין — גרסה '+sv; el.style.color='#F0A23A'; if(b){ b.style.display=''; b.textContent='עדכן לגרסה '+sv; } } }
   function doUpdate(){ if(A&&A.openUrl)A.openUrl(APK_URL); toast('מוריד את הגרסה האחרונה…'); }
-  var screens=['main','recording','history','detail','settings','help','favs','archive'];
+  var screens=['main','recording','history','detail','settings','help','favs','archive','clipboard'];
   var navStack=['main'], curScreen='main';
   function show(id){ screens.forEach(function(s){document.getElementById(s).classList.toggle('on',s===id);}); curScreen=id; var mf=document.getElementById('menuFab'); if(mf)mf.style.display=(id==='recording')?'none':''; closeHbarSafe(); if(id==='settings'){ try{refreshUpdStatus();}catch(e){} } }
   function navTo(id){ if(selMode){exitSel();rerenderSel();} if(navStack[navStack.length-1]!==id) navStack.push(id); show(id); }
@@ -583,6 +590,26 @@
     al.addEventListener('touchend',function(e){ if(cur&&mv){ var dx=e.changedTouches[0].clientX-sx; if(dx<-70){ var id=cid; archive=archive.filter(function(x){return x.id!==id;}); saveAr(); renderArc(); toast('הוסר מהארכיון'); } else { var c=cur; c.style.transition='transform .2s,opacity .2s'; c.style.transform=''; c.style.opacity=''; setTimeout(function(){c.style.transition='';},220); } } cur=null; });
   })();
 
+  // ---- clipboard log ----
+  var clips=[], clipPinOpen=false;
+  function loadClips(){ try{clips=JSON.parse(localStorage.getItem('tx_clips')||'[]');}catch(e){clips=[];} }
+  function saveClips(){ try{localStorage.setItem('tx_clips',JSON.stringify(clips.slice(0,400)));}catch(e){} }
+  function pruneClips(){ var c=0; clips=clips.filter(function(x){ if(x.pinned)return true; c++; return c<=80; }); }
+  function addClip(t){ t=(t||'').trim(); if(!t)return; if(clips.length&&clips[0].text===t)return; var ex=-1; for(var i=0;i<clips.length;i++){ if(clips[i].text===t){ex=i;break;} } if(ex>=0){ var it=clips.splice(ex,1)[0]; it.ts=Date.now(); clips.unshift(it); } else { clips.unshift({id:nid(),text:t,ts:Date.now(),pinned:false}); } pruneClips(); saveClips(); if(curScreen==='clipboard')renderClips(); }
+  var clipTr='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13"/></svg>';
+  var clipPinIc='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6l-1 6 3 3v2H7v-2l3-3-1-6zM12 15v5"/></svg>';
+  function clipRow(c){ return '<div class="hitem clipitem'+(c.pinned?' pinned':'')+'" data-id="'+c.id+'"><button class="hlock'+(c.pinned?' on':'')+'" data-clippin="'+c.id+'" aria-label="קבע">'+clipPinIc+'</button><button class="htrash" data-clipdel="'+c.id+'" aria-label="מחק">'+clipTr+'</button><div class="t">'+esc(c.text)+'</div><div class="d">'+tstr(c.ts)+'</div></div>'; }
+  function renderClips(){ var el=document.getElementById('clipList'); if(!el)return; var pinned=clips.filter(function(c){return c.pinned;}); var recent=clips.filter(function(c){return !c.pinned;}); var h='';
+    if(pinned.length){ h+='<div class="datehdr'+(clipPinOpen?' open':'')+'" data-clipacc><span class="dchev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span><span class="dlabel">מקובעים</span><span class="dcount">'+pinned.length+'</span></div>'; h+='<div class="grpitems"'+(clipPinOpen?'':' hidden')+'>'+pinned.map(clipRow).join('')+'</div>'; }
+    if(recent.length){ h+=recent.map(clipRow).join(''); }
+    if(!pinned.length&&!recent.length){ h='<div class="empty">הלוח ריק. מה שתעתיק יופיע כאן כשתיכנס לאפליקציה.</div>'; }
+    el.innerHTML=h; }
+  document.getElementById('clipList').addEventListener('click',function(e){
+    if(e.target.closest('[data-clipacc]')){ clipPinOpen=!clipPinOpen; renderClips(); return; }
+    var pin=e.target.closest('[data-clippin]'); if(pin){ var id=pin.getAttribute('data-clippin'); var c=clips.find(function(x){return x.id===id;}); if(c){ c.pinned=!c.pinned; saveClips(); renderClips(); toast(c.pinned?'קובע ✓':'הקיבוע בוטל'); } return; }
+    var del=e.target.closest('[data-clipdel]'); if(del){ var did=del.getAttribute('data-clipdel'); clips=clips.filter(function(x){return x.id!==did;}); saveClips(); renderClips(); return; }
+    var it=e.target.closest('.clipitem'); if(it){ var c2=clips.find(function(x){return x.id===it.getAttribute('data-id');}); if(c2){ if(A&&A.copy)A.copy(c2.text); toast('הועתק'); } } });
+
   // ---- detail ----
   var detTxt='', detId=null, detOrig='';
   function autoGrowDet(){ var ta=document.getElementById('detailTx'); ta.style.height='auto'; ta.style.height=Math.max(120,ta.scrollHeight)+'px'; }
@@ -693,7 +720,8 @@
     onMicPermission:function(g){ if(g){ var r=A&&A.startRecording?A.startRecording():'error'; if(r==='ok') beginUI(); } else toast('צריך הרשאת מיקרופון'); },
     onAuth:function(purpose,ok){ if(ok!=='1'){ toast('האימות בוטל'); return; } authPurpose=purpose; onAuthLocal(); },
     onBack:function(){ doBack(); },
-    onVersion:function(raw){ try{ versionResult(raw); }catch(e){} }
+    onVersion:function(raw){ try{ versionResult(raw); }catch(e){} },
+    onClipboard:function(t){ try{ addClip(t); }catch(e){} }
   };
   document.getElementById('appUpdate').addEventListener('click',doUpdate);
   document.getElementById('updBarBtn').addEventListener('click',doUpdate);
@@ -709,7 +737,8 @@
     phoneL:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="18" rx="2.4"/><g fill="currentColor" stroke="none"><circle cx="9.5" cy="6" r="0.9"/><circle cx="9.5" cy="9.25" r="0.9"/><circle cx="9.5" cy="12.5" r="0.9"/><circle cx="9.5" cy="15.75" r="0.9"/><circle cx="9.5" cy="19" r="0.9"/></g><path d="M18 12 H22 M20.4 10.4 L22 12 L20.4 13.6"/></svg>',
     help:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 .9-1 1.7"/><circle cx="12" cy="17" r=".6" fill="currentColor" stroke="none"/></svg>',
     key:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="4.2"/><path d="M11 11l9 9M16.5 16.5l2.2-2.2M13.5 13.5l2.2-2.2"/></svg>',
-    archive:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11h14V8M10 12h4"/></svg>'
+    archive:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11h14V8M10 12h4"/></svg>',
+    clip:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2.5"/><rect x="9" y="2.5" width="6" height="3.5" rx="1.2"/><path d="M9 11h6M9 15h6"/></svg>'
   };
   var PALSW=[{top:'#1FA37A',bot:'#34E0AE'},{top:'#2F74D0',bot:'#4D97F0'},{top:'#7B5BD6',bot:'#9B7BF0'},{top:'#D6478A',bot:'#F062A0'}];
   var menuFab=document.getElementById('menuFab');
@@ -766,6 +795,7 @@
       {ic:ICONM.home,label:'בית',fn:function(){navHome();}},
       {ic:ICONM.search,label:'היסטוריה',fn:function(){exitSel();renderHist();renderDateChip();navTo('history');}},
       {ic:ICONM.archive,label:'ארכיון',fn:function(){exitSel();renderArc();renderArcChip();navTo('archive');}},
+      {ic:ICONM.clip,label:'לוח',fn:function(){renderClips();navTo('clipboard');}},
       {ic:ICONM.gear,label:'הגדרות',fn:function(){renderKey();renderSwatches();navTo('settings');}},
       {ic:ICONM.palette,label:'פלטת צבעים',pal:true},
       {ic:(curHand()==='left'?ICONM.phoneL:ICONM.phoneR),label:(curHand()==='left'?'יד ימין':'יד שמאל'),hand:1},
@@ -868,7 +898,7 @@
   document.getElementById('waSave').addEventListener('click',function(){ var nm=document.getElementById('waName').value.trim(); var nu=document.getElementById('waNum').value.replace(/[^0-9]/g,''); if(nu.length<8){ toast('מספר לא תקין'); return; } favs.push({id:nid(),type:'wa',label:nm||('וואטסאפ '+nu.slice(-4)),number:nu}); saveF(); document.getElementById('waForm').classList.remove('on'); renderFavList(); });
   document.body.addEventListener('click',function(e){ if(e.target.closest('[data-closeovl]')){ var o=e.target.closest('.ovl'); if(o)o.classList.remove('on'); } });
 
-  applyPal(curPal()); applyHand(curHand()); buildFabDots(); loadF(); resolveAppIcons(); loadAr(); boxes=[]; try{localStorage.removeItem('tx_boxes');}catch(e){} loadH(); render(); checkForUpdate();
+  applyPal(curPal()); applyHand(curHand()); buildFabDots(); loadF(); resolveAppIcons(); loadAr(); loadClips(); boxes=[]; try{localStorage.removeItem('tx_boxes');}catch(e){} loadH(); render(); checkForUpdate();
 })();
 </script>
 </body>

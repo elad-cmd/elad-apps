@@ -67,6 +67,19 @@ class MainActivity : Activity() {
         handleIntent(intent)
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Capture the current clipboard text into the in-app clipboard log (foreground read only).
+        try {
+            val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = cm.primaryClip
+            if (clip != null && clip.itemCount > 0) {
+                val t = clip.getItemAt(0).coerceToText(this)?.toString().orEmpty()
+                if (t.isNotBlank()) callJs("onClipboard", t)
+            }
+        } catch (e: Exception) {}
+    }
+
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
