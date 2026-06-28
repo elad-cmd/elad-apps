@@ -548,6 +548,26 @@
   .numpad-disp{font-size:30px;font-weight:700;color:#fff;min-height:38px;direction:ltr;letter-spacing:2px;}
   .numpad-actions{display:flex;gap:24px;align-items:center;margin-top:6px;}
   .numpad-ok{background:var(--tq-deep);color:#fff;border:none;border-radius:14px;padding:13px 30px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;}
+  .bw-ov{position:fixed;inset:0;z-index:140;display:flex;flex-direction:column;justify-content:flex-end;background:rgba(8,22,23,0);transition:background .2s;pointer-events:none;}
+  .bw-ov.show{background:rgba(8,22,23,.96);pointer-events:auto;}
+  .bw-sheet{background:#0c3b38;border-radius:22px 22px 0 0;padding:14px 14px 26px;transform:translateY(24px);transition:transform .25s;}
+  .bw-ov.show .bw-sheet{transform:translateY(0);}
+  .bw-read{text-align:center;color:#fff;font-size:18px;font-weight:700;margin:4px 0 8px;}
+  .bw-hd{display:flex;gap:8px;max-width:340px;margin:0 auto 4px;}
+  .bw-hd span{flex:1;text-align:center;color:#7fe3cf;font-size:12px;}
+  .bw-wheels{position:relative;display:flex;gap:8px;height:180px;max-width:340px;margin:0 auto;}
+  .bw-band{position:absolute;left:0;right:0;top:72px;height:36px;border-radius:10px;background:rgba(255,255,255,.12);border-top:.5px solid rgba(255,255,255,.4);border-bottom:.5px solid rgba(255,255,255,.4);pointer-events:none;}
+  .bw-col{flex:1;height:180px;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none;perspective:900px;}
+  .bw-col::-webkit-scrollbar{display:none;}
+  .bw-sp{height:72px;}
+  .bw-it{height:36px;line-height:36px;text-align:center;color:#eafaf5;font-size:18px;scroll-snap-align:center;transform-origin:center;will-change:transform,opacity;}
+  .bw-ok{display:block;width:100%;max-width:340px;margin:14px auto 0;padding:13px;border:none;border-radius:14px;background:#15b89f;color:#06211f;font:inherit;font-weight:700;font-size:15px;cursor:pointer;}
+  .mh-hint{position:absolute;z-index:24;pointer-events:none;}
+  .mh-ar{position:absolute;color:#fff;opacity:.92;}
+  .mh-hand{position:absolute;left:50%;top:50%;margin:-17px 0 0 -17px;color:#fff;}
+  .mh-chip{position:absolute;z-index:25;display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.18);color:#fff;font-size:11px;padding:5px 10px;border-radius:20px;cursor:pointer;pointer-events:auto;white-space:nowrap;}
+  @keyframes mhR{0%,100%{transform:translate(15px,-15px)}50%{transform:translate(-15px,15px)}}
+  @keyframes mhL{0%,100%{transform:translate(-15px,-15px)}50%{transform:translate(15px,15px)}}
 </style>
 </head>
 <body>
@@ -1246,7 +1266,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.28.1649';
+const APP_VERSION='2026.06.28.1719';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1497,7 +1517,7 @@ function isPhoneLike(t){t=String(t||'').trim();if(!t)return false;if(!/^[\d+\-\s
 function padInsert(inp,ch){const s=(inp.selectionStart==null?inp.value.length:inp.selectionStart),e=(inp.selectionEnd==null?inp.value.length:inp.selectionEnd);inp.value=inp.value.slice(0,s)+ch+inp.value.slice(e);const p=s+ch.length;try{inp.setSelectionRange(p,p);}catch(_){}}
 function padBksp(inp){let s=inp.selectionStart,e=inp.selectionEnd;if(s==null){inp.value=inp.value.slice(0,-1);return;}if(s!==e){inp.value=inp.value.slice(0,s)+inp.value.slice(e);try{inp.setSelectionRange(s,s);}catch(_){}}else if(s>0){inp.value=inp.value.slice(0,s-1)+inp.value.slice(s);try{inp.setSelectionRange(s-1,s-1);}catch(_){}}}
 function padAutoPaste(inp,after){if(inp.value)return;if(!navigator.clipboard||!navigator.clipboard.readText)return;navigator.clipboard.readText().then(function(t){if(inp.value)return;if(isPhoneLike(t)){inp.value=String(t).trim();if(typeof after==='function')after();}}).catch(function(){});}
-function openDialer(){const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>חייגן</h2></div><div class="scr-body dial-body"><div class="dial-res" id="dialRes"></div><div class="dial-numrow"><input class="dial-num" id="dialNum" type="text" inputmode="none" dir="ltr" style="background:transparent;border:none;outline:none;text-align:center;width:78%;caret-color:#fff;padding:0;"></div><div class="dial-padrow"><button class="dial-side dial-call" id="dialCall" aria-label="חיוג">'+ICON.call+'</button><div class="dial-grid" id="dialGrid"></div><button class="dial-side dial-bksp" id="dialBk" aria-label="מחק">⌫</button></div><button class="dial-handle" id="dialFold" aria-label="קיפול"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button></div>');sc.classList.add('scr-bottom','dialer-scr');sc._reopen=openDialer;const num=sc.querySelector('#dialNum');const grid=sc.querySelector('#dialGrid');const res=sc.querySelector('#dialRes');wirePick(res,p=>{const ph=p.phone||(p.phones&&p.phones[0])||'';if(ph)location.href='tel:'+ph;});const dig=x=>String(x||'').replace(/[^0-9]/g,'');function renderRes(){res.innerHTML='';const v=dig(num.value);if(v.length<6)return;PEOPLE.filter(p=>[p.phone].concat(p.phones||[]).filter(Boolean).some(ph=>dig(ph).indexOf(v)>=0)).slice(0,6).forEach(p=>{const ph=p.phone||(p.phones&&p.phones[0])||'';const row=document.createElement('div');row.className='row';row._person=p;row.innerHTML=rowHTML(p,ph);res.appendChild(row);});const exact=PEOPLE.some(p=>[p.phone].concat(p.phones||[]).some(ph=>dig(ph)===v));if(!exact){const row=document.createElement('div');row.className='row dial-row-new';row._person={name:num.value,phone:num.value,phones:[num.value]};row.innerHTML='<span class="av">'+ICON.plus+'</span><div class="meta"><div class="ml"><span class="nm">מספר חדש</span></div><div class="ml"><span class="sub">'+escapeHtml(num.value)+'</span></div></div>';res.appendChild(row);}}const keys=['1','2','3','4','5','6','7','8','9','*','0','#'];grid.innerHTML=keys.map(k=>'<button class="dial-key" data-k="'+k+'">'+k+'</button>').join('');const upd=()=>{renderRes();};grid.querySelectorAll('.dial-key[data-k]').forEach(b=>b.onclick=()=>{padInsert(num,b.dataset.k);upd();if(navigator.vibrate)navigator.vibrate(4);});sc.querySelector('#dialBk').onclick=()=>{padBksp(num);upd();};sc.querySelector('#dialCall').onclick=()=>{if(num.value)location.href='tel:'+num.value;};sc.querySelector('#dialFold').onclick=()=>{sc.querySelector('.dial-body').classList.toggle('dial-collapsed');};num.addEventListener('focus',()=>padAutoPaste(num,upd));setTimeout(()=>{try{num.focus();}catch(_){}padAutoPaste(num,upd);},60);upd();}
+function openDialer(){const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>חייגן</h2></div><div class="scr-body dial-body"><div class="dial-res" id="dialRes"></div><div class="dial-numrow"><input class="dial-num" id="dialNum" type="text" inputmode="none" dir="ltr" style="background:transparent;border:none;outline:none;text-align:center;width:78%;caret-color:#fff;padding:0;"></div><div class="dial-padrow"><button class="dial-side dial-call" id="dialCall" aria-label="חיוג">'+ICON.call+'</button><div class="dial-grid" id="dialGrid"></div><button class="dial-side dial-bksp" id="dialBk" aria-label="מחק">⌫</button></div><button class="dial-handle" id="dialFold" aria-label="קיפול"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button></div>');sc.classList.add('scr-bottom','dialer-scr');sc._reopen=openDialer;const num=sc.querySelector('#dialNum');const grid=sc.querySelector('#dialGrid');const res=sc.querySelector('#dialRes');wirePick(res,p=>{const ph=p.phone||(p.phones&&p.phones[0])||'';if(ph)location.href='tel:'+ph;});const dig=x=>String(x||'').replace(/[^0-9]/g,'');function renderRes(){res.innerHTML='';const v=dig(num.value);if(v.length<6)return;PEOPLE.filter(p=>[p.phone].concat(p.phones||[]).filter(Boolean).some(ph=>dig(ph).indexOf(v)>=0)).slice(0,6).forEach(p=>{const ph=p.phone||(p.phones&&p.phones[0])||'';const row=document.createElement('div');row.className='row';row._person=p;row.innerHTML=rowHTML(p,ph);res.appendChild(row);});const exact=PEOPLE.some(p=>[p.phone].concat(p.phones||[]).some(ph=>dig(ph)===v));if(!exact){const row=document.createElement('div');row.className='row dial-row-new';row._person={name:num.value,phone:num.value,phones:[num.value]};row.innerHTML='<span class="av">'+ICON.plus+'</span><div class="meta"><div class="ml"><span class="nm">מספר חדש</span></div><div class="ml"><span class="sub">'+escapeHtml(num.value)+'</span></div></div>';res.appendChild(row);}}const keys=['1','2','3','4','5','6','7','8','9','*','0','#'];grid.innerHTML=keys.map(k=>'<button class="dial-key" data-k="'+k+'">'+k+'</button>').join('');const upd=()=>{renderRes();};grid.querySelectorAll('.dial-key[data-k]').forEach(b=>{b.addEventListener('mousedown',e=>e.preventDefault());b.onclick=()=>{padInsert(num,b.dataset.k);upd();if(navigator.vibrate)navigator.vibrate(4);};});const _dbk=sc.querySelector('#dialBk');_dbk.addEventListener('mousedown',e=>e.preventDefault());_dbk.onclick=()=>{padBksp(num);upd();};sc.querySelector('#dialCall').onclick=()=>{if(num.value)location.href='tel:'+num.value;};sc.querySelector('#dialFold').onclick=()=>{sc.querySelector('.dial-body').classList.toggle('dial-collapsed');};num.addEventListener('focus',()=>padAutoPaste(num,upd));setTimeout(()=>{try{num.focus();}catch(_){}padAutoPaste(num,upd);},60);upd();}
 function openNumPad(input,onDone){
   if(!input)return;
   const ov=document.createElement('div');ov.className='numpad-ov';
@@ -1508,8 +1528,8 @@ function openNumPad(input,onDone){
   const sync=()=>{input.value=disp.value;};
   const keys=['1','2','3','4','5','6','7','8','9','*','0','#'];
   grid.innerHTML=keys.map(k=>'<button class="dial-key" data-k="'+k+'">'+k+'</button>').join('');
-  grid.querySelectorAll('.dial-key[data-k]').forEach(b=>b.onclick=()=>{padInsert(disp,b.dataset.k);sync();if(navigator.vibrate)navigator.vibrate(4);});
-  ov.querySelector('#npBk').onclick=()=>{padBksp(disp);sync();};
+  grid.querySelectorAll('.dial-key[data-k]').forEach(b=>{b.addEventListener('mousedown',e=>e.preventDefault());b.onclick=()=>{padInsert(disp,b.dataset.k);sync();if(navigator.vibrate)navigator.vibrate(4);};});
+  const _npbk=ov.querySelector('#npBk');_npbk.addEventListener('mousedown',e=>e.preventDefault());_npbk.onclick=()=>{padBksp(disp);sync();};
   const close=()=>{sync();ov.classList.remove('show');setTimeout(()=>ov.remove(),200);if(typeof onDone==='function')onDone();};
   ov.querySelector('#npOk').onclick=close;
   ov.addEventListener('click',e=>{if(e.target===ov)close();});
@@ -1553,7 +1573,7 @@ function openContact(person,fromSearch){
     '<div class="ct-frow"><div class="ct-acts"><button class="ct-act" data-act="call" aria-label="חיוג">'+ICON.call+'</button><button class="ct-act" data-act="wa" aria-label="וואטסאפ">'+ICON.whatsapp+'</button></div><input class="ct-inp" data-key="phone" placeholder="טלפון" dir="ltr" readonly inputmode="none"></div>'+
     '<div class="ct-frow"><div class="ct-acts"><button class="ct-act" data-act="mail" aria-label="מייל">'+ICON.mail+'</button></div><input class="ct-inp" data-key="email" placeholder="מייל" dir="ltr"></div>'+
     '<div class="ct-frow"><div class="ct-acts"><button class="ct-act ct-waze" data-act="waze" aria-label="ניווט ב-Waze">'+ICON.waze+'</button></div><input class="ct-inp" id="ctAddr" placeholder="כתובת (לניווט ב-Waze)" dir="rtl"></div>'+
-    '<div class="ct-frow"><div class="ct-acts"><span class="ct-act" style="cursor:default;" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16M5 21v-7a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v7M12 8V5M9 5h6"/><path d="M4 14c1.4 1 2.8 1 4.2 0s2.8-1 4.2 0 2.8 1 4.2 0"/></svg></span></div><input class="ct-inp" id="ctBday" type="date" dir="ltr" aria-label="תאריך לידה"></div>'+
+    '<div class="ct-frow"><div class="ct-acts"><span class="ct-act" style="cursor:default;" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16M5 21v-7a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v7M12 8V5M9 5h6"/><path d="M4 14c1.4 1 2.8 1 4.2 0s2.8-1 4.2 0 2.8 1 4.2 0"/></svg></span></div><input class="ct-inp" id="ctBday" dir="rtl" readonly inputmode="none" placeholder="תאריך לידה" aria-label="תאריך לידה"></div>'+
     '<div class="ct-lists" id="ctLists"></div>'+
     '<div class="ct-fields" id="ctFields"></div>'+
     '<div class="ct-days" id="ctDays"></div>'+
@@ -1566,7 +1586,7 @@ function openContact(person,fromSearch){
   const fb=card.querySelector('#ctFav');if(fb){if(person.fav)fb.classList.add('on');fb.onclick=()=>{person.fav=!person.fav;fb.classList.toggle('on',!!person.fav);renderList();savePeople();};}
   (function(){const dbox=card.querySelector('#ctDays');if(!dbox)return;function paintDays(){const v=getDays(person);dbox.innerHTML='<div class="days-lbl">ימים פנויים</div><div class="days-row">'+DAY_LET.map((L,i)=>'<button class="dayc'+(v[i]?' on':'')+'" data-d="'+i+'">'+L+'</button>').join('')+'</div>';dbox.querySelectorAll('.dayc').forEach(b=>b.onclick=()=>{toggleDayP(person,+b.dataset.d);if(navigator.vibrate)navigator.vibrate(4);paintDays();renderList();});}paintDays();})();
   (function(){const ai=card.querySelector('#ctAddr');if(!ai)return;ai.value=getAddr(person);const sv=()=>{setAddr(person,ai.value);renderList();};ai.addEventListener('input',sv);ai.addEventListener('blur',sv);})();
-  (function(){const bi=card.querySelector('#ctBday');if(!bi)return;bi.value=getBday(person);const sv=()=>{setBday(person,bi.value);};bi.addEventListener('change',sv);bi.addEventListener('blur',sv);})();
+  (function(){const bi=card.querySelector('#ctBday');if(!bi)return;const MON=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];const fmt=v=>{if(!v)return '';const m=String(v).match(/(\d{4})?-?(\d{2})-(\d{2})/);if(!m)return v;return (+m[3])+' ב'+(MON[+m[2]-1]||m[2])+(m[1]?(' '+m[1]):'');};let cur=getBday(person);bi.value=fmt(cur);bi.addEventListener('click',()=>openBdayWheel(cur,function(val){cur=val;setBday(person,val);bi.value=fmt(val);renderList();}));})();
   (function(){const fbox=card.querySelector('#ctFields');if(!fbox)return;let arr=getFields(person).map(f=>({l:String(f.l||''),v:String(f.v||'')}));const XS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';function persist(){setFields(person,arr);}function paint(){fbox.innerHTML='<div class="cf-hd">שדות מותאמים</div><div class="cf-list">'+arr.map((f,i)=>'<div class="cf-row" data-i="'+i+'"><input class="ct-inp cf-l" placeholder="תווית" value="'+escapeHtml(f.l)+'"><input class="ct-inp cf-v" placeholder="ערך" value="'+escapeHtml(f.v)+'"><button class="cf-del" data-i="'+i+'" aria-label="הסר">'+XS+'</button></div>').join('')+'</div><button class="cf-add" id="cfAdd">+ הוסף שדה</button>';fbox.querySelectorAll('.cf-row').forEach(r=>{const i=+r.dataset.i;const li=r.querySelector('.cf-l'),vi=r.querySelector('.cf-v');const upd=()=>{arr[i]={l:li.value,v:vi.value};persist();};li.addEventListener('input',upd);vi.addEventListener('input',upd);});fbox.querySelectorAll('.cf-del').forEach(b=>b.onclick=()=>{arr.splice(+b.dataset.i,1);persist();paint();});fbox.querySelector('#cfAdd').onclick=()=>{arr.push({l:'',v:''});paint();const ls=fbox.querySelectorAll('.cf-l');if(ls.length)ls[ls.length-1].focus();};}paint();})();
   function paintCtLists(){const box=sc.querySelector('#ctLists');if(!box)return;const mine=listsOf(person);box.innerHTML='<div class="ct-lists-row">'+mine.map(L=>'<button class="ct-lchip on" data-id="'+L.id+'">'+escapeHtml(L.name)+'</button>').join('')+'<button class="ct-addlist" id="ctAddList" aria-label="הוסף לרשימה">'+ICON.plus+'</button></div>';const ab=box.querySelector('#ctAddList');if(ab)ab.onclick=()=>openListAssign(person,paintCtLists);box.querySelectorAll('.ct-lchip[data-id]').forEach(b=>b.onclick=()=>{const L=(cfg.lists||[]).find(x=>x.id===b.dataset.id);if(!L)return;uiConfirm('להסיר את «'+(person.name||"איש הקשר")+'» מהרשימה «'+L.name+'»?',function(){const i=L.members.indexOf(fKey(person));if(i>=0)L.members.splice(i,1);saveCfg();renderLists();renderList();paintCtLists();});});}
   paintCtLists();
@@ -2011,6 +2031,30 @@ function addBdayToCal(name,ds){
   let url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('יום הולדת — '+(name||''))+'&dates='+start+'/'+end+'&recur='+encodeURIComponent('RRULE:FREQ=YEARLY');
   try{var w=window.open(url,'_blank');if(!w)location.href=url;}catch(e2){location.href=url;}
 }
+function openBdayWheel(initial,onSave){
+  const IT=36, months=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+  const nowY=new Date().getFullYear();
+  const days=[];for(let i=1;i<=31;i++)days.push(i);
+  const years=[];for(let i=nowY;i>=1925;i--)years.push(i);
+  let di=days.indexOf(15),mi=5,yi=years.indexOf(nowY-40);
+  if(initial){const m=String(initial).match(/(\d{4})?-?(\d{2})-(\d{2})/);if(m){const dd=+m[3],mm=+m[2],yy=m[1]?+m[1]:(nowY-40);let x=days.indexOf(dd);if(x>=0)di=x;mi=Math.max(0,Math.min(11,mm-1));let yx=years.indexOf(yy);if(yx>=0)yi=yx;}}
+  const ov=document.createElement('div');ov.className='bw-ov';
+  ov.innerHTML='<div class="bw-sheet"><div class="bw-read" id="bwRead"></div><div class="bw-hd"><span>יום</span><span>חודש</span><span>שנה</span></div><div class="bw-wheels"><div class="bw-band"></div><div class="bw-col" id="bwD"></div><div class="bw-col" id="bwM"></div><div class="bw-col" id="bwY"></div></div><button class="bw-ok" id="bwOk">שמור</button></div>';
+  document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
+  const elD=ov.querySelector('#bwD'),elM=ov.querySelector('#bwM'),elY=ov.querySelector('#bwY'),read=ov.querySelector('#bwRead');
+  function fill(el,arr){el.innerHTML='<div class="bw-sp"></div>'+arr.map(v=>'<div class="bw-it">'+v+'</div>').join('')+'<div class="bw-sp"></div>';}
+  fill(elD,days);fill(elM,months);fill(elY,years);
+  function shape(el){var sf=el.scrollTop/IT,its=el.children,n=its.length;for(var j=1;j<n-1;j++){var idx=j-1,d=idx-sf,ad=Math.abs(d),it=its[j];if(ad>3.4){it.style.opacity='0';it.style.transform='rotateX(70deg)';continue;}var ang=Math.max(-65,Math.min(65,d*24));it.style.transform='rotateX('+(-ang)+'deg) scale('+(Math.max(.72,1-ad*0.09))+')';it.style.opacity=String(Math.max(.16,1-ad*0.34));it.style.color=ad<0.5?'#fff':'#eafaf5';it.style.fontWeight=ad<0.5?'700':'400';}}
+  function idxOf(el){return Math.max(0,Math.round(el.scrollTop/IT));}
+  function upd(){const d=days[Math.min(idxOf(elD),days.length-1)],m=months[Math.min(idxOf(elM),months.length-1)],y=years[Math.min(idxOf(elY),years.length-1)];read.textContent=d+' ב'+m+' '+y;}
+  function wire(el){var raf=0;el.addEventListener('scroll',function(){if(raf)return;raf=requestAnimationFrame(function(){raf=0;shape(el);upd();});});}
+  wire(elD);wire(elM);wire(elY);
+  function setIdx(el,k){el.scrollTop=Math.max(0,k)*IT;shape(el);}
+  setIdx(elD,di);setIdx(elM,mi);setIdx(elY,yi);upd();
+  const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),220);};
+  ov.addEventListener('click',e=>{if(e.target===ov)close();});
+  ov.querySelector('#bwOk').onclick=()=>{const d=days[Math.min(idxOf(elD),days.length-1)],mo=Math.min(idxOf(elM),11)+1,y=years[Math.min(idxOf(elY),years.length-1)];const z=n=>String(n).padStart(2,'0');const val=''+y+'-'+z(mo)+'-'+z(d);close();if(typeof onSave==='function')onSave(val);};
+}
 function openBirthdays(){
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>ימי הולדת קרובים</h2></div><div class="scr-body" id="bdBody"></div>');sc._reopen=openBirthdays;
   function render(){
@@ -2065,8 +2109,48 @@ function openHbar(){
   _meas.forEach(m=>{m.el.style.setProperty('--sx',Math.round(fcx-m.icx)+'px');m.el.style.setProperty('--sy',Math.round(fcy-m.icy)+'px');m.el.style.transformOrigin=Math.round(m.icx-m.er.left)+'px '+Math.round(m.icy-m.er.top)+'px';});
   requestAnimationFrame(()=>{bd.classList.add('show');bar.classList.add('run');});
   const close=cb=>closeHbar(cb);
-  bd.addEventListener('click',e=>{if(e.target===bd||e.target===bar)close();});
-  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.pal){if(navigator.vibrate)navigator.vibrate(8);b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);openPaletteRow(b);return;}if(it.hand){if(navigator.vibrate)navigator.vibrate(10);b.classList.add('tapped');setTimeout(doHandFlip,150);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);closeHbar();snapFabClosed();setTimeout(()=>{closeSearch();document.querySelectorAll('.scr').forEach(x=>x.remove());it.fn();},210);};});
+  let dragMoved=false;
+  bd.addEventListener('click',e=>{if(dragMoved){dragMoved=false;return;}if(e.target===bd||e.target===bar)close();});
+  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(dragMoved)return;if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.pal){if(navigator.vibrate)navigator.vibrate(8);b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);openPaletteRow(b);return;}if(it.hand){if(navigator.vibrate)navigator.vibrate(10);b.classList.add('tapped');setTimeout(doHandFlip,150);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);closeHbar();snapFabClosed();setTimeout(()=>{closeSearch();document.querySelectorAll('.scr').forEach(x=>x.remove());it.fn();},210);};});
+  try{
+    const far=_meas[_meas.length-1];
+    let ox=far.icx-fcx, oy=far.icy-fcy; const olen=Math.hypot(ox,oy)||1; ox/=olen; oy/=olen;
+    const baseProj=_meas.map(m=>(m.icx-fcx)*ox+(m.icy-fcy)*oy);
+    const maxProj=baseProj[baseProj.length-1];
+    const distTop=oy<0?(fcy/-oy):1e9;
+    const distSide=ox>0?((window.innerWidth-fcx)/ox):(ox<0?(fcx/-ox):1e9);
+    const visibleMax=Math.max(120,Math.min(distTop,distSide)-46);
+    const sMax=Math.max(0,maxProj-visibleMax+44);
+    let S=0;
+    function applyScroll(){bar.style.transform='translate('+(-S*ox)+'px,'+(-S*oy)+'px)';_meas.forEach((m,i)=>{const p=baseProj[i]-S;let op=1;if(p<36)op=Math.max(0,(p-6)/30);if(p>visibleMax)op=Math.max(0,1-(p-visibleMax)/50);m.el.style.opacity=op.toFixed(2);});}
+    if(sMax>4){
+      let dr=false,px=0,py=0,s0=0;
+      bd.addEventListener('pointerdown',e=>{dr=true;dragMoved=false;px=e.clientX;py=e.clientY;s0=S;});
+      bd.addEventListener('pointermove',e=>{if(!dr)return;if(Math.abs(e.clientX-px)+Math.abs(e.clientY-py)>8)dragMoved=true;const dp=(e.clientX-px)*ox+(e.clientY-py)*oy;S=Math.max(0,Math.min(sMax,s0-dp));applyScroll();});
+      const _up=()=>{dr=false;};bd.addEventListener('pointerup',_up);bd.addEventListener('pointercancel',_up);
+      let seen=false;try{seen=localStorage.getItem('myshare_menuhint')==='1';}catch(e){}
+      if(!seen){
+        const FINGER='<svg viewBox="0 0 24 24" fill="currentColor" width="34" height="34"><path d="M9 11.5V5a1.5 1.5 0 0 1 3 0v5.5h1V6.5a1.5 1.5 0 0 1 3 0v4h1V8.5a1.5 1.5 0 0 1 3 0v6a6 6 0 0 1-6 6h-2a4 4 0 0 1-3.2-1.6L6 15s-.9-1.2.3-2.1c1.1-.8 2.2.2 2.2.2z"/></svg>';
+        const AR_UR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" width="30" height="30"><path d="M7 17L17 7M9 7h8v8"/></svg>';
+        const AR_DL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" width="30" height="30"><path d="M17 7L7 17M15 17H7V9"/></svg>';
+        const AR_UL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" width="30" height="30"><path d="M17 17L7 7M15 7H7v8"/></svg>';
+        const AR_DR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" width="30" height="30"><path d="M7 7l10 10M9 17h8V9"/></svg>';
+        const EYE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.4 5.2A9 9 0 0 1 21 12a9 9 0 0 1-2 3M6.6 6.6A9 9 0 0 0 3 12a9 9 0 0 0 9 5"/></svg>';
+        const HW=130, hintProj=Math.min(visibleMax*0.62,maxProj*0.62);
+        const perpX=-oy, perpY=ox, side=lh?1:-1;
+        const hcx=fcx+ox*hintProj+perpX*44*side, hcy=fcy+oy*hintProj+perpY*44*side;
+        const h=document.createElement('div');h.className='mh-hint';h.style.left=(hcx-HW/2)+'px';h.style.top=(hcy-HW/2)+'px';h.style.width=HW+'px';h.style.height=HW+'px';
+        const a1=lh?AR_UL:AR_UR, a2=lh?AR_DR:AR_DL, rot=lh?45:-45, anim=lh?'mhL':'mhR';
+        h.innerHTML='<span class="mh-ar" style="top:4px;'+(lh?'left:4px;':'right:4px;')+'">'+a1+'</span><span class="mh-ar" style="bottom:4px;'+(lh?'right:4px;':'left:4px;')+'">'+a2+'</span><span class="mh-hand" style="animation:'+anim+' 1.8s ease-in-out infinite;"><span style="display:inline-block;transform:rotate('+rot+'deg);">'+FINGER+'</span></span>';
+        bd.appendChild(h);
+        const chip=document.createElement('div');chip.className='mh-chip';chip.style.left=(hcx-58)+'px';chip.style.top=(hcy+HW/2-2)+'px';chip.innerHTML=EYE+' אל תציג שוב';
+        const dismiss=()=>{try{localStorage.setItem('myshare_menuhint','1');}catch(e){}if(h.parentNode)h.remove();if(chip.parentNode)chip.remove();};
+        chip.onclick=e=>{e.stopPropagation();dismiss();};
+        bd.appendChild(chip);
+        bd.addEventListener('pointerdown',()=>{setTimeout(dismiss,500);},{once:true});
+      }
+    }
+  }catch(e){}
 }
 const welcomeEl=document.getElementById('welcome');
 function hideWelcome(){welcomeEl.classList.add('hide');updateSearchFab();}
