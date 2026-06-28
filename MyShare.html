@@ -1246,7 +1246,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.28.1618';
+const APP_VERSION='2026.06.28.1649';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1254,16 +1254,14 @@ function refreshUpdStatus(){
   fetchServerVersion().then(sv=>{
     const e2=document.getElementById('updStatus'),b2=document.getElementById('appUpdate');if(!e2)return;
     if(!sv){e2.textContent='לא ניתן לבדוק עדכון כרגע';e2.style.color='';if(b2)b2.style.display='';return;}
-    if(sv===APP_VERSION){e2.textContent='מעודכן לגרסה האחרונה ✓';e2.style.color='#1a9c3e';if(b2)b2.style.display='none';}
-    else{e2.textContent='עדכון זמין — גרסה '+sv;e2.style.color='#c77a17';if(b2){b2.style.display='';b2.textContent='עדכן לגרסה '+sv;}}
+    if(sv===APP_VERSION){e2.textContent='מעודכן לגרסה האחרונה ✓';e2.style.color='#1a9c3e';if(b2){b2.style.display='';b2.disabled=false;b2.textContent='רענן מהשרת';}}
+    else{e2.textContent='עדכון זמין — גרסה '+sv;e2.style.color='#c77a17';if(b2){b2.style.display='';b2.disabled=false;b2.textContent='עדכן לגרסה '+sv;}}
   });
 }
 function doUpdate(){
-  const btn=document.getElementById('appUpdate');if(btn){btn.disabled=true;btn.textContent='מעדכן…';}
-  fetchServerVersion().then(sv=>{
-    if(sv&&sv===APP_VERSION){if(typeof toast==='function')toast('כבר בגרסה האחרונה ✓');const s=document.getElementById('updStatus');if(s){s.textContent='מעודכן לגרסה האחרונה ✓';s.style.color='#1a9c3e';}if(btn){btn.disabled=false;btn.style.display='none';}return;}
-    try{localStorage.setItem('myshare_updto',sv||'1');}catch(e){}
-    if(typeof toast==='function')toast('מעדכן לגרסה האחרונה…');
+  const btn=document.getElementById('appUpdate');if(btn){btn.disabled=true;btn.textContent='מרענן…';}
+  if(typeof toast==='function')toast('מרענן לגרסה האחרונה…');
+  fetchServerVersion().then(function(sv){try{localStorage.setItem('myshare_updto',sv||'1');}catch(e){}}).finally(function(){
     try{const base=location.href.split('#')[0].split('?')[0];location.replace(base+'?v='+Date.now());}catch(e){try{location.reload();}catch(_){}}
   });
 }
