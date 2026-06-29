@@ -1416,7 +1416,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.29.2023';
+const APP_VERSION='2026.06.29.2035';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2736,7 +2736,12 @@ function startVoice(){
         aiTranscribe(blob).then(text=>{showResult(text||'');}).catch(err=>{txtEl.textContent='שגיאת תמלול';actEl.style.display='';actEl.textContent='בדוק את מפתח ה-OpenAI ואת החיבור לאינטרנט';okBtn.style.display='none';editEl.style.display='';editEl.value='';});
       };
       mediaRec.start();micEl.onclick=finishRec;
-    }).catch(()=>{txtEl.textContent='אין הרשאת מיקרופון';actEl.style.display='';actEl.textContent='אשר הרשאת מיקרופון בדפדפן/באפליקציה ונסה שוב';});
+    }).catch((err)=>{const nm=(err&&err.name)||'';let msg='לא ניתן לפתוח מיקרופון';let hint='אשר הרשאת מיקרופון ונסה שוב';
+      if(nm==='NotAllowedError'||nm==='SecurityError'){msg='הרשאת מיקרופון נחסמה';hint='פתח הגדרות האתר בדפדפן → הרשאות → מיקרופון → אפשר';}
+      else if(nm==='NotFoundError'||nm==='DevicesNotFoundError'){msg='לא נמצא מיקרופון';hint='ודא שיש מיקרופון פעיל';}
+      else if(nm==='NotReadableError'){msg='המיקרופון תפוס';hint='סגור אפליקציות שמשתמשות במיקרופון ונסה שוב';}
+      else if(!window.isSecureContext){msg='נדרש חיבור מאובטח (https)';hint='פתח את האפליקציה דרך הקישור ב-https, לא כקובץ מקומי';}
+      txtEl.textContent=msg+(nm?(' ('+nm+')'):'');actEl.style.display='';actEl.textContent=hint;});
     return;
   }
   let finalTxt='',stopped=false,rec;
