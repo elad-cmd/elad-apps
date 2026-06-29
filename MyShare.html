@@ -1419,7 +1419,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.29.2049';
+const APP_VERSION='2026.06.29.2102';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1488,7 +1488,7 @@ function openSettings(){
   const _imp=sheet.querySelector('#cmImport'),_cf=sheet.querySelector('#cmFile');if(_imp&&_cf){_imp.onclick=()=>_cf.click();_cf.onchange=e=>{const f=e.target.files&&e.target.files[0];if(f)loadContactsFile(f);};}
   const _exp=sheet.querySelector('#cmExport');if(_exp)_exp.onclick=()=>exportContacts();
   const _onb=sheet.querySelector('#cmOnboard');if(_onb)_onb.onclick=()=>{closeSheet();try{welcomeEl.classList.remove('hide');}catch(e){}};
-  const _ak=sheet.querySelector('#aiKeyInp'),_aks=sheet.querySelector('#aiKeySave');if(_aks&&_ak)_aks.onclick=()=>{const v=(_ak.value||'').trim();if(!v){toast('הדבק מפתח קודם');return;}try{localStorage.setItem('myshare_aikey',v);}catch(e){}toast('המפתח נשמר — העוזר החכם פעיל ✓');openSettings();};
+  const _ak=sheet.querySelector('#aiKeyInp'),_aks=sheet.querySelector('#aiKeySave');if(_aks&&_ak)_aks.onclick=()=>{const v=(_ak.value||'').trim();if(!v){toast('הדבק מפתח קודם');return;}const st=sheet.querySelector('#aiStatus');if(st){st.textContent='בודק את המפתח…';st.style.color='rgba(255,255,255,.7)';}_aks.disabled=true;_aks.textContent='בודק…';aiTestKey(v).then(res=>{if(res&&res.ok){try{localStorage.setItem('myshare_aikey',v);}catch(e){}toast('המפתח תקין ונשמר — העוזר החכם פעיל ✓');openSettings();}else{if(st){st.textContent='המפתח לא תקין: '+((res&&res.msg)||'')+' — לא נשמר';st.style.color='#ff9b90';}_aks.disabled=false;_aks.textContent='שמור מפתח';toast('המפתח לא תקין');}});};
   const _ake=sheet.querySelector('#aiKeyEye');if(_ake&&_ak)_ake.onclick=()=>{_ak.type=(_ak.type==='password')?'text':'password';};
   const _akcp=sheet.querySelector('#aiKeyCopy');if(_akcp)_akcp.onclick=()=>{const v=aiKey();if(!v){toast('אין מפתח');return;}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(v).then(()=>toast('המפתח הועתק')).catch(()=>toast('לא ניתן להעתיק'));}else toast('לא ניתן להעתיק');};
   const _akc=sheet.querySelector('#aiKeyClear');if(_akc)_akc.onclick=()=>{try{localStorage.removeItem('myshare_aikey');}catch(e){}toast('המפתח נמחק');openSettings();};
@@ -2641,6 +2641,12 @@ function handleVoice(txt){const t=(txt||'').trim();if(!t){toast('לא שמעתי
   openSearch();setTimeout(()=>{try{searchInput.value=t;renderSearch(t);if(typeof updSrchClear==='function')updSrchClear();}catch(e){}},140);
 }
 function aiKey(){try{return localStorage.getItem('myshare_aikey')||'';}catch(e){return '';}}
+function aiTestKey(key){
+  if(!key)return Promise.resolve({ok:false,msg:'אין מפתח'});
+  return fetch('https://api.openai.com/v1/models',{headers:{'Authorization':'Bearer '+key}})
+    .then(r=>{if(r.ok)return {ok:true};return r.json().catch(()=>({})).then(e=>({ok:false,msg:(e&&e.error&&e.error.message)||('HTTP '+r.status)}));})
+    .catch(e=>({ok:false,msg:(e&&e.message)||'חיבור נכשל'}));
+}
 function aiContext(){return {names:PEOPLE.filter(p=>FDEC[fKey(p)]!=='delete').map(p=>p.name).filter(Boolean).slice(0,400),lists:(cfg.lists||[]).map(l=>l.name)};}
 function aiToAction(o){
   if(!o||!o.action||o.action==='unknown')return {label:(o&&o.say)||'לא הבנתי את הפקודה — נסה שוב או תקן בשדה',run:null};
@@ -2711,7 +2717,8 @@ function startVoice(){
   ov.innerHTML='<div class="vc-box"><button class="vc-mic listening" id="vcMic" aria-label="עצור הקלטה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><div class="vc-txt" id="vcTxt">מקליט… (הקש על המיקרופון לסיום)</div><textarea class="vc-edit" id="vcEdit" dir="rtl" rows="3" placeholder="הטקסט שזוהה — אפשר לתקן או להקליד פקודה" style="display:none;"></textarea><div class="vc-act" id="vcAct" style="display:none;"></div><div class="vc-list" id="vcList" style="display:none;"></div><div class="vc-btns"><button class="vc-cancel" id="vcCancel">ביטול</button><button class="vc-ok" id="vcOk" style="display:none;">אישור</button></div></div>';
   document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
   const txtEl=ov.querySelector('#vcTxt'),actEl=ov.querySelector('#vcAct'),okBtn=ov.querySelector('#vcOk'),micEl=ov.querySelector('#vcMic'),editEl=ov.querySelector('#vcEdit');
-  let action=null,_reTok=0,_reTmr=0;
+  let action=null,_reTok=0,_reTmr=0,micStream=null;
+  const stopMic=()=>{try{if(micStream){micStream.getTracks().forEach(t=>t.stop());micStream=null;}}catch(e){}};
   function _setAction(a){action=a;actEl.style.display='';actEl.textContent=a.label;okBtn.style.display=(a&&a.run)?'':'none';const lst=ov.querySelector('#vcList');if(lst){if(a&&a.list&&a.list.length){lst.style.display='';lst.innerHTML='<div class="vc-list-hd">'+a.list.length+' אנשי קשר:</div>'+a.list.map(n=>'<div class="vc-list-row">'+escapeHtml(n||'(ללא שם)')+'</div>').join('');}else{lst.style.display='none';lst.innerHTML='';}}}
   function reinterpret(){const txt=(editEl.value||'').trim();
     if(aiKey()){const tok=++_reTok;actEl.style.display='';actEl.textContent='חושב… (מנוע חכם)';okBtn.style.display='none';
@@ -2719,7 +2726,7 @@ function startVoice(){
     }else{const f=interpretVoice(txt);f.label='(מנוע בסיסי — הוסף מפתח בהגדרות) '+f.label;_setAction(f);}}
   function reinterpretDebounced(){if(_reTmr)clearTimeout(_reTmr);_reTmr=setTimeout(reinterpret,500);}
   editEl.addEventListener('input',reinterpretDebounced);
-  const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),200);};
+  const close=()=>{stopMic();ov.classList.remove('show');setTimeout(()=>ov.remove(),200);};
   function showResult(text){micEl.classList.remove('listening');txtEl.textContent=text?'שמעתי (אפשר לתקן):':'לא נקלט — אפשר להקליד:';editEl.style.display='';editEl.value=text||'';reinterpret();}
   okBtn.onclick=()=>{const a=action;close();if(a&&a.run)a.run();};
   if(useAI){
@@ -2729,7 +2736,7 @@ function startVoice(){
     ov.querySelector('#vcCancel').onclick=()=>{stopped=true;try{if(mediaRec&&mediaRec.state!=='inactive')mediaRec.stop();}catch(e){}cleanup();close();};
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){txtEl.textContent='אין גישה למיקרופון בדפדפן הזה';return;}
     navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{
-      stream=s;let mime='';try{if(window.MediaRecorder){if(MediaRecorder.isTypeSupported('audio/webm'))mime='audio/webm';else if(MediaRecorder.isTypeSupported('audio/mp4'))mime='audio/mp4';}}catch(e){}
+      stream=s;micStream=s;let mime='';try{if(window.MediaRecorder){if(MediaRecorder.isTypeSupported('audio/webm'))mime='audio/webm';else if(MediaRecorder.isTypeSupported('audio/mp4'))mime='audio/mp4';}}catch(e){}
       mediaRec=mime?new MediaRecorder(s,{mimeType:mime}):new MediaRecorder(s);
       mediaRec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data);};
       mediaRec.onstop=()=>{cleanup();micEl.classList.remove('listening');txtEl.textContent='מתמלל…';

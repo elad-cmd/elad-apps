@@ -84,10 +84,16 @@ class ShareActivity : Activity() {
         setContentView(web)
         web.loadUrl("file:///android_asset/myshare.html")
 
-        if (checkSelfPermission(android.Manifest.permission.READ_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(android.Manifest.permission.READ_CONTACTS), REQ_CONTACTS)
+        // מבקש את כל ההרשאות יחד בהתקנה הראשונה: אנשי קשר (קריאה+כתיבה) ומיקרופון (לקלט קולי).
+        val needed = ArrayList<String>()
+        for (perm in listOf(
+            android.Manifest.permission.READ_CONTACTS,
+            android.Manifest.permission.WRITE_CONTACTS,
+            android.Manifest.permission.RECORD_AUDIO
+        )) {
+            if (checkSelfPermission(perm) != PackageManager.PERMISSION_GRANTED) needed.add(perm)
         }
+        if (needed.isNotEmpty()) requestPermissions(needed.toTypedArray(), REQ_CONTACTS)
     }
 
     override fun onRequestPermissionsResult(
