@@ -1372,7 +1372,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.29.1839';
+const APP_VERSION='2026.06.29.1858';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2603,6 +2603,7 @@ function aiToAction(o){
     case 'search':return {label:say||('חיפוש: '+t),run:()=>{openSearch();setTimeout(()=>{try{searchInput.value=t;renderSearch(t);if(typeof updSrchClear==='function')updSrchClear();}catch(e){}},140);}};
     case 'open_list':{const L=(cfg.lists||[]).find(x=>String(x.name).indexOf(t)>=0);return L?{label:say||('רשימה: '+L.name),run:()=>openSendList(L.id)}:{label:'לא מצאתי רשימה: '+t,run:null};}
     case 'add_to_list':{const term=pr.match||pr.text||pr.term||'';const m=voiceMatchByName(term);return (term&&t)?{label:say||('נמצאו '+m.length+' עם "'+term+'" → «'+t+'»'),run:m.length?(()=>bulkAddToList(m,t)):null}:{label:'חסר טקסט לסינון או שם רשימה',run:null};}
+    case 'add_contacts_to_list':case 'create_list_add':{const ppl=(pr.contacts||pr.names||[]).map(n=>voiceFindContact(n)).filter(Boolean);return (t&&ppl.length)?{label:say||('הוספת '+ppl.length+' אנשי קשר לרשימה «'+t+'»'),run:()=>bulkAddToList(ppl,t)}:{label:'לא מצאתי את אנשי הקשר או שם הרשימה',run:null};}
     case 'merge':return {label:say||'מיזוג כפילויות',run:openMerge};
     case 'settings':return {label:say||'הגדרות',run:openSettings};
     case 'birthdays':return {label:say||'ימי הולדת',run:openBirthdays};
@@ -2611,14 +2612,19 @@ function aiToAction(o){
   }
   return {label:say||'לא הבנתי',run:null};
 }
+function aiSteps(steps){
+  const built=steps.map(aiToAction);const runnable=built.filter(a=>a&&a.run);
+  if(!runnable.length)return {label:built.map(a=>a.label).join(' · ')||'לא הבנתי את הפעולות',run:null};
+  return {label:built.map(a=>a.label).join('  ·  '),run:()=>{runnable.forEach(a=>{try{a.run();}catch(e){}});}};
+}
 function aiInterpret(text){
   const key=aiKey();if(!key||!(text||'').trim())return Promise.resolve(null);
   const ctx=aiContext();
-  const sys='אתה מנוע פקודות לאפליקציית אנשי קשר בעברית. החזר אך ורק JSON תקין: {"action":"...","target":"...","params":{...},"say":"משפט קצר בעברית שמתאר מה תבצע"}. action אחד מ: call, whatsapp, add_contact, search, open_list, navigate, add_to_list, merge, settings, birthdays, dialer, my_card, unknown. target = שם איש קשר או שם רשימה. ל-whatsapp אפשר params.text (תוכן ההודעה). ל-add_contact: params.name, params.phone, params.email. ל-add_to_list: target=שם הרשימה, params.match=טקסט שאמור להופיע בשם איש הקשר. אם לא ברור — action="unknown". בחר את שם איש הקשר/הרשימה הקרוב ביותר מהרשימות שסופקו.';
+  const sys='אתה מנוע פקודות לאפליקציית אנשי קשר בעברית. החזר אך ורק JSON תקין. לפעולה אחת: {"action":"...","target":"...","params":{...},"say":"משפט קצר בעברית"}. לכמה פעולות במשפט אחד: {"steps":[<פעולה>,<פעולה>...],"say":"תיאור כללי"}. action אחד מ: call, whatsapp, add_contact, search, open_list, navigate, add_to_list, add_contacts_to_list, merge, settings, birthdays, dialer, my_card, unknown. target = שם איש קשר או שם רשימה. whatsapp: params.text. add_contact: params.name/phone/email. add_to_list: target=שם רשימה, params.match=טקסט בשם. add_contacts_to_list: target=שם הרשימה (גם אם חדשה), params.contacts=מערך שמות אנשי קשר ספציפיים (לדוגמה: "צור רשימה X וצרף את אבא, בן ומיקה"). בחר את השמות הקרובים ביותר מאנשי הקשר שסופקו. אם לא ברור — action="unknown".';
   const usr='פקודה: "'+text+'"\nאנשי קשר קיימים: '+JSON.stringify(ctx.names)+'\nרשימות קיימות: '+JSON.stringify(ctx.lists);
   return fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'gpt-4o-mini',temperature:0,response_format:{type:'json_object'},messages:[{role:'system',content:sys},{role:'user',content:usr}]})})
     .then(r=>r.ok?r.json():null)
-    .then(j=>{if(!j)return null;try{return aiToAction(JSON.parse(j.choices[0].message.content));}catch(e){return null;}})
+    .then(j=>{if(!j)return null;try{const o=JSON.parse(j.choices[0].message.content);return (Array.isArray(o.steps)&&o.steps.length)?aiSteps(o.steps):aiToAction(o);}catch(e){return null;}})
     .catch(()=>null);
 }
 function interpretVoice(t){t=(t||'').trim();if(!t)return {label:'לא נקלט טקסט',run:null};
