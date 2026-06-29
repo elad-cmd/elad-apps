@@ -35,6 +35,7 @@ class ShareActivity : Activity() {
     private val REQ_WRITE = 301
     private val REQ_AUDIO = 401
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
+    private var pendingAudioRequest: android.webkit.PermissionRequest? = null
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,11 +54,14 @@ class ShareActivity : Activity() {
                 request ?: return
                 runOnUiThread {
                     val wants = request.resources.any { it == android.webkit.PermissionRequest.RESOURCE_AUDIO_CAPTURE }
-                    if (wants && checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                        requestPermissions(arrayOf(android.Manifest.permission.RECORD_AUDIO), REQ_AUDIO)
-                        try { request.deny() } catch (e: Exception) {}
-                    } else {
+                    if (!wants) { try { request.deny() } catch (e: Exception) {}; return@runOnUiThread }
+                    if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                        // ההרשאה כבר קיימת — לאשר מיד את בקשת ה-WebView
                         try { request.grant(request.resources) } catch (e: Exception) {}
+                    } else {
+                        // אין עדיין הרשאה — לשמור את הבקשה, לבקש מהמערכת, ולאשר/לדחות בתוצאה (onRequestPermissionsResult)
+                        pendingAudioRequest = request
+                        requestPermissions(arrayOf(android.Manifest.permission.RECORD_AUDIO), REQ_AUDIO)
                     }
                 }
             }
@@ -101,6 +105,14 @@ class ShareActivity : Activity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQ_CONTACTS) web.reload()
+        if (requestCode == REQ_AUDIO) {
+            val granted = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            val req = pendingAudioRequest
+            pendingAudioRequest = null
+            try {
+                if (granted && req != null) req.grant(req.resources) else req?.deny()
+            } catch (e: Exception) {}
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
