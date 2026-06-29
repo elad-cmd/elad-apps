@@ -289,6 +289,9 @@
   .ct-lbl{display:block;font-size:12px;font-weight:700;color:rgba(255,255,255,.62);text-align:right;margin:0 2px 4px;}
   .acf-row{display:flex;align-items:center;gap:8px;}
   .bd-cal-hit{background:var(--tq)!important;color:#04342C!important;transform:scale(.94);transition:transform .12s ease;}
+  .mg-mrow{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.06);border-radius:12px;padding:9px 11px;margin-bottom:6px;cursor:grab;touch-action:pan-y;}
+  .mg-mrow.mg-target{box-shadow:inset 0 0 0 2px var(--tq);background:rgba(0,194,168,.20);}
+  .mg-drag-clone{position:fixed;left:0;top:0;z-index:200;pointer-events:none;display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:12px;background:var(--tq-deep);box-shadow:0 14px 34px rgba(0,0,0,.5);opacity:.95;}
   .ac-favrow{display:flex;align-items:center;justify-content:space-between;}
   .ac-favrow .ct-lbl{margin:0;}
   .ac-fav{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:10px;color:rgba(255,255,255,.4);cursor:pointer;width:40px;height:40px;display:flex;align-items:center;justify-content:center;padding:0;transition:color .15s;}
@@ -403,7 +406,7 @@
   .ct-lchip.on{background:var(--tq-deep);color:#04342C;}
   .ct-addlist{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--tq-deep);color:#04342C;border:none;border-radius:50%;padding:0;cursor:pointer;}
   .ct-addlist svg{width:18px;height:18px;}
-  .pk-search{position:fixed;left:0;right:0;bottom:84px;z-index:96;padding:10px 16px;background:var(--tq-bot);box-shadow:0 -12px 22px -8px rgba(0,0,0,.55);}
+  .pk-search{position:fixed;left:0;right:0;bottom:0;z-index:92;padding:10px 16px 88px;background:var(--tq-bot);box-shadow:0 -12px 22px -8px rgba(0,0,0,.55);}
   .mpk-scr .scr-body{padding-bottom:170px;display:flex;flex-direction:column;}
   .mpk-scr #pkList{margin-top:auto;}
   .pk-inp{width:100%;text-align:right;padding-left:42px;}
@@ -1053,9 +1056,9 @@ function openSendList(listId){
   }
   function waQueue(q){
     let done=0;
-    const openIdx=idx=>{const p=q[idx];const u='https://wa.me/'+intlDigits(phoneOf(p))+(msg?('?text='+encodeURIComponent(msg)):'');try{var w=window.open(u,'_blank');if(!w)location.href=u;}catch(e){location.href=u;}};
+    const openIdx=idx=>{const p=q[idx];const ph=phoneOf(p);if(BRIDGE&&typeof BRIDGE.openWhatsApp==='function'){try{BRIDGE.openWhatsApp(ph,msg||'');return;}catch(e){}}const u='https://wa.me/'+intlDigits(ph)+(msg?('?text='+encodeURIComponent(msg)):'');try{var w=window.open(u,'_blank');if(!w)location.href=u;}catch(e){location.href=u;}};
     const advance=()=>{if(done>=q.length)return;openIdx(done);done++;render();};
-    function onVis(){if(document.visibilityState==='visible'&&autoNext&&done>0&&done<q.length){setTimeout(()=>{if(autoNext&&done<q.length)advance();},700);}}
+    function onVis(){if(document.visibilityState==='visible'&&autoNext&&done>0&&done<q.length&&sc.isConnected){setTimeout(()=>{if(autoNext&&done<q.length&&sc.isConnected)advance();},700);}}
     document.addEventListener('visibilitychange',onVis);
     const ob=sc._back;sc._back=()=>{try{document.removeEventListener('visibilitychange',onVis);}catch(e){}ob();};
     function render(){
@@ -1360,7 +1363,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.29.1204';
+const APP_VERSION='2026.06.29.1238';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1606,7 +1609,7 @@ function appBack(){
 function navBack(){if(!appBack()){if(MODE==='share')doExit();else openExitConfirm();}}
 let exitDlgOpen=false,allowExit=false;
 function doExit(){
-  try{if(BRIDGE){if(typeof BRIDGE.close==='function'){BRIDGE.close();return;}if(typeof BRIDGE.exit==='function'){BRIDGE.exit();return;}if(typeof BRIDGE.finish==='function'){BRIDGE.finish();return;}if(typeof BRIDGE.exitApp==='function'){BRIDGE.exitApp();return;}}}catch(e){}
+  try{if(BRIDGE){if(typeof BRIDGE.exitApp==='function'){BRIDGE.exitApp();return;}if(typeof BRIDGE.close==='function'){BRIDGE.close();return;}if(typeof BRIDGE.exit==='function'){BRIDGE.exit();return;}if(typeof BRIDGE.finish==='function'){BRIDGE.finish();return;}}}catch(e){}
   allowExit=true;
   try{window.close();}catch(e){}
   if(/android/i.test(navigator.userAgent)){try{location.href='intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.HOME;end';return;}catch(e){}}
@@ -1775,14 +1778,30 @@ function computeMergeGroups(){
   return Object.values(groups).filter(g=>g.length>=2).filter(g=>!MGDONE[mgSig(g)]);
 }
 function mgUpdateSel(groupEl,person){[...groupEl.querySelectorAll('.dup-member')].forEach(mm=>mm.classList.toggle('selected',mm._person===person));}
-function mgDone(sc){const body=sc.querySelector('#dupBody');if(!body)return;body.innerHTML='<div class="mg-donewrap"><button class="mg-home">חזור למסך הבית</button></div>';const b=body.querySelector('.mg-home');if(b)b.onclick=goHome;}
+function mgDone(sc){const body=sc.querySelector('#dupGroups')||sc.querySelector('#dupBody');if(!body)return;body.innerHTML='<div class="mg-donewrap"><div class="flt-done" style="margin:4px 0 12px;">אין כפילויות שזוהו אוטומטית</div><button class="mg-home">חזור למסך הבית</button></div>';const b=body.querySelector('.mg-home');if(b)b.onclick=goHome;}
 function mgRefresh(sc){const left=sc.querySelectorAll('.dup-group').length;const h=sc.querySelector('.scr-head h2');if(h)h.textContent='מיזוג כפילויות ('+left+')';if(left===0)mgDone(sc);}
 function mgRemovePerson(person){const i=PEOPLE.indexOf(person);if(i>=0)PEOPLE.splice(i,1);savePeople();}
 function openMerge(){
   const groups=computeMergeGroups();
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>מיזוג כפילויות ('+groups.length+')</h2></div><div class="scr-body" id="dupBody"></div>');sc._reopen=openMerge;
   const dupBody=sc.querySelector('#dupBody');
-  if(!groups.length){mgDone(sc);return;}
+  const X_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  dupBody.innerHTML='<p class="cr-hint" style="text-align:right;margin:0 0 8px;">גרור איש קשר לאיש קשר אחר על מנת למזג.</p><div class="flt-search"><div class="srch-inwrap" id="mgWrap"><input id="mgSearch" class="ct-inp pk-inp" type="text" placeholder="חיפוש למיזוג ידני…" autocomplete="off"><button class="srch-clear pk-clear" id="mgSearchClr" type="button" aria-label="נקה">'+X_SVG+'</button></div></div><div id="mgResults" class="flt-list" style="margin-bottom:14px;"></div><div id="dupGroups"></div>';
+  const groupsBox=dupBody.querySelector('#dupGroups');
+  const mbox=dupBody.querySelector('#mgResults');
+  const msi=dupBody.querySelector('#mgSearch');
+  const mwrap=dupBody.querySelector('#mgWrap');
+  msi.oninput=()=>{if(mwrap)mwrap.classList.toggle('has-text',!!msi.value);renderManual(msi.value);};
+  var _mclr=dupBody.querySelector('#mgSearchClr');if(_mclr)_mclr.onclick=()=>{msi.value='';if(mwrap)mwrap.classList.remove('has-text');renderManual('');try{msi.focus();}catch(_){}};
+  function mgWireDrag(rw,p){
+    let holdT=0,sX=0,sY=0,dragging=false,clone=null,oX=0,oY=0;
+    const onMove=ev=>{if(!dragging){if(holdT&&(Math.abs(ev.clientX-sX)>12||Math.abs(ev.clientY-sY)>12)){clearTimeout(holdT);holdT=0;}return;}ev.preventDefault();clone.style.transform='translate('+(ev.clientX-oX)+'px,'+(ev.clientY-oY)+'px)';const el=document.elementFromPoint(ev.clientX,ev.clientY);mbox.querySelectorAll('.mg-mrow').forEach(r=>r.classList.remove('mg-target'));const tgt=el&&el.closest('.mg-mrow');if(tgt&&tgt!==rw)tgt.classList.add('mg-target');};
+    const onUp=ev=>{document.removeEventListener('pointermove',onMove);document.removeEventListener('pointerup',onUp);if(holdT){clearTimeout(holdT);holdT=0;}if(dragging){const el=document.elementFromPoint(ev.clientX,ev.clientY);const tgt=el&&el.closest('.mg-mrow');mbox.querySelectorAll('.mg-mrow').forEach(r=>r.classList.remove('mg-target'));if(clone){clone.remove();clone=null;}rw.style.opacity='';dragging=false;if(tgt&&tgt!==rw){const tp=tgt._person;if(tp&&tp!==p){openMergePicker([p,tp],tp,()=>{renderManual(msi.value);renderList();});}}}else if(Math.abs(ev.clientX-sX)<10&&Math.abs(ev.clientY-sY)<10){openContact(p);}};
+    rw._person=p;
+    rw.addEventListener('pointerdown',e=>{sX=e.clientX;sY=e.clientY;document.addEventListener('pointermove',onMove);document.addEventListener('pointerup',onUp);holdT=setTimeout(()=>{holdT=0;dragging=true;if(navigator.vibrate)navigator.vibrate(15);const rect=rw.getBoundingClientRect();oX=e.clientX-rect.left;oY=e.clientY-rect.top;clone=rw.cloneNode(true);clone.classList.add('mg-drag-clone');clone.style.width=rect.width+'px';clone.style.transform='translate('+(e.clientX-oX)+'px,'+(e.clientY-oY)+'px)';document.body.appendChild(clone);rw.style.opacity='.4';},200);});
+  }
+  function renderManual(q){q=(q||'').trim().toLowerCase();if(!q){mbox.innerHTML='';return;}const matches=PEOPLE.filter(p=>FDEC[fKey(p)]!=='delete').filter(p=>{const hay=[(p.name||''),(p.phone||''),(p.email||'')].concat(p.phones||[]).concat(p.emails||[]).join(' ').toLowerCase();return hay.indexOf(q)>=0;}).sort(byName).slice(0,40);if(!matches.length){mbox.innerHTML='<div class="flt-done">לא נמצאו אנשי קשר</div>';return;}mbox.innerHTML=matches.map((p,i)=>{const det=personDetails(p);return '<div class="mg-mrow" data-i="'+i+'"><span class="li-av">'+escapeHtml(initials(p.name)||'?')+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(det.length?'<div class="s">'+escapeHtml(det.join(' · '))+'</div>':'')+'</div></div>';}).join('');mbox.querySelectorAll('.mg-mrow').forEach(rw=>mgWireDrag(rw,matches[+rw.dataset.i]));}
+  if(!groups.length){mgDone(sc);}
   const sel=new Map();
   groups.forEach((g,gi)=>{
     sel.set(gi,g[0]);
@@ -1803,7 +1822,7 @@ function openMerge(){
     fg.addEventListener('pointermove',e=>{if(!drag)return;dx=e.clientX-sx;if(Math.abs(dx)>6)moved=true;if(dx>0)dx=0;fg.style.transform='translateX('+dx+'px)';});
     const end=()=>{if(!drag)return;drag=false;if(dx<=-90){dismiss();return;}fg.style.transition='transform .2s';fg.style.transform='';if(!moved&&downT){const t=downT.closest('.dup-member');if(t){sel.set(gi,t._person);mgUpdateSel(card,t._person);}}};
     fg.addEventListener('pointerup',end);fg.addEventListener('pointercancel',end);
-    dupBody.appendChild(card);
+    groupsBox.appendChild(card);
   });
 }
 function openMergePicker(group,keep,onDone){

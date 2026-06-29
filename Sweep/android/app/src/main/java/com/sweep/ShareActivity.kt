@@ -211,6 +211,37 @@ class ShareActivity : Activity() {
             }
         }
 
-        @JavascriptInterface fun close() { runOnUiThread { finish() } }
+        /** פותח צ'אט וואטסאפ מבלי לנווט את ה-WebView ומבלי לסגור את ה-Activity (לתור שליחה מרובה). */
+        @JavascriptInterface
+        fun openWhatsApp(phone: String, text: String) {
+            runOnUiThread {
+                try {
+                    openUri("https://wa.me/${digits(phone)}" + if (text.isNotEmpty()) "?text=${enc(text)}" else "")
+                } catch (e: Exception) {
+                    Toast.makeText(this@ShareActivity, "לא נמצאה אפליקציית וואטסאפ", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        @JavascriptInterface fun close() { doExitApp() }
+        /** יציאה אמיתית מהאפליקציה — נקרא מכפתור "יציאה" ב-JS. */
+        @JavascriptInterface fun exitApp() { doExitApp() }
+    }
+
+    /** סוגר את ה-Activity וכל ה-task (יציאה אמיתית), עם נפילה ל-moveTaskToBack. */
+    private fun doExitApp() {
+        runOnUiThread {
+            try {
+                finishAffinity()
+            } catch (e: Exception) {
+                try { finish() } catch (_: Exception) {}
+            }
+            try {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    finishAndRemoveTask()
+                }
+            } catch (_: Exception) {}
+            try { moveTaskToBack(true) } catch (_: Exception) {}
+        }
     }
 }
