@@ -1416,7 +1416,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.29.1952';
+const APP_VERSION='2026.06.29.2023';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2694,15 +2694,22 @@ function interpretVoice(t){t=(t||'').trim();if(!t)return {label:'לא נקלט �
   if(/(שלח לרשימה|רשימת|רשימה)/.test(t)){const q=voiceAfter(t,['שלח לרשימה','רשימת','רשימה']);const L=(cfg.lists||[]).find(x=>String(x.name).indexOf(q)>=0);return L?{label:'אשלח לרשימה: '+L.name,run:()=>openSendList(L.id)}:{label:'לא מצאתי רשימה: "'+q+'"',run:null};}
   return {label:'אחפש: "'+t+'"',run:()=>{openSearch();setTimeout(()=>{try{searchInput.value=t;renderSearch(t);if(typeof updSrchClear==='function')updSrchClear();}catch(e){}},140);}};
 }
+function aiTranscribe(blob){
+  const key=aiKey();if(!key)return Promise.resolve(null);
+  const fd=new FormData();fd.append('file',blob,'audio.webm');fd.append('model','gpt-4o-transcribe');fd.append('language','he');
+  return fetch('https://api.openai.com/v1/audio/transcriptions',{method:'POST',headers:{'Authorization':'Bearer '+key},body:fd})
+    .then(r=>{if(r.ok)return r.json();return r.json().then(e=>{throw new Error((e&&e.error&&e.error.message)||('HTTP '+r.status));});})
+    .then(j=>(j&&j.text)?j.text.trim():'');
+}
 function startVoice(){
+  const useAI=!!aiKey();
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){toast('זיהוי דיבור לא נתמך בדפדפן הזה');return;}
+  if(!useAI&&!SR){toast('זיהוי דיבור לא נתמך כאן — הגדר מפתח OpenAI בהגדרות');return;}
   const ov=document.createElement('div');ov.className='vc-ov';
-  ov.innerHTML='<div class="vc-box"><button class="vc-mic listening" id="vcMic" aria-label="עצור הקלטה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><div class="vc-txt" id="vcTxt">מקשיב… (הקש על המיקרופון לעצירה)</div><input class="vc-edit" id="vcEdit" dir="rtl" placeholder="טקסט שזוהה — אפשר לתקן" style="display:none;"><div class="vc-act" id="vcAct" style="display:none;"></div><div class="vc-btns"><button class="vc-cancel" id="vcCancel">ביטול</button><button class="vc-ok" id="vcOk" style="display:none;">אישור</button></div></div>';
+  ov.innerHTML='<div class="vc-box"><button class="vc-mic listening" id="vcMic" aria-label="עצור הקלטה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><div class="vc-txt" id="vcTxt">מקליט… (הקש על המיקרופון לסיום)</div><input class="vc-edit" id="vcEdit" dir="rtl" placeholder="טקסט שזוהה — אפשר לתקן" style="display:none;"><div class="vc-act" id="vcAct" style="display:none;"></div><div class="vc-btns"><button class="vc-cancel" id="vcCancel">ביטול</button><button class="vc-ok" id="vcOk" style="display:none;">אישור</button></div></div>';
   document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
   const txtEl=ov.querySelector('#vcTxt'),actEl=ov.querySelector('#vcAct'),okBtn=ov.querySelector('#vcOk'),micEl=ov.querySelector('#vcMic'),editEl=ov.querySelector('#vcEdit');
-  let finalTxt='',stopped=false,action=null;
-  let _reTok=0,_reTmr=0;
+  let action=null,_reTok=0,_reTmr=0;
   function _setAction(a){action=a;actEl.style.display='';actEl.textContent=a.label;okBtn.style.display=(a&&a.run)?'':'none';}
   function reinterpret(){const txt=(editEl.value||'').trim();
     if(aiKey()){const tok=++_reTok;actEl.style.display='';actEl.textContent='חושב…';okBtn.style.display='none';
@@ -2711,15 +2718,35 @@ function startVoice(){
   function reinterpretDebounced(){if(_reTmr)clearTimeout(_reTmr);_reTmr=setTimeout(reinterpret,500);}
   editEl.addEventListener('input',reinterpretDebounced);
   const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),200);};
-  let rec;try{rec=new SR();}catch(e){close();toast('זיהוי דיבור נכשל');return;}
+  function showResult(text){micEl.classList.remove('listening');txtEl.textContent=text?'שמעתי (אפשר לתקן):':'לא נקלט — אפשר להקליד:';editEl.style.display='';editEl.value=text||'';reinterpret();}
+  okBtn.onclick=()=>{const a=action;close();if(a&&a.run)a.run();};
+  if(useAI){
+    let mediaRec=null,stream=null,chunks=[],stopped=false;
+    const cleanup=()=>{try{if(stream)stream.getTracks().forEach(t=>t.stop());}catch(e){}};
+    const finishRec=()=>{if(stopped)return;stopped=true;try{if(mediaRec&&mediaRec.state!=='inactive')mediaRec.stop();}catch(e){cleanup();}};
+    ov.querySelector('#vcCancel').onclick=()=>{stopped=true;try{if(mediaRec&&mediaRec.state!=='inactive')mediaRec.stop();}catch(e){}cleanup();close();};
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){txtEl.textContent='אין גישה למיקרופון בדפדפן הזה';return;}
+    navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{
+      stream=s;let mime='';try{if(window.MediaRecorder){if(MediaRecorder.isTypeSupported('audio/webm'))mime='audio/webm';else if(MediaRecorder.isTypeSupported('audio/mp4'))mime='audio/mp4';}}catch(e){}
+      mediaRec=mime?new MediaRecorder(s,{mimeType:mime}):new MediaRecorder(s);
+      mediaRec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data);};
+      mediaRec.onstop=()=>{cleanup();micEl.classList.remove('listening');txtEl.textContent='מתמלל…';
+        const blob=new Blob(chunks,{type:(mediaRec&&mediaRec.mimeType)||'audio/webm'});
+        if(!blob.size){txtEl.textContent='לא נקלט קול — נסה שוב';editEl.style.display='';editEl.value='';return;}
+        aiTranscribe(blob).then(text=>{showResult(text||'');}).catch(err=>{txtEl.textContent='שגיאת תמלול';actEl.style.display='';actEl.textContent='בדוק את מפתח ה-OpenAI ואת החיבור לאינטרנט';okBtn.style.display='none';editEl.style.display='';editEl.value='';});
+      };
+      mediaRec.start();micEl.onclick=finishRec;
+    }).catch(()=>{txtEl.textContent='אין הרשאת מיקרופון';actEl.style.display='';actEl.textContent='אשר הרשאת מיקרופון בדפדפן/באפליקציה ונסה שוב';});
+    return;
+  }
+  let finalTxt='',stopped=false,rec;
+  try{rec=new SR();}catch(e){close();toast('זיהוי דיבור נכשל');return;}
   rec.lang='he-IL';rec.interimResults=true;rec.maxAlternatives=1;
   rec.onresult=e=>{let inter='',fin='';for(let i=0;i<e.results.length;i++){const r=e.results[i];if(r.isFinal)fin+=r[0].transcript;else inter+=r[0].transcript;}finalTxt=(fin||inter).trim();if(!stopped)txtEl.textContent=finalTxt||'מקשיב…';};
   rec.onerror=()=>{};
-  function showResult(){micEl.classList.remove('listening');txtEl.textContent=finalTxt?'שמעתי (אפשר לתקן):':'לא נקלט — אפשר להקליד:';editEl.style.display='';editEl.value=finalTxt||'';reinterpret();}
-  function stopListening(){if(stopped)return;stopped=true;try{rec.stop();}catch(e){}showResult();}
-  rec.onend=()=>{if(!stopped){stopped=true;showResult();}};
+  const stopListening=()=>{if(stopped)return;stopped=true;try{rec.stop();}catch(e){}showResult(finalTxt);};
+  rec.onend=()=>{if(!stopped){stopped=true;showResult(finalTxt);}};
   micEl.onclick=stopListening;
-  okBtn.onclick=()=>{const a=action;close();if(a&&a.run)a.run();};
   ov.querySelector('#vcCancel').onclick=()=>{stopped=true;try{rec.stop();}catch(e){}close();};
   try{rec.start();}catch(e){close();toast('לא ניתן להפעיל מיקרופון');}
 }

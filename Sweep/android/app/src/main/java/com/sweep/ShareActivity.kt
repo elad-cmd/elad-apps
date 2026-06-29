@@ -33,6 +33,7 @@ class ShareActivity : Activity() {
     private val REQ_CONTACTS = 101
     private val REQ_FILE = 201
     private val REQ_WRITE = 301
+    private val REQ_AUDIO = 401
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -47,6 +48,19 @@ class ShareActivity : Activity() {
         web.addJavascriptInterface(Bridge(), "AndroidShare")
         // מאפשר ל-<input type=file> בתוך ה-WebView לפתוח בורר קבצים (לשחזור גיבוי)
         web.webChromeClient = object : WebChromeClient() {
+            // מתן גישת מיקרופון ל-WebView (לתמלול הקלט הקולי)
+            override fun onPermissionRequest(request: android.webkit.PermissionRequest?) {
+                request ?: return
+                runOnUiThread {
+                    val wants = request.resources.any { it == android.webkit.PermissionRequest.RESOURCE_AUDIO_CAPTURE }
+                    if (wants && checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                        requestPermissions(arrayOf(android.Manifest.permission.RECORD_AUDIO), REQ_AUDIO)
+                        try { request.deny() } catch (e: Exception) {}
+                    } else {
+                        try { request.grant(request.resources) } catch (e: Exception) {}
+                    }
+                }
+            }
             override fun onShowFileChooser(
                 view: WebView?,
                 callback: ValueCallback<Array<Uri>>?,
