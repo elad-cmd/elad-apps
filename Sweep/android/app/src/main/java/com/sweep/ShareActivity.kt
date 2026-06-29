@@ -36,6 +36,9 @@ class ShareActivity : Activity() {
     private val REQ_AUDIO = 401
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private var pendingAudioRequest: android.webkit.PermissionRequest? = null
+    private var nativeRec: android.media.MediaRecorder? = null
+    private var nativeRecFile: java.io.File? = null
+    private val recLock = Any()
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -307,6 +310,65 @@ class ShareActivity : Activity() {
             }
         }
 
+        /**
+         * הקלטה נייטיב של המיקרופון (עוקף את לכידת האודיו של ה-WebView שאינה אמינה).
+         * מקליט ל-AAC/MPEG_4 בקובץ זמני. מחזיר true אם ההקלטה התחילה.
+         */
+        @JavascriptInterface
+        fun startRecording(): Boolean {
+            if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                runOnUiThread { requestPermissions(arrayOf(android.Manifest.permission.RECORD_AUDIO), REQ_AUDIO) }
+                return false
+            }
+            return try {
+                synchronized(recLock) {
+                    stopAndReleaseRec()
+                    val f = java.io.File(cacheDir, "voice_" + System.currentTimeMillis() + ".m4a")
+                    val r = if (android.os.Build.VERSION.SDK_INT >= 31)
+                                android.media.MediaRecorder(this@ShareActivity)
+                            else
+                                @Suppress("DEPRECATION") android.media.MediaRecorder()
+                    r.setAudioSource(android.media.MediaRecorder.AudioSource.MIC)
+                    r.setOutputFormat(android.media.MediaRecorder.OutputFormat.MPEG_4)
+                    r.setAudioEncoder(android.media.MediaRecorder.AudioEncoder.AAC)
+                    r.setAudioEncodingBitRate(128000)
+                    r.setAudioSamplingRate(44100)
+                    r.setOutputFile(f.absolutePath)
+                    r.prepare()
+                    r.start()
+                    nativeRec = r
+                    nativeRecFile = f
+                }
+                true
+            } catch (e: Exception) {
+                synchronized(recLock) { stopAndReleaseRec() }
+                false
+            }
+        }
+
+        /** עוצר את ההקלטה ומחזיר את האודיו כ-Base64 (ריק אם נכשל/קצר מדי). */
+        @JavascriptInterface
+        fun stopRecording(): String {
+            return try {
+                synchronized(recLock) {
+                    val r = nativeRec ?: return ""
+                    try { r.stop() } catch (e: Exception) {}
+                    try { r.release() } catch (e: Exception) {}
+                    nativeRec = null
+                    val f = nativeRecFile
+                    nativeRecFile = null
+                    if (f == null || !f.exists() || f.length() <= 0L) { try { f?.delete() } catch (e: Exception) {}; return "" }
+                    val bytes = f.readBytes()
+                    try { f.delete() } catch (e: Exception) {}
+                    android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)
+                }
+            } catch (e: Exception) { "" }
+        }
+
+        /** מבטל הקלטה פעילה ומשחרר את המיקרופון. */
+        @JavascriptInterface
+        fun cancelRecording() { synchronized(recLock) { stopAndReleaseRec() } }
+
         @JavascriptInterface fun close() { doExitApp() }
         /** יציאה אמיתית מהאפליקציה — נקרא מכפתור "יציאה" ב-JS. */
         @JavascriptInterface fun exitApp() { doExitApp() }
@@ -327,5 +389,23 @@ class ShareActivity : Activity() {
             } catch (_: Exception) {}
             try { moveTaskToBack(true) } catch (_: Exception) {}
         }
+    }
+
+    /** עוצר ומשחרר את מקליט המיקרופון הנייטיב (אם פעיל) ומוחק את הקובץ הזמני. */
+    private fun stopAndReleaseRec() {
+        try {
+            nativeRec?.let {
+                try { it.stop() } catch (e: Exception) {}
+                try { it.release() } catch (e: Exception) {}
+            }
+        } catch (e: Exception) {}
+        nativeRec = null
+        try { nativeRecFile?.delete() } catch (e: Exception) {}
+        nativeRecFile = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        synchronized(recLock) { stopAndReleaseRec() }
     }
 }

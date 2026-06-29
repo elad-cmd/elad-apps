@@ -1419,7 +1419,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.30.0202';
+const APP_VERSION='2026.06.30.0216';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2704,9 +2704,10 @@ function interpretVoice(t){t=(t||'').trim();if(!t)return {label:'לא נקלט �
 }
 let _activeMicStream=null;
 function _killActiveMic(){try{if(_activeMicStream){_activeMicStream.getTracks().forEach(t=>t.stop());_activeMicStream=null;}}catch(e){}}
-function aiTranscribe(blob){
+function _b64ToBlob(b64,type){try{const bin=atob(b64);const len=bin.length;const arr=new Uint8Array(len);for(let i=0;i<len;i++)arr[i]=bin.charCodeAt(i);return new Blob([arr],{type:type||'audio/mp4'});}catch(e){return null;}}
+function aiTranscribe(blob,name){
   const key=aiKey();if(!key)return Promise.resolve(null);
-  const fd=new FormData();fd.append('file',blob,'audio.webm');fd.append('model','gpt-4o-transcribe');fd.append('language','he');
+  const fd=new FormData();fd.append('file',blob,name||'audio.webm');fd.append('model','gpt-4o-transcribe');fd.append('language','he');
   return fetch('https://api.openai.com/v1/audio/transcriptions',{method:'POST',headers:{'Authorization':'Bearer '+key},body:fd})
     .then(r=>{if(r.ok)return r.json();return r.json().then(e=>{throw new Error((e&&e.error&&e.error.message)||('HTTP '+r.status));});})
     .then(j=>(j&&j.text)?j.text.trim():'');
@@ -2732,6 +2733,17 @@ function startVoice(){
   function showResult(text){micEl.classList.remove('listening');txtEl.textContent=text?'שמעתי (אפשר לתקן):':'לא נקלט — אפשר להקליד:';editEl.style.display='';editEl.value=text||'';reinterpret();}
   okBtn.onclick=()=>{const a=action;close();if(a&&a.run)a.run();};
   if(useAI){
+    const NA=(window.AndroidShare&&typeof AndroidShare.startRecording==='function'&&typeof AndroidShare.stopRecording==='function')?window.AndroidShare:null;
+    if(NA){
+      let nstopped=false;
+      const doTr=(b64)=>{micEl.classList.remove('listening');if(!b64){txtEl.textContent='לא נקלט קול — נסה שוב';editEl.style.display='';editEl.value='';return;}txtEl.textContent='מתמלל…';const blob=_b64ToBlob(b64,'audio/mp4');if(!blob){txtEl.textContent='שגיאת תמלול';return;}aiTranscribe(blob,'audio.m4a').then(text=>{showResult(text||'');}).catch(err=>{txtEl.textContent='שגיאת תמלול';actEl.style.display='';actEl.textContent='בדוק את מפתח ה-OpenAI ואת החיבור לאינטרנט';okBtn.style.display='none';editEl.style.display='';editEl.value='';});};
+      const nFinish=()=>{if(nstopped)return;nstopped=true;let b64='';try{b64=NA.stopRecording()||'';}catch(e){}doTr(b64);};
+      ov.querySelector('#vcCancel').onclick=()=>{nstopped=true;try{if(NA.cancelRecording)NA.cancelRecording();}catch(e){}close();};
+      let ok=false;try{ok=!!NA.startRecording();}catch(e){ok=false;}
+      if(!ok){txtEl.textContent='לא ניתן לפתוח מיקרופון';actEl.style.display='';actEl.textContent='ודא שהאפליקציה קיבלה הרשאת מיקרופון בהגדרות, ונסה שוב';return;}
+      micEl.onclick=nFinish;
+      return;
+    }
     let mediaRec=null,stream=null,chunks=[],stopped=false;
     const cleanup=()=>{try{if(stream)stream.getTracks().forEach(t=>t.stop());}catch(e){}};
     const finishRec=()=>{if(stopped)return;stopped=true;try{if(mediaRec&&mediaRec.state!=='inactive')mediaRec.stop();}catch(e){cleanup();}};
