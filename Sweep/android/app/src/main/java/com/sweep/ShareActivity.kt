@@ -181,6 +181,19 @@ class ShareActivity : Activity() {
         @JavascriptInterface fun getSharedText(): String = sharedText
         @JavascriptInterface fun getContacts(): String = readContacts()
 
+        /** מבקש הרשאת קריאת אנשי קשר; בעת אישור — טעינה מחדש (onRequestPermissionsResult). */
+        @JavascriptInterface
+        fun requestContacts() {
+            runOnUiThread {
+                if (checkSelfPermission(android.Manifest.permission.READ_CONTACTS)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(arrayOf(android.Manifest.permission.READ_CONTACTS), REQ_CONTACTS)
+                } else {
+                    web.reload()
+                }
+            }
+        }
+
         /** appId: whatsapp | mail | sms | telegram | messenger | instagram | copy | more */
         @JavascriptInterface
         fun shareTo(appId: String, contactJson: String, text: String) {
