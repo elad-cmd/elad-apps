@@ -285,6 +285,15 @@
   .mp-sheet .ct-inp::placeholder{color:rgba(8,50,50,.42);}
   .mp-sheet .ct-inp:focus{border-color:var(--tq-deep);background:#fff;}
   .ct-nameinp{font-size:18px;font-weight:800;text-align:center;}
+  .ct-field{text-align:right;margin-bottom:10px;}
+  .ct-lbl{display:block;font-size:12px;font-weight:700;color:rgba(255,255,255,.62);text-align:right;margin:0 2px 4px;}
+  .acf-row{display:flex;align-items:center;gap:8px;}
+  .bd-cal-hit{background:var(--tq)!important;color:#04342C!important;transform:scale(.94);transition:transform .12s ease;}
+  .ac-favrow{display:flex;align-items:center;justify-content:space-between;}
+  .ac-favrow .ct-lbl{margin:0;}
+  .ac-fav{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:10px;color:rgba(255,255,255,.4);cursor:pointer;width:40px;height:40px;display:flex;align-items:center;justify-content:center;padding:0;transition:color .15s;}
+  .ac-fav.on{color:#ffd24a;}
+  .ac-fav svg{width:22px;height:22px;}
   .ct-acts{display:flex;gap:6px;flex:0 0 auto;}
   .ct-act{width:38px;height:38px;border-radius:50%;border:none;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;cursor:pointer;}
   .ct-act svg{width:20px;height:20px;}
@@ -409,9 +418,12 @@
   .flt-body{display:flex;flex-direction:column;}
   .scr-body.flt-body{padding-bottom:104px;}
   .flt-tabs{display:flex;gap:6px;margin-bottom:12px;}
-  .flt-cattabs{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:8px;scrollbar-width:none;}
+  .flt-cattabs{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 0 10px;scrollbar-width:none;}
   .flt-cattabs::-webkit-scrollbar{display:none;}
-  .flt-cattabs .vtab{flex:0 0 auto;min-width:78px;padding-left:10px;padding-right:10px;}
+  .catchip{flex:0 0 auto;display:inline-flex;flex-direction:row;align-items:center;gap:5px;background:rgba(255,255,255,.16);border:none;border-radius:999px;padding:4px 11px;color:rgba(255,255,255,.85);cursor:pointer;font-family:inherit;}
+  .catchip svg{width:16px;height:16px;}
+  .catchip b{font-size:13px;font-weight:800;}
+  .catchip.on{background:var(--tq);color:#fff;}
   .vtab{flex:1;display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,.08);border:none;border-radius:12px;padding:7px 0;color:rgba(255,255,255,.82);cursor:pointer;font-family:inherit;}
   .vtab b{font-size:16px;font-weight:800;}
   .vtab span{font-size:10.5px;}
@@ -525,7 +537,7 @@
   .row.dragging{opacity:.96;}
   body.editing .row .av{box-shadow:0 10px 22px -8px rgba(0,0,0,.6);}
   #botbar{position:fixed;bottom:26px;left:0;right:0;z-index:94;display:flex;align-items:center;justify-content:space-between;padding:0 16px;pointer-events:none;direction:ltr;}
-  .bot-shade{position:fixed;left:0;right:0;bottom:0;height:150px;background:linear-gradient(to top,#000 0%,#000 64%,rgba(0,0,0,0) 100%);pointer-events:none;z-index:88;transition:opacity .3s ease;}
+  .bot-shade{position:fixed;left:0;right:0;bottom:0;height:130px;background:linear-gradient(to top,#000 0%,#000 90%,rgba(0,0,0,0) 100%);pointer-events:none;z-index:88;transition:opacity .3s ease;}
   body.hand-left #botbar{flex-direction:row-reverse;}
   #botbar .bb-spacer{width:54px;height:54px;flex:0 0 auto;}
   #botbar .bb-btn{pointer-events:auto;flex:0 0 auto;width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;background:var(--white);color:var(--tq-ink);display:flex;align-items:center;justify-content:center;box-shadow:0 16px 34px 2px rgba(0,0,0,.55),0 6px 14px rgba(0,0,0,.45);transition:transform .12s ease, opacity .2s ease;}
@@ -540,13 +552,16 @@
   body.hand-left #bbBack svg{transform:scaleX(-1);}
   .scr-back{display:none;}
   .dial-body{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:10px;padding-bottom:104px;}
-  .dial-res{display:flex;flex-direction:column;gap:8px;width:100%;max-width:340px;max-height:48vh;overflow-y:auto;margin-bottom:2px;transform-origin:center bottom;transition:max-height .2s cubic-bezier(.4,0,.2,1),opacity .2s ease,transform .2s cubic-bezier(.4,0,.2,1);}
-  .dial-numrow{display:flex;align-items:center;justify-content:center;gap:14px;direction:ltr;}
+  .dial-res{display:flex;flex-direction:column;gap:8px;width:100%;max-width:340px;flex:1 1 auto;min-height:0;overflow-y:auto;margin-bottom:2px;transform-origin:center bottom;transition:opacity .2s ease,transform .2s ease;}
+  .dial-numrow{display:flex;align-items:center;justify-content:center;gap:14px;direction:ltr;flex:0 0 auto;width:100%;}
   .dial-num{font-size:30px;font-weight:700;color:#fff;min-height:38px;direction:ltr;letter-spacing:2px;}
   .dial-bksp{width:44px;height:44px;border-radius:50%;border:none;background:rgba(255,255,255,.12);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
-  .dial-padrow{display:flex;align-items:flex-end;justify-content:center;gap:12px;direction:ltr;width:100%;overflow:hidden;max-height:52vh;transform-origin:center bottom;transition:max-height .2s cubic-bezier(.4,0,.2,1),opacity .2s ease,transform .2s cubic-bezier(.4,0,.2,1);}
+  .dial-padrow{display:flex;align-items:flex-end;justify-content:center;gap:12px;direction:ltr;width:100%;flex:0 0 auto;overflow:hidden;max-height:60vh;transform-origin:center bottom;transition:max-height .2s cubic-bezier(.4,0,.2,1),opacity .2s ease,transform .2s cubic-bezier(.4,0,.2,1);}
   .dial-grid{display:grid;grid-template-columns:repeat(3,58px);gap:11px;justify-content:center;}
   .dial-key{width:58px;height:58px;border-radius:50%;border:none;background:rgba(255,255,255,.12);color:#fff;font-size:23px;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .dial-key0{flex-direction:column;gap:0;line-height:1;}
+  .dial-key0 .dk0{line-height:1;}
+  .dial-key .dk-plus{font-size:12px;font-weight:700;opacity:.7;line-height:1;margin-top:1px;}
   .dial-key:active{background:rgba(255,255,255,.25);}
   .dial-side{width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;color:#fff;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;flex:0 0 auto;font-size:22px;font-family:inherit;}
   .dial-side:active{background:rgba(255,255,255,.25);}
@@ -556,7 +571,7 @@
   .dial-handle:active{background:rgba(255,255,255,.26);}
   .dial-handle svg{width:24px;height:24px;transition:transform .22s ease;}
   .dial-collapsed .dial-padrow{max-height:0;opacity:0;transform:translateY(26px) scaleY(.5);pointer-events:none;margin-top:-10px;}
-  .dial-collapsed .dial-res{max-height:0;opacity:0;transform:translateY(22px) scaleY(.6);pointer-events:none;overflow:hidden;margin-bottom:0;}
+  .dial-collapsed .dial-res{flex:0 0 auto;max-height:0;opacity:0;transform:translateY(22px) scaleY(.6);pointer-events:none;overflow:hidden;margin-bottom:0;}
   .dial-collapsed .dial-handle svg{transform:rotate(180deg);}
   .dial-res-row{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.1);border-radius:14px;padding:7px 11px;cursor:pointer;}
   .dial-res-row.dial-res-new{background:var(--tq-deep);}
@@ -1285,9 +1300,9 @@ listEl.addEventListener('pointercancel',()=>{if(pendTimer){clearTimeout(pendTime
 function wirePick(container,onTap){
   let pRow=null,pX=0,pY=0,pTimer=0,pStarted=false,tRow=null,tX=0,tY=0;
   const clr=()=>{if(pTimer){clearTimeout(pTimer);pTimer=0;}pRow=null;pStarted=false;};
-  container.addEventListener('pointerdown',e=>{const av=e.target.closest('.av');if(av){const row=av.closest('.row');if(!row)return;e.preventDefault();e.stopPropagation();if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();pRow=row;pX=e.clientX;pY=e.clientY;pStarted=false;try{av.setPointerCapture(e.pointerId);}catch(_){}pTimer=setTimeout(()=>{pTimer=0;if(pRow){pStarted=true;startPick(pRow,pX,pY);}},80);}else{tRow=e.target.closest('.row');tX=e.clientX;tY=e.clientY;}});
+  container.addEventListener('pointerdown',e=>{const av=e.target.closest('.av');if(av){const row=av.closest('.row');if(!row)return;if(row._person&&row._person._addnew){tRow=row;tX=e.clientX;tY=e.clientY;return;}e.preventDefault();e.stopPropagation();if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();pRow=row;pX=e.clientX;pY=e.clientY;pStarted=false;try{av.setPointerCapture(e.pointerId);}catch(_){}pTimer=setTimeout(()=>{pTimer=0;if(pRow){pStarted=true;startPick(pRow,pX,pY);}},80);}else{tRow=e.target.closest('.row');tX=e.clientX;tY=e.clientY;}});
   container.addEventListener('pointermove',e=>{if(pStarted&&picking){e.preventDefault();moveBig(e.clientX,e.clientY);return;}if(pRow&&!pStarted&&Math.hypot(e.clientX-pX,e.clientY-pY)>10){if(pTimer){clearTimeout(pTimer);pTimer=0;}pStarted=true;startPick(pRow,pX,pY);moveBig(e.clientX,e.clientY);}});
-  container.addEventListener('pointerup',e=>{if(pTimer){clearTimeout(pTimer);pTimer=0;}if(pStarted&&picking){e.stopPropagation();endPick(e.clientX,e.clientY);clr();tRow=null;return;}if(pRow){e.stopPropagation();const p=pRow._person||null;clr();tRow=null;if(p&&onTap)onTap(p);return;}if(tRow&&!picking){const dx=e.clientX-tX,dy=e.clientY-tY,r=tRow;tRow=null;if(Math.abs(dx)<8&&Math.abs(dy)<8){const p=r._person||null;if(p&&onTap)onTap(p);}}});
+  container.addEventListener('pointerup',e=>{if(pTimer){clearTimeout(pTimer);pTimer=0;}if(pStarted&&picking){e.stopPropagation();endPick(e.clientX,e.clientY);clr();tRow=null;return;}if(pRow){e.stopPropagation();const p=pRow._person||null;clr();tRow=null;if(p&&onTap)onTap(p);return;}if(tRow&&!picking){const dx=e.clientX-tX,dy=e.clientY-tY,r=tRow;tRow=null;if((r._person&&r._person._addnew)||(Math.abs(dx)<8&&Math.abs(dy)<8)){const p=r._person||null;if(p&&onTap)onTap(p);}}});
   container.addEventListener('pointercancel',()=>{if(pTimer){clearTimeout(pTimer);pTimer=0;}if(picking)resetPick();clr();tRow=null;});
 }
 
@@ -1345,7 +1360,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.29.0224';
+const APP_VERSION='2026.06.29.1105';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1380,7 +1395,7 @@ function openSettings(){
     DIV+
     `<div style="${SECH}">גרסה ועדכון</div><div style="text-align:center;font-size:16px;font-weight:700;color:#fff;letter-spacing:.3px;">גרסה ${APP_VERSION}</div><div id="updStatus" style="text-align:center;font-size:13px;font-weight:700;margin:4px 0 2px;min-height:17px;"></div><div style="text-align:center;width:100%;margin-top:10px;"><button id="appUpdate" style="display:inline-block;padding:7px 18px;border:1px solid rgba(255,255,255,.28);border-radius:18px;background:rgba(255,255,255,.07);color:#fff;font:inherit;font-weight:600;font-size:13px;opacity:.8;cursor:pointer;">עדכן אפליקציה לגרסה האחרונה</button></div>`+
     DIV+
-    `<div style="${SECH};opacity:.42;">גיבוי ושחזור</div><div class="bk-row" style="display:flex;gap:12px;justify-content:center;margin:4px 0 4px;"><button id="bkSave" style="padding:6px 16px;border:1px solid rgba(255,255,255,.28);border-radius:18px;background:rgba(255,255,255,.05);color:#fff;font:inherit;font-weight:600;font-size:12.5px;opacity:.62;cursor:pointer;">גיבוי</button><button id="bkLoad" style="padding:6px 16px;border:1px solid rgba(255,255,255,.28);border-radius:18px;background:rgba(255,255,255,.05);color:#fff;font:inherit;font-weight:600;font-size:12.5px;opacity:.62;cursor:pointer;">שחזור</button></div><p class="cr-hint" style="margin:6px 0 0;opacity:.55;font-size:11.5px;">גיבוי/שחזור של רשימות, מועדפים, ארכיון והגדרות. אנשי הקשר עצמם נקראים מהטלפון.</p><div style="height:40px;"></div><button class="sheet-x sheet-x-bottom" aria-label="סגור"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`);
+    `<div style="${SECH};opacity:.42;">גיבוי ושחזור</div><div class="bk-row" style="display:flex;gap:12px;justify-content:center;margin:4px 0 4px;"><button id="bkSave" style="padding:6px 16px;border:1px solid rgba(255,255,255,.28);border-radius:18px;background:rgba(255,255,255,.05);color:#fff;font:inherit;font-weight:600;font-size:12.5px;opacity:.62;cursor:pointer;">גיבוי</button><button id="bkLoad" style="padding:6px 16px;border:1px solid rgba(255,255,255,.28);border-radius:18px;background:rgba(255,255,255,.05);color:#fff;font:inherit;font-weight:600;font-size:12.5px;opacity:.62;cursor:pointer;">שחזור</button></div><p class="cr-hint" style="margin:6px 0 0;opacity:.55;font-size:11.5px;">גיבוי/שחזור של רשימות, מועדפים, ארכיון והגדרות. אנשי הקשר עצמם נקראים מהטלפון.</p><div style="height:40px;"></div>`);
   ovl.classList.add('bare');
   const xb=sheet.querySelector('.sheet-x');if(xb)xb.onclick=closeSheet;
   const dt=sheet.querySelector('#dblTog');if(dt)dt.onclick=()=>{cfg.dblCall=!cfg.dblCall;saveCfg();openSettings();};
@@ -1576,7 +1591,7 @@ botbar.querySelector('#bbAdd').onclick=()=>openAddContact();
 botbar.querySelector('#bbSearch').onclick=()=>openSearch();
 botbar.querySelector('#bbDial').onclick=()=>openDialer();
 botbar.querySelector('#bbBack').onclick=()=>navBack();
-function updateBar(){if(flipping||barCollapsing||barReopening)return;const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||sheetOpen||flipping);botbar.classList.toggle('collapsed',!(onHome&&!menuOpen&&!welcomeOn));if(!botbar.classList.contains('bar-hidden')){botbar.querySelectorAll('.bb-btn').forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});}var _sh=document.querySelector('.bot-shade');if(_sh)_sh.style.opacity=(welcomeOn||screenOpen||searchOn||sheetOpen)?'0':'1';}
+function updateBar(){if(flipping||barCollapsing||barReopening)return;const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const bareSheet=!!document.querySelector('.ovl.bare.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||(sheetOpen&&!bareSheet)||flipping);botbar.classList.toggle('collapsed',!(onHome&&!menuOpen&&!welcomeOn));if(!botbar.classList.contains('bar-hidden')){botbar.querySelectorAll('.bb-btn').forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});}var _sh=document.querySelector('.bot-shade');if(_sh)_sh.style.opacity=(welcomeOn||screenOpen||searchOn||sheetOpen)?'0':'1';}
 function appBack(){
   const np=document.querySelector('.numpad-ov.show');if(np){np.classList.remove('show');setTimeout(()=>np.remove(),200);return true;}
   const mp=[...document.querySelectorAll('.mpovl.show:not(.exit-dlg)')].pop();if(mp){mp.classList.remove('show');setTimeout(()=>mp.remove(),260);return true;}
@@ -1615,7 +1630,7 @@ function isPhoneLike(t){t=String(t||'').trim();if(!t)return false;if(!/^[\d+\-\s
 function padInsert(inp,ch){const s=(inp.selectionStart==null?inp.value.length:inp.selectionStart),e=(inp.selectionEnd==null?inp.value.length:inp.selectionEnd);inp.value=inp.value.slice(0,s)+ch+inp.value.slice(e);const p=s+ch.length;try{inp.setSelectionRange(p,p);}catch(_){}}
 function padBksp(inp){let s=inp.selectionStart,e=inp.selectionEnd;if(s==null){inp.value=inp.value.slice(0,-1);return;}if(s!==e){inp.value=inp.value.slice(0,s)+inp.value.slice(e);try{inp.setSelectionRange(s,s);}catch(_){}}else if(s>0){inp.value=inp.value.slice(0,s-1)+inp.value.slice(s);try{inp.setSelectionRange(s-1,s-1);}catch(_){}}}
 function padAutoPaste(inp,after){if(inp.value)return;if(!navigator.clipboard||!navigator.clipboard.readText)return;navigator.clipboard.readText().then(function(t){if(inp.value)return;if(isPhoneLike(t)){inp.value=(typeof normIL==='function'?normIL(t):String(t).trim());if(typeof after==='function')after();}}).catch(function(){});}
-function openDialer(){const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>חייגן</h2></div><div class="scr-body dial-body"><div class="dial-res" id="dialRes"></div><div class="dial-numrow"><button id="dialClr" aria-label="נקה" style="background:rgba(255,255,255,.12);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:15px;cursor:pointer;flex:0 0 auto;">✕</button><input class="dial-num" id="dialNum" type="text" inputmode="none" dir="ltr" style="background:transparent;border:none;outline:none;text-align:center;flex:1;min-width:0;caret-color:#fff;padding:0;"></div><div class="dial-padrow"><button class="dial-side dial-call" id="dialCall" aria-label="חיוג">'+ICON.call+'</button><div class="dial-grid" id="dialGrid"></div><button class="dial-side dial-bksp" id="dialBk" aria-label="מחק">⌫</button></div><button class="dial-handle" id="dialFold" aria-label="קיפול"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button></div>');sc.classList.add('scr-bottom','dialer-scr');sc._reopen=openDialer;const num=sc.querySelector('#dialNum');const grid=sc.querySelector('#dialGrid');const res=sc.querySelector('#dialRes');wirePick(res,p=>{const ph=p.phone||(p.phones&&p.phones[0])||'';if(ph)location.href='tel:'+ph;});const dig=x=>String(x||'').replace(/[^0-9]/g,'');function renderRes(){res.innerHTML='';const v=dig(num.value);if(v.length<6)return;PEOPLE.filter(p=>[p.phone].concat(p.phones||[]).filter(Boolean).some(ph=>dig(ph).indexOf(v)>=0)).slice(0,6).forEach(p=>{const ph=p.phone||(p.phones&&p.phones[0])||'';const row=document.createElement('div');row.className='row';row._person=p;row.innerHTML=rowHTML(p,ph);res.appendChild(row);});const exact=PEOPLE.some(p=>[p.phone].concat(p.phones||[]).some(ph=>dig(ph)===v));if(!exact){const row=document.createElement('div');row.className='row dial-row-new';row._person={name:num.value,phone:num.value,phones:[num.value]};row.innerHTML='<span class="av">'+ICON.plus+'</span><div class="meta"><div class="ml"><span class="nm">מספר חדש</span></div><div class="ml"><span class="sub">'+escapeHtml(num.value)+'</span></div></div>';res.appendChild(row);}}const keys=['1','2','3','4','5','6','7','8','9','*','0','#'];grid.innerHTML=keys.map(k=>'<button class="dial-key" data-k="'+k+'">'+k+'</button>').join('');const upd=()=>{renderRes();};grid.querySelectorAll('.dial-key[data-k]').forEach(b=>{b.addEventListener('mousedown',e=>e.preventDefault());b.onclick=()=>{padInsert(num,b.dataset.k);upd();if(navigator.vibrate)navigator.vibrate(4);};});const _dbk=sc.querySelector('#dialBk');_dbk.addEventListener('mousedown',e=>e.preventDefault());_dbk.onclick=()=>{padBksp(num);upd();};var _dclr=sc.querySelector('#dialClr');if(_dclr){_dclr.addEventListener('mousedown',e=>e.preventDefault());_dclr.onclick=()=>{num.value='';upd();try{num.focus();}catch(_){}};}sc.querySelector('#dialCall').onclick=()=>{if(num.value)location.href='tel:'+num.value;};sc.querySelector('#dialFold').onclick=()=>{sc.querySelector('.dial-body').classList.toggle('dial-collapsed');};num.addEventListener('focus',()=>padAutoPaste(num,upd));setTimeout(()=>{try{num.focus();}catch(_){}padAutoPaste(num,upd);},60);upd();}
+function openDialer(){const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>חייגן</h2></div><div class="scr-body dial-body"><div class="dial-res" id="dialRes"></div><div class="dial-numrow"><button id="dialClr" aria-label="נקה" style="background:rgba(255,255,255,.12);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:15px;cursor:pointer;flex:0 0 auto;">✕</button><input class="dial-num" id="dialNum" type="text" inputmode="none" readonly dir="ltr" style="background:transparent;border:none;outline:none;text-align:center;flex:1;min-width:0;caret-color:#fff;padding:0;"><button id="dialAdd" aria-label="הוסף איש קשר" style="background:rgba(255,255,255,.12);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;flex:0 0 auto;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M19 8v6M16 11h6"/></svg></button></div><div class="dial-padrow"><button class="dial-side dial-call" id="dialCall" aria-label="חיוג">'+ICON.call+'</button><div class="dial-grid" id="dialGrid"></div><button class="dial-side dial-bksp" id="dialBk" aria-label="מחק">⌫</button></div><button class="dial-handle" id="dialFold" aria-label="קיפול"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button></div>');sc.classList.add('scr-bottom','dialer-scr');sc._reopen=openDialer;const num=sc.querySelector('#dialNum');const grid=sc.querySelector('#dialGrid');const res=sc.querySelector('#dialRes');wirePick(res,p=>{if(p&&p._addnew){openAddContact({phone:normIL((num.value||'').trim())||p.phone||''});return;}const ph=p.phone||(p.phones&&p.phones[0])||'';if(ph)location.href='tel:'+ph;});const dig=x=>String(x||'').replace(/[^0-9]/g,'');function renderRes(){res.innerHTML='';const v=dig(num.value);if(v.length<5)return;PEOPLE.filter(p=>[p.phone].concat(p.phones||[]).filter(Boolean).some(ph=>dig(ph).indexOf(v)>=0)).slice(0,6).forEach(p=>{const ph=p.phone||(p.phones&&p.phones[0])||'';const row=document.createElement('div');row.className='row';row._person=p;row.innerHTML=rowHTML(p,ph);res.appendChild(row);});const exact=PEOPLE.some(p=>[p.phone].concat(p.phones||[]).some(ph=>dig(ph)===v));if(!exact){const row=document.createElement('div');row.className='row dial-row-new';row._person={phone:num.value,phones:[num.value],_addnew:true};row.innerHTML='<span class="av">'+ICON.plus+'</span><div class="meta"><div class="ml"><span class="nm">הוסף איש קשר חדש</span></div><div class="ml"><span class="sub">'+escapeHtml(num.value)+'</span></div></div>';res.appendChild(row);}}const keys=['1','2','3','4','5','6','7','8','9','*','0','#'];grid.innerHTML=keys.map(k=>'<button class="dial-key'+(k==='0'?' dial-key0':'')+'" data-k="'+k+'">'+(k==='0'?'<span class="dk0">0</span><span class="dk-plus">+</span>':k)+'</button>').join('');const upd=()=>{renderRes();};grid.querySelectorAll('.dial-key[data-k]').forEach(b=>{b.addEventListener('mousedown',e=>e.preventDefault());b.onclick=()=>{if(b._skip){b._skip=false;return;}padInsert(num,b.dataset.k);upd();if(navigator.vibrate)navigator.vibrate(4);};if(b.dataset.k==='0'){let lp=0;const cancel=()=>{if(lp){clearTimeout(lp);lp=0;}};b.addEventListener('pointerdown',()=>{lp=setTimeout(()=>{lp=0;b._skip=true;padInsert(num,'+');upd();if(navigator.vibrate)navigator.vibrate(12);},900);});b.addEventListener('pointerup',cancel);b.addEventListener('pointerleave',cancel);b.addEventListener('pointercancel',cancel);}});var _dadd=sc.querySelector('#dialAdd');if(_dadd)_dadd.onclick=()=>openAddContact({phone:num.value.trim()});const _dbk=sc.querySelector('#dialBk');_dbk.addEventListener('mousedown',e=>e.preventDefault());_dbk.onclick=()=>{padBksp(num);upd();};var _dclr=sc.querySelector('#dialClr');if(_dclr){_dclr.addEventListener('mousedown',e=>e.preventDefault());_dclr.onclick=()=>{num.value='';upd();};}sc.querySelector('#dialCall').onclick=()=>{if(num.value)location.href='tel:'+num.value;};sc.querySelector('#dialFold').onclick=()=>{sc.querySelector('.dial-body').classList.toggle('dial-collapsed');};setTimeout(()=>{padAutoPaste(num,upd);},60);upd();}
 function openNumPad(input,onDone){
   if(!input)return;
   const ov=document.createElement('div');ov.className='numpad-ov';
@@ -1625,8 +1640,8 @@ function openNumPad(input,onDone){
   disp.value=input.value||'';
   const sync=()=>{input.value=disp.value;};
   const keys=['1','2','3','4','5','6','7','8','9','*','0','#'];
-  grid.innerHTML=keys.map(k=>'<button class="dial-key" data-k="'+k+'">'+k+'</button>').join('');
-  grid.querySelectorAll('.dial-key[data-k]').forEach(b=>{b.addEventListener('mousedown',e=>e.preventDefault());b.onclick=()=>{padInsert(disp,b.dataset.k);sync();if(navigator.vibrate)navigator.vibrate(4);};});
+  grid.innerHTML=keys.map(k=>'<button class="dial-key'+(k==='0'?' dial-key0':'')+'" data-k="'+k+'">'+(k==='0'?'<span class="dk0">0</span><span class="dk-plus">+</span>':k)+'</button>').join('');
+  grid.querySelectorAll('.dial-key[data-k]').forEach(b=>{b.addEventListener('mousedown',e=>e.preventDefault());b.onclick=()=>{if(b._skip){b._skip=false;return;}padInsert(disp,b.dataset.k);sync();if(navigator.vibrate)navigator.vibrate(4);};if(b.dataset.k==='0'){let lp=0;const cancel=()=>{if(lp){clearTimeout(lp);lp=0;}};b.addEventListener('pointerdown',()=>{lp=setTimeout(()=>{lp=0;b._skip=true;padInsert(disp,'+');sync();if(navigator.vibrate)navigator.vibrate(12);},900);});b.addEventListener('pointerup',cancel);b.addEventListener('pointerleave',cancel);b.addEventListener('pointercancel',cancel);}});
   const _npbk=ov.querySelector('#npBk');_npbk.addEventListener('mousedown',e=>e.preventDefault());_npbk.onclick=()=>{padBksp(disp);sync();};
   const _npclr=ov.querySelector('#npClr');if(_npclr){_npclr.addEventListener('mousedown',e=>e.preventDefault());_npclr.onclick=()=>{disp.value='';sync();try{disp.focus();}catch(_){}};}
   const close=()=>{sync();ov.classList.remove('show');setTimeout(()=>ov.remove(),200);if(typeof onDone==='function')onDone();};
@@ -1635,7 +1650,37 @@ function openNumPad(input,onDone){
   disp.addEventListener('focus',()=>padAutoPaste(disp,sync));
   setTimeout(()=>{try{disp.focus();}catch(_){}padAutoPaste(disp,sync);},60);
 }
-function openAddContact(pf){const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>איש קשר חדש</h2></div><div class="scr-body"><div class="ct-card"><div class="ct-frow ct-namerow"><input class="ct-inp ct-nameinp" id="acName" placeholder="שם"></div><div class="ct-frow"><input class="ct-inp" id="acPhone" placeholder="טלפון" dir="ltr" readonly inputmode="none"></div><div class="ct-frow"><input class="ct-inp" id="acEmail" placeholder="מייל" dir="ltr"></div><button class="mp-confirm" id="acSave" style="margin-top:16px;">שמור</button></div></div>');sc.classList.add('scr-bottom');sc._reopen=openAddContact;if(pf){var _n=sc.querySelector('#acName');if(_n)_n.value=pf.name||'';var _p=sc.querySelector('#acPhone');if(_p)_p.value=pf.phone||'';var _e=sc.querySelector('#acEmail');if(_e)_e.value=pf.email||'';}sc.querySelector('#acPhone').onclick=()=>openNumPad(sc.querySelector('#acPhone'));sc.querySelector('#acSave').onclick=()=>{const name=sc.querySelector('#acName').value.trim();const phone=sc.querySelector('#acPhone').value.trim();const email=sc.querySelector('#acEmail').value.trim();if(!name&&!phone&&!email){toast('הזן לפחות שדה אחד');return;}PEOPLE.unshift({name:name||'(ללא שם)',phone:phone,email:email,phones:phone?[phone]:[],emails:email?[email]:[],org:'',msg:'',fav:false,last:0});savePeople();renderList();toast('נוסף איש קשר');sc._back();};}
+function openAddContact(pf){
+  pf=pf||{};let flds=[];let fav=!!pf.fav;
+  const html='<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>איש קשר חדש</h2></div>'+
+    '<div class="scr-body"><div class="ct-card">'+
+    '<div class="ct-av">'+ICON.plus+'</div>'+
+    '<div class="ct-field ac-favrow"><label class="ct-lbl">מועדף</label><button class="ac-fav'+(fav?' on':'')+'" id="acFav" aria-label="מועדף">'+STAR+'</button></div>'+
+    '<div class="ct-field"><label class="ct-lbl">שם</label><input class="ct-inp" id="acName" placeholder="שם מלא" dir="rtl"></div>'+
+    '<div class="ct-field"><label class="ct-lbl">טלפון</label><input class="ct-inp" id="acPhone" placeholder="מספר טלפון" dir="ltr" readonly inputmode="none"></div>'+
+    '<div class="ct-field"><label class="ct-lbl">מייל</label><input class="ct-inp" id="acEmail" placeholder="כתובת מייל" dir="ltr"></div>'+
+    '<div class="ct-field"><label class="ct-lbl">כתובת</label><div class="acf-row"><button class="ct-act ct-waze" id="acWaze" aria-label="ניווט ב-Waze">'+ICON.waze+'</button><input class="ct-inp" id="acAddr" placeholder="כתובת לניווט" dir="rtl"></div></div>'+
+    '<div class="ct-fields" id="acFields"></div>'+
+    '<button class="mp-confirm" id="acSave" style="margin-top:16px;">שמור</button>'+
+    '</div></div>';
+  const sc=openScreen(html);sc.classList.add('scr-bottom');sc._reopen=()=>openAddContact(pf);
+  const q=s=>sc.querySelector(s);
+  q('#acName').value=pf.name||'';q('#acPhone').value=pf.phone||'';q('#acEmail').value=pf.email||'';q('#acAddr').value=pf.address||'';
+  q('#acPhone').onclick=()=>openNumPad(q('#acPhone'));
+  q('#acWaze').onclick=()=>openWaze(q('#acAddr').value);
+  (function(){const fb=q('#acFav');if(!fb)return;fb.onclick=()=>{fav=!fav;fb.classList.toggle('on',fav);if(navigator.vibrate)navigator.vibrate(6);};})();
+  (function(){const fbox=q('#acFields');const XS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';function paint(){fbox.innerHTML='<div class="cf-hd">שדות מותאמים</div><div class="cf-list">'+flds.map((f,i)=>'<div class="cf-row" data-i="'+i+'"><input class="ct-inp cf-l" placeholder="תווית" value="'+escapeHtml(f.l)+'"><input class="ct-inp cf-v" placeholder="ערך" value="'+escapeHtml(f.v)+'"><button class="cf-del" data-i="'+i+'" aria-label="הסר">'+XS+'</button></div>').join('')+'</div><button class="cf-add" id="acfAdd">+ הוסף שדה</button>';fbox.querySelectorAll('.cf-row').forEach(r=>{const i=+r.dataset.i;const li=r.querySelector('.cf-l'),vi=r.querySelector('.cf-v');li.addEventListener('input',()=>{flds[i].l=li.value;});vi.addEventListener('input',()=>{flds[i].v=vi.value;});});fbox.querySelectorAll('.cf-del').forEach(b=>b.onclick=()=>{flds.splice(+b.dataset.i,1);paint();});fbox.querySelector('#acfAdd').onclick=()=>{flds.push({l:'',v:''});paint();const ls=fbox.querySelectorAll('.cf-l');if(ls.length)ls[ls.length-1].focus();};}paint();})();
+  q('#acSave').onclick=()=>{
+    const name=q('#acName').value.trim(),phone=q('#acPhone').value.trim(),email=q('#acEmail').value.trim(),ad=q('#acAddr').value.trim();
+    const cf=flds.filter(f=>(String(f.l||'').trim())||(String(f.v||'').trim()));
+    if(!name&&!phone&&!email&&!ad&&!cf.length){toast('הזן לפחות שדה אחד');return;}
+    const person={name:name||'(ללא שם)',phone:phone,email:email,phones:phone?[phone]:[],emails:email?[email]:[],org:'',msg:'',fav:fav,last:0};
+    PEOPLE.unshift(person);
+    if(ad)setAddr(person,ad);
+    if(cf.length)setFields(person,cf);
+    savePeople();renderList();toast('נוסף איש קשר');sc._back();
+  };
+}
 let _barRAF=0;function _schedBar(){if(_barRAF)return;_barRAF=requestAnimationFrame(()=>{_barRAF=0;updateBar();});}try{new MutationObserver(_schedBar).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});}catch(e){}
 function updateSearchFab(){updateBar();}
 const favEditBtn=document.createElement('button');favEditBtn.className='fav-edit';favEditBtn.id='favEdit';favEditBtn.setAttribute('aria-label','עריכת סדר');favEditBtn.innerHTML=ICON.edit;favEditBtn.onclick=()=>setEdit(!editMode);document.body.appendChild(favEditBtn);
@@ -1793,9 +1838,13 @@ function fViewIds(vf){if(vf==='undecided')return PEOPLE.filter(p=>!FDEC[fKey(p)]
 function openFilter(){
   let vf='undecided',vm='cards',hist=[],introSeen=false,fq='';
   let slCat='all';
-  const SLDEFS=[{k:'all',t:'הכל',f:null},{k:'noname',t:'חסר שם',f:dqNoName},{k:'nophone',t:'חסר טלפון',f:dqNoPhone},{k:'noemail',t:'חסר אימייל',f:dqNoEmail},{k:'badphone',t:'טלפון לא תקין',f:dqBadPhone}];
+  const SVG_ALL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 6a3 3 0 0 1 0 6M21 20a6 6 0 0 0-3.4-5.4"/></svg>';
+  const SVG_NONAME='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3.2"/><path d="M4 20a6 6 0 0 1 12 0"/><path d="M16.5 6.5l4 4M20.5 6.5l-4 4"/></svg>';
+  const SVG_NOPHONE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h3l2 5-2 1a11 11 0 0 0 5 5l1-2 5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/><path d="M2 2l20 20"/></svg>';
+  const SVG_BADPHONE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h3l2 5-2 1a11 11 0 0 0 5 5l1-2 5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/><path d="M19 2.5v4M19 9.5v.01"/></svg>';
+  const SLDEFS=[{k:'all',t:'הכל',f:null,ic:SVG_ALL},{k:'noname',t:'חסר שם',f:dqNoName,ic:SVG_NONAME},{k:'nophone',t:'חסר טלפון',f:dqNoPhone,ic:SVG_NOPHONE},{k:'badphone',t:'טלפון לא תקין',f:dqBadPhone,ic:SVG_BADPHONE}];
   function catMatch(p){const d=SLDEFS.find(x=>x.k===slCat);return !d||!d.f||d.f(p);}
-  function catTabs(){const base=fViewIds(vf);return '<div class="flt-tabs flt-cattabs">'+SLDEFS.map(d=>{const c=d.f?base.filter(d.f).length:base.length;return '<button class="vtab vtab-cat'+(slCat===d.k?' on':'')+'" data-c="'+d.k+'"><b>'+c+'</b><span>'+d.t+'</span></button>';}).join('')+'</div>';}
+  function catTabs(){const base=fViewIds(vf);return '<div class="flt-cattabs">'+SLDEFS.map(d=>{const c=d.f?base.filter(d.f).length:base.length;return '<button class="catchip'+(slCat===d.k?' on':'')+'" data-c="'+d.k+'" aria-label="'+d.t+'" title="'+d.t+'">'+d.ic+'<b>'+c+'</b></button>';}).join('')+'</div>';}
   let selMode=false;const selSet=new Set();
   function fltSelPeople(){return fViewIds(vf).filter(fMatch).filter(catMatch).filter(p=>selSet.has(fKey(p)));}
   function fltExitSel(){selMode=false;selSet.clear();hideSelBar();render();}
@@ -1834,9 +1883,9 @@ function openFilter(){
   }
   function render(){
     pullReset();
-    const ou=sc.querySelector('.flt-undo');if(ou)ou.remove();body.innerHTML=catTabs()+tabs()+'<div id="fltView" class="flt-view"></div>'+searchBarHTML();
-    body.querySelectorAll('.flt-cattabs .vtab').forEach(t=>t.onclick=()=>{slCat=t.dataset.c;render();});
-    body.querySelectorAll('.flt-tabs:not(.flt-cattabs) .vtab').forEach(t=>t.onclick=()=>{vf=t.dataset.f;fq='';render();});
+    const ou=sc.querySelector('.flt-undo');if(ou)ou.remove();body.innerHTML=tabs()+catTabs()+'<div id="fltView" class="flt-view"></div>'+searchBarHTML();
+    body.querySelectorAll('.flt-cattabs .catchip').forEach(t=>t.onclick=()=>{slCat=t.dataset.c;render();});
+    body.querySelectorAll('.flt-tabs .vtab').forEach(t=>t.onclick=()=>{vf=t.dataset.f;fq='';render();});
     body.querySelector('#vtog').onclick=()=>{vm=(vm==='cards')?'list':'cards';render();};
     wireSearch();
     renderView();
@@ -1955,6 +2004,16 @@ function showSelBar(count,actions,onCancel){
   requestAnimationFrame(()=>bar.classList.add('show'));
 }
 function hideSelBar(){const bar=document.getElementById('selBar');document.body.classList.remove('selecting');if(bar){bar.classList.remove('show');setTimeout(()=>{if(bar&&!bar.classList.contains('show'))bar.remove();},280);}_selCancel=null;}
+function attachElasticPull(el){
+  if(!el||el._pullWired)return;el._pullWired=true;
+  let off=0;const max=Math.max(120,Math.min(280,Math.round(window.innerHeight*0.33)));
+  let plY=0,plBase=0,plOn=false,plArmed=false,plVel=0,plLastY=0,plLastT=0,plRAF=0;
+  const setP=v=>{off=Math.max(0,Math.min(max,v));el.style.transform=off?('translateY('+off+'px)'):'';};
+  el.addEventListener('touchstart',e=>{if(plRAF){cancelAnimationFrame(plRAF);plRAF=0;}plArmed=(el.scrollTop<=0||off>0);plOn=false;plY=e.touches[0].clientY;plLastY=plY;plLastT=Date.now();plVel=0;plBase=off;},{passive:true});
+  el.addEventListener('touchmove',e=>{if(!plArmed)return;const cy=e.touches[0].clientY;const dy=cy-plY;if(!plOn){if((dy>4&&el.scrollTop<=0)||off>0){plOn=true;el.style.transition='none';}else{if(dy<-2||el.scrollTop>0)plArmed=false;return;}}const now=Date.now();const dt=(now-plLastT)||16;plVel=(cy-plLastY)/dt*16;plLastY=cy;plLastT=now;const target=plBase+dy;if(target<=0){setP(0);plOn=false;plArmed=false;return;}e.preventDefault();setP(target);},{passive:false});
+  const plEnd=()=>{if(!plOn)return;plOn=false;plArmed=false;let v=plVel;if(plRAF)cancelAnimationFrame(plRAF);const step=()=>{v*=0.95;if(Math.abs(v)<0.4){plRAF=0;return;}const nv=off+v;if(nv<=0){setP(0);plRAF=0;return;}if(nv>=max){setP(max);plRAF=0;return;}setP(nv);plRAF=requestAnimationFrame(step);};plRAF=requestAnimationFrame(step);};
+  el.addEventListener('touchend',plEnd);el.addEventListener('touchcancel',plEnd);
+}
 function openArchive(){
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>ארכיון</h2></div><div class="scr-body" id="arcBody"></div>');sc._reopen=openArchive;
   let aSelMode=false;const aSel=new Set();
@@ -2245,10 +2304,11 @@ function openBirthdays(){
     const list=upcomingBdays();
     if(!list.length){body.innerHTML='<p class="cr-hint" style="text-align:center;margin:18px 0;">עדיין לא הוגדרו ימי הולדת. הוסף תאריך לידה בכרטיס איש קשר.</p>';return;}
     body.innerHTML='<div class="flt-list">'+list.map((o,i)=>{const p=o.p;const soon=o.n<=7;return '<div class="arc-row bd-row" data-i="'+i+'"><span class="li-av">'+escapeHtml(initials(p.name)||'?')+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div><div class="s"'+(soon?' style="color:#ffd27a;"':'')+'>'+fmtBdayDate(o.ds)+' · '+bdayLabel(o.n)+'</div></div><button class="arc-restore bd-cal" data-i="'+i+'">ליומן</button></div>';}).join('')+'</div>';
-    body.querySelectorAll('.bd-cal').forEach(b=>b.onclick=(e)=>{e.stopPropagation();const o=list[+b.dataset.i];addBdayToCal(o.p.name||'',o.ds);});
+    body.querySelectorAll('.bd-cal').forEach(b=>b.onclick=(e)=>{e.stopPropagation();if(navigator.vibrate)navigator.vibrate(10);b.classList.add('bd-cal-hit');setTimeout(()=>b.classList.remove('bd-cal-hit'),320);const o=list[+b.dataset.i];addBdayToCal(o.p.name||'',o.ds);});
     body.querySelectorAll('.bd-row').forEach(rw=>rw.onclick=()=>openContact(list[+rw.dataset.i].p));
   }
   render();
+  attachElasticPull(sc.querySelector('#bdBody'));
 }
 function openHbar(){
   if(document.querySelector('.hbar-backdrop'))return;
