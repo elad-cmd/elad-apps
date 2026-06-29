@@ -195,6 +195,168 @@ class ShareActivity : Activity() {
         return null
     }
 
+    /** מזהה שורת data לפי raw_contact ו-mimetype (לשם/מייל). */
+    private fun dataRowId(rawId: Long, mime: String): Long? {
+        contentResolver.query(
+            ContactsContract.Data.CONTENT_URI, arrayOf(ContactsContract.Data._ID),
+            ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?",
+            arrayOf(rawId.toString(), mime), null
+        )?.use { if (it.moveToFirst()) return it.getLong(0) }
+        return null
+    }
+
+    /** מזהה שורת טלפון שתואמת למספר המקורי (השוואת ספרות), אחרת הטלפון הראשון. */
+    private fun phoneRowId(rawId: Long, origPhone: String): Long? {
+        val target = origPhone.filter { it.isDigit() }
+        var firstId: Long? = null
+        contentResolver.query(
+            ContactsContract.Data.CONTENT_URI,
+            arrayOf(ContactsContract.Data._ID, ContactsContract.CommonDataKinds.Phone.NUMBER),
+            ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?",
+            arrayOf(rawId.toString(), ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE), null
+        )?.use {
+            while (it.moveToNext()) {
+                val id = it.getLong(0)
+                if (firstId == null) firstId = id
+                val num = (it.getString(1) ?: "").filter { c -> c.isDigit() }
+                if (target.isNotEmpty() && (num == target || num.endsWith(target) || target.endsWith(num))) return id
+            }
+        }
+        return firstId
+    }
+
+    /** מזהה שורת אירוע מסוג יום הולדת (Event TYPE_BIRTHDAY). */
+    private fun birthdayRowId(rawId: Long): Long? {
+        contentResolver.query(
+            ContactsContract.Data.CONTENT_URI, arrayOf(ContactsContract.Data._ID),
+            ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=? AND " +
+                ContactsContract.CommonDataKinds.Event.TYPE + "=?",
+            arrayOf(rawId.toString(), ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE,
+                ContactsContract.CommonDataKinds.Event.TYPE_BIRTHDAY.toString()), null
+        )?.use { if (it.moveToFirst()) return it.getLong(0) }
+        return null
+    }
+
+    /**
+     * כותב עריכת איש קשר חזרה למאגר הטלפון. מאתר לפי השם/טלפון המקוריים.
+     * מעדכן שם, טלפון, מייל, כתובת ותאריך לידה; יוצר שורה אם חסרה. מחזיר true בהצלחה.
+     */
+    private fun applyContactUpdate(origName: String, origPhone: String, name: String, phone: String, email: String, address: String, birthday: String): Boolean {
+        val lookupKey = findLookupKey(origName, origPhone) ?: return false
+        val cUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey)
+        var contactId = -1L
+        contentResolver.query(cUri, arrayOf(ContactsContract.Contacts._ID), null, null, null)
+            ?.use { if (it.moveToFirst()) contactId = it.getLong(0) }
+        if (contactId < 0) return false
+        var rawId = -1L
+        contentResolver.query(
+            ContactsContract.RawContacts.CONTENT_URI, arrayOf(ContactsContract.RawContacts._ID),
+            ContactsContract.RawContacts.CONTACT_ID + "=?", arrayOf(contactId.toString()), null
+        )?.use { if (it.moveToFirst()) rawId = it.getLong(0) }
+        if (rawId < 0) return false
+
+        val ops = ArrayList<android.content.ContentProviderOperation>()
+        val DATA = ContactsContract.Data.CONTENT_URI
+
+        if (name.isNotBlank()) {
+            val mime = ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE
+            val rowId = dataRowId(rawId, mime)
+            if (rowId != null) {
+                ops.add(android.content.ContentProviderOperation.newUpdate(DATA)
+                    .withSelection(ContactsContract.Data._ID + "=?", arrayOf(rowId.toString()))
+                    .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name)
+                    .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, null)
+                    .withValue(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME, null)
+                    .withValue(ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME, null)
+                    .withValue(ContactsContract.CommonDataKinds.StructuredName.PREFIX, null)
+                    .withValue(ContactsContract.CommonDataKinds.StructuredName.SUFFIX, null)
+                    .build())
+            } else {
+                ops.add(android.content.ContentProviderOperation.newInsert(DATA)
+                    .withValue(ContactsContract.Data.RAW_CONTACT_ID, rawId)
+                    .withValue(ContactsContract.Data.MIMETYPE, mime)
+                    .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name)
+                    .build())
+            }
+        }
+
+        if (phone.isNotBlank()) {
+            val mime = ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE
+            val rowId = phoneRowId(rawId, origPhone)
+            if (rowId != null) {
+                ops.add(android.content.ContentProviderOperation.newUpdate(DATA)
+                    .withSelection(ContactsContract.Data._ID + "=?", arrayOf(rowId.toString()))
+                    .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phone)
+                    .build())
+            } else {
+                ops.add(android.content.ContentProviderOperation.newInsert(DATA)
+                    .withValue(ContactsContract.Data.RAW_CONTACT_ID, rawId)
+                    .withValue(ContactsContract.Data.MIMETYPE, mime)
+                    .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phone)
+                    .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
+                    .build())
+            }
+        }
+
+        if (email.isNotBlank()) {
+            val mime = ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE
+            val rowId = dataRowId(rawId, mime)
+            if (rowId != null) {
+                ops.add(android.content.ContentProviderOperation.newUpdate(DATA)
+                    .withSelection(ContactsContract.Data._ID + "=?", arrayOf(rowId.toString()))
+                    .withValue(ContactsContract.CommonDataKinds.Email.ADDRESS, email)
+                    .build())
+            } else {
+                ops.add(android.content.ContentProviderOperation.newInsert(DATA)
+                    .withValue(ContactsContract.Data.RAW_CONTACT_ID, rawId)
+                    .withValue(ContactsContract.Data.MIMETYPE, mime)
+                    .withValue(ContactsContract.CommonDataKinds.Email.ADDRESS, email)
+                    .withValue(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_HOME)
+                    .build())
+            }
+        }
+
+        if (address.isNotBlank()) {
+            val mime = ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE
+            val rowId = dataRowId(rawId, mime)
+            if (rowId != null) {
+                ops.add(android.content.ContentProviderOperation.newUpdate(DATA)
+                    .withSelection(ContactsContract.Data._ID + "=?", arrayOf(rowId.toString()))
+                    .withValue(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS, address)
+                    .build())
+            } else {
+                ops.add(android.content.ContentProviderOperation.newInsert(DATA)
+                    .withValue(ContactsContract.Data.RAW_CONTACT_ID, rawId)
+                    .withValue(ContactsContract.Data.MIMETYPE, mime)
+                    .withValue(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS, address)
+                    .withValue(ContactsContract.CommonDataKinds.StructuredPostal.TYPE, ContactsContract.CommonDataKinds.StructuredPostal.TYPE_HOME)
+                    .build())
+            }
+        }
+
+        if (birthday.isNotBlank()) {
+            val mime = ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE
+            val rowId = birthdayRowId(rawId)
+            if (rowId != null) {
+                ops.add(android.content.ContentProviderOperation.newUpdate(DATA)
+                    .withSelection(ContactsContract.Data._ID + "=?", arrayOf(rowId.toString()))
+                    .withValue(ContactsContract.CommonDataKinds.Event.START_DATE, birthday)
+                    .build())
+            } else {
+                ops.add(android.content.ContentProviderOperation.newInsert(DATA)
+                    .withValue(ContactsContract.Data.RAW_CONTACT_ID, rawId)
+                    .withValue(ContactsContract.Data.MIMETYPE, mime)
+                    .withValue(ContactsContract.CommonDataKinds.Event.START_DATE, birthday)
+                    .withValue(ContactsContract.CommonDataKinds.Event.TYPE, ContactsContract.CommonDataKinds.Event.TYPE_BIRTHDAY)
+                    .build())
+            }
+        }
+
+        if (ops.isEmpty()) return true
+        contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
+        return true
+    }
+
     private fun openUri(uri: String) =
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(uri)))
 
@@ -368,6 +530,28 @@ class ShareActivity : Activity() {
         /** מבטל הקלטה פעילה ומשחרר את המיקרופון. */
         @JavascriptInterface
         fun cancelRecording() { synchronized(recLock) { stopAndReleaseRec() } }
+
+        /** עדכון איש קשר במאגר הטלפון (שם/טלפון/מייל). מחזיר true אם נכתב בהצלחה. */
+        @JavascriptInterface
+        fun updateContact(origName: String, origPhone: String, name: String, phone: String, email: String, address: String, birthday: String): Boolean {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                runOnUiThread { requestPermissions(arrayOf(android.Manifest.permission.WRITE_CONTACTS), REQ_WRITE) }
+                return false
+            }
+            return try { applyContactUpdate(origName, origPhone, name, phone, email, address, birthday) } catch (e: Exception) { false }
+        }
+
+        /** מחזיר את טקסט הלוח (להדבקה אוטומטית של מפתח). ריק אם אין. */
+        @JavascriptInterface
+        fun readClipboard(): String {
+            return try {
+                val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = cm.primaryClip
+                if (clip != null && clip.itemCount > 0)
+                    (clip.getItemAt(0).coerceToText(this@ShareActivity)?.toString() ?: "")
+                else ""
+            } catch (e: Exception) { "" }
+        }
 
         @JavascriptInterface fun close() { doExitApp() }
         /** יציאה אמיתית מהאפליקציה — נקרא מכפתור "יציאה" ב-JS. */

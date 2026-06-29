@@ -1419,7 +1419,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.30.0216';
+const APP_VERSION='2026.06.30.0229';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1488,7 +1488,9 @@ function openSettings(){
   const _imp=sheet.querySelector('#cmImport'),_cf=sheet.querySelector('#cmFile');if(_imp&&_cf){_imp.onclick=()=>_cf.click();_cf.onchange=e=>{const f=e.target.files&&e.target.files[0];if(f)loadContactsFile(f);};}
   const _exp=sheet.querySelector('#cmExport');if(_exp)_exp.onclick=()=>exportContacts();
   const _onb=sheet.querySelector('#cmOnboard');if(_onb)_onb.onclick=()=>{closeSheet();try{welcomeEl.classList.remove('hide');}catch(e){}};
-  const _ak=sheet.querySelector('#aiKeyInp'),_aks=sheet.querySelector('#aiKeySave');if(_aks&&_ak)_aks.onclick=()=>{const v=(_ak.value||'').trim();if(!v){toast('הדבק מפתח קודם');return;}const st=sheet.querySelector('#aiStatus');if(st){st.textContent='בודק את המפתח…';st.style.color='rgba(255,255,255,.7)';}_aks.disabled=true;_aks.textContent='בודק…';aiTestKey(v).then(res=>{if(res&&res.ok){try{localStorage.setItem('myshare_aikey',v);}catch(e){}toast('המפתח תקין ונשמר — העוזר החכם פעיל ✓');openSettings();}else{if(st){st.textContent='המפתח לא תקין: '+((res&&res.msg)||'')+' — לא נשמר';st.style.color='#ff9b90';}_aks.disabled=false;_aks.textContent='שמור מפתח';toast('המפתח לא תקין');}});};
+  const _ak=sheet.querySelector('#aiKeyInp'),_aks=sheet.querySelector('#aiKeySave');
+  if(_ak){const _autoPaste=()=>{if((_ak.value||'').trim())return;let t='';try{if(BRIDGE&&typeof BRIDGE.readClipboard==='function')t=BRIDGE.readClipboard()||'';}catch(e){}if(t){_ak.value=t.trim();return;}try{if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(c=>{if(c&&!(_ak.value||'').trim())_ak.value=String(c).trim();}).catch(()=>{});}catch(e){}};_ak.addEventListener('focus',_autoPaste);_ak.addEventListener('click',_autoPaste);}
+  if(_aks&&_ak)_aks.onclick=()=>{const v=(_ak.value||'').trim();if(!v){toast('הדבק מפתח קודם');return;}const st=sheet.querySelector('#aiStatus');if(st){st.textContent='בודק את המפתח…';st.style.color='rgba(255,255,255,.7)';}_aks.disabled=true;_aks.textContent='בודק…';aiTestKey(v).then(res=>{if(res&&res.ok){try{localStorage.setItem('myshare_aikey',v);}catch(e){}toast('המפתח תקין ונשמר — העוזר החכם פעיל ✓');openSettings();}else{if(st){st.textContent='המפתח לא תקין: '+((res&&res.msg)||'')+' — לא נשמר';st.style.color='#ff9b90';}_aks.disabled=false;_aks.textContent='שמור מפתח';toast('המפתח לא תקין');}});};
   const _ake=sheet.querySelector('#aiKeyEye');if(_ake&&_ak)_ake.onclick=()=>{_ak.type=(_ak.type==='password')?'text':'password';};
   const _akcp=sheet.querySelector('#aiKeyCopy');if(_akcp)_akcp.onclick=()=>{const v=aiKey();if(!v){toast('אין מפתח');return;}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(v).then(()=>toast('המפתח הועתק')).catch(()=>toast('לא ניתן להעתיק'));}else toast('לא ניתן להעתיק');};
   const _akc=sheet.querySelector('#aiKeyClear');if(_akc)_akc.onclick=()=>{try{localStorage.removeItem('myshare_aikey');}catch(e){}toast('המפתח נמחק');openSettings();};
@@ -1813,13 +1815,14 @@ function openContact(person,fromSearch){
   const sc=openScreen(html);sc.classList.add('ct-scr');sc._reopen=()=>openContact(person);
   if(fromSearch)sc._back=()=>{closeScreen(sc);resumeSearch();};
   const card=sc.querySelector('.ct-card');
-  card.querySelectorAll('.ct-inp').forEach(inp=>{const k=inp.dataset.key;if(!k)return;inp.value=person[k]||'';const save=()=>{person[k]=inp.value;if(k==='phone')person.phones=inp.value?[inp.value]:[];renderList();savePeople();};inp.addEventListener('input',save);inp.addEventListener('blur',save);if(k==='phone'){inp.addEventListener('click',()=>openNumPad(inp,save));}});
+  const _orig={name:person.name||'',phone:(person.phone||((person.phones&&person.phones[0])||''))||''};
+  card.querySelectorAll('.ct-inp').forEach(inp=>{const k=inp.dataset.key;if(!k)return;inp.value=person[k]||'';const save=()=>{person[k]=inp.value;if(k==='phone')person.phones=inp.value?[inp.value]:[];renderList();savePeople();};const saveSync=()=>{save();nativeUpdateContact(person,_orig);};inp.addEventListener('input',save);inp.addEventListener('blur',saveSync);if(k==='phone'){inp.addEventListener('click',()=>openNumPad(inp,saveSync));}});
   card.querySelectorAll('.ct-act').forEach(b=>{b.onclick=(e)=>{e.stopPropagation();fireAction(b.dataset.act,person);};});
   const fb=card.querySelector('#ctFav');if(fb){if(person.fav)fb.classList.add('on');fb.onclick=()=>{person.fav=!person.fav;fb.classList.toggle('on',!!person.fav);renderList();savePeople();};}
   (function(){const db=sc.querySelector('#ctDel');if(!db)return;let st=0,tmr=0;db.onclick=()=>{if(st===0){st=1;db.classList.add('arm');db.textContent='בטוח? לחץ שוב למחיקה (גם מהטלפון)';if(navigator.vibrate)navigator.vibrate(8);tmr=setTimeout(()=>{st=0;db.classList.remove('arm');db.textContent='מחק איש קשר';},3000);return;}if(tmr)clearTimeout(tmr);nativeDeleteContact(person);savePeople();renderList();if(navigator.vibrate)navigator.vibrate(12);toast('איש הקשר נמחק');closeScreen(sc);};})();
   (function(){const dbox=card.querySelector('#ctDays');if(!dbox)return;function paintDays(){const v=getDays(person);dbox.innerHTML='<div class="days-lbl">ימים פנויים</div><div class="days-row">'+DAY_LET.map((L,i)=>'<button class="dayc'+(v[i]?' on':'')+'" data-d="'+i+'">'+L+'</button>').join('')+'</div>';dbox.querySelectorAll('.dayc').forEach(b=>b.onclick=()=>{toggleDayP(person,+b.dataset.d);if(navigator.vibrate)navigator.vibrate(4);paintDays();renderList();});}paintDays();})();
-  (function(){const ai=card.querySelector('#ctAddr');if(!ai)return;ai.value=getAddr(person);const sv=()=>{setAddr(person,ai.value);renderList();};ai.addEventListener('input',sv);ai.addEventListener('blur',sv);})();
-  (function(){const bi=card.querySelector('#ctBday');if(!bi)return;const MON=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];const fmt=v=>{if(!v)return '';const m=String(v).match(/(\d{4})?-?(\d{2})-(\d{2})/);if(!m)return v;return (+m[3])+' ב'+(MON[+m[2]-1]||m[2])+(m[1]?(' '+m[1]):'');};let cur=getBday(person);bi.value=fmt(cur);bi.addEventListener('click',()=>openBdayWheel(cur,function(val){cur=val;setBday(person,val);bi.value=fmt(val);renderList();}));})();
+  (function(){const ai=card.querySelector('#ctAddr');if(!ai)return;ai.value=getAddr(person);const sv=()=>{setAddr(person,ai.value);renderList();};ai.addEventListener('input',sv);ai.addEventListener('blur',()=>{sv();nativeUpdateContact(person,_orig);});})();
+  (function(){const bi=card.querySelector('#ctBday');if(!bi)return;const MON=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];const fmt=v=>{if(!v)return '';const m=String(v).match(/(\d{4})?-?(\d{2})-(\d{2})/);if(!m)return v;return (+m[3])+' ב'+(MON[+m[2]-1]||m[2])+(m[1]?(' '+m[1]):'');};let cur=getBday(person);bi.value=fmt(cur);bi.addEventListener('click',()=>openBdayWheel(cur,function(val){cur=val;setBday(person,val);bi.value=fmt(val);renderList();nativeUpdateContact(person,_orig);}));})();
   (function(){const fbox=card.querySelector('#ctFields');if(!fbox)return;let arr=getFields(person).map(f=>({l:String(f.l||''),v:String(f.v||'')}));const XS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';function persist(){setFields(person,arr);}function paint(){fbox.innerHTML='<div class="cf-hd">שדות מותאמים</div><div class="cf-list">'+arr.map((f,i)=>'<div class="cf-row" data-i="'+i+'"><input class="ct-inp cf-l" placeholder="תווית" value="'+escapeHtml(f.l)+'"><input class="ct-inp cf-v" placeholder="ערך" value="'+escapeHtml(f.v)+'"><button class="cf-del" data-i="'+i+'" aria-label="הסר">'+XS+'</button></div>').join('')+'</div><button class="cf-add" id="cfAdd">+ הוסף שדה</button>';fbox.querySelectorAll('.cf-row').forEach(r=>{const i=+r.dataset.i;const li=r.querySelector('.cf-l'),vi=r.querySelector('.cf-v');const upd=()=>{arr[i]={l:li.value,v:vi.value};persist();};li.addEventListener('input',upd);vi.addEventListener('input',upd);});fbox.querySelectorAll('.cf-del').forEach(b=>b.onclick=()=>{arr.splice(+b.dataset.i,1);persist();paint();});fbox.querySelector('#cfAdd').onclick=()=>{arr.push({l:'',v:''});paint();const ls=fbox.querySelectorAll('.cf-l');if(ls.length)ls[ls.length-1].focus();};}paint();})();
   function paintCtLists(){const box=sc.querySelector('#ctLists');if(!box)return;const mine=listsOf(person);box.innerHTML='<div class="ct-lists-row">'+mine.map(L=>'<button class="ct-lchip on" data-id="'+L.id+'">'+escapeHtml(L.name)+'</button>').join('')+'<button class="ct-addlist" id="ctAddList" aria-label="הוסף לרשימה">'+ICON.plus+'</button></div>';const ab=box.querySelector('#ctAddList');if(ab)ab.onclick=()=>openListAssign(person,paintCtLists);box.querySelectorAll('.ct-lchip[data-id]').forEach(b=>b.onclick=()=>{const L=(cfg.lists||[]).find(x=>x.id===b.dataset.id);if(!L)return;uiConfirm('להסיר את «'+(person.name||"איש הקשר")+'» מהרשימה «'+L.name+'»?',function(){const i=L.members.indexOf(fKey(person));if(i>=0)L.members.splice(i,1);saveCfg();renderLists();renderList();paintCtLists();});});}
   paintCtLists();
@@ -2149,6 +2152,19 @@ function nativeDeleteContact(p){
   try{if(BRIDGE&&typeof BRIDGE.deleteContact==='function'){BRIDGE.deleteContact(p.name||'',(p.phone||((p.phones&&p.phones[0])||''))||'');}}catch(e){}
   const i=PEOPLE.indexOf(p);if(i>=0)PEOPLE.splice(i,1);
   try{delete FDEC[fKey(p)];}catch(e){}
+}
+function nativeUpdateContact(p,orig){
+  if(!p||!BRIDGE||typeof BRIDGE.updateContact!=='function')return;
+  try{
+    const np=(p.phone||((p.phones&&p.phones[0])||''))||'';
+    const oN=(orig&&orig.name)||p.name||'';
+    const oP=(orig&&orig.phone)||np;
+    const addr=(typeof getAddr==='function'?(getAddr(p)||''):'')||'';
+    let bd=(typeof getBday==='function'?(getBday(p)||''):'')||'';
+    if(bd){const m=String(bd).match(/(\d{4})?-?(\d{2})-(\d{2})/);bd=m?(m[1]?(m[1]+'-'+m[2]+'-'+m[3]):('--'+m[2]+'-'+m[3])):'';}
+    const r=BRIDGE.updateContact(oN,oP,p.name||'',np,p.email||'',addr,bd);
+    if(r&&orig){orig.name=p.name||'';orig.phone=np;}
+  }catch(e){}
 }
 function openArchive(){
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>ארכיון</h2></div><div class="scr-body" id="arcBody"></div>');sc._reopen=openArchive;
