@@ -181,8 +181,8 @@ function render(){
    d.style.left=o.x+'px';d.style.top=o.y+'px';d.style.width=o.w+'px';d.style.height=o.h+'px';d.style.overflow='visible';
    d.innerHTML='<div style="position:absolute;inset:0">'+objInner(o)+'</div><div class="cropframe" style="left:'+cr.l+'px;top:'+cr.t+'px;right:'+cr.r+'px;bottom:'+cr.b+'px">'+cropHTML()+'</div>';
   } else {
-   d.style.left=(o.x+cr.l)+'px';d.style.top=(o.y+cr.t)+'px';d.style.width=(o.w-cr.l-cr.r)+'px';d.style.height=(o.h-cr.t-cr.b)+'px';d.style.overflow='hidden';
-   d.innerHTML='<div style="position:absolute;left:'+(-cr.l)+'px;top:'+(-cr.t)+'px;width:'+o.w+'px;height:'+o.h+'px">'+objInner(o)+'</div>'+handlesHTML();
+   d.style.left=(o.x+cr.l)+'px';d.style.top=(o.y+cr.t)+'px';d.style.width=(o.w-cr.l-cr.r)+'px';d.style.height=(o.h-cr.t-cr.b)+'px';
+   d.innerHTML='<div style="position:absolute;inset:0;overflow:hidden"><div style="position:absolute;left:'+(-cr.l)+'px;top:'+(-cr.t)+'px;width:'+o.w+'px;height:'+o.h+'px">'+objInner(o)+'</div></div>'+handlesHTML();
   }
   stage.appendChild(d);wire(d,o);
  });
