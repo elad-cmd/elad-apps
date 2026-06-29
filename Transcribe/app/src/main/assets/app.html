@@ -174,6 +174,14 @@
   .swatches{display:flex;gap:12px;margin-top:4px}
   .sw{width:46px;height:46px;border-radius:14px;border:3px solid transparent;box-shadow:var(--shCard)}
   .sw.on{border-color:var(--ink)}
+  .acc{margin-top:12px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--page)}
+  .acc summary{padding:12px 14px;font-weight:700;font-size:14px;color:var(--ink);cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between}
+  .acc summary::-webkit-details-marker{display:none}
+  .acc summary::after{content:'⌄';font-size:16px;color:var(--mut);transition:transform .2s}
+  .acc[open] summary::after{transform:rotate(180deg)}
+  .accbody{padding:2px 14px 12px}
+  .setrow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:6px}
+  .setlbl{font-size:14px;color:var(--ink)}
   .homebtn{position:absolute;left:18px;right:18px;bottom:calc(20px + env(safe-area-inset-bottom));background:var(--acc);color:#fff;border:none;border-radius:27px;padding:16px;font-size:16px;font-weight:700;box-shadow:var(--shBtn);display:flex;align-items:center;justify-content:center;gap:8px}
   .homebtn svg{width:20px;height:20px;stroke:#fff}
   .step{background:var(--card);border-radius:16px;box-shadow:var(--shCard);padding:14px;margin-bottom:12px}
@@ -328,25 +336,21 @@
     <div id="keyArea"></div>
     <div class="savemsg" id="saveMsg">המפתח נשמר ✓</div>
     <p class="help-txt">אופציונלי (מצב מתקדם): האפליקציה עובדת בלי מפתח. אם תזין מפתח משלך — התמלול יעבור דרכו במקום דרך השרת. המפתח נשמר רק במכשיר; פעולות עליו דורשות אימות מסך הנעילה.</p>
-    <button class="ghostbtn" id="toHelp">איך משיגים מפתח?</button>
-    <div class="lbl" style="margin-top:18px">גרסה</div>
+    <details class="acc"><summary>איך משיגים מפתח?</summary><div class="accbody">
+      <p class="help-txt" style="font-size:13.5px;margin-bottom:8px">תהליך חד-פעמי של כ-5 דקות. כל אחד פותח מפתח משלו ומשלם רק על מה שהוא מתמלל — בערך 2 אגורות לדקה.</p>
+      <div class="step"><h4>הרשמה <span class="n">1</span></h4><p>היכנסו לאתר ופתחו חשבון — הכי מהיר עם "Continue with Google".</p><div class="lk"><button class="openlink" data-url="https://platform.openai.com/signup">פתח את אתר ההרשמה ←</button></div></div>
+      <div class="step"><h4>אימות <span class="n">2</span></h4><p>מזינים קוד שמגיע לאימייל, ולעיתים גם אימות טלפון.</p></div>
+      <div class="step"><h4>טעינת קרדיט <span class="n">3</span></h4><p>מוסיפים כרטיס וטוענים סכום קטן מראש — מספיק 5 דולר.</p><div class="lk"><button class="openlink" data-url="https://platform.openai.com/settings/organization/billing/overview">פתח את עמוד החיוב ←</button></div></div>
+      <div class="step"><h4>יצירת המפתח <span class="n">4</span></h4><p>לוחצים "Create new secret key" ומעתיקים מיד.</p><div class="lk"><button class="openlink" data-url="https://platform.openai.com/api-keys">פתח את עמוד המפתחות ←</button></div><div class="warnbox">המפתח מוצג פעם אחת בלבד. העתיקו מיד; אם פספסתם — צרו חדש, בחינם.</div></div>
+      <div class="step"><h4>הדבקה כאן <span class="n">5</span></h4><p>חוזרים להגדרות, מדביקים את המפתח ולוחצים "שמור מפתח".</p></div>
+    </div></details>
+    <div class="lbl" style="margin-top:22px">מראה</div>
+    <div class="setrow"><span class="setlbl">פלטת צבעים</span><div id="swatches" class="swatches"></div></div>
+    <div class="lbl" style="margin-top:22px">גרסה</div>
     <div id="verNum" class="help-txt" style="margin:2px 0 0"></div>
     <div id="updStatus" class="verstat"></div>
     <button class="ghostbtn" id="appUpdate" style="display:none;margin-top:6px">עדכן לגרסה האחרונה</button>
-    <button class="save" id="toHomeBtn" style="margin-top:14px">חזור למסך הבית</button>
-  </div>
-  <div class="botbar"><span class="bbspace"></span><div class="bbcenter"></div><button class="bbback" data-back-to="main" aria-label="חזרה"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div>
-</section>
-
-<section id="help" class="screen">
-  <div class="top"><span class="tt">איך משיגים מפתח</span></div>
-  <div class="scrollpad">
-    <p class="help-txt" style="font-size:13.5px;margin-bottom:8px">תהליך חד-פעמי של כ-5 דקות. כל אחד פותח מפתח משלו ומשלם רק על מה שהוא מתמלל — בערך 2 אגורות לדקה.</p>
-    <div class="step"><h4>הרשמה <span class="n">1</span></h4><p>היכנסו לאתר ופתחו חשבון — הכי מהיר עם "Continue with Google".</p><div class="lk"><button class="openlink" data-url="https://platform.openai.com/signup">פתח את אתר ההרשמה ←</button></div></div>
-    <div class="step"><h4>אימות <span class="n">2</span></h4><p>מזינים קוד שמגיע לאימייל, ולעיתים גם אימות טלפון.</p></div>
-    <div class="step"><h4>טעינת קרדיט <span class="n">3</span></h4><p>מוסיפים כרטיס וטוענים סכום קטן מראש — מספיק 5 דולר.</p><div class="lk"><button class="openlink" data-url="https://platform.openai.com/settings/organization/billing/overview">פתח את עמוד החיוב ←</button></div></div>
-    <div class="step"><h4>יצירת המפתח <span class="n">4</span></h4><p>לוחצים "Create new secret key" ומעתיקים מיד.</p><div class="lk"><button class="openlink" data-url="https://platform.openai.com/api-keys">פתח את עמוד המפתחות ←</button></div><div class="warnbox">המפתח מוצג פעם אחת בלבד. העתיקו מיד; אם פספסתם — צרו חדש, בחינם.</div></div>
-    <div class="step"><h4>הדבקה כאן <span class="n">5</span></h4><p>חוזרים להגדרות, מדביקים את המפתח ולוחצים "שמור מפתח".</p></div>
+    <button class="save" id="toHomeBtn" style="margin-top:18px">חזור למסך הבית</button>
   </div>
   <div class="botbar"><span class="bbspace"></span><div class="bbcenter"></div><button class="bbback" data-back-to="main" aria-label="חזרה"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div>
 </section>
@@ -391,9 +395,9 @@
     if(sv===APP_VERSION){ el.textContent='מעודכן לגרסה האחרונה ✓'; el.style.color='#2BD0A0'; if(b)b.style.display='none'; }
     else { el.textContent='עדכון זמין — גרסה '+sv; el.style.color='#F0A23A'; if(b){ b.style.display=''; b.textContent='עדכן לגרסה '+sv; } } }
   function doUpdate(){ if(A&&A.openUrl)A.openUrl(APK_URL); toast('מוריד את הגרסה האחרונה…'); }
-  var screens=['main','recording','history','detail','settings','help','favs','archive','clipboard'];
+  var screens=['main','recording','history','detail','settings','favs','archive','clipboard'];
   var navStack=['main'], curScreen='main';
-  function show(id){ screens.forEach(function(s){document.getElementById(s).classList.toggle('on',s===id);}); curScreen=id; var mf=document.getElementById('menuFab'); if(mf)mf.style.display=(id==='recording')?'none':''; closeHbarSafe(); if(id==='settings'){ try{refreshUpdStatus();}catch(e){} } }
+  function show(id){ screens.forEach(function(s){document.getElementById(s).classList.toggle('on',s===id);}); curScreen=id; var mf=document.getElementById('menuFab'); if(mf)mf.style.display=(id==='recording')?'none':''; closeHbarSafe(); if(id==='settings'){ try{renderSwatches();refreshUpdStatus();}catch(e){} } }
   function navTo(id){ if(selMode){exitSel();rerenderSel();} if(navStack[navStack.length-1]!==id) navStack.push(id); show(id); }
   function navHome(){ if(selMode){exitSel();rerenderSel();} navStack=['main']; show('main'); }
   function doBack(){
@@ -682,7 +686,6 @@
     if(v.length<10||v.slice(0,2)!=='sk'){ toast('הדבק מפתח תקין שמתחיל ב-sk'); return; }
     if(A&&A.setKey)A.setKey(v); keyEditing=false; renderKey();
     var m=document.getElementById('saveMsg'); m.classList.remove('show'); void m.offsetWidth; m.classList.add('show'); }
-  document.getElementById('toHelp').addEventListener('click',function(){ navTo('help'); });
   document.getElementById('toHomeBtn').addEventListener('click',function(){ navHome(); });
   (function(){ var t=document.querySelector('#main .head .t'); if(!t)return; var lp=null;
     t.addEventListener('touchstart',function(){ lp=setTimeout(function(){ renderKey(); renderSwatches(); navTo('settings'); },700); },{passive:true});
@@ -814,9 +817,7 @@
       {ic:ICONM.archive,label:'ארכיון',fn:function(){exitSel();renderArc();renderArcChip();navTo('archive');}},
       {ic:ICONM.clip,label:'לוח',fn:function(){renderClips();navTo('clipboard');}},
       {ic:ICONM.gear,label:'הגדרות',fn:function(){renderKey();renderSwatches();navTo('settings');}},
-      {ic:ICONM.palette,label:'פלטת צבעים',pal:true},
-      {ic:(curHand()==='left'?ICONM.phoneL:ICONM.phoneR),label:(curHand()==='left'?'יד ימין':'יד שמאל'),hand:1},
-      {ic:ICONM.help,label:'עזרה',fn:function(){navTo('help');}}
+      {ic:(curHand()==='left'?ICONM.phoneL:ICONM.phoneR),label:(curHand()==='left'?'יד ימין':'יד שמאל'),hand:1}
     ];
     var n=items.length, lh=(curHand()==='left');
     var posProp=lh?'left':'right', dirX=lh?-1:1;
@@ -854,17 +855,18 @@
         var _up=function(){dr=false;};bd.addEventListener('pointerup',_up);bd.addEventListener('pointercancel',_up);
         var muted=false;try{muted=localStorage.getItem('tx_menuhint')==='1';}catch(e){}
         if(!muted){
-          var FINGER='<svg viewBox="0 0 24 24" fill="currentColor" width="34" height="34"><path d="M9 11.5V5a1.5 1.5 0 0 1 3 0v5.5h1V6.5a1.5 1.5 0 0 1 3 0v4h1V8.5a1.5 1.5 0 0 1 3 0v6a6 6 0 0 1-6 6h-2a4 4 0 0 1-3.2-1.6L6 15s-.9-1.2.3-2.1c1.1-.8 2.2.2 2.2.2z"/></svg>';
+          var FINGER='<svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-4 0"/><path d="M14 10V9a2 2 0 0 0-4 0v1"/><path d="M10 9.5V4a2 2 0 0 0-4 0v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>';
           var AR_UR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" width="30" height="30"><path d="M7 17L17 7M9 7h8v8"/></svg>';
           var AR_DL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" width="30" height="30"><path d="M17 7L7 17M15 17H7V9"/></svg>';
           var AR_UL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" width="30" height="30"><path d="M17 17L7 7M15 7H7v8"/></svg>';
           var AR_DR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" width="30" height="30"><path d="M7 7l10 10M9 17h8V9"/></svg>';
           var HW=130;
-          var h=document.createElement('div');h.className='mh-hint';h.style.top='118px';h.style.width=HW+'px';h.style.height=HW+'px';if(lh){h.style.right='18px';}else{h.style.left='18px';}
+          var hintTop=Math.round(window.innerHeight*0.40);
+          var h=document.createElement('div');h.className='mh-hint';h.style.top=hintTop+'px';h.style.width=HW+'px';h.style.height=HW+'px';if(lh){h.style.right='18px';}else{h.style.left='18px';}
           var a1=lh?AR_UL:AR_UR, a2=lh?AR_DR:AR_DL, rot=lh?45:-45, anim=lh?'mhL':'mhR';
           h.innerHTML='<span class="mh-ar" style="top:4px;'+(lh?'left:4px;':'right:4px;')+'">'+a1+'</span><span class="mh-ar" style="bottom:4px;'+(lh?'right:4px;':'left:4px;')+'">'+a2+'</span><span class="mh-hand" style="animation:'+anim+' 1.8s ease-in-out infinite;"><span style="display:inline-block;transform:rotate('+rot+'deg);">'+FINGER+'</span></span>';
           bd.appendChild(h);
-          var chk=document.createElement('label');chk.className='mh-chk';chk.style.top=(118+HW+8)+'px';if(lh){chk.style.right='18px';}else{chk.style.left='18px';}chk.innerHTML='<input type="checkbox"> אל תציג יותר';
+          var chk=document.createElement('label');chk.className='mh-chk';chk.style.top=(hintTop+HW+8)+'px';if(lh){chk.style.right='18px';}else{chk.style.left='18px';}chk.innerHTML='<input type="checkbox"> אל תציג יותר';
           chk.querySelector('input').onchange=function(ev){if(ev.target.checked){try{localStorage.setItem('tx_menuhint','1');}catch(_){}if(h.parentNode)h.remove();if(chk.parentNode)chk.remove();}};
           bd.appendChild(chk);
         }
