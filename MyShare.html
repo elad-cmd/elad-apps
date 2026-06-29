@@ -1368,7 +1368,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.29.1656';
+const APP_VERSION='2026.06.29.1719';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2063,31 +2063,46 @@ function attachElasticPull(el){
   const plEnd=()=>{if(!plOn)return;plOn=false;plArmed=false;let v=plVel;if(plRAF)cancelAnimationFrame(plRAF);const step=()=>{v*=0.95;if(Math.abs(v)<0.4){plRAF=0;return;}const nv=off+v;if(nv<=0){setP(0);plRAF=0;return;}if(nv>=max){setP(max);plRAF=0;return;}setP(nv);plRAF=requestAnimationFrame(step);};plRAF=requestAnimationFrame(step);};
   el.addEventListener('touchend',plEnd);el.addEventListener('touchcancel',plEnd);
 }
+function nativeDeleteContact(p){
+  if(!p)return;
+  try{if(BRIDGE&&typeof BRIDGE.deleteContact==='function'){BRIDGE.deleteContact(p.name||'',(p.phone||((p.phones&&p.phones[0])||''))||'');}}catch(e){}
+  const i=PEOPLE.indexOf(p);if(i>=0)PEOPLE.splice(i,1);
+  try{delete FDEC[fKey(p)];}catch(e){}
+}
 function openArchive(){
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>ארכיון</h2></div><div class="scr-body" id="arcBody"></div>');sc._reopen=openArchive;
   let aSelMode=false;const aSel=new Set();
   function aArch(){return PEOPLE.filter(p=>FDEC[fKey(p)]==='delete');}
   function aExit(){aSelMode=false;aSel.clear();hideSelBar();render();}
   function aRestoreAll(){const ppl=aArch().filter(p=>aSel.has(fKey(p)));ppl.forEach(p=>{delete FDEC[fKey(p)];});saveDec();aSelMode=false;aSel.clear();hideSelBar();renderList();render();toast('שוחזרו '+ppl.length);}
-  function aDeleteAll(){const ppl=aArch().filter(p=>aSel.has(fKey(p)));if(!ppl.length){aExit();return;}uiConfirm('למחוק סופית '+ppl.length+' אנשי קשר? פעולה בלתי הפיכה.',()=>{ppl.forEach(p=>{const i=PEOPLE.indexOf(p);if(i>=0)PEOPLE.splice(i,1);delete FDEC[fKey(p)];});saveDec();savePeople();aSelMode=false;aSel.clear();hideSelBar();renderList();render();toast('נמחקו '+ppl.length);});}
+  function aDeleteAll(){const ppl=aArch().filter(p=>aSel.has(fKey(p)));if(!ppl.length){aExit();return;}uiConfirm('למחוק סופית '+ppl.length+' אנשי קשר? יימחקו גם מהטלפון/Google.',()=>{ppl.forEach(p=>nativeDeleteContact(p));saveDec();savePeople();aSelMode=false;aSel.clear();hideSelBar();renderList();render();toast('נמחקו '+ppl.length);});}
   function aSelUpdate(){if(!aSelMode)return;if(!aSel.size){aExit();return;}showSelBar(aSel.size,[{html:'שחזר הכל',cls:'ghost',fn:aRestoreAll},{html:'מחק הכל',cls:'danger',fn:aDeleteAll}],aExit);}
   function render(){
     const arch=aArch();
     const body=sc.querySelector('#arcBody');if(!body)return;
     if(!arch.length){body.innerHTML='<div class="dup-empty">הארכיון ריק</div>';if(aSelMode)aExit();return;}
-    body.innerHTML='<p class="cr-hint" style="text-align:right;margin:0 0 12px;">אנשי קשר בארכיון אינם מוצגים ברשימה (ולא נמחקים מהטלפון). לחיצה ארוכה לבחירה מרובה · אפשר לשחזר או לנקות סופית.</p><div class="flt-list">'+arch.map((p,i)=>{const det=personDetails(p);return '<div class="arc-row'+(aSel.has(fKey(p))?' sel':'')+'" data-i="'+i+'"><span class="li-av">'+escapeHtml(initials(p.name))+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(det.length?'<div class="s">'+escapeHtml(det.join(' · '))+'</div>':'')+'</div><button class="arc-restore" data-i="'+i+'">שחזר</button></div>';}).join('')+'</div><button class="mp-confirm" id="arcClear" style="background:#d23b30;margin-top:18px;">נקה ארכיון סופית</button>';
-    body.querySelectorAll('.arc-restore').forEach(b=>b.onclick=(e)=>{e.stopPropagation();const p=arch[+b.dataset.i];if(aSelMode){const k=fKey(p);if(aSel.has(k))aSel.delete(k);else aSel.add(k);b.closest('.arc-row').classList.toggle('sel',aSel.has(k));aSelUpdate();return;}delete FDEC[fKey(p)];saveDec();renderList();render();toast('שוחזר');});
-    body.querySelectorAll('.arc-row').forEach(rw=>{
-      const p=arch[+rw.dataset.i];let lpT=0,sx=0,sy=0,moved=false;
+    const TRASH='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>';
+    body.innerHTML='<p class="cr-hint" style="text-align:right;margin:0 0 12px;">בארכיון אנשי הקשר מוסתרים מ-Sweep אך נשארים בטלפון. החלקה ימינה — שחזור · החלקה שמאלה — מחיקה סופית (גם מהטלפון/Google) · לחיצה ארוכה לבחירה מרובה.</p><div class="flt-list">'+arch.map((p,i)=>{const det=personDetails(p);return '<div class="flt-row arc-row2'+(aSel.has(fKey(p))?' sel':'')+'" data-i="'+i+'"><div class="flt-row-bg"></div><div class="flt-row-fg"><span class="li-av">'+escapeHtml(initials(p.name))+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div>'+(det.length?'<div class="s">'+escapeHtml(det.join(' · '))+'</div>':'')+'</div><button class="arc-restore" data-i="'+i+'">שחזר</button></div></div>';}).join('')+'</div><button class="mp-confirm" id="arcClear" style="background:#d23b30;margin-top:18px;">מחק את כל הארכיון מהטלפון</button>';
+    function rowOutA(rw,dir){const fg=rw.querySelector('.flt-row-fg');fg.style.transition='transform .25s';fg.style.transform='translateX('+(dir>0?'115%':'-115%')+')';if(navigator.vibrate)navigator.vibrate(8);setTimeout(render,260);}
+    body.querySelectorAll('.arc-restore').forEach(b=>b.onclick=(e)=>{e.stopPropagation();const p=arch[+b.dataset.i];if(aSelMode){const k=fKey(p);if(aSel.has(k))aSel.delete(k);else aSel.add(k);b.closest('.flt-row').classList.toggle('sel',aSel.has(k));aSelUpdate();return;}delete FDEC[fKey(p)];saveDec();renderList();render();toast('שוחזר');});
+    body.querySelectorAll('.flt-row.arc-row2').forEach(rw=>{
+      const fg=rw.querySelector('.flt-row-fg');const bg=rw.querySelector('.flt-row-bg');const p=arch[+rw.dataset.i];
+      let sx=0,sy=0,dx=0,dy=0,drag=false,moved=false,d0=0,lpT=0;
       const clearLP=()=>{if(lpT){clearTimeout(lpT);lpT=0;}};
       const toggle=()=>{const k=fKey(p);if(aSel.has(k)){aSel.delete(k);rw.classList.remove('sel');}else{aSel.add(k);rw.classList.add('sel');}aSelUpdate();};
-      rw.addEventListener('pointerdown',e=>{if(e.target.closest('.arc-restore'))return;sx=e.clientX;sy=e.clientY;moved=false;clearLP();lpT=setTimeout(()=>{lpT=0;if(!aSelMode)aSelMode=true;aSel.add(fKey(p));rw.classList.add('sel');if(navigator.vibrate)navigator.vibrate(15);aSelUpdate();},420);});
-      rw.addEventListener('pointermove',e=>{if(Math.abs(e.clientX-sx)>8||Math.abs(e.clientY-sy)>8){moved=true;clearLP();}});
-      rw.addEventListener('pointerup',e=>{if(e.target.closest('.arc-restore'))return;clearLP();if(aSelMode&&!moved){e.stopPropagation();toggle();}});
-      rw.addEventListener('pointercancel',clearLP);
+      const setDir=(sg)=>{if(sg===d0)return;d0=sg;if(sg>0){bg.className='flt-row-bg keepbg';bg.innerHTML=ICON.check;}else if(sg<0){bg.className='flt-row-bg delbg';bg.innerHTML=TRASH;}else{bg.className='flt-row-bg';bg.innerHTML='';}};
+      const settle=()=>{fg.style.transition='transform .2s';fg.style.transform='';setDir(0);};
+      fg.addEventListener('pointerdown',e=>{if(e.target.closest('.arc-restore'))return;drag=true;moved=false;sx=e.clientX;sy=e.clientY;dx=0;dy=0;d0=0;fg.style.transition='none';clearLP();lpT=setTimeout(()=>{lpT=0;drag=false;settle();if(!aSelMode)aSelMode=true;aSel.add(fKey(p));rw.classList.add('sel');if(navigator.vibrate)navigator.vibrate(15);aSelUpdate();},420);});
+      fg.addEventListener('pointermove',e=>{if(!drag&&!lpT)return;dx=e.clientX-sx;dy=e.clientY-sy;if(Math.abs(dx)>6||Math.abs(dy)>6)clearLP();if(!drag)return;if(!moved&&Math.abs(dy)>8&&Math.abs(dy)>=Math.abs(dx)){drag=false;settle();return;}if(Math.abs(dx)>6)moved=true;if(moved){setDir(Math.sign(dx));fg.style.transform='translateX('+dx+'px)';}});
+      fg.addEventListener('pointerup',e=>{clearLP();if(!drag)return;drag=false;
+        if(aSelMode){if(!moved&&Math.abs(dy)<8){settle();toggle();}else settle();return;}
+        if(dx>80){delete FDEC[fKey(p)];saveDec();renderList();rowOutA(rw,1);toast('שוחזר');}
+        else if(dx<-80){settle();uiConfirm('למחוק סופית את «'+(p.name||'איש הקשר')+'»? יימחק גם מהטלפון/Google.',()=>{nativeDeleteContact(p);saveDec();savePeople();renderList();render();toast('נמחק');});}
+        else settle();});
+      fg.addEventListener('pointercancel',()=>{clearLP();if(!drag)return;drag=false;settle();});
     });
     const cb=body.querySelector('#arcClear');let st=1;
-    if(cb)cb.onclick=()=>{if(st===1){st=2;cb.textContent='בטוח? פעולה בלתי הפיכה';}else{arch.forEach(p=>{const i=PEOPLE.indexOf(p);if(i>=0)PEOPLE.splice(i,1);delete FDEC[fKey(p)];});saveDec();savePeople();renderList();render();toast('הארכיון נוקה');}};
+    if(cb)cb.onclick=()=>{if(st===1){st=2;cb.textContent='בטוח? יימחקו מהטלפון לצמיתות';}else{aArch().slice().forEach(p=>nativeDeleteContact(p));saveDec();savePeople();renderList();render();toast('הארכיון נמחק מהטלפון');}};
     if(aSelMode)aSelUpdate();
   }
   render();

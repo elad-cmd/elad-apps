@@ -32,6 +32,7 @@ class ShareActivity : Activity() {
     private var sharedText: String = ""
     private val REQ_CONTACTS = 101
     private val REQ_FILE = 201
+    private val REQ_WRITE = 301
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -139,6 +140,26 @@ class ShareActivity : Activity() {
         return arr.toString()
     }
 
+    /** מאתר LOOKUP_KEY של איש קשר — קודם לפי טלפון (אמין), אחרת לפי שם תצוגה. */
+    private fun findLookupKey(name: String, phone: String): String? {
+        if (phone.isNotBlank()) {
+            val uri = Uri.withAppendedPath(
+                ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone)
+            )
+            contentResolver.query(
+                uri, arrayOf(ContactsContract.PhoneLookup.LOOKUP_KEY), null, null, null
+            )?.use { if (it.moveToFirst()) return it.getString(0) }
+        }
+        if (name.isNotBlank()) {
+            contentResolver.query(
+                ContactsContract.Contacts.CONTENT_URI,
+                arrayOf(ContactsContract.Contacts.LOOKUP_KEY),
+                ContactsContract.Contacts.DISPLAY_NAME + "=?", arrayOf(name), null
+            )?.use { if (it.moveToFirst()) return it.getString(0) }
+        }
+        return null
+    }
+
     private fun openUri(uri: String) =
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(uri)))
 
@@ -220,6 +241,24 @@ class ShareActivity : Activity() {
                 } catch (e: Exception) {
                     Toast.makeText(this@ShareActivity, "לא נמצאה אפליקציית וואטסאפ", Toast.LENGTH_SHORT).show()
                 }
+            }
+        }
+
+        /** מחיקה אמיתית של איש קשר מהמכשיר (מסונכרן ל-Google). מאתר לפי טלפון, אחרת לפי שם. */
+        @JavascriptInterface
+        fun deleteContact(name: String, phone: String) {
+            runOnUiThread {
+                try {
+                    if (checkSelfPermission(android.Manifest.permission.WRITE_CONTACTS)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        requestPermissions(arrayOf(android.Manifest.permission.WRITE_CONTACTS), REQ_WRITE)
+                        Toast.makeText(this@ShareActivity, "אשר/י הרשאת עריכת אנשי קשר ונסה/י שוב", Toast.LENGTH_LONG).show()
+                        return@runOnUiThread
+                    }
+                    val lookupKey = findLookupKey(name, phone) ?: return@runOnUiThread
+                    val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey)
+                    contentResolver.delete(uri, null, null)
+                } catch (e: Exception) {}
             }
         }
 
