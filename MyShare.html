@@ -315,6 +315,9 @@
   .wel-upload{background:rgba(255,255,255,.14);color:#fff;}
   .wel-install{background:var(--tq-deep);color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 12px 28px -10px rgba(0,194,168,.5);}
   .wel-install svg{width:20px;height:20px;}
+  .wel-inst-hint{font-size:12px;line-height:1.5;color:rgba(255,255,255,.72);text-align:center;margin:-2px 4px 6px;}
+  .cm-btn{padding:8px 16px;border:1px solid rgba(255,255,255,.28);border-radius:18px;background:rgba(255,255,255,.07);color:#fff;font:inherit;font-weight:600;font-size:13px;cursor:pointer;}
+  .cm-btn:active{background:rgba(255,255,255,.16);}
   .home{position:fixed;inset:0;}
   #azbar{position:absolute;z-index:30;top:96px;bottom:120px;width:20px;display:none;flex-direction:column;align-items:center;justify-content:space-around;padding:6px 0;touch-action:none;}
   #azbar.show{display:flex;}
@@ -660,6 +663,7 @@
     <p class="wel-sub">איך מתחילים? אפשר לסנכרן את אנשי הקשר שלך מ‑Google, או לטעון קובץ אנשי קשר.</p>
     <button class="wel-btn wel-google" id="welGoogle">סנכרון מ‑Google</button>
     <button class="wel-btn wel-install" id="welInstall" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 21h14"/></svg>התקן את האפליקציה</button>
+    <div class="wel-inst-hint" id="welInstHint" style="display:none;">(יש להמתין להודעת המערכת שההתקנה הסתיימה בראש המסך — ורק אז ללחוץ "פתח")</div>
     <button class="wel-btn wel-upload" id="welUpload">טען קובץ אנשי קשר</button>
     <input type="file" id="welFile" accept=".csv,.vcf,text/csv,text/vcard" style="display:none">
   </div></div>
@@ -1368,7 +1372,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.29.1811';
+const APP_VERSION='2026.06.29.1839';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1389,6 +1393,25 @@ function doUpdate(){
 }
 (function(){try{const t=localStorage.getItem('myshare_updto');if(t!=null){localStorage.removeItem('myshare_updto');setTimeout(()=>{if(typeof toast==='function')toast('עודכן לגרסה '+APP_VERSION+' ✓');},900);}}catch(e){}})();
 (function(){fetchServerVersion().then(function(sv){if(!sv||sv===APP_VERSION)return;try{if(sessionStorage.getItem('myshare_autoupd')===sv)return;sessionStorage.setItem('myshare_autoupd',sv);}catch(e){}try{localStorage.setItem('myshare_updto',sv);}catch(e){}try{const base=location.href.split('#')[0].split('?')[0];location.replace(base+'?v='+Date.now());}catch(e){try{location.reload();}catch(_){}}}).catch(function(){});})();
+function exportContacts(){
+  try{
+    const esc=s=>String(s||'').replace(/([,;\\])/g,'\\$1').replace(/\r?\n/g,'\\n');
+    let v='';
+    PEOPLE.filter(p=>FDEC[fKey(p)]!=='delete').forEach(p=>{
+      v+='BEGIN:VCARD\r\nVERSION:3.0\r\nFN:'+esc(p.name||'')+'\r\n';
+      const phs=(p.phones&&p.phones.length)?p.phones:(p.phone?[p.phone]:[]);phs.filter(Boolean).forEach(ph=>{v+='TEL:'+esc(ph)+'\r\n';});
+      const ems=(p.emails&&p.emails.length)?p.emails:(p.email?[p.email]:[]);ems.filter(Boolean).forEach(em=>{v+='EMAIL:'+esc(em)+'\r\n';});
+      if(p.org)v+='ORG:'+esc(p.org)+'\r\n';
+      v+='END:VCARD\r\n';
+    });
+    if(!v){toast('אין אנשי קשר לייצוא');return;}
+    try{const file=new File([v],'sweep-contacts.vcf',{type:'text/vcard'});if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:'אנשי קשר'}).catch(()=>{});return;}}catch(e){}
+    const blob=new Blob([v],{type:'text/vcard'});const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='sweep-contacts.vcf';document.body.appendChild(a);a.click();
+    setTimeout(()=>{try{document.body.removeChild(a);}catch(e){}URL.revokeObjectURL(url);},1000);
+    toast('יוצא קובץ אנשי קשר');
+  }catch(e){toast('שגיאה בייצוא');}
+}
 function openSettings(){
   const coins=cfg.share.map((id,i)=>{
     const app=byId(id);
@@ -1403,6 +1426,10 @@ function openSettings(){
     DIV+
     `<div style="${SECH}">גרסה ועדכון</div><div style="text-align:center;font-size:16px;font-weight:700;color:#fff;letter-spacing:.3px;">גרסה ${APP_VERSION}</div><div id="updStatus" style="text-align:center;font-size:13px;font-weight:700;margin:4px 0 2px;min-height:17px;"></div><div style="text-align:center;width:100%;margin-top:10px;"><button id="appUpdate" style="display:inline-block;padding:7px 18px;border:1px solid rgba(255,255,255,.28);border-radius:18px;background:rgba(255,255,255,.07);color:#fff;font:inherit;font-weight:600;font-size:13px;opacity:.8;cursor:pointer;">עדכן אפליקציה לגרסה האחרונה</button></div>`+
     DIV+
+    `<div style="${SECH}">ניהול אנשי קשר</div><div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;"><button class="cm-btn" id="cmImport">ייבוא מקובץ</button><button class="cm-btn" id="cmExport">ייצוא לקובץ</button><button class="cm-btn" id="cmOnboard">מסך טעינת אנשי קשר</button></div><input type="file" id="cmFile" accept=".csv,.vcf,text/csv,text/vcard" style="display:none"><p class="cr-hint" style="margin:8px 0 0;opacity:.6;font-size:11.5px;">ייבוא/ייצוא קובץ vCard או CSV. בנייטיב אנשי הקשר נטענים מהטלפון אוטומטית.</p>`+
+    DIV+
+    `<div style="${SECH}">עוזר קולי חכם</div><div style="display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;"><input id="aiKeyInp" type="password" placeholder="מפתח OpenAI" value="${aiKey()?'••••••••••':''}" style="flex:1;min-width:0;max-width:230px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:9px 12px;color:#fff;font:inherit;font-size:13px;text-align:left;direction:ltr;"><button class="cm-btn" id="aiKeySave">שמור</button>${aiKey()?'<button class="cm-btn" id="aiKeyClear">מחק</button>':''}</div><p class="cr-hint" style="margin:8px 0 0;opacity:.6;font-size:11.5px;">הדבק את מפתח ה-OpenAI הקיים שלך כדי שהעוזר הקולי יבין שפה חופשית. בלי מפתח — פקודות בסיסיות בלבד.</p>`+
+    DIV+
     `<div style="${SECH};opacity:.42;">גיבוי ושחזור</div><div class="bk-row" style="display:flex;gap:12px;justify-content:center;margin:4px 0 4px;"><button id="bkSave" style="padding:6px 16px;border:1px solid rgba(255,255,255,.28);border-radius:18px;background:rgba(255,255,255,.05);color:#fff;font:inherit;font-weight:600;font-size:12.5px;opacity:.62;cursor:pointer;">גיבוי</button><button id="bkLoad" style="padding:6px 16px;border:1px solid rgba(255,255,255,.28);border-radius:18px;background:rgba(255,255,255,.05);color:#fff;font:inherit;font-weight:600;font-size:12.5px;opacity:.62;cursor:pointer;">שחזור</button></div><p class="cr-hint" style="margin:6px 0 0;opacity:.55;font-size:11.5px;">גיבוי/שחזור של רשימות, מועדפים, ארכיון והגדרות. אנשי הקשר עצמם נקראים מהטלפון.</p><div style="height:40px;"></div>`);
   ovl.classList.add('bare');
   const xb=sheet.querySelector('.sheet-x');if(xb)xb.onclick=closeSheet;
@@ -1411,6 +1438,11 @@ function openSettings(){
   const bs=sheet.querySelector('#bkSave');if(bs)bs.onclick=doBackup;
   const bl=sheet.querySelector('#bkLoad');if(bl)bl.onclick=doRestore;
   const ub=sheet.querySelector('#appUpdate');if(ub)ub.onclick=doUpdate;
+  const _imp=sheet.querySelector('#cmImport'),_cf=sheet.querySelector('#cmFile');if(_imp&&_cf){_imp.onclick=()=>_cf.click();_cf.onchange=e=>{const f=e.target.files&&e.target.files[0];if(f)loadContactsFile(f);};}
+  const _exp=sheet.querySelector('#cmExport');if(_exp)_exp.onclick=()=>exportContacts();
+  const _onb=sheet.querySelector('#cmOnboard');if(_onb)_onb.onclick=()=>{closeSheet();try{welcomeEl.classList.remove('hide');}catch(e){}};
+  const _ak=sheet.querySelector('#aiKeyInp'),_aks=sheet.querySelector('#aiKeySave');if(_aks&&_ak)_aks.onclick=()=>{const v=(_ak.value||'').trim();if(!v||/^[•]+$/.test(v)){toast('הדבק מפתח');return;}try{localStorage.setItem('myshare_aikey',v);}catch(e){}toast('נשמר — העוזר הקולי החכם פעיל');openSettings();};
+  const _akc=sheet.querySelector('#aiKeyClear');if(_akc)_akc.onclick=()=>{try{localStorage.removeItem('myshare_aikey');}catch(e){}toast('המפתח נמחק');openSettings();};
   sheet.querySelectorAll('#setSwatches .sw').forEach(b=>b.onclick=()=>{cfg.palette=+b.dataset.i;applyPalette(cfg.palette);saveCfg();sheet.querySelectorAll('#setSwatches .sw').forEach(x=>x.classList.toggle('on',(+x.dataset.i)===cfg.palette));});
   refreshUpdStatus();
 }
@@ -1616,10 +1648,9 @@ let exitDlgOpen=false,allowExit=false;
 function doExit(){
   try{if(BRIDGE){if(typeof BRIDGE.exitApp==='function'){BRIDGE.exitApp();return;}if(typeof BRIDGE.close==='function'){BRIDGE.close();return;}if(typeof BRIDGE.exit==='function'){BRIDGE.exit();return;}if(typeof BRIDGE.finish==='function'){BRIDGE.finish();return;}}}catch(e){}
   allowExit=true;
+  if(BRIDGE&&/android/i.test(navigator.userAgent)){try{location.href='intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.HOME;end';return;}catch(e){}}
   try{window.close();}catch(e){}
-  if(/android/i.test(navigator.userAgent)){try{location.href='intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.HOME;end';return;}catch(e){}}
-  try{history.go(-(history.length>1?history.length-1:1));}catch(e){}
-  setTimeout(()=>{allowExit=false;},1200);
+  setTimeout(()=>{allowExit=false;if(!BRIDGE){try{toast('בדפדפן אי-אפשר לסגור כרטיסייה — סגור/י ידנית. ליציאה אמיתית התקן/י את האפליקציה.');}catch(e){}}},500);
 }
 function openExitConfirm(){
   if(exitDlgOpen)return;exitDlgOpen=true;
@@ -2510,13 +2541,15 @@ function openApp(){
   try{window.location.href='intent://open#Intent;package=com.sweep;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;S.browser_fallback_url='+encodeURIComponent('https://elad-cmd.github.io/elad-apps/MyShare.html')+';end';}catch(e){}
 }
 function render(){
-  if(standalone()){installBtn.classList.remove('show');if(welInstall)welInstall.style.display='none';return;}
+  var _hint=document.getElementById('welInstHint');
+  if(standalone()){installBtn.classList.remove('show');if(welInstall)welInstall.style.display='none';if(_hint)_hint.style.display='none';return;}
   var mode=installed?'open':((deferredPrompt||ios)?'install':null);
-  if(!mode){installBtn.classList.remove('show');if(welInstall)welInstall.style.display='none';return;}
+  if(!mode){installBtn.classList.remove('show');if(welInstall)welInstall.style.display='none';if(_hint)_hint.style.display='none';return;}
   var isOpen=mode==='open';var icon=isOpen?ICN_OPEN:ICN_INSTALL;
   installBtn.innerHTML=icon+'<span>'+(isOpen?'פתח':'התקן')+'</span>';
   installBtn.onclick=isOpen?openApp:doInstall;installBtn.classList.add('show');
   if(welInstall){welInstall.innerHTML=icon+(isOpen?'פתח את האפליקציה':'התקן את האפליקציה');welInstall.onclick=isOpen?openApp:doInstall;welInstall.style.display='';}
+  if(_hint)_hint.style.display=(welInstall&&welInstall.style.display!=='none')?'':'none';
 }
 window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;installed=false;try{localStorage.removeItem('myshare_installed');}catch(e){}render();});
 window.addEventListener('appinstalled',function(){installed=true;deferredPrompt=null;try{localStorage.setItem('myshare_installed','1');}catch(e){}render();});
@@ -2557,6 +2590,37 @@ function handleVoice(txt){const t=(txt||'').trim();if(!t){toast('לא שמעתי
   if(/(שלח לרשימה|רשימת|רשימה)/.test(t)){const q=voiceAfter(t,['שלח לרשימה','רשימת','רשימה']);const L=(cfg.lists||[]).find(x=>String(x.name).indexOf(q)>=0);if(L){openSendList(L.id);}else toast('לא מצאתי רשימה "'+q+'"');return;}
   openSearch();setTimeout(()=>{try{searchInput.value=t;renderSearch(t);if(typeof updSrchClear==='function')updSrchClear();}catch(e){}},140);
 }
+function aiKey(){try{return localStorage.getItem('myshare_aikey')||'';}catch(e){return '';}}
+function aiContext(){return {names:PEOPLE.filter(p=>FDEC[fKey(p)]!=='delete').map(p=>p.name).filter(Boolean).slice(0,400),lists:(cfg.lists||[]).map(l=>l.name)};}
+function aiToAction(o){
+  if(!o||!o.action||o.action==='unknown')return {label:(o&&o.say)||'לא הבנתי את הפקודה — נסה שוב או תקן בשדה',run:null};
+  const t=o.target||'',pr=o.params||{},say=o.say||'';
+  switch(o.action){
+    case 'call':{const p=voiceFindContact(t);return p?{label:say||('אחייג ל: '+p.name),run:()=>fireAction('call',p)}:{label:'לא מצאתי איש קשר: '+t,run:null};}
+    case 'whatsapp':{const p=voiceFindContact(t);return p?{label:say||('וואטסאפ ל: '+p.name),run:()=>fireAction('wa',p)}:{label:'לא מצאתי איש קשר: '+t,run:null};}
+    case 'navigate':case 'waze':{const p=voiceFindContact(t);if(p)return {label:say||('ניווט ל: '+p.name),run:()=>fireAction('waze',p)};return t?{label:say||('ניווט ל: '+t),run:()=>openWaze(t)}:{label:'לא הבנתי לאן',run:null};}
+    case 'add_contact':return {label:say||'הוספת איש קשר',run:()=>openAddContact({name:pr.name||(t||''),phone:pr.phone?normIL(pr.phone):'',email:pr.email||''})};
+    case 'search':return {label:say||('חיפוש: '+t),run:()=>{openSearch();setTimeout(()=>{try{searchInput.value=t;renderSearch(t);if(typeof updSrchClear==='function')updSrchClear();}catch(e){}},140);}};
+    case 'open_list':{const L=(cfg.lists||[]).find(x=>String(x.name).indexOf(t)>=0);return L?{label:say||('רשימה: '+L.name),run:()=>openSendList(L.id)}:{label:'לא מצאתי רשימה: '+t,run:null};}
+    case 'add_to_list':{const term=pr.match||pr.text||pr.term||'';const m=voiceMatchByName(term);return (term&&t)?{label:say||('נמצאו '+m.length+' עם "'+term+'" → «'+t+'»'),run:m.length?(()=>bulkAddToList(m,t)):null}:{label:'חסר טקסט לסינון או שם רשימה',run:null};}
+    case 'merge':return {label:say||'מיזוג כפילויות',run:openMerge};
+    case 'settings':return {label:say||'הגדרות',run:openSettings};
+    case 'birthdays':return {label:say||'ימי הולדת',run:openBirthdays};
+    case 'dialer':return {label:say||'חייגן',run:openDialer};
+    case 'my_card':return {label:say||'הכרטיס שלי',run:openMyCard};
+  }
+  return {label:say||'לא הבנתי',run:null};
+}
+function aiInterpret(text){
+  const key=aiKey();if(!key||!(text||'').trim())return Promise.resolve(null);
+  const ctx=aiContext();
+  const sys='אתה מנוע פקודות לאפליקציית אנשי קשר בעברית. החזר אך ורק JSON תקין: {"action":"...","target":"...","params":{...},"say":"משפט קצר בעברית שמתאר מה תבצע"}. action אחד מ: call, whatsapp, add_contact, search, open_list, navigate, add_to_list, merge, settings, birthdays, dialer, my_card, unknown. target = שם איש קשר או שם רשימה. ל-whatsapp אפשר params.text (תוכן ההודעה). ל-add_contact: params.name, params.phone, params.email. ל-add_to_list: target=שם הרשימה, params.match=טקסט שאמור להופיע בשם איש הקשר. אם לא ברור — action="unknown". בחר את שם איש הקשר/הרשימה הקרוב ביותר מהרשימות שסופקו.';
+  const usr='פקודה: "'+text+'"\nאנשי קשר קיימים: '+JSON.stringify(ctx.names)+'\nרשימות קיימות: '+JSON.stringify(ctx.lists);
+  return fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'gpt-4o-mini',temperature:0,response_format:{type:'json_object'},messages:[{role:'system',content:sys},{role:'user',content:usr}]})})
+    .then(r=>r.ok?r.json():null)
+    .then(j=>{if(!j)return null;try{return aiToAction(JSON.parse(j.choices[0].message.content));}catch(e){return null;}})
+    .catch(()=>null);
+}
 function interpretVoice(t){t=(t||'').trim();if(!t)return {label:'לא נקלט טקסט',run:null};
   if(/רשימ/.test(t)&&/(מצא|תמצא|כל |שכתוב|שיש|מכיל|המיל|הכנס|תכניס|הוסף|תוסיף|צרף|תצרף|שים|תשים|ששמ)/.test(t)){
     const listName=voiceListName(t);const term=voiceFilterTerm(t);
@@ -2585,8 +2649,14 @@ function startVoice(){
   document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
   const txtEl=ov.querySelector('#vcTxt'),actEl=ov.querySelector('#vcAct'),okBtn=ov.querySelector('#vcOk'),micEl=ov.querySelector('#vcMic'),editEl=ov.querySelector('#vcEdit');
   let finalTxt='',stopped=false,action=null;
-  function reinterpret(){const txt=(editEl.value||'').trim();action=interpretVoice(txt);actEl.style.display='';actEl.textContent=action.label;okBtn.style.display=(action&&action.run)?'':'none';}
-  editEl.addEventListener('input',reinterpret);
+  let _reTok=0,_reTmr=0;
+  function _setAction(a){action=a;actEl.style.display='';actEl.textContent=a.label;okBtn.style.display=(a&&a.run)?'':'none';}
+  function reinterpret(){const txt=(editEl.value||'').trim();
+    if(aiKey()){const tok=++_reTok;actEl.style.display='';actEl.textContent='חושב…';okBtn.style.display='none';
+      aiInterpret(txt).then(a=>{if(tok!==_reTok)return;_setAction(a||interpretVoice(txt));}).catch(()=>{if(tok===_reTok)_setAction(interpretVoice(txt));});
+    }else{_setAction(interpretVoice(txt));}}
+  function reinterpretDebounced(){if(_reTmr)clearTimeout(_reTmr);_reTmr=setTimeout(reinterpret,500);}
+  editEl.addEventListener('input',reinterpretDebounced);
   const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),200);};
   let rec;try{rec=new SR();}catch(e){close();toast('זיהוי דיבור נכשל');return;}
   rec.lang='he-IL';rec.interimResults=true;rec.maxAlternatives=1;
