@@ -998,6 +998,24 @@ function bulkNormalizePhones(){
   if(n){savePeople();healKeys();renderLists();renderList();}
   toast(n?('נוקו '+n+' מספרים'):'אין מה לנקות');
 }
+function normalizePreviewList(){
+  const out=[];
+  PEOPLE.forEach(p=>{
+    const cur=p.phone||((p.phones&&p.phones[0])||'');if(!cur)return;
+    const nw=normIL(cur);if(nw!==cur)out.push({p:p,from:cur,to:nw});
+  });
+  return out;
+}
+function openNormalizePreview(){
+  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>ניקוי מספרי טלפון</h2></div><div class="scr-body" id="nzBody"></div>');sc._reopen=openNormalizePreview;
+  const body=sc.querySelector('#nzBody');
+  const changes=normalizePreviewList();
+  if(!changes.length){body.innerHTML='<div class="flt-done">אין מספרים לניקוי 🎉<div class="sm">לא נמצאו מספרים עם +972 או מקפים לשינוי</div></div>';return;}
+  body.innerHTML='<p class="cr-hint" style="text-align:right;margin:0 0 12px;">אלה המספרים שישתנו (+972 → 0, בלי מקפים). קידומות מדינה אחרות נשמרות. עבור ואשר.</p><div class="flt-list">'+
+    changes.map(c=>'<div class="arc-row"><span class="li-av">'+escapeHtml(initials(c.p.name)||'?')+'</span><div class="li-txt"><div class="n">'+escapeHtml(c.p.name||'(ללא שם)')+'</div><div class="s" dir="ltr" style="text-align:right;"><span style="opacity:.6;text-decoration:line-through;">'+escapeHtml(c.from)+'</span> &nbsp;→&nbsp; <span style="color:#7fe9d8;font-weight:700;">'+escapeHtml(c.to)+'</span></div></div></div>').join('')+
+    '</div><button class="mp-confirm" id="nzGo" style="margin-top:16px;">נקה '+changes.length+' מספרים</button>';
+  const go=body.querySelector('#nzGo');if(go)go.onclick=()=>{bulkNormalizePhones();closeScreen(sc);};
+}
 function openSpecialLists(){
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>רשימות מיוחדות</h2></div><div class="scr-body" id="slBody"></div>');sc._reopen=openSpecialLists;
   let tab='noname',slView='all';
@@ -1372,7 +1390,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.29.1858';
+const APP_VERSION='2026.06.29.1908';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1787,7 +1805,7 @@ function openSeder(){
   sc._reopen=openSeder;sc.querySelector('#optMerge').onclick=()=>openMerge();
   sc.querySelector('#optFilter').onclick=()=>openFilter();
   sc.querySelector('#optArchive').onclick=()=>openArchive();
-  sc.querySelector('#optNorm').onclick=()=>uiConfirm('לנקות את כל המספרים? יוסר +972 ויתווסף 0, בלי מקפים.',bulkNormalizePhones);
+  sc.querySelector('#optNorm').onclick=()=>openNormalizePreview();
   sc.querySelector('#optReset').onclick=()=>openResetConfirm();
 }
 function normEmail(e){return String(e||'').trim().toLowerCase();}
@@ -1937,7 +1955,7 @@ function openFilter(){
   (function(){
     let plY=0,plBase=0,plOn=false,plArmed=false,plVel=0,plLastY=0,plLastT=0,plRAF=0;
     const setP=v=>{_pOff=Math.max(0,Math.min(_pMax,v));body.style.transform=_pOff?('translateY('+_pOff+'px)'):'';};
-    body.addEventListener('touchstart',e=>{if(plRAF){cancelAnimationFrame(plRAF);plRAF=0;}plArmed=(body.scrollTop<=0||_pOff>0);plOn=false;plY=e.touches[0].clientY;plLastY=plY;plLastT=Date.now();plVel=0;plBase=_pOff;},{passive:true});
+    body.addEventListener('touchstart',e=>{if(plRAF){cancelAnimationFrame(plRAF);plRAF=0;}const onCard=!!(e.target&&e.target.closest&&e.target.closest('.flt-card,.flt-row,.flt-acts,.flt-btn'));plArmed=!onCard&&(body.scrollTop<=0||_pOff>0);plOn=false;plY=e.touches[0].clientY;plLastY=plY;plLastT=Date.now();plVel=0;plBase=_pOff;},{passive:true});
     body.addEventListener('touchmove',e=>{if(!plArmed)return;const cy=e.touches[0].clientY;const dy=cy-plY;if(!plOn){if((dy>4&&body.scrollTop<=0)||_pOff>0){plOn=true;body.style.transition='none';}else{if(dy<-2||body.scrollTop>0)plArmed=false;return;}}const now=Date.now();const dt=(now-plLastT)||16;plVel=(cy-plLastY)/dt*16;plLastY=cy;plLastT=now;const target=plBase+dy;if(target<=0){setP(0);plOn=false;plArmed=false;return;}e.preventDefault();setP(target);},{passive:false});
     const plEnd=()=>{if(!plOn)return;plOn=false;plArmed=false;let v=plVel;if(plRAF)cancelAnimationFrame(plRAF);const step=()=>{v*=0.95;if(Math.abs(v)<0.4){plRAF=0;return;}const nv=_pOff+v;if(nv<=0){setP(0);plRAF=0;return;}if(nv>=_pMax){setP(_pMax);plRAF=0;return;}setP(nv);plRAF=requestAnimationFrame(step);};plRAF=requestAnimationFrame(step);};
     body.addEventListener('touchend',plEnd);body.addEventListener('touchcancel',plEnd);
