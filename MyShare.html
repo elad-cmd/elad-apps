@@ -1419,7 +1419,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.29.2357';
+const APP_VERSION='2026.06.30.0055';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2739,6 +2739,7 @@ function startVoice(){
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){txtEl.textContent='אין גישה למיקרופון בדפדפן הזה';return;}
     _killActiveMic();
     navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{
+      if(stopped||!ov.isConnected){try{s.getTracks().forEach(t=>t.stop());}catch(e){}return;}
       stream=s;micStream=s;_activeMicStream=s;let mime='';try{if(window.MediaRecorder){if(MediaRecorder.isTypeSupported('audio/webm'))mime='audio/webm';else if(MediaRecorder.isTypeSupported('audio/mp4'))mime='audio/mp4';}}catch(e){}
       mediaRec=mime?new MediaRecorder(s,{mimeType:mime}):new MediaRecorder(s);
       mediaRec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data);};
