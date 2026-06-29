@@ -28,14 +28,15 @@
   .scroll{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;padding:6px 16px 14px}
   .sp{flex:1 0 auto;min-height:0}
 
-  .box{position:relative;background:var(--card);border-radius:18px;box-shadow:var(--shCard);padding:14px 15px;margin-bottom:14px;display:flex;flex-direction:row;align-items:stretch;gap:10px;direction:ltr}
-  .bxbody{flex:1;min-width:0;direction:rtl}
+  .box{position:relative;background:var(--card);border-radius:18px;box-shadow:var(--shCard);padding:14px 15px;margin-bottom:14px}
   .box .tx{font-size:15.5px;line-height:1.7;color:var(--ink);text-align:right;-webkit-user-select:text;user-select:text;white-space:pre-wrap}
-  .box .acts{display:flex;flex-direction:column;justify-content:flex-end;gap:8px;flex:0 0 auto}
-  .box .acts .ibtn{width:36px;height:36px;border-radius:10px}
-  .box .acts .ibtn svg{width:18px;height:18px}
-  body.selmode .box .acts{display:none}
-  body.hand-right .box{flex-direction:row-reverse}
+  .actrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;direction:ltr}
+  .actbtns{display:flex;gap:8px;flex:0 0 auto}
+  .actbtns .ibtn{width:36px;height:36px;border-radius:10px}
+  .actbtns .ibtn svg{width:18px;height:18px}
+  .actrow .favstrip{margin-top:0;padding:0}
+  body.selmode .box .actrow{display:none}
+  body.hand-right .actrow{flex-direction:row-reverse}
   body.hand-right .box .hcheck{left:auto;right:10px}
   body.hand-right.selmode .box{padding-left:15px;padding-right:46px}
   .arcbadge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--acc);background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;padding:2px 8px;margin-bottom:7px}
@@ -207,8 +208,8 @@
   .appitem .al{font-size:14px;color:var(--ink)}
   .ovlclose{margin-top:12px;background:var(--page);border:1px solid var(--line);color:var(--mut);border-radius:18px;padding:11px;font-size:14px}
   .botfade{position:fixed;left:0;right:0;bottom:0;height:140px;pointer-events:none;z-index:25;background:linear-gradient(to top, rgba(12,28,20,.32), rgba(12,28,20,0))}
-  @keyframes rubberDel{0%{transform:translateX(0)}16%{transform:translateX(16px)}100%{transform:translateX(-130%);opacity:0}}
-  .hitem.deleting,.box.deleting{animation:rubberDel .42s cubic-bezier(.5,0,.7,.3) forwards}
+  @keyframes rubberDel{0%{transform:translateX(0);opacity:1}100%{transform:translateX(-110%);opacity:0}}
+  .hitem.deleting,.box.deleting{animation:rubberDel .32s cubic-bezier(.4,0,1,1) forwards}
   .step .lk{text-align:left;margin-top:8px}
   .step .lk .openlink{margin-top:0}
   .bbback{position:relative;z-index:60;width:54px;height:54px;border-radius:50%;background:var(--card);border:none;box-shadow:var(--shFab);color:var(--acc);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
@@ -449,11 +450,10 @@
     var el=document.getElementById('boxes'); var h='<div class="sp"></div>';
     boxes.forEach(function(b){
       if(b.state==='busy'){ h+='<div class="box busy"><div class="tx"><span class="spin"></span>מתמלל… רגע אחד</div></div>'; }
-      else { h+='<div class="box'+(selSet.has(b.id)?' sel':'')+'" data-id="'+b.id+'"><div class="hcheck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5 9-11"/></svg></div><div class="acts">'
-        +'<button class="ibtn" data-act="menu" data-id="'+b.id+'">'+IC.dots+'</button>'
-        +'<button class="ibtn" data-act="copy" data-id="'+b.id+'">'+IC.copy+'</button>'
-        +'<button class="ibtn" data-act="share" data-id="'+b.id+'">'+IC.share+'</button></div>'
-        +'<div class="bxbody">'+(b.archived?'<span class="arcbadge">'+IC.arch+'בארכיון</span>':'')+'<div class="tx">'+esc(heNumToDigits(b.text))+'</div>'+favStripHtml()+'</div></div>'; }
+      else { h+='<div class="box'+(selSet.has(b.id)?' sel':'')+'" data-id="'+b.id+'"><div class="hcheck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5 9-11"/></svg></div>'
+        +(b.archived?'<span class="arcbadge">'+IC.arch+'בארכיון</span>':'')
+        +'<div class="tx">'+esc(heNumToDigits(b.text))+'</div>'
+        +'<div class="actrow"><div class="actbtns"><button class="ibtn" data-act="copy" data-id="'+b.id+'">'+IC.copy+'</button><button class="ibtn" data-act="share" data-id="'+b.id+'">'+IC.share+'</button></div>'+favStripHtml()+'</div></div>'; }
     });
     var lm=br('getLang','');
     h+='<div class="recbox" id="recAdd"><button class="langtog" id="langTog">'+LANGLBL[lm]+'</button>'
@@ -482,10 +482,8 @@
     if(!e.target.closest('button')){ var obx=e.target.closest('.box'); if(obx && !obx.classList.contains('busy')){ var ob=boxes.find(function(x){return x.id===obx.getAttribute('data-id');}); if(ob){ openDetail(ob.text, ob.histId); return; } } }
     var b=e.target.closest('[data-act]'); if(!b) return;
     var id=b.getAttribute('data-id'), act=b.getAttribute('data-act'); var box=boxes.find(function(x){return x.id===id;}); if(!box) return;
-    if(act==='menu'){ openCardMenu(id); return; }
     if(act==='copy'){ if(A&&A.copy)A.copy(heNumToDigits(box.text)); toast('הועתק'); }
     if(act==='share'){ if(A&&A.share)A.share(heNumToDigits(box.text)); }
-    if(act==='del'){ boxes=boxes.filter(function(x){return x.id!==id;}); saveB(); render(); }
   });
   (function(){ var bl=document.getElementById('boxes'); var lp=null,cur=null,cid=null,sx=0,sy=0,mv=false;
     bl.addEventListener('touchstart',function(e){ var it=e.target.closest('.box'); if(!it||it.classList.contains('busy'))return; cur=it; cid=it.getAttribute('data-id'); sx=e.touches[0].clientX; sy=e.touches[0].clientY; mv=false; if(!selMode){ lp=setTimeout(function(){ lp=null; if(cur) enterSel('main', cid); },480); } },{passive:true});

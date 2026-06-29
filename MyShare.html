@@ -93,12 +93,12 @@
   .dirc.hot .lbl{opacity:1;font-weight:800;background:var(--tq-deep);color:#fff;padding:3px 9px;border-radius:9px;}
 
 
-  .fab-menu{position:fixed;bottom:26px;left:16px;right:auto;z-index:95;backface-visibility:hidden;-webkit-backface-visibility:hidden;width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;background:var(--white);color:var(--tq-ink);box-shadow:0 20px 44px 2px rgba(0,0,0,.72), 0 8px 18px rgba(0,0,0,.6);transition:transform .12s;transform-origin:50% 80%;}
+  .fab-menu{position:fixed;bottom:10px;left:16px;right:auto;z-index:95;backface-visibility:hidden;-webkit-backface-visibility:hidden;width:50px;height:50px;border-radius:50%;border:none;cursor:pointer;background:var(--white);color:var(--tq-ink);box-shadow:0 20px 44px 2px rgba(0,0,0,.72), 0 8px 18px rgba(0,0,0,.6);transition:transform .12s;transform-origin:50% 80%;}
   .dotmorph{position:absolute;inset:0;transform-origin:50% 50%;transition:transform .55s cubic-bezier(.34,1.4,.5,1);}
   .dm{position:absolute;left:0;top:0;width:5px;height:5px;border-radius:50%;background:var(--tq-ink);transition:transform .5s cubic-bezier(.34,1.4,.5,1);will-change:transform;}
   .fab-menu.left{left:auto;right:16px;}
   .fab-menu:active{transform:scale(.9);}
-  .fab-menu svg{width:24px;height:24px;color:var(--tq-ink);}
+  .fab-menu svg{width:22px;height:22px;color:var(--tq-ink);}
   .fab-search{position:fixed;bottom:88px;left:19px;right:auto;z-index:94;width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;background:var(--white);color:var(--tq-ink);box-shadow:0 16px 34px 2px rgba(0,0,0,.6),0 6px 14px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;transition:transform .12s ease, opacity .2s ease;}
   .fab-search.left{left:auto;right:19px;}
   .fab-search svg{width:22px;height:22px;color:var(--tq-ink);}
@@ -543,13 +543,13 @@
   #botbar{position:fixed;bottom:10px;left:0;right:0;z-index:94;display:flex;align-items:center;justify-content:space-between;padding:0 16px;pointer-events:none;direction:ltr;}
   .bot-shade{position:fixed;left:0;right:0;bottom:0;height:78px;background:linear-gradient(to top,#000 0%,#000 88%,rgba(0,0,0,0) 100%);pointer-events:none;z-index:88;transition:opacity .3s ease;}
   body.hand-left #botbar{flex-direction:row-reverse;}
-  #botbar .bb-spacer{width:48px;height:48px;flex:0 0 auto;}
-  #botbar .bb-btn{pointer-events:auto;flex:0 0 auto;width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;background:var(--white);color:var(--tq-ink);display:flex;align-items:center;justify-content:center;box-shadow:0 16px 34px 2px rgba(0,0,0,.55),0 6px 14px rgba(0,0,0,.45);transition:transform .12s ease, opacity .2s ease;}
-  #botbar .bb-btn svg{width:20px;height:20px;color:var(--tq-ink);}
+  #botbar .bb-spacer{width:50px;height:50px;flex:0 0 auto;}
+  #botbar .bb-btn{pointer-events:auto;flex:0 0 auto;width:50px;height:50px;border-radius:50%;border:none;cursor:pointer;background:var(--white);color:var(--tq-ink);display:flex;align-items:center;justify-content:center;box-shadow:0 16px 34px 2px rgba(0,0,0,.55),0 6px 14px rgba(0,0,0,.45);transition:transform .12s ease, opacity .2s ease;}
+  #botbar .bb-btn svg{width:22px;height:22px;color:var(--tq-ink);}
   #botbar .bb-btn.bb-search{width:50px;height:50px;}
-  #botbar .bb-btn.bb-search svg{width:23px;height:23px;}
-  #botbar .bb-btn.bb-voice{width:54px;height:54px;background:var(--tq-deep);color:#fff;}
-  #botbar .bb-btn.bb-voice svg{width:24px;height:24px;color:#fff;}
+  #botbar .bb-btn.bb-search svg{width:22px;height:22px;}
+  #botbar .bb-btn.bb-voice{width:50px;height:50px;background:var(--tq-deep);color:#fff;}
+  #botbar .bb-btn.bb-voice svg{width:22px;height:22px;color:#fff;}
   #botbar .bb-btn:active{transform:scale(.9);}
   #botbar.collapsed .bb-mid{display:none;}
   #botbar.bar-hidden{opacity:0;pointer-events:none;}
@@ -1366,7 +1366,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.29.1611';
+const APP_VERSION='2026.06.29.1621';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
