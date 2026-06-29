@@ -248,6 +248,9 @@
   .hlock svg{width:17px;height:17px}
   .hitem.locked .hlock{color:var(--acc);border-color:var(--acc)}
   body.selmode .hlock{display:none}
+  .hcopy{position:absolute;left:44px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:10px;background:var(--page);border:1px solid var(--line);color:var(--mut);display:flex;align-items:center;justify-content:center}
+  .hcopy svg{width:17px;height:17px}
+  body.selmode .hcopy{display:none}
   .toast{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);background:var(--card);color:var(--ink);border:1px solid var(--line);padding:10px 18px;border-radius:20px;font-size:14px;z-index:60;opacity:0;transition:opacity .2s;max-width:80%;text-align:center}
   .toast.show{opacity:1}
 </style>
@@ -588,7 +591,7 @@
     groups.forEach(function(g){
       h+='<div class="datehdr open" style="cursor:default"><span class="dlabel">'+esc(g.ds)+'</span><span class="dcount">'+g.items.length+'</span></div>';
       h+='<div class="grpitems">';
-      g.items.forEach(function(x){ h+='<div class="hitem'+(selSet.has(x.id)?' sel':'')+'" data-id="'+x.id+'"><button class="htrash" data-arcdel="'+x.id+'" aria-label="הסר מהארכיון">'+trSvg+'</button><div class="hcheck">'+CK_SVG+'</div><div class="t">'+esc(heNumToDigits(x.text))+'</div><div class="d">'+tstr(x.ts)+'</div></div>'; });
+      g.items.forEach(function(x){ h+='<div class="hitem'+(selSet.has(x.id)?' sel':'')+'" data-id="'+x.id+'"><button class="htrash" data-arcdel="'+x.id+'" aria-label="הסר מהארכיון">'+trSvg+'</button><button class="hcopy" data-arccopy="'+x.id+'" aria-label="העתק">'+IC.copy+'</button><div class="hcheck">'+CK_SVG+'</div><div class="t">'+esc(heNumToDigits(x.text))+'</div><div class="d">'+tstr(x.ts)+'</div></div>'; });
       h+='</div>';
     });
     el.innerHTML=h;
@@ -598,7 +601,7 @@
   document.getElementById('arcDateBtn').addEventListener('click',function(){ var d=document.getElementById('arcDate'); try{ if(d.showPicker) d.showPicker(); else d.click(); }catch(e){ d.click(); } });
   function renderArcChip(){ var w=document.getElementById('arcDateChipWrap'); w.innerHTML = arcDateF? '<span class="datechip">'+arcDateF+' <button data-arcclear style="background:none;border:none;color:#fff;font-weight:700">✕</button></span>':''; }
   document.getElementById('arcDateChipWrap').addEventListener('click',function(e){ if(e.target.closest('[data-arcclear]')){ arcDateF=''; document.getElementById('arcDate').value=''; renderArcChip(); renderArc(); } });
-  document.getElementById('arcList').addEventListener('click',function(e){ if(selMode&&selCtx==='archive'){ var sit=e.target.closest('.hitem'); if(sit)toggleSel(sit.getAttribute('data-id')); return; } var rm=e.target.closest('[data-arcdel]'); if(rm){ var rid=rm.getAttribute('data-arcdel'); archive=archive.filter(function(x){return x.id!==rid;}); saveAr(); renderArc(); toast('הוסר מהארכיון'); return; } var it=e.target.closest('.hitem'); if(!it)return; var aid=it.getAttribute('data-id'); var x=archive.find(function(z){return z.id===aid;}); if(x) openDetail(x.text, aid); });
+  document.getElementById('arcList').addEventListener('click',function(e){ if(selMode&&selCtx==='archive'){ var sit=e.target.closest('.hitem'); if(sit)toggleSel(sit.getAttribute('data-id')); return; } var cp=e.target.closest('[data-arccopy]'); if(cp){ var cpid=cp.getAttribute('data-arccopy'); var cc=archive.find(function(x){return x.id===cpid;}); if(cc&&A&&A.copy){ A.copy(heNumToDigits(cc.text)); toast('הועתק'); } return; } var rm=e.target.closest('[data-arcdel]'); if(rm){ var rid=rm.getAttribute('data-arcdel'); archive=archive.filter(function(x){return x.id!==rid;}); saveAr(); renderArc(); toast('הוסר מהארכיון'); return; } var it=e.target.closest('.hitem'); if(!it)return; var aid=it.getAttribute('data-id'); var x=archive.find(function(z){return z.id===aid;}); if(x) openDetail(x.text, aid); });
   (function(){ var al=document.getElementById('arcList'); var sx=0,sy=0,cur=null,cid=null,mv=false,lp=null;
     al.addEventListener('touchstart',function(e){ var it=e.target.closest('.hitem'); if(!it)return; cur=it; cid=it.getAttribute('data-id'); sx=e.touches[0].clientX; sy=e.touches[0].clientY; mv=false; if(!selMode){ lp=setTimeout(function(){ lp=null; enterSel('archive',cid); },480); } },{passive:true});
     al.addEventListener('touchmove',function(e){ if(!cur)return; var dx=e.touches[0].clientX-sx, dy=e.touches[0].clientY-sy; if((Math.abs(dx)>8||Math.abs(dy)>8)&&lp){clearTimeout(lp);lp=null;} if(!selMode&&Math.abs(dx)>Math.abs(dy)&&dx<0){ mv=true; cur.style.transform='translateX('+dx+'px)'; cur.style.opacity=String(Math.max(0.3,1+dx/220)); } },{passive:true});

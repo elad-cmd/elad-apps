@@ -635,14 +635,17 @@
   #voiceFab:active{transform:scale(.9);}
   .vc-ov{position:fixed;inset:0;z-index:140;background:rgba(8,22,23,0);transition:background .2s;display:flex;align-items:center;justify-content:center;pointer-events:none;}
   .vc-ov.show{background:rgba(8,22,23,.93);pointer-events:auto;}
-  .vc-box{display:flex;flex-direction:column;align-items:center;gap:20px;padding:24px;}
-  .vc-mic{width:92px;height:92px;border-radius:50%;background:var(--tq-deep);color:#fff;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .vc-box{display:flex;flex-direction:column;align-items:center;gap:14px;padding:22px 18px;width:94%;max-width:460px;box-sizing:border-box;max-height:90vh;overflow-y:auto;}
+  .vc-mic{width:80px;height:80px;border-radius:50%;background:var(--tq-deep);color:#fff;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;}
   .vc-mic.listening{animation:vcPulse 1.3s ease-in-out infinite;}
-  .vc-mic svg{width:42px;height:42px;}
+  .vc-mic svg{width:38px;height:38px;}
   @keyframes vcPulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(0,194,168,.45)}50%{transform:scale(1.06);box-shadow:0 0 0 20px rgba(0,194,168,0)}}
-  .vc-txt{color:#fff;font-size:16px;font-weight:600;max-width:82%;text-align:center;min-height:22px;line-height:1.5;}
-  .vc-act{color:#7fe3cf;font-size:15.5px;font-weight:700;text-align:center;max-width:82%;line-height:1.5;}
-  .vc-edit{width:84%;box-sizing:border-box;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.12);color:#fff;font-family:inherit;font-size:16px;text-align:right;outline:none;}
+  .vc-txt{color:#fff;font-size:15px;font-weight:600;width:100%;text-align:center;min-height:20px;line-height:1.5;}
+  .vc-act{color:#7fe3cf;font-size:16px;font-weight:700;text-align:center;width:100%;line-height:1.5;}
+  .vc-edit{width:100%;box-sizing:border-box;min-height:92px;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.12);color:#fff;font-family:inherit;font-size:16px;text-align:right;outline:none;resize:vertical;line-height:1.6;}
+  .vc-list{width:100%;max-height:30vh;overflow-y:auto;background:rgba(255,255,255,.06);border-radius:12px;padding:8px 10px;box-sizing:border-box;}
+  .vc-list-hd{color:rgba(255,255,255,.7);font-size:12px;font-weight:700;margin-bottom:6px;text-align:right;}
+  .vc-list-row{color:#fff;font-size:14px;padding:4px 2px;text-align:right;border-top:1px solid rgba(255,255,255,.07);}
   .vc-btns{display:flex;gap:12px;margin-top:2px;}
   .vc-ok{background:#15b89f;border:none;color:#06322d;padding:10px 30px;border-radius:22px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;}
   .vc-cancel{background:rgba(255,255,255,.14);border:none;color:#fff;padding:10px 26px;border-radius:22px;font:inherit;font-size:14px;cursor:pointer;}
@@ -1416,7 +1419,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.29.2035';
+const APP_VERSION='2026.06.29.2049';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2649,8 +2652,8 @@ function aiToAction(o){
     case 'add_contact':return {label:say||'הוספת איש קשר',run:()=>openAddContact({name:pr.name||(t||''),phone:pr.phone?normIL(pr.phone):'',email:pr.email||''})};
     case 'search':return {label:say||('חיפוש: '+t),run:()=>{openSearch();setTimeout(()=>{try{searchInput.value=t;renderSearch(t);if(typeof updSrchClear==='function')updSrchClear();}catch(e){}},140);}};
     case 'open_list':{const L=(cfg.lists||[]).find(x=>String(x.name).indexOf(t)>=0);return L?{label:say||('רשימה: '+L.name),run:()=>openSendList(L.id)}:{label:'לא מצאתי רשימה: '+t,run:null};}
-    case 'add_to_list':{const term=pr.match||pr.text||pr.term||'';const m=voiceMatchByName(term);return (term&&t)?{label:say||('נמצאו '+m.length+' עם "'+term+'" → «'+t+'»'),run:m.length?(()=>bulkAddToList(m,t)):null}:{label:'חסר טקסט לסינון או שם רשימה',run:null};}
-    case 'add_contacts_to_list':case 'create_list_add':{const ppl=(pr.contacts||pr.names||[]).map(n=>voiceFindContact(n)).filter(Boolean);return (t&&ppl.length)?{label:say||('הוספת '+ppl.length+' אנשי קשר לרשימה «'+t+'»'),run:()=>bulkAddToList(ppl,t)}:{label:'לא מצאתי את אנשי הקשר או שם הרשימה',run:null};}
+    case 'add_to_list':{const term=pr.match||pr.text||pr.term||'';const m=voiceMatchByName(term);return (term&&t)?{label:say||('נמצאו '+m.length+' עם "'+term+'" → «'+t+'»'),run:m.length?(()=>bulkAddToList(m,t)):null,list:m.map(p=>p.name)}:{label:'חסר טקסט לסינון או שם רשימה',run:null};}
+    case 'add_contacts_to_list':case 'create_list_add':{const ppl=(pr.contacts||pr.names||[]).map(n=>voiceFindContact(n)).filter(Boolean);return (t&&ppl.length)?{label:say||('הוספת '+ppl.length+' אנשי קשר לרשימה «'+t+'»'),run:()=>bulkAddToList(ppl,t),list:ppl.map(p=>p.name)}:{label:'לא מצאתי את אנשי הקשר או שם הרשימה',run:null};}
     case 'merge':return {label:say||'מיזוג כפילויות',run:openMerge};
     case 'settings':return {label:say||'הגדרות',run:openSettings};
     case 'birthdays':return {label:say||'ימי הולדת',run:openBirthdays};
@@ -2670,14 +2673,13 @@ function aiInterpret(text){
   const sys='אתה מנוע פקודות לאפליקציית אנשי קשר בעברית. החזר אך ורק JSON תקין. לפעולה אחת: {"action":"...","target":"...","params":{...},"say":"משפט קצר בעברית"}. לכמה פעולות במשפט אחד: {"steps":[<פעולה>,<פעולה>...],"say":"תיאור כללי"}. action אחד מ: call, whatsapp, add_contact, search, open_list, navigate, add_to_list, add_contacts_to_list, merge, settings, birthdays, dialer, my_card, unknown. target = שם איש קשר או שם רשימה. whatsapp: params.text. add_contact: params.name/phone/email. add_to_list: target=שם רשימה, params.match=טקסט בשם. add_contacts_to_list: target=שם הרשימה (גם אם חדשה), params.contacts=מערך שמות אנשי קשר ספציפיים (לדוגמה: "צור רשימה X וצרף את אבא, בן ומיקה"). בחר את השמות הקרובים ביותר מאנשי הקשר שסופקו. אם לא ברור — action="unknown".';
   const usr='פקודה: "'+text+'"\nאנשי קשר קיימים: '+JSON.stringify(ctx.names)+'\nרשימות קיימות: '+JSON.stringify(ctx.lists);
   return fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'gpt-4o-mini',temperature:0,response_format:{type:'json_object'},messages:[{role:'system',content:sys},{role:'user',content:usr}]})})
-    .then(r=>r.ok?r.json():null)
-    .then(j=>{if(!j)return null;try{const o=JSON.parse(j.choices[0].message.content);return (Array.isArray(o.steps)&&o.steps.length)?aiSteps(o.steps):aiToAction(o);}catch(e){return null;}})
-    .catch(()=>null);
+    .then(r=>{if(r.ok)return r.json();return r.json().catch(()=>({})).then(e=>{throw new Error((e&&e.error&&e.error.message)||('HTTP '+r.status));});})
+    .then(j=>{const o=JSON.parse(j.choices[0].message.content);return (Array.isArray(o.steps)&&o.steps.length)?aiSteps(o.steps):aiToAction(o);});
 }
 function interpretVoice(t){t=(t||'').trim();if(!t)return {label:'לא נקלט טקסט',run:null};
   if(/רשימ/.test(t)&&/(מצא|תמצא|כל |שכתוב|שיש|מכיל|המיל|הכנס|תכניס|הוסף|תוסיף|צרף|תצרף|שים|תשים|ששמ)/.test(t)){
     const listName=voiceListName(t);const term=voiceFilterTerm(t);
-    if(term&&listName){const m=voiceMatchByName(term);return {label:'נמצאו '+m.length+' עם "'+term+'" — להוסיף לרשימה «'+listName+'»?',run:m.length?(()=>bulkAddToList(m,listName)):null};}
+    if(term&&listName){const m=voiceMatchByName(term);return {label:'נמצאו '+m.length+' עם "'+term+'" — להוסיף לרשימה «'+listName+'»?',run:m.length?(()=>bulkAddToList(m,listName)):null,list:m.map(p=>p.name)};}
     if(term&&!listName)return {label:'הבנתי: כל מי שיש לו "'+term+'" — לאיזו רשימה? אמרו: "…לרשימה <שם>"',run:null};
     if(listName&&!term)return {label:'הבנתי רשימה «'+listName+'» — לפי איזה טקסט בשם לסנן?',run:null};
   }
@@ -2706,15 +2708,15 @@ function startVoice(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!useAI&&!SR){toast('זיהוי דיבור לא נתמך כאן — הגדר מפתח OpenAI בהגדרות');return;}
   const ov=document.createElement('div');ov.className='vc-ov';
-  ov.innerHTML='<div class="vc-box"><button class="vc-mic listening" id="vcMic" aria-label="עצור הקלטה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><div class="vc-txt" id="vcTxt">מקליט… (הקש על המיקרופון לסיום)</div><input class="vc-edit" id="vcEdit" dir="rtl" placeholder="טקסט שזוהה — אפשר לתקן" style="display:none;"><div class="vc-act" id="vcAct" style="display:none;"></div><div class="vc-btns"><button class="vc-cancel" id="vcCancel">ביטול</button><button class="vc-ok" id="vcOk" style="display:none;">אישור</button></div></div>';
+  ov.innerHTML='<div class="vc-box"><button class="vc-mic listening" id="vcMic" aria-label="עצור הקלטה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><div class="vc-txt" id="vcTxt">מקליט… (הקש על המיקרופון לסיום)</div><textarea class="vc-edit" id="vcEdit" dir="rtl" rows="3" placeholder="הטקסט שזוהה — אפשר לתקן או להקליד פקודה" style="display:none;"></textarea><div class="vc-act" id="vcAct" style="display:none;"></div><div class="vc-list" id="vcList" style="display:none;"></div><div class="vc-btns"><button class="vc-cancel" id="vcCancel">ביטול</button><button class="vc-ok" id="vcOk" style="display:none;">אישור</button></div></div>';
   document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
   const txtEl=ov.querySelector('#vcTxt'),actEl=ov.querySelector('#vcAct'),okBtn=ov.querySelector('#vcOk'),micEl=ov.querySelector('#vcMic'),editEl=ov.querySelector('#vcEdit');
   let action=null,_reTok=0,_reTmr=0;
-  function _setAction(a){action=a;actEl.style.display='';actEl.textContent=a.label;okBtn.style.display=(a&&a.run)?'':'none';}
+  function _setAction(a){action=a;actEl.style.display='';actEl.textContent=a.label;okBtn.style.display=(a&&a.run)?'':'none';const lst=ov.querySelector('#vcList');if(lst){if(a&&a.list&&a.list.length){lst.style.display='';lst.innerHTML='<div class="vc-list-hd">'+a.list.length+' אנשי קשר:</div>'+a.list.map(n=>'<div class="vc-list-row">'+escapeHtml(n||'(ללא שם)')+'</div>').join('');}else{lst.style.display='none';lst.innerHTML='';}}}
   function reinterpret(){const txt=(editEl.value||'').trim();
-    if(aiKey()){const tok=++_reTok;actEl.style.display='';actEl.textContent='חושב…';okBtn.style.display='none';
-      aiInterpret(txt).then(a=>{if(tok!==_reTok)return;_setAction(a||interpretVoice(txt));}).catch(()=>{if(tok===_reTok)_setAction(interpretVoice(txt));});
-    }else{_setAction(interpretVoice(txt));}}
+    if(aiKey()){const tok=++_reTok;actEl.style.display='';actEl.textContent='חושב… (מנוע חכם)';okBtn.style.display='none';
+      aiInterpret(txt).then(a=>{if(tok!==_reTok)return;_setAction(a||interpretVoice(txt));}).catch(err=>{if(tok!==_reTok)return;const f=interpretVoice(txt);f.label='⚠ המנוע החכם לא זמין ('+((err&&err.message)||'')+') — '+f.label;_setAction(f);});
+    }else{const f=interpretVoice(txt);f.label='(מנוע בסיסי — הוסף מפתח בהגדרות) '+f.label;_setAction(f);}}
   function reinterpretDebounced(){if(_reTmr)clearTimeout(_reTmr);_reTmr=setTimeout(reinterpret,500);}
   editEl.addEventListener('input',reinterpretDebounced);
   const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),200);};
