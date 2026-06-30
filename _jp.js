@@ -1,0 +1,11 @@
+const fs=require('fs');const {JSDOM,VirtualConsole}=require('jsdom');
+const html=fs.readFileSync('MyShare.html','utf8');
+const vc=new VirtualConsole();const errs=[];
+vc.on('jsdomError',e=>errs.push('jsdomError: '+(e&&(e.stack||e.message)||e)));
+const dom=new JSDOM(html,{runScripts:'dangerously',pretendToBeVisual:true,url:'https://localhost/',virtualConsole:vc});
+dom.window.onerror=(m,s,l,c,err)=>errs.push('onerror: '+m+' @'+l+':'+c+(err&&err.stack?'\n'+err.stack:''));
+setTimeout(()=>{const d=dom.window.document;
+console.log('ERRORS:',errs.length);
+errs.slice(0,4).forEach(e=>console.log('--- '+String(e).split('\n').slice(0,6).join('\n')));
+console.log('body children:',d.body?d.body.children.length:0,'| .list:',!!d.querySelector('.list'),'| #botbar:',!!d.getElementById('botbar'));
+},1000);
