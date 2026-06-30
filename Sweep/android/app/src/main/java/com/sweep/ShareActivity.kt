@@ -486,25 +486,34 @@ class ShareActivity : Activity() {
         return arr.toString()
     }
 
-    /** המספרים שדיברת איתם לאחרונה (שיחות + SMS), distinct לפי 9 ספרות, ממוין יורד. */
+    private fun callKind(type: Int): String = when (type) {
+        1 -> "call_in"
+        2 -> "call_out"
+        3, 5 -> "call_miss"
+        else -> "call"
+    }
+
+    /** המספרים שדיברת איתם לאחרונה (שיחות + SMS), distinct לפי 9 ספרות, ממוין יורד, עם סוג המגע. */
     private fun recentContactsJson(limit: Int): String {
-        val map = HashMap<String, Long>()
+        val dateMap = HashMap<String, Long>()
+        val kindMap = HashMap<String, String>()
         try {
             if (checkSelfPermission(android.Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED) {
                 contentResolver.query(
                     android.provider.CallLog.Calls.CONTENT_URI,
-                    arrayOf(android.provider.CallLog.Calls.NUMBER, android.provider.CallLog.Calls.DATE),
+                    arrayOf(android.provider.CallLog.Calls.NUMBER, android.provider.CallLog.Calls.DATE, android.provider.CallLog.Calls.TYPE),
                     null, null,
                     android.provider.CallLog.Calls.DATE + " DESC LIMIT 500"
                 )?.use {
                     val iNum = it.getColumnIndex(android.provider.CallLog.Calls.NUMBER)
                     val iDate = it.getColumnIndex(android.provider.CallLog.Calls.DATE)
+                    val iType = it.getColumnIndex(android.provider.CallLog.Calls.TYPE)
                     while (it.moveToNext()) {
                         val d = digitsOf(if (iNum >= 0) it.getString(iNum) ?: "" else "")
                         if (d.length < 5) continue
                         val k = d.takeLast(9)
                         val date = if (iDate >= 0) it.getLong(iDate) else 0L
-                        if (date > (map[k] ?: 0L)) map[k] = date
+                        if (date > (dateMap[k] ?: 0L)) { dateMap[k] = date; kindMap[k] = callKind(if (iType >= 0) it.getInt(iType) else 0) }
                     }
                 }
             }
@@ -521,15 +530,15 @@ class ShareActivity : Activity() {
                         if (d.length < 5) continue
                         val k = d.takeLast(9)
                         val date = it.getLong(1)
-                        if (date > (map[k] ?: 0L)) map[k] = date
+                        if (date > (dateMap[k] ?: 0L)) { dateMap[k] = date; kindMap[k] = "sms" }
                     }
                 }
             }
         } catch (e: Exception) {}
         val n = if (limit > 0) limit else 60
-        val sorted = map.entries.sortedByDescending { it.value }.take(n)
+        val sorted = dateMap.entries.sortedByDescending { it.value }.take(n)
         val arr = JSONArray()
-        sorted.forEach { arr.put(JSONObject().put("num", it.key).put("date", it.value)) }
+        sorted.forEach { arr.put(JSONObject().put("num", it.key).put("date", it.value).put("kind", kindMap[it.key] ?: "call")) }
         return arr.toString()
     }
 
