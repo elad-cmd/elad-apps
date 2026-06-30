@@ -274,6 +274,11 @@
   .mp-confirm{width:100%;padding:13px;border:none;border-radius:14px;background:var(--tq-deep);color:#fff;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;margin-top:4px;}
   .la-new{display:inline-block;padding:6px 13px;border:none;border-radius:11px;background:rgba(8,50,50,.1);color:rgba(8,50,50,.6);font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;}
   .la-new:active{background:rgba(8,50,50,.18);}
+  .fo-sec{font-size:13px;font-weight:700;color:var(--tq-ink);margin:12px 2px 7px;text-align:right;}
+  .fo-chips{display:flex;flex-wrap:wrap;gap:7px;}
+  .fo-chip{padding:7px 13px;border:1px solid rgba(8,50,50,.2);border-radius:999px;background:rgba(8,50,50,.05);color:var(--tq-ink);font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;}
+  .fo-chip.on{background:var(--tq-deep);color:#fff;border-color:var(--tq-deep);}
+  .flt-tabs .vtab-toggle.flt-on{color:#fff;background:var(--tq-deep);}
   .ct-card{position:relative;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:22px 16px;text-align:center;}
   .ct-fav{position:absolute;top:12px;inset-inline-start:12px;width:42px;height:42px;border:none;background:rgba(255,255,255,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,.55);transition:color .15s,background .15s;}
   .ct-fav svg{width:23px;height:23px;}
@@ -1452,7 +1457,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.30.1700';
+const APP_VERSION='2026.06.30.1738';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2053,7 +2058,27 @@ function openFilter(){
   function tabs(){
     const c=fCounts();
     const t=(k,l,n)=>'<button class="vtab'+(vf===k?' on':'')+'" data-f="'+k+'"><b>'+n+'</b><span>'+l+'</span></button>';
-    return '<div class="flt-tabs">'+t('undecided','לא נבדקו',c.left)+t('keep','נשמרו',c.keep)+t('maybe','לבדיקה',c.maybe)+t('delete','נמחקו',c.del)+'<button class="vtab-toggle" id="vtog" aria-label="תצוגה">'+(vm==='cards'?ICON.viewlist:ICON.viewcards)+'</button></div>';
+    const _F='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 8v5l-4 2v-7z"/></svg>';
+    const fltOn=(slCat!=='all'||slAcct!=='all');
+    return '<div class="flt-tabs">'+t('undecided','לא נבדקו',c.left)+t('keep','נשמרו',c.keep)+t('maybe','לבדיקה',c.maybe)+t('delete','נמחקו',c.del)+'<button class="vtab-toggle'+(fltOn?' flt-on':'')+'" id="vflt" aria-label="סינון">'+_F+'</button></div>';
+  }
+  function openFilterOpts(){
+    const accs=acctList();
+    const xs='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    const ov=document.createElement('div');ov.className='mpovl';
+    const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),250);};
+    function draw(){
+      const catRow=SLDEFS.map(d=>'<button class="fo-chip'+(slCat===d.k?' on':'')+'" data-c="'+d.k+'">'+escapeHtml(d.t)+'</button>').join('');
+      const accSec=accs.length?('<div class="fo-sec">חשבון</div><div class="fo-chips"><button class="fo-chip'+(slAcct==='all'?' on':'')+'" data-a="all">כל החשבונות</button>'+accs.map(a=>'<button class="fo-chip'+(slAcct===a?' on':'')+'" data-a="'+escapeHtml(a)+'">'+escapeHtml(_acctShort(a))+'</button>').join('')+'</div>'):'';
+      const viewRow='<button class="fo-chip'+(vm==='cards'?' on':'')+'" data-v="cards">כרטיסיות</button><button class="fo-chip'+(vm==='list'?' on':'')+'" data-v="list">רשימה</button>';
+      ov.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xs+'</button><h2 style="flex:1;margin:0;text-align:center;">סינון</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="fo-sec">תצוגה</div><div class="fo-chips">'+viewRow+'</div><div class="fo-sec">רשימות מיוחדות</div><div class="fo-chips">'+catRow+'</div>'+accSec+'</div>';
+      ov.querySelector('.sheet-x').onclick=close;
+      ov.querySelectorAll('.fo-chip[data-v]').forEach(b=>b.onclick=()=>{vm=b.dataset.v;render();draw();});
+      ov.querySelectorAll('.fo-chip[data-c]').forEach(b=>b.onclick=()=>{slCat=b.dataset.c;render();draw();});
+      ov.querySelectorAll('.fo-chip[data-a]').forEach(b=>b.onclick=()=>{slAcct=b.dataset.a;render();draw();});
+    }
+    document.body.appendChild(ov);draw();requestAnimationFrame(()=>ov.classList.add('show'));
+    ov.addEventListener('click',e=>{if(e.target===ov)close();});
   }
   function fMatch(p){if(!fq)return true;const q=fq.trim().toLowerCase();if(!q)return true;const hay=[(p.name||''),(p.phone||''),(p.email||'')].concat(p.phones||[]).concat(p.emails||[]).join(' ').toLowerCase();return hay.indexOf(q)>=0;}
   const X_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
@@ -2071,11 +2096,9 @@ function openFilter(){
   }
   function render(){
     pullReset();
-    const ou=sc.querySelector('.flt-undo');if(ou)ou.remove();body.innerHTML=tabs()+catTabs()+acctChips()+'<div id="fltView" class="flt-view"></div>'+searchBarHTML();
-    body.querySelectorAll('.flt-cattabs:not(.flt-accttabs) .catchip').forEach(t=>t.onclick=()=>{slCat=t.dataset.c;render();});
-    body.querySelectorAll('.flt-accttabs .catchip').forEach(t=>t.onclick=()=>{slAcct=t.dataset.a;render();});
+    const ou=sc.querySelector('.flt-undo');if(ou)ou.remove();body.innerHTML=tabs()+'<div id="fltView" class="flt-view"></div>'+searchBarHTML();
     body.querySelectorAll('.flt-tabs .vtab').forEach(t=>t.onclick=()=>{vf=t.dataset.f;fq='';render();});
-    body.querySelector('#vtog').onclick=()=>{vm=(vm==='cards')?'list':'cards';render();};
+    const _vflt=body.querySelector('#vflt');if(_vflt)_vflt.onclick=()=>openFilterOpts();
     wireSearch();
     renderView();
   }
