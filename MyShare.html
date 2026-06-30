@@ -677,6 +677,9 @@
   </div></div>
 
 <script>
+window.onerror=function(m,s,l,c,e){try{var d=document.getElementById('__err__')||document.createElement('div');d.id='__err__';d.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:#a11;color:#fff;font:11px monospace;padding:8px;white-space:pre-wrap;direction:ltr;text-align:left;max-height:70vh;overflow:auto;';d.textContent='JS ERROR: '+m+'  @line '+l+':'+c+(e&&e.stack?'\n'+e.stack:'');(document.body||document.documentElement).appendChild(d);}catch(_){}return false;};
+</script>
+<script>
 function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
 const ICON={
@@ -1261,8 +1264,8 @@ function openMemberPicker(listId){
   sc._back=()=>{L.members=[...sel];saveCfg();renderLists();renderList();origBack();};
 }
 if(BRIDGE){try{var _fk=JSON.parse(localStorage.getItem('myshare_favkeys')||'null');if(_fk){PEOPLE.forEach(p=>{if(_fk[fKey(p)])p.fav=true;});Object.keys(_fk).forEach(k=>{FAVSET[k]=1;});saveFavSet();localStorage.removeItem('myshare_favkeys');}}catch(e){}}
-applyFavSet();
-healKeys();recomputeAllRules();renderSeg();renderList();renderLists();layoutList();
+try{applyFavSet();}catch(e){if(window.onerror)window.onerror('applyFavSet: '+(e&&e.message),'',0,0,e);}
+try{healKeys();recomputeAllRules();renderSeg();renderList();renderLists();layoutList();}catch(e){if(window.onerror)window.onerror('init: '+(e&&e.message),'',0,0,e);}
 setTimeout(()=>{try{const t=upcomingBdays().filter(o=>o.n===0);if(t.length){const nm=t.map(o=>o.p.name||'').filter(Boolean).slice(0,3).join(', ');toast('🎂 היום יום הולדת ל'+(nm||t.length+' אנשי קשר'));}}catch(e){}},1600);
 window.addEventListener('resize',layoutList);
 
@@ -1437,7 +1440,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.30.1041';
+const APP_VERSION='2026.06.30.1053';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
