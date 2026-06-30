@@ -19,3 +19,16 @@ buildscript {
 }
 
 apply plugin: "com.facebook.react.rootproject"
+
+// React Native injects the oss.sonatype.org snapshots repository, which is frequently
+// unavailable and returns HTTP 504 (Gateway Time-out), breaking dependency resolution for
+// stable releases. All our dependencies live on mavenCentral()/google(), so strip that
+// repo from every project to make builds resilient to the outage.
+allprojects {
+    afterEvaluate { proj ->
+        proj.repositories.removeAll { repo ->
+            repo instanceof org.gradle.api.artifacts.repositories.MavenArtifactRepository &&
+                repo.url != null && repo.url.toString().contains('oss.sonatype.org')
+        }
+    }
+}
