@@ -826,7 +826,7 @@ const STATS=loadStats();
 function saveStats(){try{localStorage.setItem('myshare_stats',JSON.stringify(STATS));}catch(e){}}
 function loadILog(){try{return JSON.parse(localStorage.getItem('myshare_ilog')||'{}')||{};}catch(e){return {};}}
 const ILOG=loadILog();
-function logInteraction(person,kind){try{const k=statKey(person);if(!k)return;if(!ILOG[k])ILOG[k]=[];ILOG[k].push({date:Date.now(),kind:kind});if(ILOG[k].length>500)ILOG[k]=ILOG[k].slice(-500);localStorage.setItem('myshare_ilog',JSON.stringify(ILOG));}catch(e){}}
+function logInteraction(person,kind){try{const k=statKey(person);if(!k)return;if(!ILOG[k])ILOG[k]=[];ILOG[k].push({date:Date.now(),kind:kind});if(ILOG[k].length>500)ILOG[k]=ILOG[k].slice(-500);localStorage.setItem('myshare_ilog',JSON.stringify(ILOG));if(typeof RECENTTS!=='undefined')RECENTTS=null;}catch(e){}}
 function _fmtDur(sec){sec=+sec||0;const m=Math.floor(sec/60),s=sec%60;return m+':'+(s<10?'0':'')+s;}
 function _fmtHistDate(ms){if(!ms)return '';const d=new Date(+ms);const p=n=>(n<10?'0':'')+n;return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+String(d.getFullYear()).slice(2)+' '+p(d.getHours())+':'+p(d.getMinutes());}
 function lastContactTs(person){try{let mx=0;const ph=(person.phone||((person.phones&&person.phones[0])||''))||'';if(BRIDGE&&ph){[ 'getCallLog','getSmsLog'].forEach(fn=>{try{(JSON.parse((BRIDGE[fn]?BRIDGE[fn](ph):'[]')||'[]')||[]).forEach(x=>{if(+x.date>mx)mx=+x.date;});}catch(e){}});}if(BRIDGE&&BRIDGE.getNotifLog){try{(JSON.parse(BRIDGE.getNotifLog(person.name||'')||'[]')||[]).forEach(x=>{if(+x.date>mx)mx=+x.date;});}catch(e){}}const il=(ILOG[statKey(person)]||[]);il.forEach(o=>{if(+o.date>mx)mx=+o.date;});return mx;}catch(e){return 0;}}
@@ -849,7 +849,15 @@ function saveFavOrder(){try{localStorage.setItem('myshare_favorder',JSON.stringi
 let FDEC=loadDec();
 let MGDONE={};try{MGDONE=JSON.parse(localStorage.getItem('myshare_mgdone')||'{}')||{};}catch(e){MGDONE={};}
 function saveMgDone(){try{localStorage.setItem('myshare_mgdone',JSON.stringify(MGDONE));}catch(e){}}
-function peopleFor(v){let a=PEOPLE.slice().filter(p=>FDEC[fKey(p)]!=='delete');if(v==='fav'){a=a.filter(p=>p.fav);a.sort((x,y)=>{const ix=FAVORDER.indexOf(fKey(x)),iy=FAVORDER.indexOf(fKey(y));if(ix<0&&iy<0)return byName(x,y);if(ix<0)return 1;if(iy<0)return -1;return ix-iy;});}else if(v==='abc')a.sort(byName);else a.sort((x,y)=>(STATS[statKey(y)]||0)-(STATS[statKey(x)]||0)||(y.last||0)-(x.last||0));return a;}
+const RECENT_LIMIT=30;
+let RECENTTS=null;
+function buildRecentTs(){RECENTTS={};try{
+  Object.keys(ILOG||{}).forEach(k=>{const arr=ILOG[k];if(arr&&arr.length){const mx=arr.reduce((m,o)=>Math.max(m,+o.date||0),0);if(mx>(RECENTTS[k]||0))RECENTTS[k]=mx;}});
+  if(BRIDGE&&typeof BRIDGE.getRecentContacts==='function'){const rc=JSON.parse(BRIDGE.getRecentContacts(80)||'[]')||[];
+    if(rc.length){const idx={};PEOPLE.forEach(p=>{const ph=(p.phone||((p.phones&&p.phones[0])||''))||'';const d=String(ph).replace(/\D/g,'');if(d.length>=5)idx[d.slice(-9)]=statKey(p);});
+      rc.forEach(o=>{const k=idx[String(o.num||'').slice(-9)];if(k){const d=+o.date||0;if(d>(RECENTTS[k]||0))RECENTTS[k]=d;}});}}
+}catch(e){RECENTTS=RECENTTS||{};}}
+function peopleFor(v){let a=PEOPLE.slice().filter(p=>FDEC[fKey(p)]!=='delete');if(v==='fav'){a=a.filter(p=>p.fav);a.sort((x,y)=>{const ix=FAVORDER.indexOf(fKey(x)),iy=FAVORDER.indexOf(fKey(y));if(ix<0&&iy<0)return byName(x,y);if(ix<0)return 1;if(iy<0)return -1;return ix-iy;});}else if(v==='abc')a.sort(byName);else{if(!RECENTTS)buildRecentTs();const rt=RECENTTS||{};if(Object.keys(rt).length){a=a.filter(p=>(rt[statKey(p)]||0)>0);a.sort((x,y)=>(rt[statKey(y)]||0)-(rt[statKey(x)]||0));if(a.length>RECENT_LIMIT)a=a.slice(0,RECENT_LIMIT);}else a.sort((x,y)=>(STATS[statKey(y)]||0)-(STATS[statKey(x)]||0)||(y.last||0)-(x.last||0));}return a;}
 const DAY_LET=['א','ב','ג','ד','ה','ו','ש'];
 function loadDays(){try{return JSON.parse(localStorage.getItem('myshare_days')||'{}')||{};}catch(e){return{};}}
 let DAYS=loadDays();
@@ -1439,7 +1447,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.30.1357';
+const APP_VERSION='2026.06.30.1405';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;

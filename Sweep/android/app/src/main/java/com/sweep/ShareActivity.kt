@@ -486,6 +486,53 @@ class ShareActivity : Activity() {
         return arr.toString()
     }
 
+    /** המספרים שדיברת איתם לאחרונה (שיחות + SMS), distinct לפי 9 ספרות, ממוין יורד. */
+    private fun recentContactsJson(limit: Int): String {
+        val map = HashMap<String, Long>()
+        try {
+            if (checkSelfPermission(android.Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED) {
+                contentResolver.query(
+                    android.provider.CallLog.Calls.CONTENT_URI,
+                    arrayOf(android.provider.CallLog.Calls.NUMBER, android.provider.CallLog.Calls.DATE),
+                    null, null,
+                    android.provider.CallLog.Calls.DATE + " DESC LIMIT 500"
+                )?.use {
+                    val iNum = it.getColumnIndex(android.provider.CallLog.Calls.NUMBER)
+                    val iDate = it.getColumnIndex(android.provider.CallLog.Calls.DATE)
+                    while (it.moveToNext()) {
+                        val d = digitsOf(if (iNum >= 0) it.getString(iNum) ?: "" else "")
+                        if (d.length < 5) continue
+                        val k = d.takeLast(9)
+                        val date = if (iDate >= 0) it.getLong(iDate) else 0L
+                        if (date > (map[k] ?: 0L)) map[k] = date
+                    }
+                }
+            }
+        } catch (e: Exception) {}
+        try {
+            if (checkSelfPermission(android.Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED) {
+                contentResolver.query(
+                    Uri.parse("content://sms"),
+                    arrayOf("address", "date"),
+                    null, null, "date DESC LIMIT 500"
+                )?.use {
+                    while (it.moveToNext()) {
+                        val d = digitsOf(it.getString(0) ?: "")
+                        if (d.length < 5) continue
+                        val k = d.takeLast(9)
+                        val date = it.getLong(1)
+                        if (date > (map[k] ?: 0L)) map[k] = date
+                    }
+                }
+            }
+        } catch (e: Exception) {}
+        val n = if (limit > 0) limit else 60
+        val sorted = map.entries.sortedByDescending { it.value }.take(n)
+        val arr = JSONArray()
+        sorted.forEach { arr.put(JSONObject().put("num", it.key).put("date", it.value)) }
+        return arr.toString()
+    }
+
     inner class Bridge {
         @JavascriptInterface fun getSharedText(): String = sharedText
         @JavascriptInterface fun getContacts(): String = readContacts()
@@ -670,6 +717,9 @@ class ShareActivity : Activity() {
 
         /** יומן SMS מול מספר (JSON). */
         @JavascriptInterface fun getSmsLog(phone: String): String = try { smsLogJson(phone) } catch (e: Exception) { "[]" }
+
+        /** מספרים שדיברת איתם לאחרונה (לתצוגת "שימוש אחרון"). */
+        @JavascriptInterface fun getRecentContacts(limit: Int): String = try { recentContactsJson(limit) } catch (e: Exception) { "[]" }
 
         /** התראות וואטסאפ שנתפסו לאיש קשר לפי שם (JSON). */
         @JavascriptInterface fun getNotifLog(name: String): String = try { NotifListener.read(this@ShareActivity, name) } catch (e: Exception) { "[]" }
