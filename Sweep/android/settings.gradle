@@ -4,3 +4,16 @@ extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autoli
 rootProject.name = 'Sweep'
 include ':app'
 includeBuild('../node_modules/@react-native/gradle-plugin')
+
+// React Native registers the oss.sonatype.org snapshots repository in the centralized
+// dependencyResolutionManagement. That host frequently returns HTTP 504 (Gateway Time-out),
+// which breaks resolution of stable releases that actually live on mavenCentral()/google().
+// Strip any oss.sonatype.org repository once settings are evaluated so builds stay resilient.
+gradle.settingsEvaluated { settings ->
+    try {
+        settings.dependencyResolutionManagement.repositories.removeAll { repo ->
+            repo instanceof org.gradle.api.artifacts.repositories.MavenArtifactRepository &&
+                repo.url != null && repo.url.toString().contains('oss.sonatype.org')
+        }
+    } catch (ignored) {}
+}
