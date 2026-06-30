@@ -54,7 +54,7 @@ jobs:
         working-directory: Sweep/android
         run: |
           chmod +x ./gradlew
-          ./gradlew assembleRelease --no-daemon --stacktrace
+          ./gradlew assembleRelease --no-daemon --stacktrace --init-script strip-sonatype.init.gradle
 
       - name: Rename APK to Sweep.apk
         working-directory: Sweep

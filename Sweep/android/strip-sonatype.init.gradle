@@ -1,0 +1,22 @@
+// Gradle init script: forcibly remove the flaky oss.sonatype.org snapshots repository
+// (injected by React Native) from every repository container. That host returns HTTP 504
+// during outages and aborts resolution of stable releases that live on mavenCentral/google.
+// Runs at the latest safe points (settingsEvaluated + projectsEvaluated) so it strips the
+// repo AFTER React Native has finished adding it, regardless of where it was declared.
+
+def isSonatype = { repo ->
+    repo instanceof org.gradle.api.artifacts.repositories.MavenArtifactRepository &&
+        repo.url != null && repo.url.toString().contains('oss.sonatype.org')
+}
+
+gradle.settingsEvaluated { settings ->
+    try { settings.pluginManagement.repositories.removeAll(isSonatype) } catch (ignored) {}
+    try { settings.dependencyResolutionManagement.repositories.removeAll(isSonatype) } catch (ignored) {}
+}
+
+gradle.projectsEvaluated { g ->
+    g.rootProject.allprojects { proj ->
+        try { proj.repositories.removeAll(isSonatype) } catch (ignored) {}
+        try { proj.buildscript.repositories.removeAll(isSonatype) } catch (ignored) {}
+    }
+}
