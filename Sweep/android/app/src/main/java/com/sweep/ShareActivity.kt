@@ -149,50 +149,16 @@ class ShareActivity : Activity() {
 
     private fun enc(s: String): String = URLEncoder.encode(s, "UTF-8")
 
-    /** תווית חשבון ידידותית. ל-Google מחזיר את כתובת המייל (כדי להבחין בין חשבונות). */
-    private fun accountLabel(name: String?, type: String?): String {
-        if (type == null || type.isBlank()) return "מכשיר"
-        if (type.contains("google", true)) return if (!name.isNullOrBlank()) name else "Google"
-        if (type.contains("sim", true)) return "SIM"
-        if (type.contains("whatsapp", true)) return "WhatsApp"
-        return if (!name.isNullOrBlank()) name else "מכשיר"
-    }
-
     private fun readContacts(): String {
         if (checkSelfPermission(android.Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) return "[]"
-        // מיפוי contactId -> חשבון (לפי ה-raw contact הראשון)
-        val acctMap = HashMap<Long, String>()
-        try {
-            contentResolver.query(
-                ContactsContract.RawContacts.CONTENT_URI,
-                arrayOf(
-                    ContactsContract.RawContacts.CONTACT_ID,
-                    ContactsContract.RawContacts.ACCOUNT_NAME,
-                    ContactsContract.RawContacts.ACCOUNT_TYPE
-                ),
-                null, null, null
-            )?.use {
-                val iC = it.getColumnIndex(ContactsContract.RawContacts.CONTACT_ID)
-                val iN = it.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_NAME)
-                val iT = it.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_TYPE)
-                while (it.moveToNext()) {
-                    val cid = if (iC >= 0) it.getLong(iC) else continue
-                    if (acctMap.containsKey(cid)) continue
-                    val an = if (iN >= 0) it.getString(iN) else null
-                    val at = if (iT >= 0) it.getString(iT) else null
-                    acctMap[cid] = accountLabel(an, at)
-                }
-            }
-        } catch (e: Exception) {}
         val arr = JSONArray()
         val seen = HashSet<String>()
         val cur = contentResolver.query(
             ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
             arrayOf(
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-                ContactsContract.CommonDataKinds.Phone.NUMBER,
-                ContactsContract.CommonDataKinds.Phone.CONTACT_ID
+                ContactsContract.CommonDataKinds.Phone.NUMBER
             ),
             null, null,
             ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC"
@@ -200,15 +166,12 @@ class ShareActivity : Activity() {
         cur?.use {
             val iName = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
             val iNum = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
-            val iCid = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID)
             while (it.moveToNext()) {
                 val name = if (iName >= 0) it.getString(iName) ?: "" else ""
                 val num = if (iNum >= 0) it.getString(iNum) ?: "" else ""
                 if (name.isBlank()) continue
                 if (!seen.add(name)) continue
-                val cid = if (iCid >= 0) it.getLong(iCid) else -1L
-                val acct = acctMap[cid] ?: "מכשיר"
-                arr.put(JSONObject().put("name", name).put("phone", num).put("account", acct))
+                arr.put(JSONObject().put("name", name).put("phone", num))
             }
         }
         return arr.toString()
