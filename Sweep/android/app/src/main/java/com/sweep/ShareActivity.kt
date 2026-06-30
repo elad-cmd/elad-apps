@@ -93,16 +93,19 @@ class ShareActivity : Activity() {
 
         // מבקש את כל ההרשאות יחד בהתקנה הראשונה: אנשי קשר (קריאה+כתיבה) ומיקרופון (לקלט קולי).
         val needed = ArrayList<String>()
-        for (perm in listOf(
+        val perms = ArrayList(listOf(
             android.Manifest.permission.READ_CONTACTS,
             android.Manifest.permission.WRITE_CONTACTS,
             android.Manifest.permission.RECORD_AUDIO,
             android.Manifest.permission.READ_CALL_LOG,
             android.Manifest.permission.READ_SMS
-        )) {
+        ))
+        if (android.os.Build.VERSION.SDK_INT >= 33) perms.add("android.permission.POST_NOTIFICATIONS")
+        for (perm in perms) {
             if (checkSelfPermission(perm) != PackageManager.PERMISSION_GRANTED) needed.add(perm)
         }
         if (needed.isNotEmpty()) requestPermissions(needed.toTypedArray(), REQ_CONTACTS)
+        try { KitAlarmReceiver.schedule(this) } catch (e: Exception) {}
     }
 
     override fun onRequestPermissionsResult(
@@ -733,6 +736,15 @@ class ShareActivity : Activity() {
 
         /** מספרים שדיברת איתם לאחרונה (לתצוגת "שימוש אחרון"). */
         @JavascriptInterface fun getRecentContacts(limit: Int): String = try { recentContactsJson(limit) } catch (e: Exception) { "[]" }
+
+        /** שומר את מצב "שמירה על קשר" (מערך JSON של {num,days,name}) לבדיקת הרקע. */
+        @JavascriptInterface
+        fun saveKitState(json: String) {
+            try {
+                getSharedPreferences("kit_state", Context.MODE_PRIVATE).edit().putString("members", json ?: "[]").apply()
+                KitAlarmReceiver.schedule(this@ShareActivity)
+            } catch (e: Exception) {}
+        }
 
         /** התראות וואטסאפ שנתפסו לאיש קשר לפי שם (JSON). */
         @JavascriptInterface fun getNotifLog(name: String): String = try { NotifListener.read(this@ShareActivity, name) } catch (e: Exception) { "[]" }

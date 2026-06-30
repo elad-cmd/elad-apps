@@ -52,6 +52,7 @@ class MainActivity : Activity() {
                     if (!pageReady) {
                         pageReady = true
                         if (pendingShared.isNotEmpty()) transcribeSharedList(pendingShared)
+                        pendingClip?.let { callJs("onClipboard", it); pendingClip = null }
                     }
                 }
             }
@@ -69,13 +70,27 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        // Capture the current clipboard text into the in-app clipboard log (foreground read only).
+        readClipboardIntoLog()
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        // Clipboard can only be read once the window actually HAS focus (Android 10+).
+        // onResume often fires before focus is granted, so this is the reliable capture point.
+        if (hasFocus) readClipboardIntoLog()
+    }
+
+    private var pendingClip: String? = null
+    /** Capture the current clipboard text into the in-app clipboard log. */
+    private fun readClipboardIntoLog() {
         try {
             val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = cm.primaryClip
             if (clip != null && clip.itemCount > 0) {
                 val t = clip.getItemAt(0).coerceToText(this)?.toString().orEmpty()
-                if (t.isNotBlank()) callJs("onClipboard", t)
+                if (t.isNotBlank()) {
+                    if (pageReady) callJs("onClipboard", t) else pendingClip = t
+                }
             }
         } catch (e: Exception) {}
     }
