@@ -160,8 +160,8 @@
   .pal-sw.on{border-color:#fff;border-width:3px;}
   .hbar.hand-left .hm-label{right:auto;left:56px;}
 
-  .toast{position:fixed;bottom:96px;left:43px;transform:translateX(-50%);max-width:calc(100vw - 28px);text-align:center;background:var(--tq-ink);color:#fff;padding:11px 20px;border-radius:14px;font-weight:600;font-size:14px;z-index:99;opacity:0;transition:opacity .2s;pointer-events:none;box-shadow:0 12px 28px -10px rgba(0,0,0,.4);}
-  body.hand-left .toast{left:auto;right:43px;transform:translateX(50%);}
+  .toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);max-width:calc(100vw - 28px);text-align:center;background:var(--tq-ink);color:#fff;padding:11px 20px;border-radius:14px;font-weight:600;font-size:14px;z-index:99;opacity:0;transition:opacity .2s;pointer-events:none;box-shadow:0 12px 28px -10px rgba(0,0,0,.4);}
+  body.hand-left .toast{left:50%;right:auto;transform:translateX(-50%);}
   .toast.show{opacity:1;}
 
   .hint{position:fixed;bottom:30px;right:18px;left:84px;text-align:center;font-size:12px;color:rgba(255,255,255,.85);z-index:5;}
@@ -806,6 +806,12 @@ let PEOPLE = [];
 if(BRIDGE){try{const arr=JSON.parse(bGet('getContacts','[]')||'[]');if(arr&&arr.length)PEOPLE=arr;}catch(e){}}
 if(!PEOPLE.length){try{const _sp=JSON.parse(localStorage.getItem('myshare_people')||'[]');if(Array.isArray(_sp)&&_sp.length)PEOPLE=_sp;}catch(e){}}
 function savePeople(){try{localStorage.setItem('myshare_people',JSON.stringify(PEOPLE));}catch(e){}}
+function loadFavSet(){try{return JSON.parse(localStorage.getItem('myshare_favset')||'{}')||{};}catch(e){return {};}}
+let FAVSET=loadFavSet();
+function saveFavSet(){try{localStorage.setItem('myshare_favset',JSON.stringify(FAVSET));}catch(e){}}
+function applyFavSet(){try{PEOPLE.forEach(p=>{if(FAVSET[fKey(p)])p.fav=true;});}catch(e){}}
+function setFav(p,on){if(!p)return;p.fav=!!on;const k=fKey(p);if(on)FAVSET[k]=1;else delete FAVSET[k];saveFavSet();}
+function bulkFav(list,on){let n=0;(list||[]).forEach(p=>{setFav(p,on===undefined?!p.fav:!!on);n++;});savePeople();renderList();if(navigator.vibrate)navigator.vibrate(12);toast((on===false?'הוסרו ממועדפים: ':'סומנו כמועדפים: ')+n);}
 
 const DEF={hand:'right',palette:0,share:['call','whatsapp','mail'],sharev:3,dblCall:false};
 const DEF_BANK=['whatsapp','call','sms','mail','copy','telegram','messenger','savecontact'];
@@ -1007,6 +1013,7 @@ function dqNoName(p){const n=String(p.name||'').trim();return !n||n==='(ללא �
 function dqNoPhone(p){return !dqPhones(p).filter(x=>String(x).trim()).length;}
 function dqNoEmail(p){return !dqEmails(p).filter(x=>String(x).trim()).length;}
 function dqBadPhone(p){const ph=dqPhones(p).filter(x=>String(x).trim());if(!ph.length)return false;return ph.every(x=>{const d=String(x).replace(/\D/g,'');return d.length<9||d.length>15;});}
+function _acctShort(a){a=String(a||'');const at=a.indexOf('@');let s=at>0?a.slice(0,at):a;return s.length>12?s.slice(0,12)+'…':s;}
 function bulkNormalizePhones(){
   let n=0;
   PEOPLE.forEach(p=>{let ch=false;if(p.phone){const v=normIL(p.phone);if(v!==p.phone){p.phone=v;ch=true;}}if(p.phones&&p.phones.length){p.phones=p.phones.map(x=>{const v=normIL(x);if(v!==x)ch=true;return v;});}if(ch)n++;});
@@ -1054,6 +1061,7 @@ function openSpecialLists(){
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>רשימות מיוחדות</h2></div><div class="scr-body" id="slBody"></div>');sc._reopen=openSpecialLists;
   let tab='noname',slView='all';
   const defs=[{k:'noname',t:'חסר שם',f:dqNoName},{k:'nophone',t:'חסר טלפון',f:dqNoPhone},{k:'noemail',t:'חסר אימייל',f:dqNoEmail},{k:'badphone',t:'טלפון לא תקין',f:dqBadPhone}];
+  try{const _accs=[...new Set(PEOPLE.filter(p=>FDEC[fKey(p)]!=='delete').map(p=>p.account).filter(Boolean))];_accs.forEach(a=>defs.push({k:'acc:'+a,t:_acctShort(a),f:(function(an){return function(p){return p.account===an;};})(a)}));}catch(e){}
   function render(){
     const body=sc.querySelector('#slBody');if(!body)return;
     const cur=defs.find(d=>d.k===tab)||defs[0];
@@ -1252,7 +1260,8 @@ function openMemberPicker(listId){
   const origBack=sc._back;
   sc._back=()=>{L.members=[...sel];saveCfg();renderLists();renderList();origBack();};
 }
-if(BRIDGE){try{var _fk=JSON.parse(localStorage.getItem('myshare_favkeys')||'null');if(_fk){PEOPLE.forEach(p=>{if(_fk[fKey(p)])p.fav=true;});localStorage.removeItem('myshare_favkeys');}}catch(e){}}
+if(BRIDGE){try{var _fk=JSON.parse(localStorage.getItem('myshare_favkeys')||'null');if(_fk){PEOPLE.forEach(p=>{if(_fk[fKey(p)])p.fav=true;});Object.keys(_fk).forEach(k=>{FAVSET[k]=1;});saveFavSet();localStorage.removeItem('myshare_favkeys');}}catch(e){}}
+applyFavSet();
 healKeys();recomputeAllRules();renderSeg();renderList();renderLists();layoutList();
 setTimeout(()=>{try{const t=upcomingBdays().filter(o=>o.n===0);if(t.length){const nm=t.map(o=>o.p.name||'').filter(Boolean).slice(0,3).join(', ');toast('🎂 היום יום הולדת ל'+(nm||t.length+' אנשי קשר'));}}catch(e){}},1600);
 window.addEventListener('resize',layoutList);
@@ -1428,7 +1437,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.30.0404';
+const APP_VERSION='2026.06.30.0416';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1775,6 +1784,7 @@ function openAddContact(pf){
     if(!name&&!phone&&!email&&!ad&&!cf.length){toast('הזן לפחות שדה אחד');return;}
     const person={name:name||'(ללא שם)',phone:phone,email:email,phones:phone?[phone]:[],emails:email?[email]:[],org:'',msg:'',fav:fav,last:0};
     PEOPLE.unshift(person);
+    if(fav)setFav(person,true);
     if(ad)setAddr(person,ad);
     if(cf.length)setFields(person,cf);
     savePeople();renderList();toast('נוסף איש קשר');sc._back();
@@ -1813,6 +1823,7 @@ function openContact(person,fromSearch){
     '<div class="scr-body"><div class="ct-card">'+
     '<button class="ct-fav" id="ctFav" aria-label="מועדף">'+STAR+'</button>'+'<div class="ct-av">'+escapeHtml(initials(person.name))+'</div>'+
     '<div class="ct-frow ct-namerow"><input class="ct-inp ct-nameinp" data-key="name" placeholder="שם"></div>'+
+    '<div id="ctAccount" style="text-align:center;font-size:12px;color:rgba(255,255,255,.55);margin:-2px 0 6px;"></div>'+
     '<div class="ct-frow"><div class="ct-acts"><button class="ct-act" data-act="call" aria-label="חיוג">'+ICON.call+'</button><button class="ct-act" data-act="wa" aria-label="וואטסאפ">'+ICON.whatsapp+'</button></div><input class="ct-inp" data-key="phone" placeholder="טלפון" dir="ltr" readonly inputmode="none"></div>'+
     '<div class="ct-frow"><div class="ct-acts"><button class="ct-act" data-act="mail" aria-label="מייל">'+ICON.mail+'</button></div><input class="ct-inp" data-key="email" placeholder="מייל" dir="ltr"></div>'+
     '<div class="ct-frow"><div class="ct-acts"><button class="ct-act ct-waze" data-act="waze" aria-label="ניווט ב-Waze">'+ICON.waze+'</button></div><input class="ct-inp" id="ctAddr" placeholder="כתובת (לניווט ב-Waze)" dir="rtl"></div>'+
@@ -1826,9 +1837,10 @@ function openContact(person,fromSearch){
   if(fromSearch)sc._back=()=>{closeScreen(sc);resumeSearch();};
   const card=sc.querySelector('.ct-card');
   const _orig={name:person.name||'',phone:(person.phone||((person.phones&&person.phones[0])||''))||''};
+  (function(){const ae=card.querySelector('#ctAccount');if(!ae)return;if(person.account){ae.textContent='חשבון: '+person.account;ae.style.display='';}else{ae.style.display='none';}})();
   card.querySelectorAll('.ct-inp').forEach(inp=>{const k=inp.dataset.key;if(!k)return;inp.value=person[k]||'';const save=()=>{person[k]=inp.value;if(k==='phone')person.phones=inp.value?[inp.value]:[];renderList();savePeople();};const saveSync=()=>{save();nativeUpdateContact(person,_orig);};inp.addEventListener('input',save);inp.addEventListener('blur',saveSync);if(k==='phone'){inp.addEventListener('click',()=>openNumPad(inp,saveSync));}});
   card.querySelectorAll('.ct-act').forEach(b=>{b.onclick=(e)=>{e.stopPropagation();fireAction(b.dataset.act,person);};});
-  const fb=card.querySelector('#ctFav');if(fb){if(person.fav)fb.classList.add('on');fb.onclick=()=>{person.fav=!person.fav;fb.classList.toggle('on',!!person.fav);renderList();savePeople();};}
+  const fb=card.querySelector('#ctFav');if(fb){if(person.fav)fb.classList.add('on');fb.onclick=()=>{setFav(person,!person.fav);fb.classList.toggle('on',!!person.fav);renderList();savePeople();};}
   (function(){const db=sc.querySelector('#ctDel');if(!db)return;let st=0,tmr=0;db.onclick=()=>{if(st===0){st=1;db.classList.add('arm');db.textContent='בטוח? לחץ שוב למחיקה (גם מהטלפון)';if(navigator.vibrate)navigator.vibrate(8);tmr=setTimeout(()=>{st=0;db.classList.remove('arm');db.textContent='מחק איש קשר';},3000);return;}if(tmr)clearTimeout(tmr);nativeDeleteContact(person);savePeople();renderList();if(navigator.vibrate)navigator.vibrate(12);toast('איש הקשר נמחק');closeScreen(sc);};})();
   (function(){const dbox=card.querySelector('#ctDays');if(!dbox)return;function paintDays(){const v=getDays(person);dbox.innerHTML='<div class="days-lbl">ימים פנויים</div><div class="days-row">'+DAY_LET.map((L,i)=>'<button class="dayc'+(v[i]?' on':'')+'" data-d="'+i+'">'+L+'</button>').join('')+'</div>';dbox.querySelectorAll('.dayc').forEach(b=>b.onclick=()=>{toggleDayP(person,+b.dataset.d);if(navigator.vibrate)navigator.vibrate(4);paintDays();renderList();});}paintDays();})();
   (function(){const ai=card.querySelector('#ctAddr');if(!ai)return;ai.value=getAddr(person);const sv=()=>{setAddr(person,ai.value);renderList();};ai.addEventListener('input',sv);ai.addEventListener('blur',()=>{sv();nativeUpdateContact(person,_orig);});})();
@@ -2701,6 +2713,7 @@ function aiToAction(o){
     case 'open_list':{const L=(cfg.lists||[]).find(x=>String(x.name).indexOf(t)>=0);return L?{label:say||('רשימה: '+L.name),run:()=>openSendList(L.id)}:{label:'לא מצאתי רשימה: '+t,run:null};}
     case 'add_to_list':{const term=pr.match||pr.text||pr.term||'';const m=voiceMatchByName(term);return (term&&t)?{label:say||('נמצאו '+m.length+' עם "'+term+'" → «'+t+'»'),people:m,run:m.length?((sel)=>bulkAddToList(sel||m,t)):null,list:m.map(p=>p.name)}:{label:'חסר טקסט לסינון או שם רשימה',run:null};}
     case 'add_contacts_to_list':case 'create_list_add':{const ppl=(pr.contacts||pr.names||[]).map(n=>voiceFindContact(n)).filter(Boolean);return (t&&ppl.length)?{label:say||('הוספת '+ppl.length+' אנשי קשר לרשימה «'+t+'»'),people:ppl,run:(sel)=>bulkAddToList(sel||ppl,t),list:ppl.map(p=>p.name)}:{label:'לא מצאתי את אנשי הקשר או שם הרשימה',run:null};}
+    case 'favorite':case 'add_favorite':case 'mark_favorite':{let ppl=(pr.contacts||pr.names||[]).map(n=>voiceFindContact(n)).filter(Boolean);if(!ppl.length&&t){const p=voiceFindContact(t);if(p)ppl=[p];}return ppl.length?{label:say||('לסמן כמועדפים: '+ppl.length),people:ppl,run:(sel)=>bulkFav(sel||ppl,true)}:{label:'לא מצאתי את אנשי הקשר לסימון כמועדף',run:null};}
     case 'merge':return {label:say||'מיזוג כפילויות',run:openMerge};
     case 'settings':return {label:say||'הגדרות',run:openSettings};
     case 'birthdays':return {label:say||'ימי הולדת',run:openBirthdays};
@@ -2717,7 +2730,7 @@ function aiSteps(steps){
 function aiInterpret(text){
   const key=aiKey();if(!key||!(text||'').trim())return Promise.resolve(null);
   const ctx=aiContext();
-  const sys='אתה מנוע פקודות לאפליקציית אנשי קשר בעברית. החזר אך ורק JSON תקין. לפעולה אחת: {"action":"...","target":"...","params":{...},"say":"משפט קצר בעברית"}. לכמה פעולות במשפט אחד: {"steps":[<פעולה>,<פעולה>...],"say":"תיאור כללי"}. action אחד מ: call, whatsapp, add_contact, search, open_list, navigate, add_to_list, add_contacts_to_list, merge, settings, birthdays, dialer, my_card, unknown. target = שם איש קשר או שם רשימה. whatsapp: params.text. add_contact: params.name/phone/email. add_to_list: target=שם רשימה, params.match=טקסט בשם. add_contacts_to_list: target=שם הרשימה (גם אם חדשה), params.contacts=מערך שמות אנשי קשר ספציפיים (לדוגמה: "צור רשימה X וצרף את אבא, בן ומיקה"). בחר את השמות הקרובים ביותר מאנשי הקשר שסופקו. אם לא ברור — action="unknown".';
+  const sys='אתה מנוע פקודות לאפליקציית אנשי קשר בעברית. החזר אך ורק JSON תקין. לפעולה אחת: {"action":"...","target":"...","params":{...},"say":"משפט קצר בעברית"}. לכמה פעולות במשפט אחד: {"steps":[<פעולה>,<פעולה>...],"say":"תיאור כללי"}. action אחד מ: call, whatsapp, add_contact, search, open_list, navigate, add_to_list, add_contacts_to_list, favorite, merge, settings, birthdays, dialer, my_card, unknown. favorite=סימון אנשי קשר כמועדפים: target=שם איש קשר, או params.contacts=מערך שמות. target = שם איש קשר או שם רשימה. whatsapp: params.text. add_contact: params.name/phone/email. add_to_list: target=שם רשימה, params.match=טקסט בשם. add_contacts_to_list: target=שם הרשימה (גם אם חדשה), params.contacts=מערך שמות אנשי קשר ספציפיים (לדוגמה: "צור רשימה X וצרף את אבא, בן ומיקה"). בחר את השמות הקרובים ביותר מאנשי הקשר שסופקו. אם לא ברור — action="unknown".';
   const usr='פקודה: "'+text+'"\nאנשי קשר קיימים: '+JSON.stringify(ctx.names)+'\nרשימות קיימות: '+JSON.stringify(ctx.lists);
   return fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'gpt-4o-mini',temperature:0,response_format:{type:'json_object'},messages:[{role:'system',content:sys},{role:'user',content:usr}]})})
     .then(r=>{if(r.ok)return r.json();return r.json().catch(()=>({})).then(e=>{throw new Error((e&&e.error&&e.error.message)||('HTTP '+r.status));});})
@@ -2730,6 +2743,7 @@ function interpretVoice(t){t=(t||'').trim();if(!t)return {label:'לא נקלט �
     if(term&&!listName)return {label:'הבנתי: כל מי שיש לו "'+term+'" — לאיזו רשימה? אמרו: "…לרשימה <שם>"',run:null};
     if(listName&&!term)return {label:'הבנתי רשימה «'+listName+'» — לפי איזה טקסט בשם לסנן?',run:null};
   }
+  if(/(מועדפ|העדפ|מעדיף)/i.test(t)){const q=voiceAfter(t,['למועדפים את','למועדפים','כמועדף את','כמועדף','מועדפים את','מועדפים','מועדף את','מועדף','סמן את','סמן','הוסף את','הוסף']);const p=voiceFindContact(q);return p?{label:'לסמן כמועדף: '+(p.name||''),people:[p],run:(sel)=>bulkFav(sel||[p],true)}:{label:'לא מצאתי איש קשר לסימון כמועדף: "'+q+'"',run:null};}
   if(/(מזג|מיזוג).*כפיל|כפילויות/.test(t))return {label:'אפתח: מיזוג כפילויות',run:openMerge};
   if(/(נווט|ניווט|וייז|וויז|waze)/i.test(t)){const q=voiceAfter(t,['נווט אל','נווט ל','נווט','ניווט אל','ניווט ל','ניווט','בוייז ל','בוייז','וייז ל','וייז']);const p=voiceFindContact(q);if(p)return {label:'אנווט אל: '+(p.name||''),run:()=>fireAction('waze',p)};return q?{label:'אנווט אל: "'+q+'"',run:()=>openWaze(q)}:{label:'לא הבנתי לאן לנווט',run:null};}
   if(/(וואטסאפ|וטסאפ|הודעה)/i.test(t)){const q=voiceAfter(t,['וואטסאפ ל','וואטסאפ','וטסאפ ל','וטסאפ','שלח הודעה ל','שלחי הודעה ל','הודעה ל','שלח הודעה','הודעה']);const p=voiceFindContact(q);return p?{label:'אשלח וואטסאפ ל: '+(p.name||''),run:()=>fireAction('wa',p)}:{label:'לא מצאתי איש קשר: "'+q+'"',run:null};}
