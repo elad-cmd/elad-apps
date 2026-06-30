@@ -503,12 +503,14 @@ class ShareActivity : Activity() {
                     android.provider.CallLog.Calls.CONTENT_URI,
                     arrayOf(android.provider.CallLog.Calls.NUMBER, android.provider.CallLog.Calls.DATE, android.provider.CallLog.Calls.TYPE),
                     null, null,
-                    android.provider.CallLog.Calls.DATE + " DESC LIMIT 500"
+                    android.provider.CallLog.Calls.DATE + " DESC"
                 )?.use {
                     val iNum = it.getColumnIndex(android.provider.CallLog.Calls.NUMBER)
                     val iDate = it.getColumnIndex(android.provider.CallLog.Calls.DATE)
                     val iType = it.getColumnIndex(android.provider.CallLog.Calls.TYPE)
+                    var cnt = 0
                     while (it.moveToNext()) {
+                        if (cnt++ > 800) break
                         val d = digitsOf(if (iNum >= 0) it.getString(iNum) ?: "" else "")
                         if (d.length < 5) continue
                         val k = d.takeLast(9)
@@ -523,9 +525,11 @@ class ShareActivity : Activity() {
                 contentResolver.query(
                     Uri.parse("content://sms"),
                     arrayOf("address", "date"),
-                    null, null, "date DESC LIMIT 500"
+                    null, null, "date DESC"
                 )?.use {
+                    var cnt = 0
                     while (it.moveToNext()) {
+                        if (cnt++ > 800) break
                         val d = digitsOf(it.getString(0) ?: "")
                         if (d.length < 5) continue
                         val k = d.takeLast(9)
