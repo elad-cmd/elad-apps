@@ -816,6 +816,12 @@ function statKey(p){return (p&&(p.phone||p.name))||'';}
 function loadStats(){try{return JSON.parse(localStorage.getItem('myshare_stats')||'{}')||{};}catch(e){return {};}}
 const STATS=loadStats();
 function saveStats(){try{localStorage.setItem('myshare_stats',JSON.stringify(STATS));}catch(e){}}
+function loadILog(){try{return JSON.parse(localStorage.getItem('myshare_ilog')||'{}')||{};}catch(e){return {};}}
+const ILOG=loadILog();
+function logInteraction(person,kind){try{const k=statKey(person);if(!k)return;if(!ILOG[k])ILOG[k]=[];ILOG[k].push({date:Date.now(),kind:kind});if(ILOG[k].length>500)ILOG[k]=ILOG[k].slice(-500);localStorage.setItem('myshare_ilog',JSON.stringify(ILOG));}catch(e){}}
+function _fmtDur(sec){sec=+sec||0;const m=Math.floor(sec/60),s=sec%60;return m+':'+(s<10?'0':'')+s;}
+function _fmtHistDate(ms){if(!ms)return '';const d=new Date(+ms);const p=n=>(n<10?'0':'')+n;return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+String(d.getFullYear()).slice(2)+' '+p(d.getHours())+':'+p(d.getMinutes());}
+function lastContactTs(person){try{let mx=0;const ph=(person.phone||((person.phones&&person.phones[0])||''))||'';if(BRIDGE&&ph){[ 'getCallLog','getSmsLog'].forEach(fn=>{try{(JSON.parse((BRIDGE[fn]?BRIDGE[fn](ph):'[]')||'[]')||[]).forEach(x=>{if(+x.date>mx)mx=+x.date;});}catch(e){}});}if(BRIDGE&&BRIDGE.getNotifLog){try{(JSON.parse(BRIDGE.getNotifLog(person.name||'')||'[]')||[]).forEach(x=>{if(+x.date>mx)mx=+x.date;});}catch(e){}}const il=(ILOG[statKey(person)]||[]);il.forEach(o=>{if(+o.date>mx)mx=+o.date;});return mx;}catch(e){return 0;}}
 PEOPLE=PEOPLE.slice().sort((a,b)=>(STATS[statKey(b)]||0)-(STATS[statKey(a)]||0));
 
 function applyPalette(i){const p=PALETTES[((i%PALETTES.length)+PALETTES.length)%PALETTES.length];const r=document.documentElement.style;r.setProperty('--tq',p.tq);r.setProperty('--tq-deep',p.deep);r.setProperty('--tq-ink',p.ink);r.setProperty('--soft',p.soft);r.setProperty('--tq-top',p.top);r.setProperty('--tq-bot',p.bot);const m=document.querySelector('meta[name=theme-color]');if(m)m.content=p.top;}
@@ -1325,6 +1331,7 @@ function fire(appId,person){
   if(appId==='waze'){openWaze(getAddr(person));return;}
   if(appId==='savecontact'){openAddContact({name:person.name||'',phone:normIL(person.phone||((person.phones&&person.phones[0])||'')),email:(person.email||((person.emails&&person.emails[0])||''))});return;}
   if(appId==='deletecontact'){const nm=person.name||'איש הקשר';uiConfirm('למחוק את «'+nm+'»? יימחק גם מהטלפון/Google.',()=>{nativeDeleteContact(person);savePeople();renderList();if(navigator.vibrate)navigator.vibrate(12);toast('איש הקשר נמחק');});return;}
+  logInteraction(person,appId);
   const app=byId(appId);
   if(BRIDGE&&BRIDGE.shareTo){
     try{BRIDGE.shareTo(appId,JSON.stringify({name:person.name||'',phone:person.phone||'',email:person.email||''}),SHARED);}catch(e){}
@@ -1419,7 +1426,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.30.0229';
+const APP_VERSION='2026.06.30.0305';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1792,9 +1799,9 @@ const ICN_BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 function openScreen(html){if(!document.querySelector('.scr'))HIST=[];closeSearch();searchFab.classList.add('hidden');const sc=document.createElement('div');sc.className='scr';sc.innerHTML=html;document.body.appendChild(sc);void sc.offsetHeight;requestAnimationFrame(()=>requestAnimationFrame(()=>sc.classList.add('show')));sc._back=()=>closeScreen(sc);const b=sc.querySelector('.scr-back');if(b)b.onclick=()=>sc._back();let bx=0,by=0,bw=false;sc.addEventListener('pointerdown',e=>{bx=e.clientX;by=e.clientY;bw=true;});sc.addEventListener('pointerup',e=>{if(!bw)return;bw=false;const dx=e.clientX-bx,dy=e.clientY-by;if(dx>70&&Math.abs(dx)>Math.abs(dy)*1.4)sc._back();});return sc;}
 function fireAction(act,person){
   const ph=(person.phone||(person.phones&&person.phones[0])||'').replace(/[^0-9+]/g,'');
-  if(act==='call'){if(ph)location.href='tel:'+ph;}
-  else if(act==='wa'){if(ph){let w=ph.replace(/^\+/,'').replace(/^0/,'972');location.href='https://wa.me/'+w;}}
-  else if(act==='mail'){if(person.email)location.href='mailto:'+person.email;}
+  if(act==='call'){if(ph){logInteraction(person,'call');location.href='tel:'+ph;}}
+  else if(act==='wa'){if(ph){logInteraction(person,'whatsapp');let w=ph.replace(/^\+/,'').replace(/^0/,'972');location.href='https://wa.me/'+w;}}
+  else if(act==='mail'){if(person.email){logInteraction(person,'mail');location.href='mailto:'+person.email;}}
   else if(act==='waze'){openWaze(getAddr(person));}
 }
 function openContact(person,fromSearch){
@@ -1811,6 +1818,7 @@ function openContact(person,fromSearch){
     '<div class="ct-lists" id="ctLists"></div>'+
     '<div class="ct-fields" id="ctFields"></div>'+
     '<div class="ct-days" id="ctDays"></div>'+
+    '<div class="ct-history" id="ctHistory"></div>'+
     '</div><button class="ct-del" id="ctDel">מחק איש קשר</button></div>';
   const sc=openScreen(html);sc.classList.add('ct-scr');sc._reopen=()=>openContact(person);
   if(fromSearch)sc._back=()=>{closeScreen(sc);resumeSearch();};
@@ -1823,6 +1831,21 @@ function openContact(person,fromSearch){
   (function(){const dbox=card.querySelector('#ctDays');if(!dbox)return;function paintDays(){const v=getDays(person);dbox.innerHTML='<div class="days-lbl">ימים פנויים</div><div class="days-row">'+DAY_LET.map((L,i)=>'<button class="dayc'+(v[i]?' on':'')+'" data-d="'+i+'">'+L+'</button>').join('')+'</div>';dbox.querySelectorAll('.dayc').forEach(b=>b.onclick=()=>{toggleDayP(person,+b.dataset.d);if(navigator.vibrate)navigator.vibrate(4);paintDays();renderList();});}paintDays();})();
   (function(){const ai=card.querySelector('#ctAddr');if(!ai)return;ai.value=getAddr(person);const sv=()=>{setAddr(person,ai.value);renderList();};ai.addEventListener('input',sv);ai.addEventListener('blur',()=>{sv();nativeUpdateContact(person,_orig);});})();
   (function(){const bi=card.querySelector('#ctBday');if(!bi)return;const MON=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];const fmt=v=>{if(!v)return '';const m=String(v).match(/(\d{4})?-?(\d{2})-(\d{2})/);if(!m)return v;return (+m[3])+' ב'+(MON[+m[2]-1]||m[2])+(m[1]?(' '+m[1]):'');};let cur=getBday(person);bi.value=fmt(cur);bi.addEventListener('click',()=>openBdayWheel(cur,function(val){cur=val;setBday(person,val);bi.value=fmt(val);renderList();nativeUpdateContact(person,_orig);}));})();
+  (function(){const hbox=card.querySelector('#ctHistory');if(!hbox)return;if(!BRIDGE){hbox.style.display='none';return;}
+    const ph=(person.phone||((person.phones&&person.phones[0])||''))||'';
+    const J=(fn,a)=>{try{return JSON.parse((BRIDGE[fn]?BRIDGE[fn](a):'[]')||'[]')||[];}catch(e){return [];}};
+    const ev=[];
+    if(ph){J('getCallLog',ph).forEach(c=>{const t=+c.type;let dir='out',lbl='שיחה יוצאת';if(t===1){dir='in';lbl='שיחה נכנסת';}else if(t===3){dir='miss';lbl='שיחה שלא נענתה';}else if(t===5){dir='miss';lbl='שיחה שנדחתה';}const dur=+c.dur||0;ev.push({date:+c.date||0,icon:'call',dir:dir,lbl:lbl,detail:dur?('משך '+_fmtDur(dur)):''});});}
+    if(ph){J('getSmsLog',ph).forEach(s=>{const dir=(+s.type===2)?'out':'in';ev.push({date:+s.date||0,icon:'sms',dir:dir,lbl:(dir==='out'?'SMS יוצא':'SMS נכנס'),detail:(s.body||'').slice(0,80)});});}
+    J('getNotifLog',person.name||'').forEach(w=>{ev.push({date:+w.date||0,icon:'whatsapp',dir:'in',lbl:'וואטסאפ נכנס',detail:(w.text||'').slice(0,80)});});
+    (ILOG[statKey(person)]||[]).forEach(o=>{const k=o.kind;if(k==='call'||k==='sms')return;let lbl,icon;if(k==='whatsapp'||k==='wa'){lbl='וואטסאפ יוצא';icon='whatsapp';}else if(k==='mail'){lbl='מייל יוצא';icon='mail';}else if(k==='telegram'){lbl='טלגרם יוצא';icon='telegram';}else{lbl='שיתוף יוצא';icon='copy';}ev.push({date:+o.date||0,icon:icon,dir:'out',lbl:lbl+' (מ-Sweep)',detail:''});});
+    ev.sort((a,b)=>b.date-a.date);
+    let head='<div class="cf-hd">היסטוריית מגעים</div>';
+    if(BRIDGE.isNotifAccess&&!BRIDGE.isNotifAccess())head+='<button class="cm-btn" id="hNotif" style="margin:0 0 8px;font-size:12px;opacity:.85;">הפעל מעקב וואטסאפ נכנס ›</button>';
+    if(!ev.length){hbox.innerHTML=head+'<div style="opacity:.55;font-size:13px;padding:4px 0;">אין מגעים מתועדים עדיין</div>';}
+    else{const rows=ev.slice(0,200).map(e=>{const col=e.dir==='in'?'#7fe9d8':(e.dir==='miss'?'#ff9b90':'rgba(255,255,255,.9)');const ic=(ICON[e.icon]||'');return '<div class="hist-row" style="display:flex;align-items:flex-start;gap:9px;padding:7px 2px;border-top:1px solid rgba(255,255,255,.08);"><span style="flex:0 0 auto;color:'+col+';width:17px;height:17px;display:inline-flex;margin-top:1px;">'+ic+'</span><div style="flex:1;min-width:0;text-align:right;"><div style="font-size:13px;color:'+col+';font-weight:600;">'+e.lbl+'</div>'+(e.detail?'<div style="font-size:12px;opacity:.7;word-break:break-word;">'+escapeHtml(e.detail)+'</div>':'')+'</div><div style="flex:0 0 auto;font-size:11px;opacity:.55;direction:ltr;white-space:nowrap;">'+_fmtHistDate(e.date)+'</div></div>';}).join('');hbox.innerHTML=head+'<div class="hist-list">'+rows+'</div>';}
+    const nb=hbox.querySelector('#hNotif');if(nb)nb.onclick=()=>{try{if(BRIDGE.openNotifAccess)BRIDGE.openNotifAccess();}catch(e){}};
+  })();
   (function(){const fbox=card.querySelector('#ctFields');if(!fbox)return;let arr=getFields(person).map(f=>({l:String(f.l||''),v:String(f.v||'')}));const XS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';function persist(){setFields(person,arr);}function paint(){fbox.innerHTML='<div class="cf-hd">שדות מותאמים</div><div class="cf-list">'+arr.map((f,i)=>'<div class="cf-row" data-i="'+i+'"><input class="ct-inp cf-l" placeholder="תווית" value="'+escapeHtml(f.l)+'"><input class="ct-inp cf-v" placeholder="ערך" value="'+escapeHtml(f.v)+'"><button class="cf-del" data-i="'+i+'" aria-label="הסר">'+XS+'</button></div>').join('')+'</div><button class="cf-add" id="cfAdd">+ הוסף שדה</button>';fbox.querySelectorAll('.cf-row').forEach(r=>{const i=+r.dataset.i;const li=r.querySelector('.cf-l'),vi=r.querySelector('.cf-v');const upd=()=>{arr[i]={l:li.value,v:vi.value};persist();};li.addEventListener('input',upd);vi.addEventListener('input',upd);});fbox.querySelectorAll('.cf-del').forEach(b=>b.onclick=()=>{arr.splice(+b.dataset.i,1);persist();paint();});fbox.querySelector('#cfAdd').onclick=()=>{arr.push({l:'',v:''});paint();const ls=fbox.querySelectorAll('.cf-l');if(ls.length)ls[ls.length-1].focus();};}paint();})();
   function paintCtLists(){const box=sc.querySelector('#ctLists');if(!box)return;const mine=listsOf(person);box.innerHTML='<div class="ct-lists-row">'+mine.map(L=>'<button class="ct-lchip on" data-id="'+L.id+'">'+escapeHtml(L.name)+'</button>').join('')+'<button class="ct-addlist" id="ctAddList" aria-label="הוסף לרשימה">'+ICON.plus+'</button></div>';const ab=box.querySelector('#ctAddList');if(ab)ab.onclick=()=>openListAssign(person,paintCtLists);box.querySelectorAll('.ct-lchip[data-id]').forEach(b=>b.onclick=()=>{const L=(cfg.lists||[]).find(x=>x.id===b.dataset.id);if(!L)return;uiConfirm('להסיר את «'+(person.name||"איש הקשר")+'» מהרשימה «'+L.name+'»?',function(){const i=L.members.indexOf(fKey(person));if(i>=0)L.members.splice(i,1);saveCfg();renderLists();renderList();paintCtLists();});});}
   paintCtLists();

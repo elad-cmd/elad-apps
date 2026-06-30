@@ -96,7 +96,9 @@ class ShareActivity : Activity() {
         for (perm in listOf(
             android.Manifest.permission.READ_CONTACTS,
             android.Manifest.permission.WRITE_CONTACTS,
-            android.Manifest.permission.RECORD_AUDIO
+            android.Manifest.permission.RECORD_AUDIO,
+            android.Manifest.permission.READ_CALL_LOG,
+            android.Manifest.permission.READ_SMS
         )) {
             if (checkSelfPermission(perm) != PackageManager.PERMISSION_GRANTED) needed.add(perm)
         }
@@ -374,6 +376,79 @@ class ShareActivity : Activity() {
         }, "שיתוף"))
     }
 
+    private fun digitsOf(s: String): String = s.filter { it.isDigit() }
+
+    /** האם שני מספרים מתייחסים לאותו אדם (השוואת סיומת ספרות). */
+    private fun sameNumber(aDigits: String, lastDigits: String): Boolean {
+        if (aDigits.isEmpty() || lastDigits.isEmpty()) return false
+        val n = minOf(aDigits.length, lastDigits.length)
+        return aDigits.takeLast(n) == lastDigits.takeLast(n)
+    }
+
+    /** יומן שיחות מול מספר: תאריך, משך, סוג. JSON ממוין יורד. */
+    private fun callLogJson(phone: String): String {
+        if (checkSelfPermission(android.Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) return "[]"
+        val target = digitsOf(phone)
+        if (target.length < 5) return "[]"
+        val last = target.takeLast(9)
+        val arr = JSONArray()
+        try {
+            contentResolver.query(
+                android.provider.CallLog.Calls.CONTENT_URI,
+                arrayOf(
+                    android.provider.CallLog.Calls.NUMBER, android.provider.CallLog.Calls.DATE,
+                    android.provider.CallLog.Calls.DURATION, android.provider.CallLog.Calls.TYPE
+                ),
+                android.provider.CallLog.Calls.NUMBER + " LIKE ?", arrayOf("%$last"),
+                android.provider.CallLog.Calls.DATE + " DESC"
+            )?.use {
+                val iNum = it.getColumnIndex(android.provider.CallLog.Calls.NUMBER)
+                val iDate = it.getColumnIndex(android.provider.CallLog.Calls.DATE)
+                val iDur = it.getColumnIndex(android.provider.CallLog.Calls.DURATION)
+                val iType = it.getColumnIndex(android.provider.CallLog.Calls.TYPE)
+                var n = 0
+                while (it.moveToNext() && n < 300) {
+                    val num = digitsOf(if (iNum >= 0) it.getString(iNum) ?: "" else "")
+                    if (!sameNumber(num, last)) continue
+                    arr.put(JSONObject()
+                        .put("date", if (iDate >= 0) it.getLong(iDate) else 0L)
+                        .put("dur", if (iDur >= 0) it.getLong(iDur) else 0L)
+                        .put("type", if (iType >= 0) it.getInt(iType) else 0))
+                    n++
+                }
+            }
+        } catch (e: Exception) {}
+        return arr.toString()
+    }
+
+    /** יומן SMS מול מספר: תאריך, כיוון (1=נכנס,2=יוצא), תוכן. JSON ממוין יורד. */
+    private fun smsLogJson(phone: String): String {
+        if (checkSelfPermission(android.Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED) return "[]"
+        val target = digitsOf(phone)
+        if (target.length < 5) return "[]"
+        val last = target.takeLast(9)
+        val arr = JSONArray()
+        try {
+            contentResolver.query(
+                Uri.parse("content://sms"),
+                arrayOf("address", "date", "body", "type"),
+                "address LIKE ?", arrayOf("%$last"), "date DESC"
+            )?.use {
+                var n = 0
+                while (it.moveToNext() && n < 300) {
+                    val addr = digitsOf(it.getString(0) ?: "")
+                    if (!sameNumber(addr, last)) continue
+                    arr.put(JSONObject()
+                        .put("date", it.getLong(1))
+                        .put("body", it.getString(2) ?: "")
+                        .put("type", it.getInt(3)))
+                    n++
+                }
+            }
+        } catch (e: Exception) {}
+        return arr.toString()
+    }
+
     inner class Bridge {
         @JavascriptInterface fun getSharedText(): String = sharedText
         @JavascriptInterface fun getContacts(): String = readContacts()
@@ -551,6 +626,33 @@ class ShareActivity : Activity() {
                     (clip.getItemAt(0).coerceToText(this@ShareActivity)?.toString() ?: "")
                 else ""
             } catch (e: Exception) { "" }
+        }
+
+        /** יומן שיחות מול מספר (JSON). */
+        @JavascriptInterface fun getCallLog(phone: String): String = try { callLogJson(phone) } catch (e: Exception) { "[]" }
+
+        /** יומן SMS מול מספר (JSON). */
+        @JavascriptInterface fun getSmsLog(phone: String): String = try { smsLogJson(phone) } catch (e: Exception) { "[]" }
+
+        /** התראות וואטסאפ שנתפסו לאיש קשר לפי שם (JSON). */
+        @JavascriptInterface fun getNotifLog(name: String): String = try { NotifListener.read(this@ShareActivity, name) } catch (e: Exception) { "[]" }
+
+        /** האם גישת קריאת ההתראות מופעלת. */
+        @JavascriptInterface
+        fun isNotifAccess(): Boolean {
+            return try {
+                val flat = android.provider.Settings.Secure.getString(contentResolver, "enabled_notification_listeners") ?: ""
+                flat.contains("$packageName/")
+            } catch (e: Exception) { false }
+        }
+
+        /** פותח את מסך הגדרות גישת ההתראות. */
+        @JavascriptInterface
+        fun openNotifAccess() {
+            runOnUiThread {
+                try { startActivity(Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")) }
+                catch (e: Exception) { try { startActivity(Intent(android.provider.Settings.ACTION_SETTINGS)) } catch (_: Exception) {} }
+            }
         }
 
         @JavascriptInterface fun close() { doExitApp() }
