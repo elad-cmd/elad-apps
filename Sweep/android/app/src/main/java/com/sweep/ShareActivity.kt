@@ -142,7 +142,8 @@ class ShareActivity : Activity() {
      * יציאה אמיתית קורית רק כשה-JS קורא ל-AndroidShare.close().
      */
     override fun onBackPressed() {
-        if (web.canGoBack()) web.goBack() else super.onBackPressed()
+        if (web.canGoBack()) web.goBack()
+        else web.evaluateJavascript("window.__swExit && window.__swExit()", null)
     }
 
     /** ספרות בלבד; מספר ישראלי שמתחיל ב-0 מקבל קידומת 972 (ל-wa.me). */
