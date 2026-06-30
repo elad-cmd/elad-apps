@@ -105,7 +105,9 @@ class ShareActivity : Activity() {
             if (checkSelfPermission(perm) != PackageManager.PERMISSION_GRANTED) needed.add(perm)
         }
         if (needed.isNotEmpty()) requestPermissions(needed.toTypedArray(), REQ_CONTACTS)
-        try { KitAlarmReceiver.schedule(this) } catch (e: Exception) {}
+        // התראות "שמירה על קשר" מבוטלות לבקשת המשתמש — החיווי האדום בתוך האפליקציה מספיק.
+        // ההרשאה והקוד נשארים לשימוש עתידי. כדי להחזיר: בטל הערה כאן וב-saveKitState.
+        // try { KitAlarmReceiver.schedule(this) } catch (e: Exception) {}
     }
 
     override fun onRequestPermissionsResult(
@@ -742,7 +744,57 @@ class ShareActivity : Activity() {
         fun saveKitState(json: String) {
             try {
                 getSharedPreferences("kit_state", Context.MODE_PRIVATE).edit().putString("members", json ?: "[]").apply()
-                KitAlarmReceiver.schedule(this@ShareActivity)
+                // התראות רקע מבוטלות לבקשת המשתמש: KitAlarmReceiver.schedule(this@ShareActivity)
+            } catch (e: Exception) {}
+        }
+
+        /**
+         * גיבוי: שומר את נתוני האפליקציה (JSON של localStorage) + מייצא את כל אנשי הקשר ל-VCF,
+         * לתיקיית Android/data/com.sweep/files/backups. מחזיר "OK|נתיב|מספר_אנשי_קשר" או "ERR|הודעה".
+         */
+        @JavascriptInterface
+        fun runBackup(cfgJson: String): String {
+            return try {
+                val dir = java.io.File(getExternalFilesDir(null), "backups")
+                dir.mkdirs()
+                val ts = java.text.SimpleDateFormat("yyyy-MM-dd_HHmm", java.util.Locale.US).format(java.util.Date())
+                java.io.File(dir, "sweep-data-$ts.json").writeText(cfgJson ?: "{}", Charsets.UTF_8)
+                var nv = 0
+                try {
+                    val sb = StringBuilder()
+                    contentResolver.query(
+                        ContactsContract.Contacts.CONTENT_URI,
+                        arrayOf(ContactsContract.Contacts._ID, ContactsContract.Contacts.LOOKUP_KEY),
+                        null, null, null
+                    )?.use { c ->
+                        val iL = c.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY)
+                        while (c.moveToNext()) {
+                            val lk = if (iL >= 0) c.getString(iL) else null
+                            if (lk.isNullOrEmpty()) continue
+                            try {
+                                val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lk)
+                                contentResolver.openAssetFileDescriptor(uri, "r")?.use { afd ->
+                                    afd.createInputStream().use { ins ->
+                                        sb.append(String(ins.readBytes(), Charsets.UTF_8))
+                                        nv++
+                                    }
+                                }
+                            } catch (e: Exception) {}
+                        }
+                    }
+                    if (sb.isNotEmpty()) java.io.File(dir, "contacts-$ts.vcf").writeText(sb.toString(), Charsets.UTF_8)
+                } catch (e: Exception) {}
+                pruneBackups(dir, "sweep-data-", 4)
+                pruneBackups(dir, "contacts-", 4)
+                "OK|" + dir.absolutePath + "|" + nv
+            } catch (e: Exception) { "ERR|" + (e.message ?: "") }
+        }
+
+        /** שומר רק את [keep] הקבצים האחרונים עם הקידומת הנתונה. */
+        private fun pruneBackups(dir: java.io.File, prefix: String, keep: Int) {
+            try {
+                val fs = dir.listFiles { f -> f.name.startsWith(prefix) }?.sortedByDescending { it.lastModified() } ?: return
+                for (i in keep until fs.size) try { fs[i].delete() } catch (e: Exception) {}
             } catch (e: Exception) {}
         }
 

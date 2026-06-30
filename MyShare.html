@@ -370,6 +370,7 @@
   .lm-b svg{width:16px;height:16px;}
   .lm-more{width:34px;height:34px;border-radius:50%;border:none;background:rgba(8,50,50,.1);color:var(--tq-ink);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;}
   .lm-more svg{width:16px;height:16px;}
+  .lm-hid{font-size:11px;font-weight:700;opacity:.7;margin-inline-start:6px;}
   .lact-list{display:flex;flex-direction:column;gap:8px;}
   .lact{display:flex;align-items:center;gap:12px;width:100%;border:none;background:rgba(8,50,50,.06);border-radius:12px;padding:12px 14px;color:var(--tq-ink);font:inherit;font-weight:600;font-size:14px;cursor:pointer;text-align:right;}
   .lact-ic{width:22px;height:22px;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;color:var(--tq-deep);}
@@ -907,6 +908,9 @@ const KIT_OPTS=[{d:7,t:'כל שבוע'},{d:14,t:'כל שבועיים'},{d:30,t:'
 function kitOptLabel(d){const o=KIT_OPTS.find(x=>x.d===d);return o?o.t:('כל '+d+' ימים');}
 function kitList(){const kits=(cfg.lists||[]).filter(x=>x.kit);if(kits.length>1){const keep=kits[0];kits.slice(1).forEach(ex=>{(ex.members||[]).forEach(m=>{if(keep.members.indexOf(m)<0)keep.members.push(m);});});cfg.lists=cfg.lists.filter(x=>!x.kit||x===keep);saveCfg();}let L=(cfg.lists||[]).find(x=>x.kit);if(!L){L={id:'__kit__',name:'שמירה על קשר',members:[],kit:true};(cfg.lists=cfg.lists||[]).push(L);saveCfg();}return L;}
 function kitInfo(p){const k=fKey(p);const days=KIT[k]||30;const last=(RECENTTS&&RECENTTS[k])||0;const due=days*86400000;const over=last?(Date.now()-last>due):true;const remain=last?Math.ceil((due-(Date.now()-last))/86400000):-1;return {days,last,over,remain};}
+function gatherBackupData(){const o={ts:Date.now(),app:'sweep'};try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.indexOf('myshare_')===0)o[k]=localStorage.getItem(k);}}catch(e){}return o;}
+function nativeBackup(){if(!BRIDGE||typeof BRIDGE.runBackup!=='function')return'';let r='';try{r=BRIDGE.runBackup(JSON.stringify(gatherBackupData()))||'';}catch(e){r='ERR';}if(r.indexOf('OK')===0)localStorage.setItem('myshare_lastbackup',String(Date.now()));return r;}
+function autoBackup(){try{if(!BRIDGE||typeof BRIDGE.runBackup!=='function')return;const last=parseInt(localStorage.getItem('myshare_lastbackup')||'0',10)||0;if(Date.now()-last<30*86400000)return;setTimeout(()=>{try{nativeBackup();}catch(e){}},2000);}catch(e){}}
 function saveKitNative(){try{if(!BRIDGE||typeof BRIDGE.saveKitState!=='function')return;const L=(cfg.lists||[]).find(x=>x.kit);const arr=L?((L.members||[]).map(k=>{const p=PEOPLE.find(x=>fKey(x)===k);if(!p)return null;const ph=(p.phone||((p.phones&&p.phones[0])||''))||'';const d=String(ph).replace(/\D/g,'');if(d.length<5)return null;return {num:d.slice(-9),days:KIT[k]||30,name:p.name||''};}).filter(Boolean)):[];BRIDGE.saveKitState(JSON.stringify(arr));}catch(e){}}
 function kitOverdueCount(){try{const L=(cfg.lists||[]).find(x=>x.kit);if(!L)return 0;if(!RECENTTS)buildRecentTs();let n=0;(L.members||[]).forEach(k=>{const p=PEOPLE.find(x=>fKey(x)===k);if(p&&kitInfo(p).over)n++;});return n;}catch(e){return 0;}}
 function openKitFreq(k,onDone){const ov=document.createElement('div');ov.className='mpovl';ov.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">✕</button><h2 style="flex:1;text-align:center;margin:0;">כל כמה זמן ליצור קשר?</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="fo-chips" style="margin-top:6px;">'+KIT_OPTS.map(o=>'<button class="fo-chip'+((KIT[k]||30)===o.d?' on':'')+'" data-d="'+o.d+'">'+o.t+'</button>').join('')+'</div></div>';document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),250);};ov.querySelector('.sheet-x').onclick=close;ov.addEventListener('click',e=>{if(e.target===ov)close();});ov.querySelectorAll('.fo-chip[data-d]').forEach(b=>b.onclick=()=>{KIT[k]=+b.dataset.d;saveKit();saveKitNative();close();if(onDone)onDone();});}
@@ -1262,9 +1266,11 @@ function openListManage(){
   function openListActions(id){
     const L=cfg.lists.find(x=>x.id===id);if(!L)return;const ruled=!!(L.rule&&L.rule.q);
     const FUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 8v5l-4 2v-7z"/></svg>';
+    const EYE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>';
+    const EYEOFF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 5.1A10 10 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.3 4M6.6 6.6A17 17 0 0 0 2 12s3.5 7 10 7a10 10 0 0 0 4-.8"/><path d="M3 3l18 18"/></svg>';
     const a=document.createElement('div');a.className='mpovl';a.style.zIndex='112';
     const ab=(k,ic,lbl,dng)=>'<button class="lact'+(dng?' danger':'')+'" data-k="'+k+'"><span class="lact-ic">'+ic+'</span><span>'+lbl+'</span></button>';
-    a.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xsvg+'</button><h2 style="flex:1;text-align:center;margin:0;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+escapeHtml(L.name)+'</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="lact-list">'+ab('ren',ICON.edit,'שנה שם')+ab('members',ICON.check,'ערוך חברים')+ab('rule',FUN,ruled?'ערוך כלל סינון':'הוסף כלל סינון')+ab('send',ICON.send,'שלח לרשימה')+ab('del',ICON.archive,'מחק רשימה',true)+'</div></div>';
+    a.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xsvg+'</button><h2 style="flex:1;text-align:center;margin:0;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+escapeHtml(L.name)+'</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="lact-list">'+ab('ren',ICON.edit,'שנה שם')+ab('members',ICON.check,'ערוך חברים')+ab('rule',FUN,ruled?'ערוך כלל סינון':'הוסף כלל סינון')+ab('vis',L.hidden?EYE:EYEOFF,L.hidden?'הצג ברשימה':'הסתר מהרשימה')+ab('send',ICON.send,'שלח לרשימה')+ab('del',ICON.archive,'מחק רשימה',true)+'</div></div>';
     document.body.appendChild(a);requestAnimationFrame(()=>a.classList.add('show'));
     const ca=()=>{a.classList.remove('show');setTimeout(()=>a.remove(),250);};
     a.querySelector('.sheet-x').onclick=ca;a.addEventListener('click',e=>{if(e.target===a)ca();});
@@ -1272,6 +1278,7 @@ function openListManage(){
       if(k==='ren'){ca();promptListName(L.name,function(nm){if(nm){L.name=nm;saveCfg();renderLists();paint();}});}
       else if(k==='members'){ca();close();openMemberPicker(id);}
       else if(k==='rule'){ca();openRuleEdit(id,()=>{renderLists();renderList();paint();});}
+      else if(k==='vis'){L.hidden=!L.hidden;saveCfg();renderLists();paint();ca();}
       else if(k==='send'){ca();close();openSendList(id);}
       else if(k==='del'){ca();uiConfirm('למחוק את הרשימה «'+(L.name||'')+'»? (אנשי הקשר לא יימחקו)',function(){cfg.lists=cfg.lists.filter(x=>x.id!==id);if(activeList===id)activeList=null;saveCfg();renderLists();renderList();paint();});}
     });
@@ -1281,7 +1288,7 @@ function openListManage(){
     const box=lmBox;
     if(!cfg.lists||!cfg.lists.length){box.innerHTML='<p class="mp-hint">אין רשימות עדיין. צור רשימה ראשונה למטה.</p>';return;}
     const FUNNEL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 8v5l-4 2v-7z"/></svg>';
-    const _lkm=_liveKeySet();box.innerHTML=cfg.lists.map(L=>{const ruled=!!(L.rule&&L.rule.q);return '<div class="lm-row"><span class="lm-name">'+escapeHtml(L.name)+(ruled?'<span style="font-size:11px;font-weight:700;opacity:.55;margin-inline-start:6px;">לפי כלל</span>':'')+'</span><span class="lm-cnt">'+liveCount(L,_lkm)+'</span><button class="lm-more" data-id="'+L.id+'" aria-label="פעולות">'+ICON.edit+'</button></div>';}).join('');
+    const _lkm=_liveKeySet();box.innerHTML=cfg.lists.map(L=>{const ruled=!!(L.rule&&L.rule.q);return '<div class="lm-row"'+(L.hidden?' style="opacity:.55;"':'')+'><span class="lm-name">'+escapeHtml(L.name)+(L.hidden?'<span class="lm-hid">מוסתרת</span>':'')+(ruled?'<span style="font-size:11px;font-weight:700;opacity:.55;margin-inline-start:6px;">לפי כלל</span>':'')+'</span><span class="lm-cnt">'+liveCount(L,_lkm)+'</span><button class="lm-more" data-id="'+L.id+'" aria-label="פעולות">'+ICON.edit+'</button></div>';}).join('');
     box.querySelectorAll('.lm-more').forEach(b=>b.onclick=()=>openListActions(b.dataset.id));
     [...box.querySelectorAll('.lm-row')].forEach((r,i)=>{r.dataset.li=i;});
   }
@@ -1525,7 +1532,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.30.2219';
+const APP_VERSION='2026.06.30.2314';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1570,8 +1577,8 @@ function openSettings(){
     const app=byId(id);
     return `<button class="fav-coin fav3-${i}" data-i="${i}"><span class="fav-c${app?'':' add'}">${app?app.ic:ICON.plus}<span class="fav-edit">${ICON.edit}</span></span><span class="fav-lbl">${app?escapeHtml(app.label):'ריק'}</span></button>`;
   }).join('');
-  const SECH='text-align:center;color:#fff;font-size:12px;font-weight:700;letter-spacing:.6px;opacity:.6;margin:0 0 9px;';
-  const DIV='<div style="height:1px;background:rgba(255,255,255,.13);margin:22px 8px;"></div>';
+  const SECH='text-align:center;color:#fff;font-size:12px;font-weight:700;letter-spacing:.6px;opacity:.6;margin:6px 0 13px;';
+  const DIV='<div style="height:1px;background:rgba(255,255,255,.12);margin:34px 10px;"></div>';
   showSheet(`<div class="sheet-head"><h2 style="margin:0;text-align:center;width:100%;">הגדרות</h2></div>`+
     `<div style="${SECH}">ערכת צבעים</div><div class="swatches" id="setSwatches">${PALETTES.map((p,i)=>'<button class="sw'+(i===(cfg.palette||0)?' on':'')+'" data-i="'+i+'" style="background:linear-gradient(180deg,'+p.top+','+p.bot+')" aria-label="'+escapeHtml(p.name)+'"></button>').join('')}</div>`+
     DIV+
@@ -2769,6 +2776,7 @@ window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();def
 window.addEventListener('appinstalled',function(){installed=true;deferredPrompt=null;try{localStorage.setItem('myshare_installed','1');}catch(e){}render();});
 if(navigator.getInstalledRelatedApps){navigator.getInstalledRelatedApps().then(function(apps){if(apps&&apps.length){installed=true;try{localStorage.setItem('myshare_installed','1');}catch(e){}render();}}).catch(function(){});}
 render();
+try{autoBackup();}catch(e){}
 })();
 /* ===== כפתור קול גלובלי (שלב 1) ===== */
 function voiceFindContact(q){q=(q||'').trim();if(!q)return null;let p=PEOPLE.find(x=>String(x.name||'').trim()===q);if(!p)p=PEOPLE.find(x=>x.name&&String(x.name).indexOf(q)>=0);if(!p)p=PEOPLE.find(x=>x.name&&q.indexOf(String(x.name).trim())>=0);return p||null;}
