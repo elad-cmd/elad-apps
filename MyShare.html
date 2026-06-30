@@ -934,13 +934,15 @@ let activeList=null;
 function renderLists(){
   const lb=document.getElementById('listbar');if(!lb)return;
   let h='<button class="cap'+(activeList===null?' on':'')+'" data-l="__all">הכל</button>';
-  (cfg.lists||[]).forEach(L=>{h+='<button class="cap'+(activeList===L.id?' on':'')+'" data-l="'+L.id+'">'+escapeHtml(L.name)+(L.members.length?' · '+L.members.length:'')+'</button>';});
+  (function(){const _lk=_liveKeySet();(cfg.lists||[]).forEach(L=>{const _n=liveCount(L,_lk);h+='<button class="cap'+(activeList===L.id?' on':'')+'" data-l="'+L.id+'">'+escapeHtml(L.name)+(_n?' · '+_n:'')+'</button>';});})();
   h+='<button class="cap cap-edit" id="capEdit" aria-label="עריכת רשימות">'+ICON.edit+'</button>';
   lb.innerHTML=h;
   lb.querySelectorAll('.cap[data-l]').forEach(b=>b.onclick=()=>{const spec=b.dataset.l!=='__all';activeList=spec?b.dataset.l:null;if(spec&&VIEW!=='abc'){VIEW='abc';updateSeg();}renderLists();renderList();});
   lb.querySelector('#capEdit').onclick=openListManage;
 }
 function listsOf(p){const k=fKey(p);return (cfg.lists||[]).filter(L=>(L.members||[]).indexOf(k)>=0);}
+function _liveKeySet(){const s=new Set();PEOPLE.forEach(p=>{if(FDEC[fKey(p)]!=='delete')s.add(fKey(p));});return s;}
+function liveCount(L,live){if(!L||!L.members||!L.members.length)return 0;live=live||_liveKeySet();let n=0;L.members.forEach(k=>{if(live.has(k))n++;});return n;}
 function uiConfirm(msg,onYes){
   const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   const ov=document.createElement('div');ov.className='mpovl';ov.style.zIndex='122';
@@ -1189,7 +1191,7 @@ function openListManage(){
     const box=lmBox;
     if(!cfg.lists||!cfg.lists.length){box.innerHTML='<p class="mp-hint">אין רשימות עדיין. צור רשימה ראשונה למטה.</p>';return;}
     const FUNNEL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 8v5l-4 2v-7z"/></svg>';
-    box.innerHTML=cfg.lists.map(L=>{const ruled=!!(L.rule&&L.rule.q);return '<div class="lm-row"><span class="lm-name">'+escapeHtml(L.name)+(ruled?'<span style="font-size:11px;font-weight:700;opacity:.55;margin-inline-start:6px;">לפי כלל</span>':'')+'</span><span class="lm-cnt">'+L.members.length+'</span><button class="lm-b lm-send" data-id="'+L.id+'" aria-label="שלח לרשימה">'+ICON.send+'</button><button class="lm-b lm-members" data-id="'+L.id+'" aria-label="חברים">'+ICON.check+'</button><button class="lm-b lm-rule" data-id="'+L.id+'" aria-label="כלל"'+(ruled?' style="color:var(--tq-deep)"':'')+'>'+FUNNEL+'</button><button class="lm-b lm-ren" data-id="'+L.id+'" aria-label="שם">'+ICON.edit+'</button><button class="lm-b lm-del" data-id="'+L.id+'" aria-label="מחק">'+ICON.archive+'</button></div>';}).join('');
+    const _lkm=_liveKeySet();box.innerHTML=cfg.lists.map(L=>{const ruled=!!(L.rule&&L.rule.q);return '<div class="lm-row"><span class="lm-name">'+escapeHtml(L.name)+(ruled?'<span style="font-size:11px;font-weight:700;opacity:.55;margin-inline-start:6px;">לפי כלל</span>':'')+'</span><span class="lm-cnt">'+liveCount(L,_lkm)+'</span><button class="lm-b lm-send" data-id="'+L.id+'" aria-label="שלח לרשימה">'+ICON.send+'</button><button class="lm-b lm-members" data-id="'+L.id+'" aria-label="חברים">'+ICON.check+'</button><button class="lm-b lm-rule" data-id="'+L.id+'" aria-label="כלל"'+(ruled?' style="color:var(--tq-deep)"':'')+'>'+FUNNEL+'</button><button class="lm-b lm-ren" data-id="'+L.id+'" aria-label="שם">'+ICON.edit+'</button><button class="lm-b lm-del" data-id="'+L.id+'" aria-label="מחק">'+ICON.archive+'</button></div>';}).join('');
     box.querySelectorAll('.lm-send').forEach(b=>b.onclick=()=>{close();openSendList(b.dataset.id);});
     box.querySelectorAll('.lm-rule').forEach(b=>b.onclick=()=>{openRuleEdit(b.dataset.id,()=>{renderLists();renderList();paint();});});
     box.querySelectorAll('.lm-members').forEach(b=>b.onclick=()=>{close();openMemberPicker(b.dataset.id);});
@@ -1435,7 +1437,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.30.1234';
+const APP_VERSION='2026.06.30.1257';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2110,7 +2112,7 @@ function openFilter(){
     if(!(cfg.lists&&cfg.lists.length)){promptListName('',function(nm){if(nm){const L={id:'L'+Date.now(),name:nm,members:[]};cfg.lists.push(L);saveCfg();addToListAndAdvance(p,L);}});return;}
     const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
     const ov=document.createElement('div');ov.className='mpovl lp-ovl';ov.style.zIndex='114';
-    const chips=cfg.lists.map(L=>'<button class="lp-cap" data-id="'+L.id+'">'+escapeHtml(L.name)+(L.members.length?' · '+L.members.length:'')+'</button>').join('');
+    const _lk=_liveKeySet();const chips=cfg.lists.map(L=>{const _n=liveCount(L,_lk);return '<button class="lp-cap" data-id="'+L.id+'">'+escapeHtml(L.name)+(_n?' · '+_n:'')+'</button>';}).join('');
     ov.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xsvg+'</button><h2 style="flex:1;margin:0;text-align:center;">הוסף לרשימה</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="lp-wrap">'+chips+'<button class="lp-cap lp-new" id="lpNew">'+ICON.plus+' רשימה חדשה</button></div></div>';
     document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
     let done=false;
