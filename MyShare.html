@@ -96,7 +96,7 @@
 
   .fab-menu{position:fixed;bottom:10px;left:16px;right:auto;z-index:95;backface-visibility:hidden;-webkit-backface-visibility:hidden;width:50px;height:50px;border-radius:50%;border:1.6px solid rgba(255,255,255,.72);cursor:pointer;background:transparent;color:#fff;box-shadow:none;transition:transform .12s;transform-origin:50% 80%;}
   .dotmorph{position:absolute;inset:0;transform-origin:50% 50%;transition:transform .55s cubic-bezier(.34,1.4,.5,1);}
-  .dm{position:absolute;left:0;top:0;width:5px;height:5px;border-radius:50%;background:var(--tq-ink);transition:transform .5s cubic-bezier(.34,1.4,.5,1);will-change:transform;}
+  .dm{position:absolute;left:0;top:0;width:5px;height:5px;border-radius:50%;background:#fff;transition:transform .5s cubic-bezier(.34,1.4,.5,1);will-change:transform;}
   .fab-menu.left{left:auto;right:16px;}
   .fab-menu:active{transform:scale(.9);}
   .fab-menu svg{width:22px;height:22px;color:#fff;}
@@ -412,8 +412,10 @@
   .sl-done-t{font-size:20px;font-weight:800;margin-top:10px;}
   .sl-done-s{font-size:14px;color:rgba(255,255,255,.7);margin:4px 0 22px;}
   .ct-lists-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;}
-  .ct-lchip{background:rgba(0,194,168,.22);color:#7fe9d8;font-size:12.5px;font-weight:700;padding:6px 13px;border-radius:999px;border:none;font-family:inherit;cursor:pointer;}
+  .ct-lchip{display:inline-flex;align-items:center;gap:6px;background:rgba(0,194,168,.22);color:#7fe9d8;font-size:12.5px;font-weight:700;padding:6px 8px 6px 13px;border-radius:999px;border:none;font-family:inherit;cursor:default;}
   .ct-lchip.on{background:var(--tq-deep);color:#04342C;}
+  .ct-lchip-x{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:50%;border:none;padding:0;background:rgba(0,0,0,.2);color:inherit;cursor:pointer;flex:0 0 auto;}
+  .ct-lchip-x svg{width:11px;height:11px;}
   .ct-addlist{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--tq-deep);color:#04342C;border:none;border-radius:50%;padding:0;cursor:pointer;}
   .ct-addlist svg{width:18px;height:18px;}
   .pk-search{position:fixed;left:0;right:0;bottom:0;z-index:92;padding:10px 16px 88px;background:var(--tq-bot);box-shadow:0 -12px 22px -8px rgba(0,0,0,.55);}
@@ -443,7 +445,7 @@
   .vtab.on{background:#fff;color:var(--tq-ink);}
   .vtab-toggle{flex:0 0 auto;width:42px;border:none;border-radius:12px;background:rgba(255,255,255,.08);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;}
   .vtab-toggle svg{width:20px;height:20px;}
-  .flt-view{flex:1;display:flex;flex-direction:column;min-height:0;}
+  .flt-view{flex:1;display:flex;flex-direction:column;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
   .flt-stage{flex:1;display:flex;align-items:stretch;justify-content:center;padding:6px 0;}
   .flt-deck{position:relative;width:100%;max-width:320px;margin:0 auto;display:flex;}
   @keyframes fltIn{0%{opacity:0;transform:translateY(16px) scale(.96);}100%{opacity:1;transform:translateY(0) scale(1);}}
@@ -550,7 +552,7 @@
   .row.dragging{opacity:.96;}
   body.editing .row .av{box-shadow:0 10px 22px -8px rgba(0,0,0,.6);}
   #botbar{position:fixed;bottom:10px;left:0;right:0;z-index:94;display:flex;align-items:center;justify-content:space-between;padding:0 16px;pointer-events:none;direction:ltr;}
-  .bot-shade{position:fixed;left:0;right:0;bottom:0;height:78px;background:linear-gradient(to top,#000 0%,#000 88%,rgba(0,0,0,0) 100%);pointer-events:none;z-index:88;transition:opacity .3s ease;}
+  .bot-shade{position:fixed;left:0;right:0;bottom:0;height:84px;background:linear-gradient(to top,#04211e 0%,#04211e 82%,rgba(4,33,30,0) 100%);pointer-events:none;z-index:88;transition:opacity .3s ease;}
   body.hand-left #botbar{flex-direction:row-reverse;}
   #botbar .bb-spacer{width:50px;height:50px;flex:0 0 auto;}
   #botbar .bb-btn{pointer-events:auto;flex:0 0 auto;width:50px;height:50px;border-radius:50%;border:1.6px solid rgba(255,255,255,.72);cursor:pointer;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:none;transition:transform .12s ease, opacity .2s ease;}
@@ -1433,7 +1435,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.06.30.1151';
+const APP_VERSION='2026.06.30.1234';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1856,7 +1858,7 @@ function openContact(person,fromSearch){
     const nb=hbox.querySelector('#hNotif');if(nb)nb.onclick=()=>{try{if(BRIDGE.openNotifAccess)BRIDGE.openNotifAccess();}catch(e){}};
   })();
   (function(){const fbox=card.querySelector('#ctFields');if(!fbox)return;let arr=getFields(person).map(f=>({l:String(f.l||''),v:String(f.v||'')}));const XS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';function persist(){setFields(person,arr);}function paint(){fbox.innerHTML='<div class="cf-hd">שדות מותאמים</div><div class="cf-list">'+arr.map((f,i)=>'<div class="cf-row" data-i="'+i+'"><input class="ct-inp cf-l" placeholder="תווית" value="'+escapeHtml(f.l)+'"><input class="ct-inp cf-v" placeholder="ערך" value="'+escapeHtml(f.v)+'"><button class="cf-del" data-i="'+i+'" aria-label="הסר">'+XS+'</button></div>').join('')+'</div><button class="cf-add" id="cfAdd">+ הוסף שדה</button>';fbox.querySelectorAll('.cf-row').forEach(r=>{const i=+r.dataset.i;const li=r.querySelector('.cf-l'),vi=r.querySelector('.cf-v');const upd=()=>{arr[i]={l:li.value,v:vi.value};persist();};li.addEventListener('input',upd);vi.addEventListener('input',upd);});fbox.querySelectorAll('.cf-del').forEach(b=>b.onclick=()=>{arr.splice(+b.dataset.i,1);persist();paint();});fbox.querySelector('#cfAdd').onclick=()=>{arr.push({l:'',v:''});paint();const ls=fbox.querySelectorAll('.cf-l');if(ls.length)ls[ls.length-1].focus();};}paint();})();
-  function paintCtLists(){const box=sc.querySelector('#ctLists');if(!box)return;const mine=listsOf(person);box.innerHTML='<div class="ct-lists-row">'+mine.map(L=>'<button class="ct-lchip on" data-id="'+L.id+'">'+escapeHtml(L.name)+'</button>').join('')+'<button class="ct-addlist" id="ctAddList" aria-label="הוסף לרשימה">'+ICON.plus+'</button></div>';const ab=box.querySelector('#ctAddList');if(ab)ab.onclick=()=>openListAssign(person,paintCtLists);box.querySelectorAll('.ct-lchip[data-id]').forEach(b=>b.onclick=()=>{const L=(cfg.lists||[]).find(x=>x.id===b.dataset.id);if(!L)return;uiConfirm('להסיר את «'+(person.name||"איש הקשר")+'» מהרשימה «'+L.name+'»?',function(){const i=L.members.indexOf(fKey(person));if(i>=0)L.members.splice(i,1);saveCfg();renderLists();renderList();paintCtLists();});});}
+  function paintCtLists(){const box=sc.querySelector('#ctLists');if(!box)return;const mine=listsOf(person);const _X='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';box.innerHTML='<div class="ct-lists-row">'+mine.map(L=>'<span class="ct-lchip on" data-id="'+L.id+'">'+escapeHtml(L.name)+'<button class="ct-lchip-x" data-id="'+L.id+'" aria-label="הסר מהרשימה">'+_X+'</button></span>').join('')+'<button class="ct-addlist" id="ctAddList" aria-label="הוסף לרשימה">'+ICON.plus+'</button></div>';const ab=box.querySelector('#ctAddList');if(ab)ab.onclick=()=>openListAssign(person,paintCtLists);box.querySelectorAll('.ct-lchip-x[data-id]').forEach(b=>b.onclick=(e)=>{e.stopPropagation();const L=(cfg.lists||[]).find(x=>x.id===b.dataset.id);if(!L)return;const i=L.members.indexOf(fKey(person));if(i>=0)L.members.splice(i,1);saveCfg();renderLists();renderList();paintCtLists();if(navigator.vibrate)navigator.vibrate(8);});}
   paintCtLists();
 }
 function openSeder(){
