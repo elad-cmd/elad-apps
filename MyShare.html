@@ -230,6 +230,7 @@
   .srch-input{width:100%;padding:15px 18px 15px 46px;border:none;border-radius:16px;font-size:16px;font-family:inherit;text-align:right;color:var(--tq-ink);background:#fff;outline:none;box-shadow:0 14px 34px -10px rgba(0,0,0,.55);}
   .srch-inwrap{position:relative;width:100%;}
   .srch-clear{position:absolute;top:50%;left:10px;transform:translateY(-50%) scale(.6);opacity:0;pointer-events:none;width:30px;height:30px;border-radius:50%;border:none;background:rgba(8,50,50,.12);color:var(--tq-ink);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:opacity .15s ease, transform .15s ease;}
+  #srch .srch-clear{opacity:1;pointer-events:auto;transform:translateY(-50%) scale(1);}
   .srch-inwrap.has-text .srch-clear{opacity:1;pointer-events:auto;transform:translateY(-50%) scale(1);}
   .srch-clear svg{width:15px;height:15px;}
   .pk-clear{background:rgba(255,255,255,.16);color:#fff;}
@@ -592,7 +593,7 @@
   .list-add.show{display:flex;}
   body.hand-left .list-add{transform:translate(calc(100vw - 74px),-50%);}
   .list-add svg{width:26px;height:26px;}
-  .contact-add{position:fixed;left:14px;top:50%;transform:translateY(calc(-50% + 58px));transition:transform .55s cubic-bezier(.34,1.45,.5,1);z-index:34;width:46px;height:46px;border-radius:50%;border:none;background:var(--tq-deep);color:#fff;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 12px 26px -8px rgba(0,0,0,.5);}
+  .contact-add{position:fixed;left:14px;top:50%;transform:translateY(calc(-50% + 58px));transition:transform .55s cubic-bezier(.34,1.45,.5,1);z-index:34;width:46px;height:46px;border-radius:50%;border:1.6px solid rgba(255,255,255,.72);background:transparent;color:#fff;display:none;align-items:center;justify-content:center;cursor:pointer;}
   .contact-add.show{display:flex;}
   body.hand-left .contact-add{left:auto;right:14px;}
   .contact-add svg{width:24px;height:24px;}
@@ -601,6 +602,8 @@
   body.hand-left .list-send{transform:translate(calc(100vw - 74px),calc(-50% - 56px));}
   .list-send svg{width:25px;height:25px;}
   body.editing .row{cursor:grab;}
+  .edit-hint{text-align:center;font-size:13px;font-weight:600;color:rgba(255,255,255,.9);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:10px 14px;margin:0 16px 10px;animation:hintIn .28s cubic-bezier(.22,1,.36,1);}
+  @keyframes hintIn{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:none;}}
   .row.dragging{opacity:.96;}
   body.editing .row .av{box-shadow:0 10px 22px -8px rgba(0,0,0,.6);}
   #botbar{position:fixed;bottom:10px;left:0;right:0;z-index:94;display:flex;align-items:center;justify-content:space-between;padding:0 16px;pointer-events:none;direction:ltr;}
@@ -610,14 +613,14 @@
   .scrbar-btn{pointer-events:auto;flex:0 0 auto;width:50px;height:50px;border-radius:50%;border:1.6px solid rgba(255,255,255,.72);background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .12s;}
   .scrbar-btn:active{transform:scale(.9);}
   .scrbar-btn svg{width:22px;height:22px;}
-  .scrbar-voice{background:var(--tq-deep);border:none;box-shadow:0 14px 30px 2px rgba(0,0,0,.5),0 6px 14px rgba(0,0,0,.4);}
+  .scrbar-voice{background:transparent;border:1.6px solid rgba(255,255,255,.72);box-shadow:none;}
   body.hand-left #botbar{flex-direction:row-reverse;}
   #botbar .bb-spacer{width:50px;height:50px;flex:0 0 auto;}
   #botbar .bb-btn{pointer-events:auto;flex:0 0 auto;width:50px;height:50px;border-radius:50%;border:1.6px solid rgba(255,255,255,.72);cursor:pointer;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:none;transition:transform .12s ease, opacity .2s ease;}
   #botbar .bb-btn svg{width:22px;height:22px;color:#fff;}
   #botbar .bb-btn.bb-search{width:50px;height:50px;}
   #botbar .bb-btn.bb-search svg{width:22px;height:22px;}
-  #botbar .bb-btn.bb-voice{width:50px;height:50px;background:var(--tq-deep);color:#fff;border:none;box-shadow:0 14px 30px 2px rgba(0,0,0,.5),0 6px 14px rgba(0,0,0,.4);}
+  #botbar .bb-btn.bb-voice{width:50px;height:50px;background:transparent;color:#fff;border:1.6px solid rgba(255,255,255,.72);box-shadow:none;}
   #botbar .bb-btn.bb-voice svg{width:22px;height:22px;color:#fff;}
   #botbar .bb-btn:active{transform:scale(.9);}
   #botbar.collapsed .bb-mid{display:none;}
@@ -726,7 +729,7 @@
   <div class="stage" id="stage"><div class="veil"></div></div>
   <div class="toast" id="toast"></div>
   <div class="ovl" id="ovl"><div class="sheet" id="sheet"></div></div>
-  <div class="srch" id="srch"><div class="srch-veil"></div><button class="scr-back srch-back" id="srchBack" aria-label="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button><div class="srch-panel"><div class="srch-results" id="srchResults"></div><div class="srch-inwrap" id="srchInwrap"><input id="searchInput" class="srch-input" type="text" placeholder="הקלד שם…"><button class="srch-clear" id="searchClear" type="button" aria-label="נקה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div></div>
+  <div class="srch" id="srch"><div class="srch-veil"></div><div class="srch-panel"><div class="srch-results" id="srchResults"></div><div class="srch-inwrap" id="srchInwrap"><input id="searchInput" class="srch-input" type="text" placeholder="הקלד שם…"><button class="srch-clear" id="searchClear" type="button" aria-label="נקה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div></div>
   <div class="welcome hide" id="welcome"><div class="wel-card">
     <div class="wel-logo"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1AB8A9"/><stop offset="1" stop-color="#0E7576"/></linearGradient></defs><rect x="2" y="2" width="96" height="96" rx="24" fill="url(#wg)"/><circle cx="30.14" cy="69.86" r="4.00" fill="#fff" fill-opacity="0.27"/><circle cx="36.00" cy="64.00" r="5.64" fill="#fff"/><circle cx="41.85" cy="58.15" r="7.28" fill="#fff" fill-opacity="0.43"/><circle cx="47.71" cy="52.29" r="8.92" fill="#fff"/><circle cx="55.88" cy="44.12" r="10.56" fill="#fff" fill-opacity="0.59"/><circle cx="64.06" cy="35.94" r="12.20" fill="#fff"/></svg></div>
     <h2 class="wel-title">ברוכים הבאים ל‑Sweep</h2>
@@ -984,7 +987,7 @@ function healKeys(){
 }
 function dayMiniHTML(p){const v=getDays(p);if(!v.some(Boolean))return '';return '<div class="ml"><span class="daymini">'+v.map((on,i)=>'<i class="'+(on?'on':'')+'"></i>').join('')+'</span></div>';}
 function rowHTML(c,sub){sub=(sub!==undefined?sub:c.msg)||'';const subLtr=sub&&!/[֐-׿]/.test(sub);return `<span class="av">${escapeHtml(initials(c.name))}${c.fav?'<span class="favstar">'+STAR+'</span>':''}</span><div class="meta"><div class="ml"><span class="nm">${escapeHtml(c.name)}</span></div>${sub?`<div class="ml"${subLtr?' style="text-align:left;"':''}><span class="sub"${subLtr?' style="direction:ltr;unicode-bidi:embed;"':''}>${escapeHtml(sub)}</span></div>`:""}${dayMiniHTML(c)}</div>`;}
-function renderList(){CURRENT=peopleFor(VIEW);if(activeList){const _L=(cfg.lists||[]).find(x=>x.id===activeList);CURRENT=_L?CURRENT.filter(p=>_L.members.indexOf(fKey(p))>=0):CURRENT;}listEl.innerHTML='';CURRENT.forEach((c,i)=>{const row=document.createElement('div');row.className='row';row.dataset.i=i;row._person=c;row.innerHTML=rowHTML(c,(VIEW==='recent'&&!activeList)?recentSub(c):undefined);if(VIEW==='recent'&&!activeList&&RECENTKIND&&RECENTKIND[statKey(c)]==='call_miss'){const _av=row.querySelector('.av');if(_av)_av.classList.add('av-miss');}listEl.appendChild(row);});if(activeList){if(!CURRENT.length){const em=document.createElement('div');em.className='list-empty';em.textContent='אין עדיין אנשי קשר ברשימה הזו — הוסף מהכפתור הירוק שבצד';listEl.appendChild(em);}}buildAZ();updateFavEdit();updateListAdd();updateContactAdd();}
+function renderList(){CURRENT=peopleFor(VIEW);if(activeList){const _L=(cfg.lists||[]).find(x=>x.id===activeList);CURRENT=_L?CURRENT.filter(p=>_L.members.indexOf(fKey(p))>=0):CURRENT;}listEl.innerHTML='';if(editMode&&VIEW==='fav'&&!activeList){const _eh=document.createElement('div');_eh.className='edit-hint';_eh.textContent='לחצו וגררו אנשי קשר כדי לשנות את הסדר';listEl.appendChild(_eh);}CURRENT.forEach((c,i)=>{const row=document.createElement('div');row.className='row';row.dataset.i=i;row._person=c;row.innerHTML=rowHTML(c,(VIEW==='recent'&&!activeList)?recentSub(c):undefined);if(VIEW==='recent'&&!activeList&&RECENTKIND&&RECENTKIND[statKey(c)]==='call_miss'){const _av=row.querySelector('.av');if(_av)_av.classList.add('av-miss');}listEl.appendChild(row);});if(activeList){if(!CURRENT.length){const em=document.createElement('div');em.className='list-empty';em.textContent='אין עדיין אנשי קשר ברשימה הזו — הוסף מהכפתור הירוק שבצד';listEl.appendChild(em);}}buildAZ();updateFavEdit();updateListAdd();updateContactAdd();}
 function renderSeg(){const seg=document.getElementById('seg');seg.innerHTML='<div class="seg-ind" id="segInd"></div>'+VIEWS.map(v=>`<button class="seg-btn${v.id===VIEW?' on':''}" data-v="${v.id}" aria-label="${escapeHtml(v.label)}" title="${escapeHtml(v.label)}">${v.ic}</button>`).join('');seg.querySelectorAll('.seg-btn').forEach(b=>b.onclick=()=>goToView(b.dataset.v));const ind=seg.querySelector('#segInd');if(ind)ind.style.transition='none';requestAnimationFrame(()=>{updateSeg();requestAnimationFrame(()=>{if(ind)ind.style.transition='';});});}
 function updateSeg(){const seg=document.getElementById('seg');const ind=seg&&seg.querySelector('#segInd');if(!ind)return;seg.querySelectorAll('.seg-btn').forEach(b=>b.classList.toggle('on',b.dataset.v===VIEW));const a=seg.querySelector('.seg-btn.on');if(a){ind.style.left=a.offsetLeft+'px';ind.style.width=a.offsetWidth+'px';}}
 function animTabSlide(outSign){pullOffset=0;const W=listEl.offsetWidth||window.innerWidth;const outX=outSign*W;listEl.style.transition='transform .2s ease, opacity .2s ease';listEl.style.transform='translateX('+outX+'px)';listEl.style.opacity='0';setTimeout(()=>{renderList();layoutList();listEl.scrollTop=0;tabLock=true;listEl.style.overflowY='hidden';setTimeout(()=>{tabLock=false;listEl.style.overflowY='';},300);listEl.style.transition='none';listEl.style.transform='translateX('+(-outX)+'px)';listEl.style.opacity='0';requestAnimationFrame(()=>requestAnimationFrame(()=>{listEl.style.transition='transform .28s cubic-bezier(.22,1,.36,1), opacity .22s ease';listEl.style.transform='translateX(0)';listEl.style.opacity='1';setTimeout(()=>{tabAnim=false;},300);}));},200);}
@@ -1386,6 +1389,8 @@ function openMemberPicker(listId){
 if(BRIDGE){try{var _fk=JSON.parse(localStorage.getItem('myshare_favkeys')||'null');if(_fk){PEOPLE.forEach(p=>{if(_fk[fKey(p)])p.fav=true;});Object.keys(_fk).forEach(k=>{FAVSET[k]=1;});saveFavSet();localStorage.removeItem('myshare_favkeys');}}catch(e){}}
 applyFavSet();
 healKeys();recomputeAllRules();renderSeg();renderList();renderLists();layoutList();
+// זיהוי חד-פעמי: אנשי קשר ששמם המדויק אמא/אבא/סבא/סבתא נכנסים אוטומטית לרשימת "שמירה על קשר".
+(function(){try{if(localStorage.getItem('myshare_kitfamily')==='1')return;if(!PEOPLE||!PEOPLE.length)return;const FAM=['אמא','אבא','סבא','סבתא'];const L=kitList();let added=0;PEOPLE.forEach(p=>{const nm=String(p.name||'').trim();if(FAM.indexOf(nm)>=0){const k=fKey(p);if((L.members=L.members||[]).indexOf(k)<0){L.members.push(k);if(!KIT[k])KIT[k]=30;added++;}}});if(added){saveCfg();saveKit();saveKitNative();renderLists();}localStorage.setItem('myshare_kitfamily','1');}catch(e){}})();
 try{saveKitNative();}catch(e){}
 setTimeout(()=>{try{const t=upcomingBdays().filter(o=>o.n===0);if(t.length){const nm=t.map(o=>o.p.name||'').filter(Boolean).slice(0,3).join(', ');toast('🎂 היום יום הולדת ל'+(nm||t.length+' אנשי קשר'));}}catch(e){}},1600);
 window.addEventListener('resize',layoutList);
@@ -1550,9 +1555,8 @@ wirePick(srchResults,p=>openContact(p,true));
 function openSearch(){srch.classList.add('show');srchResults.innerHTML='';searchInput.value='';if(typeof updSrchClear==='function')updSrchClear();if(window.visualViewport)window.visualViewport.addEventListener('resize',vvSearch);setTimeout(()=>{searchInput.focus();vvSearch();},60);setTimeout(vvSearch,380);updateSearchFab();}
 function closeSearch(){srch.classList.remove('show');searchInput.blur();if(window.visualViewport)window.visualViewport.removeEventListener('resize',vvSearch);srch.style.paddingBottom='';updateSearchFab();}
 function resumeSearch(){srch.classList.add('show');if(window.visualViewport)window.visualViewport.addEventListener('resize',vvSearch);setTimeout(()=>{searchInput.focus();vvSearch();},60);}
-const srchInwrap=document.getElementById('srchInwrap');const searchClear=document.getElementById('searchClear');function updSrchClear(){if(srchInwrap)srchInwrap.classList.toggle('has-text',!!searchInput.value);}searchInput.addEventListener('input',()=>{renderSearch(searchInput.value);updSrchClear();});if(searchClear)searchClear.onclick=()=>{searchInput.value='';renderSearch('');updSrchClear();searchInput.focus();};
+const srchInwrap=document.getElementById('srchInwrap');const searchClear=document.getElementById('searchClear');function updSrchClear(){if(srchInwrap)srchInwrap.classList.toggle('has-text',!!searchInput.value);}searchInput.addEventListener('input',()=>{renderSearch(searchInput.value);updSrchClear();});if(searchClear)searchClear.onclick=()=>{if((searchInput.value||'').trim()){searchInput.value='';renderSearch('');updSrchClear();searchInput.focus();}else{closeSearch();}};
 srch.addEventListener('click',e=>{if(e.target===srch||e.target.classList.contains('srch-veil'))closeSearch();});
-document.getElementById('srchBack').onclick=closeSearch;
 let _tapK=null,_tapT=0,_tapTimer=0;
 function tapContact(p){
   if(!cfg.dblCall){openContact(p);return;}
@@ -1560,7 +1564,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.07.01.2328';
+const APP_VERSION='2026.07.02.0013';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1778,6 +1782,7 @@ function doHandFlip(){
   const bar=bd&&bd.querySelector('.hbar');
   if(bar){bar.classList.remove('run');bar.classList.add('closing');}
   menuFab.classList.remove('open');setFab(false);            // morph the X back into three dots
+  if(bd){bd.classList.remove('show');setTimeout(()=>{if(bd.parentNode)bd.remove();},500);}   // remove darkening the moment the menu closes — before the hop/contacts move
   /* bottom bar is already collapsed (it collapsed when the 45° menu opened) */
   /* --- stage 2: after close + gap, hop the icon to the other side --- */
   setTimeout(()=>{
@@ -1802,7 +1807,6 @@ function doHandFlip(){
     }
     const sf=document.getElementById('searchFab');if(sf)sf.classList.toggle('left',newHand==='left');
     if(onHome)setTimeout(botbarReopen,HF.BAR_DELAY);   // bar opens only after the on-screen contacts finish crossing
-    if(bd){bd.classList.remove('show');setTimeout(()=>{if(bd.parentNode)bd.remove();},500);}
   },t3);
   setTimeout(()=>{flipping=false;updateBar();},t3+HF.BAR_DELAY+HF.REOPEN);
 }
@@ -1824,7 +1828,7 @@ botbar.querySelector('#bbSearch').onclick=()=>openSearch();
 botbar.querySelector('#bbDial').onclick=()=>openDialer();
 botbar.querySelector('#bbBack').onclick=()=>navBack();
 function addScreenBar(sc){if(!sc||sc.querySelector('.scrbar'))return;const shade=document.createElement('div');shade.className='scrbar-shade';const bar=document.createElement('div');bar.className='scrbar';bar.innerHTML='<button class="scrbar-btn scrbar-menu" aria-label="תפריט"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button><button class="scrbar-btn scrbar-voice" aria-label="עוזר קולי"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button class="scrbar-btn scrbar-back" aria-label="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>';sc.appendChild(shade);sc.appendChild(bar);const hb=sc.querySelector('.scr-head .scr-back');if(hb)hb.remove();const mb=bar.querySelector('.scrbar-menu');if(mb)mb.onclick=()=>openHbar();const vb=bar.querySelector('.scrbar-voice');if(vb)vb.onclick=()=>startVoice();const bb=bar.querySelector('.scrbar-back');if(bb)bb.onclick=()=>{if(sc._back)sc._back();};}
-function updateBar(){if(flipping||barCollapsing||barReopening)return;const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const bareSheet=!!document.querySelector('.ovl.bare.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;const scrbarOpen=!!document.querySelector('.scr .scrbar');botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||(sheetOpen&&!bareSheet)||flipping||scrbarOpen);botbar.classList.toggle('on-screen',screenOpen);botbar.classList.toggle('collapsed',!(onHome&&!menuOpen&&!welcomeOn));if(!botbar.classList.contains('bar-hidden')){botbar.querySelectorAll('.bb-btn').forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});}var _sh=document.querySelector('.bot-shade');if(_sh)_sh.style.opacity=(welcomeOn||screenOpen||searchOn||sheetOpen)?'0':'1';var _fm=document.getElementById('menuFab');if(_fm)_fm.classList.toggle('fab-off',screenOpen||searchOn||sheetOpen);}
+function updateBar(){if(flipping||barCollapsing||barReopening)return;const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const bareSheet=!!document.querySelector('.ovl.bare.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;const scrbarOpen=!!document.querySelector('.scr .scrbar');botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||(sheetOpen&&!bareSheet)||flipping||scrbarOpen||searchOn);botbar.classList.toggle('on-screen',screenOpen);botbar.classList.toggle('collapsed',!(onHome&&!menuOpen&&!welcomeOn));if(!botbar.classList.contains('bar-hidden')){botbar.querySelectorAll('.bb-btn').forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});}var _sh=document.querySelector('.bot-shade');if(_sh)_sh.style.opacity=(welcomeOn||screenOpen||searchOn||sheetOpen)?'0':'1';var _fm=document.getElementById('menuFab');if(_fm)_fm.classList.toggle('fab-off',screenOpen||searchOn||sheetOpen);}
 function appBack(){
   const np=document.querySelector('.numpad-ov.show');if(np){np.classList.remove('show');setTimeout(()=>np.remove(),200);return true;}
   const mp=[...document.querySelectorAll('.mpovl.show:not(.exit-dlg)')].pop();if(mp){mp.classList.remove('show');setTimeout(()=>mp.remove(),260);return true;}
@@ -1885,7 +1889,12 @@ function openNumPad(input,onDone){
   setTimeout(()=>{try{disp.focus();}catch(_){}padAutoPaste(disp,sync);},60);
 }
 function openAddContact(pf){
-  pf=pf||{};let flds=[];let fav=!!pf.fav;
+  pf=pf||{};
+  const person={name:pf.name||'',phone:pf.phone||'',email:pf.email||'',phones:pf.phone?[pf.phone]:[],emails:pf.email?[pf.email]:[],org:'',msg:'',fav:!!pf.fav,last:0};
+  PEOPLE.unshift(person);if(pf.fav)setFav(person,true);savePeople();renderList();
+  openContact(person,false,true);
+  return;
+  let flds=[];let fav=!!pf.fav;
   const html='<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>איש קשר חדש</h2></div>'+
     '<div class="scr-body"><div class="ct-card">'+
     '<div class="ct-av">'+ICON.plus+'</div>'+
@@ -1944,7 +1953,7 @@ function fireAction(act,person){
   else if(act==='mail'){if(person.email){logInteraction(person,'mail');location.href='mailto:'+person.email;}}
   else if(act==='waze'){openWaze(getAddr(person));}
 }
-function openContact(person,fromSearch){
+function openContact(person,fromSearch,isNew){
   if(!person)return;
   listEl.style.transition='none';setPull(0);
   const html='<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>פרטי איש קשר</h2></div>'+
@@ -1963,6 +1972,7 @@ function openContact(person,fromSearch){
     '</div><button class="ct-del" id="ctDel">מחק איש קשר</button></div>';
   const sc=openScreen(html);sc.classList.add('ct-scr');sc._reopen=()=>openContact(person);
   if(fromSearch)sc._back=()=>{closeScreen(sc);resumeSearch();};
+  if(isNew){const _ob=sc._back;sc._back=()=>{const _e=!String(person.name||'').trim()&&!String(person.phone||'').trim()&&!String(person.email||'').trim();if(_e){const _i=PEOPLE.indexOf(person);if(_i>=0)PEOPLE.splice(_i,1);savePeople();renderList();}_ob();};}
   const card=sc.querySelector('.ct-card');
   const _orig={name:person.name||'',phone:(person.phone||((person.phones&&person.phones[0])||''))||''};
   (function(){const ae=card.querySelector('#ctAccount');if(!ae)return;if(person.account){ae.textContent='חשבון: '+person.account;ae.style.display='';}else{ae.style.display='none';}})();
