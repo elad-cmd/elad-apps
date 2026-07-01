@@ -1560,7 +1560,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.07.01.2130';
+const APP_VERSION='2026.07.01.2205';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2151,7 +2151,7 @@ function openFilter(){
   function fltExitSel(){selMode=false;selSet.clear();hideSelBar();render();}
   function fltGroupApply(d){const ppl=fltSelPeople();if(!ppl.length){fltExitSel();return;}ppl.forEach(p=>decide(p,d));selMode=false;selSet.clear();hideSelBar();if(navigator.vibrate)navigator.vibrate(12);toast(d==='keep'?('נשמרו '+ppl.length):('אורכבו '+ppl.length));render();}
   function fltSelUpdate(){if(!selMode)return;if(!selSet.size){fltExitSel();return;}showSelBar(selSet.size,[{html:ICON.check+' שמור',fn:()=>fltGroupApply('keep')},{html:ICON.archive+' ארכב',cls:'danger',fn:()=>fltGroupApply('delete')}],fltExitSel);}
-  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>סינון רשימה</h2></div><div class="scr-body flt-body" id="fltBody"></div>');sc._reopen=openFilter;
+  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>סינון רשימה</h2></div><div class="scr-body flt-body" id="fltBody"></div>');sc._reopen=openFilter;addScreenBar(sc);
   const body=sc.querySelector('#fltBody');
   let _pOff=0;const _pMax=Math.max(120,Math.min(280,Math.round(window.innerHeight*0.33)));
   function pullReset(){_pOff=0;body.style.transition='';body.style.transform='';}
