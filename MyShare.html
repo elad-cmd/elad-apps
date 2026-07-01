@@ -594,6 +594,12 @@
   body.editing .row .av{box-shadow:0 10px 22px -8px rgba(0,0,0,.6);}
   #botbar{position:fixed;bottom:10px;left:0;right:0;z-index:94;display:flex;align-items:center;justify-content:space-between;padding:0 16px;pointer-events:none;direction:ltr;}
   .bot-shade{position:fixed;left:0;right:0;bottom:0;height:84px;background:linear-gradient(to top,#04211e 0%,#04211e 82%,rgba(4,33,30,0) 100%);pointer-events:none;z-index:93;transition:opacity .3s ease;}
+  .scrbar-shade{position:fixed;left:0;right:0;bottom:0;height:88px;background:linear-gradient(to top,#04211e 0%,#04211e 80%,rgba(4,33,30,0) 100%);pointer-events:none;z-index:8;}
+  .scrbar{position:fixed;left:0;right:0;bottom:12px;z-index:9;display:flex;align-items:center;justify-content:space-between;padding:0 28px;direction:ltr;pointer-events:none;}
+  .scrbar-btn{pointer-events:auto;flex:0 0 auto;width:50px;height:50px;border-radius:50%;border:1.6px solid rgba(255,255,255,.72);background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .12s;}
+  .scrbar-btn:active{transform:scale(.9);}
+  .scrbar-btn svg{width:22px;height:22px;}
+  .scrbar-voice{background:var(--tq-deep);border:none;box-shadow:0 14px 30px 2px rgba(0,0,0,.5),0 6px 14px rgba(0,0,0,.4);}
   body.hand-left #botbar{flex-direction:row-reverse;}
   #botbar .bb-spacer{width:50px;height:50px;flex:0 0 auto;}
   #botbar .bb-btn{pointer-events:auto;flex:0 0 auto;width:50px;height:50px;border-radius:50%;border:1.6px solid rgba(255,255,255,.72);cursor:pointer;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:none;transition:transform .12s ease, opacity .2s ease;}
@@ -1131,7 +1137,7 @@ function normalizePreviewList(){
   return out;
 }
 function openNormalizePreview(){
-  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>ניקוי מספרי טלפון</h2></div><div class="scr-body" id="nzBody"></div>');sc._reopen=openNormalizePreview;
+  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>ניקוי מספרי טלפון</h2></div><div class="scr-body" id="nzBody"></div>');sc._reopen=openNormalizePreview;addScreenBar(sc);
   const body=sc.querySelector('#nzBody');
   const changes=normalizePreviewList();
   if(!changes.length){body.innerHTML='<div class="flt-done">אין מספרים לניקוי 🎉<div class="sm">לא נמצאו מספרים עם +972 או מקפים לשינוי</div></div>';return;}
@@ -1545,7 +1551,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.07.01.0307';
+const APP_VERSION='2026.07.01.0312';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1808,6 +1814,7 @@ botbar.querySelector('#bbVoice').onclick=()=>startVoice();
 botbar.querySelector('#bbSearch').onclick=()=>openSearch();
 botbar.querySelector('#bbDial').onclick=()=>openDialer();
 botbar.querySelector('#bbBack').onclick=()=>navBack();
+function addScreenBar(sc){if(!sc||sc.querySelector('.scrbar'))return;const shade=document.createElement('div');shade.className='scrbar-shade';const bar=document.createElement('div');bar.className='scrbar';bar.innerHTML='<button class="scrbar-btn scrbar-menu" aria-label="תפריט"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button><button class="scrbar-btn scrbar-voice" aria-label="עוזר קולי"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button class="scrbar-btn scrbar-back" aria-label="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>';sc.appendChild(shade);sc.appendChild(bar);const mb=bar.querySelector('.scrbar-menu');if(mb)mb.onclick=()=>openHbar();const vb=bar.querySelector('.scrbar-voice');if(vb)vb.onclick=()=>startVoice();const bb=bar.querySelector('.scrbar-back');if(bb)bb.onclick=()=>{if(sc._back)sc._back();};}
 function updateBar(){if(flipping||barCollapsing||barReopening)return;const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const bareSheet=!!document.querySelector('.ovl.bare.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||(sheetOpen&&!bareSheet)||flipping);botbar.classList.toggle('on-screen',screenOpen);botbar.classList.toggle('collapsed',!(onHome&&!menuOpen&&!welcomeOn));if(!botbar.classList.contains('bar-hidden')){botbar.querySelectorAll('.bb-btn').forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});}var _sh=document.querySelector('.bot-shade');if(_sh)_sh.style.opacity=(welcomeOn||screenOpen||searchOn||sheetOpen)?'0':'1';var _fm=document.getElementById('menuFab');if(_fm)_fm.classList.toggle('fab-off',screenOpen||searchOn||sheetOpen);}
 function appBack(){
   const np=document.querySelector('.numpad-ov.show');if(np){np.classList.remove('show');setTimeout(()=>np.remove(),200);return true;}
@@ -2044,7 +2051,7 @@ function mgRefresh(sc){const left=sc.querySelectorAll('.dup-group').length;const
 function mgRemovePerson(person){const i=PEOPLE.indexOf(person);if(i>=0)PEOPLE.splice(i,1);savePeople();}
 function openMerge(){
   const groups=computeMergeGroups();
-  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>מיזוג כפילויות ('+groups.length+')</h2></div><div class="scr-body" id="dupBody"></div>');sc._reopen=openMerge;
+  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>מיזוג כפילויות ('+groups.length+')</h2></div><div class="scr-body" id="dupBody"></div>');sc._reopen=openMerge;addScreenBar(sc);
   const dupBody=sc.querySelector('#dupBody');
   const X_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   dupBody.innerHTML='<p class="cr-hint" style="text-align:right;margin:0 0 8px;">גרור איש קשר לאיש קשר אחר על מנת למזג.</p><div class="flt-search"><div class="srch-inwrap" id="mgWrap"><input id="mgSearch" class="ct-inp pk-inp" type="text" placeholder="חיפוש למיזוג ידני…" autocomplete="off"><button class="srch-clear pk-clear" id="mgSearchClr" type="button" aria-label="נקה">'+X_SVG+'</button></div></div><div id="mgResults" class="flt-list" style="margin-bottom:14px;"></div><div id="dupGroups"></div>';
@@ -2336,7 +2343,7 @@ function nativeUpdateContact(p,orig){
   }catch(e){}
 }
 function openArchive(){
-  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>ארכיון</h2></div><div class="scr-body" id="arcBody"></div>');sc._reopen=openArchive;
+  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>ארכיון</h2></div><div class="scr-body" id="arcBody"></div>');sc._reopen=openArchive;addScreenBar(sc);
   let aSelMode=false;const aSel=new Set();
   function aArch(){return PEOPLE.filter(p=>FDEC[fKey(p)]==='delete');}
   function aExit(){aSelMode=false;aSel.clear();hideSelBar();render();}
