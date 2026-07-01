@@ -548,7 +548,7 @@
   .flt-row-bg.keepbg{justify-content:flex-start;color:#2fcdb6;}
   .flt-row-bg.delbg{justify-content:flex-end;color:#e5877c;}
   .flt-row-bg svg{width:22px;height:22px;}
-  .flt-row-fg{position:relative;display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.1);padding:10px 12px;will-change:transform;cursor:pointer;}
+  .flt-row-fg{position:relative;display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.1);padding:10px 12px;will-change:transform;cursor:pointer;touch-action:pan-y;}
   .li-av{width:42px;height:42px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex:0 0 auto;}
   .li-txt{flex:1;min-width:0;}
   .li-txt .n{font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -1558,7 +1558,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.07.01.1042';
+const APP_VERSION='2026.07.01.1247';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2762,13 +2762,14 @@ function loadContactsFile(file){const rd=new FileReader();rd.onload=()=>{const t
 document.getElementById('welUpload').onclick=()=>document.getElementById('welFile').click();
 document.getElementById('welFile').onchange=e=>{const f=e.target.files&&e.target.files[0];if(f)loadContactsFile(f);};
 
-if(!PEOPLE.length){
-  if(BRIDGE){
-    var _sub=document.querySelector('.wel-sub');if(_sub)_sub.textContent='כדי להציג את אנשי הקשר שלך, Sweep צריך הרשאת גישה לאנשי הקשר במכשיר. אישור הגישה מסנכרן אוטומטית עם אנשי הקשר של הטלפון (וגוגל).';
-    var _wg=document.getElementById('welGoogle');if(_wg){_wg.textContent='אשר גישה לאנשי קשר';_wg.onclick=()=>{try{if(typeof BRIDGE.requestContacts==='function'){BRIDGE.requestContacts();return;}}catch(e){}try{location.reload();}catch(e){}};}
-    var _wu=document.getElementById('welUpload');if(_wu)_wu.style.display='none';
-    var _wf=document.getElementById('welFile');if(_wf)_wf.style.display='none';
-  }
+if(BRIDGE){
+  var _sub=document.querySelector('.wel-sub');if(_sub)_sub.textContent='כדי להציג את אנשי הקשר שלך, Sweep צריך הרשאת גישה לאנשי הקשר במכשיר. אישור הגישה מסנכרן אוטומטית עם אנשי הקשר של הטלפון (וגוגל).';
+  var _wg=document.getElementById('welGoogle');if(_wg){_wg.textContent='אשר גישה לאנשי קשר';_wg.onclick=()=>{try{if(typeof BRIDGE.requestContacts==='function'){BRIDGE.requestContacts();return;}}catch(e){}try{location.reload();}catch(e){}};}
+  var _wu=document.getElementById('welUpload');if(_wu)_wu.style.display='none';
+  var _wf=document.getElementById('welFile');if(_wf)_wf.style.display='none';
+}
+// בנייטיב אין להציג את מסך הפתיחה אוטומטית — ההרשאות + web.reload() מטפלים בטעינה. הוא נשאר זמין ידנית מההגדרות בלבד.
+if(!PEOPLE.length&&!BRIDGE){
   welcomeEl.classList.remove('hide');
 }
 (function(){
