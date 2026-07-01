@@ -1390,7 +1390,7 @@ if(BRIDGE){try{var _fk=JSON.parse(localStorage.getItem('myshare_favkeys')||'null
 applyFavSet();
 healKeys();recomputeAllRules();renderSeg();renderList();renderLists();layoutList();
 // זיהוי חד-פעמי: אנשי קשר ששמם המדויק אמא/אבא/סבא/סבתא נכנסים אוטומטית לרשימת "שמירה על קשר".
-(function(){try{if(localStorage.getItem('myshare_kitfamily')==='1')return;if(!PEOPLE||!PEOPLE.length)return;const FAM=['אמא','אבא','סבא','סבתא'];const L=kitList();let added=0;PEOPLE.forEach(p=>{const nm=String(p.name||'').trim();if(FAM.indexOf(nm)>=0){const k=fKey(p);if((L.members=L.members||[]).indexOf(k)<0){L.members.push(k);if(!KIT[k])KIT[k]=30;added++;}}});if(added){saveCfg();saveKit();saveKitNative();renderLists();}localStorage.setItem('myshare_kitfamily','1');}catch(e){}})();
+(function(){try{if(localStorage.getItem('myshare_kitfamily2')==='1')return;if(!PEOPLE||!PEOPLE.length)return;const FREQ={'אמא':7,'אבא':7,'סבא':90,'סבתא':90};const L=kitList();let ch=false;PEOPLE.forEach(p=>{const nm=String(p.name||'').trim();if(FREQ[nm]){const k=fKey(p);if((L.members=L.members||[]).indexOf(k)<0){L.members.push(k);ch=true;}if(KIT[k]!==FREQ[nm]){KIT[k]=FREQ[nm];ch=true;}}});if(ch){saveCfg();saveKit();saveKitNative();renderLists();}localStorage.setItem('myshare_kitfamily2','1');}catch(e){}})();
 try{saveKitNative();}catch(e){}
 setTimeout(()=>{try{const t=upcomingBdays().filter(o=>o.n===0);if(t.length){const nm=t.map(o=>o.p.name||'').filter(Boolean).slice(0,3).join(', ');toast('🎂 היום יום הולדת ל'+(nm||t.length+' אנשי קשר'));}}catch(e){}},1600);
 window.addEventListener('resize',layoutList);
@@ -1564,7 +1564,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.07.02.0013';
+const APP_VERSION='2026.07.02.0017';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
