@@ -1558,7 +1558,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.07.01.1504';
+const APP_VERSION='2026.07.01.1518';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1628,7 +1628,7 @@ function openSettings(){
   const _exp=sheet.querySelector('#cmExport');if(_exp)_exp.onclick=()=>exportContacts();
   const _onb=sheet.querySelector('#cmOnboard');if(_onb)_onb.onclick=()=>{closeSheet();try{welcomeEl.classList.remove('hide');}catch(e){}};
   const _ak=sheet.querySelector('#aiKeyInp'),_aks=sheet.querySelector('#aiKeySave');
-  if(_ak){const _autoPaste=()=>{if((_ak.value||'').trim())return;let t='';try{if(BRIDGE&&typeof BRIDGE.readClipboard==='function')t=BRIDGE.readClipboard()||'';}catch(e){}if(t){_ak.value=t.trim();return;}try{if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(c=>{if(c&&!(_ak.value||'').trim())_ak.value=String(c).trim();}).catch(()=>{});}catch(e){}};_ak.addEventListener('focus',_autoPaste);_ak.addEventListener('click',_autoPaste);}
+  if(_ak){const _isKey=t=>/^sk-[\w-]{20,}$/.test(String(t||'').trim());const _autoPaste=()=>{const _use=c=>{c=String(c||'').trim();if(_isKey(c)){_ak.value=c;try{_ak.setSelectionRange(c.length,c.length);}catch(e){}return true;}return false;};let t='';try{if(BRIDGE&&typeof BRIDGE.readClipboard==='function')t=BRIDGE.readClipboard()||'';}catch(e){}if(_use(t))return;try{if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(_use).catch(()=>{});}catch(e){}};_ak.addEventListener('focus',_autoPaste);_ak.addEventListener('click',_autoPaste);}
   if(_aks&&_ak)_aks.onclick=()=>{const v=(_ak.value||'').trim();if(!v){toast('הדבק מפתח קודם');return;}const st=sheet.querySelector('#aiStatus');if(st){st.textContent='בודק את המפתח…';st.style.color='rgba(255,255,255,.7)';}_aks.disabled=true;_aks.textContent='בודק…';aiTestKey(v).then(res=>{if(res&&res.ok){try{localStorage.setItem('myshare_aikey',v);}catch(e){}toast('המפתח תקין ונשמר — העוזר החכם פעיל ✓');openSettings();}else{if(st){st.textContent='המפתח לא תקין: '+((res&&res.msg)||'')+' — לא נשמר';st.style.color='#ff9b90';}_aks.disabled=false;_aks.textContent='שמור מפתח';toast('המפתח לא תקין');}});};
   const _ake=sheet.querySelector('#aiKeyEye');if(_ake&&_ak)_ake.onclick=()=>{_ak.type=(_ak.type==='password')?'text':'password';};
   const _akcp=sheet.querySelector('#aiKeyCopy');if(_akcp)_akcp.onclick=()=>{const v=aiKey();if(!v){toast('אין מפתח');return;}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(v).then(()=>toast('המפתח הועתק')).catch(()=>toast('לא ניתן להעתיק'));}else toast('לא ניתן להעתיק');};
