@@ -100,11 +100,16 @@ class ShareActivity : Activity() {
             android.Manifest.permission.READ_CALL_LOG,
             android.Manifest.permission.READ_SMS
         ))
-        if (android.os.Build.VERSION.SDK_INT >= 33) perms.add("android.permission.POST_NOTIFICATIONS")
+        // POST_NOTIFICATIONS לא מבוקש — ההתראות מבוטלות; בקשתו גרמה ללולאת בקשה+reload כשהמשתמש דוחה.
         for (perm in perms) {
             if (checkSelfPermission(perm) != PackageManager.PERMISSION_GRANTED) needed.add(perm)
         }
-        if (needed.isNotEmpty()) requestPermissions(needed.toTypedArray(), REQ_CONTACTS)
+        // בקשה חד-פעמית בלבד: מונע לולאת reload אינסופית כשהמשתמש דוחה הרשאה כלשהי (SMS/יומן שיחות וכו').
+        val _permPrefs = getSharedPreferences("sweep_prefs", MODE_PRIVATE)
+        if (needed.isNotEmpty() && !_permPrefs.getBoolean("perms_asked", false)) {
+            _permPrefs.edit().putBoolean("perms_asked", true).apply()
+            requestPermissions(needed.toTypedArray(), REQ_CONTACTS)
+        }
         // התראות "שמירה על קשר" מבוטלות לבקשת המשתמש — החיווי האדום בתוך האפליקציה מספיק.
         // ההרשאה והקוד נשארים לשימוש עתידי. כדי להחזיר: בטל הערה כאן וב-saveKitState.
         // try { KitAlarmReceiver.schedule(this) } catch (e: Exception) {}
@@ -114,7 +119,7 @@ class ShareActivity : Activity() {
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQ_CONTACTS) web.reload()
+        if (requestCode == REQ_CONTACTS && grantResults.any { it == PackageManager.PERMISSION_GRANTED }) web.reload()
         if (requestCode == REQ_AUDIO) {
             val granted = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
             val req = pendingAudioRequest
