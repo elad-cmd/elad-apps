@@ -507,6 +507,19 @@
   .flt-intro .fi-tx span{font-size:13px;color:#5a7d7e;}
   .flt-intro .fi-note{margin-top:16px;font-size:13px;color:#4d6f70;background:#fff;border-radius:12px;padding:10px 12px;width:100%;text-align:center;}
   .flt-intro .fi-start{margin-top:16px;border:none;background:var(--tq-deep);color:#fff;font-weight:800;font-size:15px;padding:11px 0;width:100%;border-radius:14px;cursor:pointer;font-family:inherit;}
+  .flt-card.flt-intro{padding:0;overflow:hidden;gap:0;}
+  .fi2{position:absolute;inset:0;}
+  .fi2-up{background:#cfe8e2;clip-path:polygon(0 0,100% 0,50% 50%);}
+  .fi2-right{background:#d2ecd6;clip-path:polygon(100% 0,100% 100%,50% 50%);}
+  .fi2-down{background:#f4e2c4;clip-path:polygon(0 100%,100% 100%,50% 50%);}
+  .fi2-left{background:#f1d4d0;clip-path:polygon(0 0,0 100%,50% 50%);}
+  .fi2lbl{position:absolute;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:13px;font-weight:800;pointer-events:none;}
+  .fi2lbl svg{width:27px;height:27px;}
+  .fi2lbl.up{top:22px;left:0;right:0;color:#15807a;}
+  .fi2lbl.down{bottom:22px;left:0;right:0;color:#c98a3a;}
+  .fi2lbl.left{left:16px;top:50%;transform:translateY(-50%);color:#c0564c;}
+  .fi2lbl.right{right:16px;top:50%;transform:translateY(-50%);color:#2f9b4e;}
+  .flt-card.flt-intro .fi-start{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);margin:0;width:auto;padding:9px 24px;border-radius:22px;background:var(--tq-deep);color:#fff;border:none;font-weight:800;font-size:14px;font-family:inherit;cursor:pointer;box-shadow:0 8px 20px -8px rgba(0,0,0,.5);z-index:2;}
   .flt-undo{position:absolute;z-index:6;width:46px;height:46px;border-radius:50%;border:none;background:rgba(255,255,255,.18);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 20px -8px rgba(0,0,0,.55);transition:opacity .35s ease;}
   .flt-undo svg{width:22px;height:22px;}
   .flt-undo.dir-right{right:10px;top:46%;transform:translateY(-50%);}
@@ -1532,7 +1545,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.07.01.0217';
+const APP_VERSION='2026.07.01.0307';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2182,13 +2195,13 @@ function openFilter(){
   function decide(p,d){if(!p)return;FDEC[fKey(p)]=d;saveDec();hist.push({key:fKey(p),dir:(d==='keep'?'right':d==='delete'?'left':'down')});}
   function undo(){const h=hist.pop();if(h){delete FDEC[h.key];if(h.list){const L=(cfg.lists||[]).find(x=>x.id===h.list);if(L){const i=L.members.indexOf(h.key);if(i>=0)L.members.splice(i,1);saveCfg();renderLists();}}saveDec();render();}}
   function introCard(view){
+    var LIST_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="4.5" cy="6" r="1.4" fill="currentColor" stroke="none"/><line x1="9" y1="6" x2="20" y2="6"/><circle cx="4.5" cy="12" r="1.4" fill="currentColor" stroke="none"/><line x1="9" y1="12" x2="20" y2="12"/><circle cx="4.5" cy="18" r="1.4" fill="currentColor" stroke="none"/><line x1="9" y1="18" x2="18" y2="18"/></svg>';
     view.innerHTML='<div class="flt-stage"><div class="flt-deck"><div class="flt-card flt-intro" id="fcard">'
-      +'<div class="fi-title">איך מסננים?</div>'
-      +'<div class="fi-row"><span class="fi-ic keep">'+ICON.check+'</span><div class="fi-tx"><b>החלקה ימינה</b><span>שמירה</span></div></div>'
-      +'<div class="fi-row"><span class="fi-ic del">'+ICON.archive+'</span><div class="fi-tx"><b>החלקה שמאלה</b><span>ארכיון</span></div></div>'
-      +'<div class="fi-row"><span class="fi-ic maybe">'+ICON.clock+'</span><div class="fi-tx"><b>החלקה למטה</b><span>בדיקה</span></div></div>'
-      +'<div class="fi-row"><span class="fi-ic list">'+ICON.plus+'</span><div class="fi-tx"><b>החלקה למעלה</b><span>הוספה לרשימה</span></div></div>'
-      +'<div class="fi-note">אל דאגה — תמיד אפשר להחזיר מהארכיון</div>'
+      +'<div class="fi2 fi2-up"></div><div class="fi2 fi2-right"></div><div class="fi2 fi2-down"></div><div class="fi2 fi2-left"></div>'
+      +'<div class="fi2lbl up">'+LIST_SVG+'<span>הוסף לרשימה</span></div>'
+      +'<div class="fi2lbl right">'+ICON.check+'<span>שמור</span></div>'
+      +'<div class="fi2lbl down">'+ICON.clock+'<span>לבדיקה</span></div>'
+      +'<div class="fi2lbl left">'+ICON.archive+'<span>לארכיון</span></div>'
       +'<button class="fi-start" id="fiStart">התחל</button></div></div></div>';
     const card=view.querySelector('#fcard');
     const go=()=>{introSeen=true;render();};
