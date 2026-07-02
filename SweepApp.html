@@ -14,7 +14,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Sweep">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap');
   :root{
     --surface:#ffffff;
     --ink:#2f2a3d;
@@ -26,7 +25,7 @@
     --teal:#2f9fc4;   --teal-soft:#dcf0f7;
     --purple:#8b7be8; --purple-soft:#e8e2fb;
     --flame1:#ff6b5e; --flame2:#fd3d7a;
-    font-family:'Assistant',system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+    font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;height:100%;}
@@ -83,11 +82,11 @@
   }
   .card .avatar svg{width:74px;height:74px;color:#c2bdd6;}
   .card .avatar img{width:100%;height:100%;object-fit:cover;}
-  .card .name{font-size:30px;font-weight:400;line-height:1.15;margin:0 0 6px;word-break:break-word;letter-spacing:-.3px;}
-  .card .name.empty{color:var(--muted);font-weight:400;font-size:24px;}
-  .card .org{font-size:16px;color:var(--ink);font-weight:400;margin:2px 0;opacity:.78;word-break:break-word;}
-  .card .email{font-size:16px;color:var(--teal);font-weight:400;margin:9px 0 2px;word-break:break-all;direction:ltr;}
-  .card .phone{font-size:15px;color:var(--muted);font-weight:400;margin:3px 0;direction:ltr;}
+  .card .name{font-size:30px;font-weight:700;line-height:1.15;margin:0 0 6px;word-break:break-word;letter-spacing:-.3px;}
+  .card .name.empty{color:var(--muted);font-weight:600;font-size:24px;}
+  .card .org{font-size:16px;color:var(--ink);font-weight:600;margin:2px 0;opacity:.78;word-break:break-word;}
+  .card .email{font-size:16px;color:var(--teal);font-weight:600;margin:9px 0 2px;word-break:break-all;direction:ltr;}
+  .card .phone{font-size:15px;color:var(--muted);font-weight:500;margin:3px 0;direction:ltr;}
   .card .extra{font-size:13px;color:var(--muted);margin-top:10px;}
 
   /* drag indicator icons (corners — never over the name) */
@@ -155,7 +154,7 @@
   .li-av svg{width:25px;height:25px;color:#c2bdd6;} .li-av img{width:100%;height:100%;object-fit:cover;}
   .li-av.init{background:var(--purple-soft);color:var(--purple);font-weight:700;font-size:20px;}
   .li-txt{flex:1;min-width:0;}
-  .li-txt .n{font-weight:400;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .li-txt .n{font-weight:600;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .li-txt .s{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:right;}
   .li-btn{border:none;border-radius:12px;padding:9px 13px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:transform .12s;}
   .li-btn:active{transform:scale(.92);}
@@ -205,7 +204,7 @@
   .dup-member.selected{background:var(--keep-soft);border-color:var(--keep);}
   .dup-member.selected .dot{border-color:var(--keep);background:var(--keep);box-shadow:inset 0 0 0 3px #fff;}
   .dup-member .li-txt{flex:1;min-width:0;}
-  .dup-member .li-txt .n{font-weight:400;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .dup-member .li-txt .n{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .dup-member .li-txt .s{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:right;}
   .dup-member .kept-badge{font-size:11px;font-weight:700;color:var(--keep);opacity:0;flex:0 0 auto;}
   .dup-member.selected .kept-badge{opacity:1;}
@@ -222,7 +221,7 @@
   .mp-opt .chk svg{width:14px;height:14px;opacity:0;}
   .mp-opt.on{border-color:var(--keep);background:var(--keep-soft);}
   .mp-opt.on .chk{background:var(--keep);border-color:var(--keep);} .mp-opt.on .chk svg{opacity:1;}
-  .mp-opt .v{flex:1;min-width:0;font-weight:400;font-size:15px;word-break:break-word;}
+  .mp-opt .v{flex:1;min-width:0;font-weight:600;font-size:15px;word-break:break-word;}
   .mp-opt .v.ltr{direction:ltr;text-align:right;}
   .mp-auto{background:var(--teal-soft);color:var(--teal);border-radius:12px;padding:10px 14px;font-size:13px;margin-bottom:16px;line-height:1.5;word-break:break-word;}
   .mp-confirm{width:100%;margin-top:6px;}
@@ -369,13 +368,13 @@
     background:radial-gradient(circle at 50% 32%,#f3eefb,#e7eff7);margin-bottom:12px;flex:0 0 auto;}
   .cd-av.init{background:var(--purple-soft);color:var(--purple);font-weight:700;font-size:36px;}
   .cd-av img{width:100%;height:100%;object-fit:cover;} .cd-av svg{width:50px;height:50px;color:#c2bdd6;}
-  .cd-name{font-size:26px;font-weight:400;color:var(--ink);letter-spacing:-.3px;word-break:break-word;line-height:1.15;}
+  .cd-name{font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-.3px;word-break:break-word;line-height:1.15;}
   .cd-name.empty{color:var(--muted);font-size:21px;}
-  .cd-org{font-size:15px;color:var(--ink);opacity:.75;font-weight:400;margin-top:5px;word-break:break-word;}
+  .cd-org{font-size:15px;color:var(--ink);opacity:.75;font-weight:600;margin-top:5px;word-break:break-word;}
   .cd-fields{margin-top:16px;display:flex;flex-direction:column;gap:9px;}
   .cd-field{background:#f7f5fb;border-radius:14px;padding:10px 14px;}
   .cd-field .lbl{font-size:11.5px;color:var(--muted);font-weight:700;margin-bottom:2px;}
-  .cd-field .val{font-size:15.5px;color:var(--ink);font-weight:400;word-break:break-word;}
+  .cd-field .val{font-size:15.5px;color:var(--ink);font-weight:600;word-break:break-word;}
   .cd-field .val.ltr{direction:ltr;text-align:right;}
   .cd-empty{text-align:center;color:var(--muted);padding:14px;}
   .sh-side .sh-lbl{font-size:13px;font-weight:700;}

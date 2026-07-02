@@ -13,11 +13,14 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Z_Sweep">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap">
 <style>
   :root{
     --tq:#7BBFC0; --tq-deep:#00C2A8; --tq-ink:#1E5A64; --white:#ffffff; --tq-top:#0C2A2B; --tq-bot:#1C4B4D;
     --soft:#EAF5F4; --line:#e7f0ef; --dim:rgba(8,40,42,.42);
-    font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+    font-family:'Assistant',system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
   html,body{height:100%;}
@@ -68,7 +71,7 @@
   body.hand-right .row .meta{right:82px;left:16px;text-align:right;}
   body.hand-left .row .meta{left:82px;right:16px;text-align:left;}
   .row .ml{line-height:1.32;}
-  .row .nm{display:inline-block;max-width:100%;font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;}
+  .row .nm{display:inline-block;max-width:100%;font-size:15px;font-weight:400;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;}
   .row .sub{display:inline-block;max-width:100%;font-size:12.5px;font-weight:400;color:rgba(255,255,255,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;}
   body.picking .row{opacity:.18;}
   body.picking .row.active{opacity:0;}
@@ -225,7 +228,7 @@
   .srch-row .sav{width:50px;height:50px;border-radius:50%;border:none;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex:0 0 auto;cursor:pointer;box-shadow:0 6px 16px -8px rgba(8,50,50,.5);}
   .srch-row .sav:active{transform:scale(.93);}
   .srch-txt{display:flex;flex-direction:column;min-width:0;}
-  .srch-row .snm{color:#fff;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .srch-row .snm{color:#fff;font-size:15px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .srch-row .ssub{font-size:12.5px;color:rgba(255,255,255,.65);direction:ltr;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .srch-input{width:100%;padding:15px 18px 15px 46px;border:none;border-radius:16px;font-size:16px;font-family:inherit;text-align:right;color:var(--tq-ink);background:#fff;outline:none;box-shadow:0 14px 34px -10px rgba(0,0,0,.55);}
   .srch-inwrap{position:relative;width:100%;}
@@ -249,7 +252,7 @@
   .dup-member.selected{box-shadow:inset 0 0 0 2px var(--tq-deep);background:#15494b;}
   .dm-av{width:42px;height:42px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex:0 0 auto;}
   .dm-txt{flex:1;min-width:0;}
-  .dm-n{font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .dm-n{font-size:15px;font-weight:400;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .dm-d{font-size:12px;color:rgba(255,255,255,.72);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:right;margin-top:1px;}
   .dm-keep{font-size:11px;font-weight:800;color:var(--tq-ink);background:#fff;border-radius:999px;padding:3px 9px;opacity:0;flex:0 0 auto;}
   .dup-member.selected .dm-keep{opacity:1;}
@@ -272,7 +275,7 @@
   .mp-opt.on .mp-chk{background:var(--tq-deep);border-color:var(--tq-deep);}
   .mp-chk svg{width:15px;height:15px;opacity:0;}
   .mp-opt.on .mp-chk svg{opacity:1;}
-  .mp-v{flex:1;min-width:0;font-size:14.5px;font-weight:600;color:var(--tq-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .mp-v{flex:1;min-width:0;font-size:14.5px;font-weight:400;color:var(--tq-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .mp-v.ltr{direction:ltr;text-align:right;}
   .mp-confirm{width:100%;padding:13px;border:none;border-radius:14px;background:var(--tq-deep);color:#fff;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;margin-top:4px;}
   .la-new{display:inline-block;padding:6px 13px;border:none;border-radius:11px;background:rgba(8,50,50,.1);color:rgba(8,50,50,.6);font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;}
@@ -286,7 +289,7 @@
   .kit-list{display:flex;flex-direction:column;gap:8px;}
   .kit-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.07);border-radius:12px;padding:10px 12px;cursor:pointer;}
   .kit-main{flex:1;min-width:0;text-align:right;}
-  .kit-nm{font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .kit-nm{font-size:15px;font-weight:400;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .kit-sub{font-size:12px;color:rgba(255,255,255,.65);margin-top:2px;}
   .kit-badge{flex:0 0 auto;font-size:11px;font-weight:800;padding:4px 9px;border-radius:999px;white-space:nowrap;}
   .kit-badge.over{background:#cf6a5e;color:#fff;}
@@ -300,13 +303,13 @@
   .ct-av{width:84px;height:84px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;margin:0 auto 12px;}
   .ct-frow{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid rgba(255,255,255,.12);}
   .ct-namerow{border-top:none;}
-  .ct-inp{flex:1;min-width:0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:10px 12px;color:#fff;font-family:inherit;font-size:15px;font-weight:600;outline:none;text-align:right;}
+  .ct-inp{flex:1;min-width:0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:10px 12px;color:#fff;font-family:inherit;font-size:15px;font-weight:400;outline:none;text-align:right;}
   .ct-inp::placeholder{color:rgba(255,255,255,.4);}
   .ct-inp:focus{border-color:var(--tq-deep);background:rgba(0,194,168,.12);}
   .mp-sheet .ct-inp{background:#fff;border:1px solid rgba(8,50,50,.20);color:var(--tq-ink);}
   .mp-sheet .ct-inp::placeholder{color:rgba(8,50,50,.42);}
   .mp-sheet .ct-inp:focus{border-color:var(--tq-deep);background:#fff;}
-  .ct-nameinp{font-size:18px;font-weight:800;text-align:center;}
+  .ct-nameinp{font-size:18px;font-weight:500;text-align:center;}
   .ct-field{text-align:right;margin-bottom:10px;}
   .ct-lbl{display:block;font-size:12px;font-weight:700;color:rgba(255,255,255,.62);text-align:right;margin:0 2px 4px;}
   .acf-row{display:flex;align-items:center;gap:8px;}
@@ -392,7 +395,7 @@
   .list-empty{text-align:center;color:rgba(255,255,255,.6);font-size:13.5px;padding:30px 24px;}
   .la-list{display:flex;flex-direction:column;gap:6px;margin:6px 0 14px;}
   .la-row{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.08);border:none;border-radius:12px;padding:10px 12px;cursor:pointer;font-family:inherit;width:100%;}
-  .la-name{color:#fff;font-size:14.5px;font-weight:700;}
+  .la-name{color:#fff;font-size:14.5px;font-weight:400;}
   .mp-sheet .la-row,.mp-sheet .lm-row{background:rgba(8,50,50,.07);}
   .mp-sheet .la-name,.mp-sheet .lm-name{color:var(--tq-ink);}
   .mp-sheet .lm-cnt{color:rgba(8,50,50,.55);}
@@ -938,6 +941,7 @@ function saveKit(){try{localStorage.setItem('myshare_kit',JSON.stringify(KIT));}
 const KIT_OPTS=[{d:7,t:'כל שבוע'},{d:14,t:'כל שבועיים'},{d:30,t:'כל חודש'},{d:90,t:'כל 3 חודשים'},{d:180,t:'כל חצי שנה'},{d:365,t:'כל שנה'}];
 function kitOptLabel(d){const o=KIT_OPTS.find(x=>x.d===d);return o?o.t:('כל '+d+' ימים');}
 function kitList(){const kits=(cfg.lists||[]).filter(x=>x.kit);if(kits.length>1){const keep=kits[0];kits.slice(1).forEach(ex=>{(ex.members||[]).forEach(m=>{if(keep.members.indexOf(m)<0)keep.members.push(m);});});cfg.lists=cfg.lists.filter(x=>!x.kit||x===keep);saveCfg();}let L=(cfg.lists||[]).find(x=>x.kit);if(!L){L={id:'__kit__',name:'שמירה על קשר',members:[],kit:true};(cfg.lists=cfg.lists||[]).push(L);saveCfg();}return L;}
+function restoreKitList(){try{const L=kitList();const FREQ={'אמא':7,'אבא':7,'סבא':90,'סבתא':90};(PEOPLE||[]).forEach(p=>{const nm=String(p.name||'').trim();if(FREQ[nm]){const k=fKey(p);if((L.members=L.members||[]).indexOf(k)<0)L.members.push(k);if(KIT[k]!==FREQ[nm])KIT[k]=FREQ[nm];}});saveCfg();saveKit();saveKitNative();renderLists();return L;}catch(e){}}
 function kitInfo(p){const k=fKey(p);const days=KIT[k]||30;const last=(RECENTTS&&RECENTTS[k])||0;const due=days*86400000;const over=last?(Date.now()-last>due):true;const remain=last?Math.ceil((due-(Date.now()-last))/86400000):-1;return {days,last,over,remain};}
 function gatherBackupData(){const o={ts:Date.now(),app:'sweep'};try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.indexOf('myshare_')===0)o[k]=localStorage.getItem(k);}}catch(e){}return o;}
 function nativeBackup(){if(!BRIDGE||typeof BRIDGE.runBackup!=='function')return'';let r='';try{r=BRIDGE.runBackup(JSON.stringify(gatherBackupData()))||'';}catch(e){r='ERR';}if(r.indexOf('OK')===0)localStorage.setItem('myshare_lastbackup',String(Date.now()));return r;}
@@ -1311,7 +1315,7 @@ function openListManage(){
       else if(k==='rule'){ca();openRuleEdit(id,()=>{renderLists();renderList();paint();});}
       else if(k==='vis'){L.hidden=!L.hidden;saveCfg();renderLists();paint();ca();}
       else if(k==='send'){ca();close();openSendList(id);}
-      else if(k==='del'){ca();uiConfirm('למחוק את הרשימה «'+(L.name||'')+'»? (אנשי הקשר לא יימחקו)',function(){cfg.lists=cfg.lists.filter(x=>x.id!==id);if(activeList===id)activeList=null;saveCfg();renderLists();renderList();paint();});}
+      else if(k==='del'){ca();var _delMsg=L.kit?('«שמירה על קשר» היא רשימה מערכתית מיוחדת. אם תמחק אותה תוכל לשחזר אותה רק דרך מסך ההגדרות. למחוק בכל זאת?'):('למחוק את הרשימה «'+(L.name||'')+'»? (אנשי הקשר לא יימחקו)');uiConfirm(_delMsg,function(){cfg.lists=cfg.lists.filter(x=>x.id!==id);if(activeList===id)activeList=null;saveCfg();renderLists();renderList();paint();});}
     });
   }
   const lmBox=ov.querySelector('#lmList');
@@ -1392,6 +1396,8 @@ healKeys();recomputeAllRules();renderSeg();renderList();renderLists();layoutList
 // זיהוי חד-פעמי: אנשי קשר ששמם המדויק אמא/אבא/סבא/סבתא נכנסים אוטומטית לרשימת "שמירה על קשר".
 (function(){try{if(localStorage.getItem('myshare_kitfamily2')==='1')return;if(!PEOPLE||!PEOPLE.length)return;const FREQ={'אמא':7,'אבא':7,'סבא':90,'סבתא':90};const L=kitList();let ch=false;PEOPLE.forEach(p=>{const nm=String(p.name||'').trim();if(FREQ[nm]){const k=fKey(p);if((L.members=L.members||[]).indexOf(k)<0){L.members.push(k);ch=true;}if(KIT[k]!==FREQ[nm]){KIT[k]=FREQ[nm];ch=true;}}});if(ch){saveCfg();saveKit();saveKitNative();renderLists();}localStorage.setItem('myshare_kitfamily2','1');}catch(e){}})();
 try{saveKitNative();}catch(e){}
+// זריעה חד-פעמית: יצירת רשימת "משפחה" כברירת מחדל, עם אבא/אמא/סבא/סבתא בתוכה.
+(function(){try{if(localStorage.getItem('myshare_familylist1')==='1')return;const FAM={'אמא':1,'אבא':1,'סבא':1,'סבתא':1};let L=(cfg.lists||[]).find(x=>!x.kit&&String(x.name||'').trim()==='משפחה');if(!L){L={id:'L'+Date.now(),name:'משפחה',members:[]};(cfg.lists=cfg.lists||[]).push(L);}(PEOPLE||[]).forEach(p=>{if(FAM[String(p.name||'').trim()]){const k=fKey(p);if((L.members=L.members||[]).indexOf(k)<0)L.members.push(k);}});saveCfg();renderLists();localStorage.setItem('myshare_familylist1','1');}catch(e){}})();
 setTimeout(()=>{try{const t=upcomingBdays().filter(o=>o.n===0);if(t.length){const nm=t.map(o=>o.p.name||'').filter(Boolean).slice(0,3).join(', ');toast('🎂 היום יום הולדת ל'+(nm||t.length+' אנשי קשר'));}}catch(e){}},1600);
 window.addEventListener('resize',layoutList);
 
@@ -1564,7 +1570,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.07.02.1530';
+const APP_VERSION='2026.07.02.1932';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2010,6 +2016,7 @@ function openSeder(){
     '<button class="opt" id="optFilter"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 5h16l-6 8v5l-4 2v-7z\"/></svg></span><span><span class="otitle">סינון רשימה</span><span class="odesc">החלקה: שומר / ארכיון / לבדיקה</span></span></button>'+
     '<button class="opt" id="optArchive"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"4\" rx=\"1\"/><path d=\"M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8\"/><path d=\"M10 12h4\"/></svg></span><span><span class="otitle">ארכיון</span><span class="odesc">אנשי קשר שהוסרו מהתצוגה</span></span></button>'+
     '<button class="opt" id="optReset"><span class="oic" style="background:#fde8e6;color:#c0392b;"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 12a9 9 0 1 0 3-6.7L3 8\"/><path d=\"M3 3v5h5\"/></svg></span><span><span class="otitle">איפוס האפליקציה</span><span class="odesc">מחיקת כל ההגדרות והנתונים</span></span></button>'+
+    '<button class="opt" id="optRestoreKit"><span class="oic" style="background:#dff3ef;color:#0f6e56;"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 12a9 9 0 1 0 3-6.7L3 8\"/><path d=\"M3 3v5h5\"/></svg></span><span><span class="otitle">החזר רשימת שמירה על קשר</span><span class="odesc">משחזר את הרשימה המיוחדת אם נמחקה</span></span></button>'+
     '</div>');
   sc.classList.add('scr-bottom');
   sc._reopen=openSeder;addScreenBar(sc);sc.querySelector('#optMerge').onclick=()=>openMerge();
@@ -2017,6 +2024,7 @@ function openSeder(){
   sc.querySelector('#optArchive').onclick=()=>openArchive();
   sc.querySelector('#optNorm').onclick=()=>openNormalizePreview();
   sc.querySelector('#optReset').onclick=()=>openResetConfirm();
+  (function(){const rb=sc.querySelector('#optRestoreKit');if(!rb)return;const exists=!!(cfg.lists||[]).find(x=>x.kit);rb.disabled=exists;rb.style.opacity=exists?'.42':'';rb.style.pointerEvents=exists?'none':'';rb.onclick=()=>{if((cfg.lists||[]).find(x=>x.kit)){toast('הרשימה כבר קיימת');return;}restoreKitList();toast('רשימת «שמירה על קשר» שוחזרה');openSeder();};})();
 }
 function normEmail(e){return String(e||'').trim().toLowerCase();}
 function normPhone(p){const d=String(p||'').replace(/\D/g,'');return d.length>=7?d.slice(-9):'';}
