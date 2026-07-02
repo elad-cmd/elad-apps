@@ -30,6 +30,7 @@ class ShareActivity : Activity() {
 
     private lateinit var web: WebView
     private var sharedText: String = ""
+    private var sharedImageUri: Uri? = null
     private val REQ_CONTACTS = 101
     private val REQ_FILE = 201
     private val REQ_WRITE = 301
@@ -43,8 +44,14 @@ class ShareActivity : Activity() {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
-            sharedText = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
+        if (intent?.action == Intent.ACTION_SEND) {
+            val _t = intent.type ?: ""
+            if (_t == "text/plain") {
+                sharedText = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
+            } else if (_t.startsWith("image/")) {
+                sharedImageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM) as? Uri
+                sharedText = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
+            }
         }
         web = WebView(this)
         web.settings.javaScriptEnabled = true
@@ -424,6 +431,59 @@ class ShareActivity : Activity() {
         }, "שיתוף"))
     }
 
+    /**
+     * מעביר תמונה משותפת ליעד לפי appId.
+     * למייל/SMS — הנמען (איש הקשר שנבחר בסוויפ) נשמר.
+     * לוואטסאפ/טלגרם וכו' — בורר הצ'אט של אותה אפליקציה נפתח (מגבלת אנדרואיד למדיה).
+     */
+    private fun shareImageTo(appId: String, uri: Uri, phone: String, email: String, text: String) {
+        val mime = try { contentResolver.getType(uri) } catch (e: Exception) { null } ?: "image/*"
+        fun base(): Intent = Intent(Intent.ACTION_SEND).apply {
+            type = mime
+            putExtra(Intent.EXTRA_STREAM, uri)
+            if (text.isNotEmpty()) putExtra(Intent.EXTRA_TEXT, text)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        when (appId) {
+            "whatsapp"  -> sendImageToPackage("com.whatsapp", uri, text, mime)
+            "telegram"  -> sendImageToPackage("org.telegram.messenger", uri, text, mime)
+            "messenger" -> sendImageToPackage("com.facebook.orca", uri, text, mime)
+            "instagram" -> sendImageToPackage("com.instagram.android", uri, text, mime)
+            "signal"    -> sendImageToPackage("org.thoughtcrime.securesms", uri, text, mime)
+            "discord"   -> sendImageToPackage("com.discord", uri, text, mime)
+            "facebook"  -> sendImageToPackage("com.facebook.katana", uri, text, mime)
+            "twitter"   -> sendImageToPackage("com.twitter.android", uri, text, mime)
+            "linkedin"  -> sendImageToPackage("com.linkedin.android", uri, text, mime)
+            "sms" -> {
+                val i = base().apply {
+                    putExtra("address", phone); putExtra("sms_body", text)
+                    val pkg = try { android.provider.Telephony.Sms.getDefaultSmsPackage(this@ShareActivity) } catch (e: Exception) { null }
+                    if (pkg != null) setPackage(pkg)
+                }
+                if (i.resolveActivity(packageManager) != null) startActivity(i)
+                else startActivity(Intent.createChooser(base(), "שלח תמונה"))
+            }
+            "mail" -> {
+                val i = base().apply { if (email.isNotEmpty()) putExtra(Intent.EXTRA_EMAIL, arrayOf(email)) }
+                startActivity(Intent.createChooser(i, "שלח תמונה"))
+            }
+            else -> startActivity(Intent.createChooser(base(), "שיתוף תמונה"))
+        }
+    }
+
+    /** ACTION_SEND עם תמונה לחבילה ספציפית; אם לא מותקנת — בורר מערכת. */
+    private fun sendImageToPackage(pkg: String, uri: Uri, text: String, mime: String) {
+        fun make(withPkg: Boolean): Intent = Intent(Intent.ACTION_SEND).apply {
+            type = mime; putExtra(Intent.EXTRA_STREAM, uri)
+            if (text.isNotEmpty()) putExtra(Intent.EXTRA_TEXT, text)
+            if (withPkg) setPackage(pkg)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        val i = make(true)
+        if (i.resolveActivity(packageManager) != null) startActivity(i)
+        else startActivity(Intent.createChooser(make(false), "שיתוף תמונה"))
+    }
+
     private fun digitsOf(s: String): String = s.filter { it.isDigit() }
 
     /** האם שני מספרים מתייחסים לאותו אדם (השוואת סיומת ספרות). */
@@ -559,6 +619,7 @@ class ShareActivity : Activity() {
 
     inner class Bridge {
         @JavascriptInterface fun getSharedText(): String = sharedText
+        @JavascriptInterface fun getSharedImage(): String = if (sharedImageUri != null) "1" else ""
         @JavascriptInterface fun getContacts(): String = readContacts()
 
         /** מבקש הרשאת קריאת אנשי קשר; בעת אישור — טעינה מחדש (onRequestPermissionsResult). */
@@ -582,6 +643,11 @@ class ShareActivity : Activity() {
             val email = c.optString("email", "")
             runOnUiThread {
                 try {
+                    val _img = sharedImageUri
+                    if (_img != null) {
+                        shareImageTo(appId, _img, phone, email, text)
+                        finish(); return@runOnUiThread
+                    }
                     when (appId) {
                         "whatsapp" -> openUri("https://wa.me/${digits(phone)}?text=${enc(text)}")
                         "telegram" -> openUri("https://t.me/share/url?url=${enc(text)}")
