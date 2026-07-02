@@ -708,7 +708,7 @@
       area.innerHTML='<input class="input" id="keyInput" placeholder="sk-..." autocapitalize="off" autocorrect="off" spellcheck="false">'
         +'<button class="save" id="saveKey">שמור מפתח</button>';
       document.getElementById('saveKey').addEventListener('click',saveKey);
-      (function(){ var kin=document.getElementById('keyInput'); function tryPaste(){ if(kin.value)return; var c=(A&&A.getClipboard)?A.getClipboard():''; if(c){ c=c.trim(); if(/^sk-/i.test(c)){ kin.value=c; toast('המפתח הודבק מהלוח'); } } } kin.addEventListener('focus',tryPaste); kin.addEventListener('click',tryPaste); })();
+      (function(){ var kin=document.getElementById('keyInput'); function _isKey(t){ return /^sk-[\w-]{20,}$/.test(String(t||'').trim()); } function tryPaste(){ var hasVal=!!(kin.value||'').trim(); if(hasVal){ try{ kin.select(); }catch(e){} } var c=(A&&A.getClipboard)?(A.getClipboard()||''):''; c=String(c).trim(); if(_isKey(c)){ kin.value=c; try{ kin.setSelectionRange(c.length,c.length); }catch(e){} toast('המפתח הודבק מהלוח'); } } kin.addEventListener('focus',tryPaste); kin.addEventListener('click',tryPaste); })();
       if(keyEditing){ var ki=document.getElementById('keyInput'); ki.value=br('getKey',''); setTimeout(function(){ try{ki.focus();ki.select();}catch(e){} },60); }
     } else {
       area.innerHTML='<div class="keyfield"><span class="kv">••••••••••••••••••••</span>'
