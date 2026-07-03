@@ -1013,7 +1013,10 @@ function renderList(){CURRENT=peopleFor(VIEW);if(activeList){const _L=(cfg.lists
 function renderSeg(){const seg=document.getElementById('seg');seg.innerHTML='<div class="seg-ind" id="segInd"></div>'+VIEWS.map(v=>`<button class="seg-btn${v.id===VIEW?' on':''}" data-v="${v.id}" aria-label="${escapeHtml(v.label)}" title="${escapeHtml(v.label)}">${v.ic}</button>`).join('');seg.querySelectorAll('.seg-btn').forEach(b=>b.onclick=()=>goToView(b.dataset.v));const ind=seg.querySelector('#segInd');if(ind)ind.style.transition='none';requestAnimationFrame(()=>{updateSeg();requestAnimationFrame(()=>{if(ind)ind.style.transition='';});});}
 function updateSeg(){const seg=document.getElementById('seg');const ind=seg&&seg.querySelector('#segInd');if(!ind)return;seg.querySelectorAll('.seg-btn').forEach(b=>b.classList.toggle('on',b.dataset.v===VIEW));const a=seg.querySelector('.seg-btn.on');if(a){ind.style.left=a.offsetLeft+'px';ind.style.width=a.offsetWidth+'px';}}
 function animTabSlide(outSign){pullOffset=0;const W=listEl.offsetWidth||window.innerWidth;const outX=outSign*W;listEl.style.transition='transform .2s ease, opacity .2s ease';listEl.style.transform='translateX('+outX+'px)';listEl.style.opacity='0';setTimeout(()=>{renderList();layoutList();listEl.scrollTop=0;tabLock=true;listEl.style.overflowY='hidden';setTimeout(()=>{tabLock=false;listEl.style.overflowY='';},300);listEl.style.transition='none';listEl.style.transform='translateX('+(-outX)+'px)';listEl.style.opacity='0';requestAnimationFrame(()=>requestAnimationFrame(()=>{listEl.style.transition='transform .28s cubic-bezier(.22,1,.36,1), opacity .22s ease';listEl.style.transform='translateX(0)';listEl.style.opacity='1';setTimeout(()=>{tabAnim=false;},300);}));},200);}
-function goToView(id){if(tabAnim)return;const cleared=(activeList!==null);if(cleared){activeList=null;renderLists();}if(id===VIEW){if(cleared)renderList();return;}const ids=VIEWS.map(v=>v.id);const cur=ids.indexOf(VIEW),tgt=ids.indexOf(id);tabAnim=true;const step=tgt>cur?1:-1;VIEW=id;try{localStorage.setItem('contacts_view',VIEW);}catch(e){}updateSeg();animTabSlide(step<0?-1:1);}
+let viewHist=[];
+function pushViewHist(){const last=viewHist[viewHist.length-1];if(last&&last.view===VIEW&&last.list===activeList)return;viewHist.push({view:VIEW,list:activeList});if(viewHist.length>60)viewHist.shift();}
+function restoreViewState(s){activeList=s.list;VIEW=s.view;try{localStorage.setItem('contacts_view',VIEW);}catch(e){}if(typeof updateSeg==='function')updateSeg();renderLists();renderList();}
+function goToView(id){if(tabAnim)return;if(activeList!==null||id!==VIEW)pushViewHist();const cleared=(activeList!==null);if(cleared){activeList=null;renderLists();}if(id===VIEW){if(cleared)renderList();return;}const ids=VIEWS.map(v=>v.id);const cur=ids.indexOf(VIEW),tgt=ids.indexOf(id);tabAnim=true;const step=tgt>cur?1:-1;VIEW=id;try{localStorage.setItem('contacts_view',VIEW);}catch(e){}updateSeg();animTabSlide(step<0?-1:1);}
 function layoutList(){const t=document.querySelector('.top');if(t)listEl.style.top=(t.offsetHeight+6)+'px';}
 const home=document.getElementById('home');
 const azbar=document.createElement('div');azbar.id='azbar';
@@ -1067,7 +1070,7 @@ function renderLists(){
   (function(){const _lk=_liveKeySet();(cfg.lists||[]).filter(L=>!L.hidden).forEach(L=>{if(L.kit){const od=kitOverdueCount();const tot=(L.members||[]).length;const ratio=tot?Math.max(0,Math.min(1,od/tot)):0;h+='<button class="cap cap-kit" data-l="'+L.id+'" style="--kit-ratio:'+ratio.toFixed(3)+'">'+escapeHtml(L.name)+'</button>';}else{const _n=liveCount(L,_lk);h+='<button class="cap'+(activeList===L.id?' on':'')+'" data-l="'+L.id+'">'+escapeHtml(L.name)+(_n?' · '+_n:'')+'</button>';}});})();
   h+='<button class="cap cap-edit" id="capEdit" aria-label="עריכת רשימות">'+ICON.edit+'</button>';
   lb.innerHTML=h;
-  lb.querySelectorAll('.cap[data-l]').forEach(b=>b.onclick=()=>{const id=b.dataset.l;if(id!=='__all'){const L=(cfg.lists||[]).find(x=>x.id===id);if(L&&L.kit){openKeepInTouch();return;}}const spec=id!=='__all';activeList=spec?id:null;if(spec&&VIEW!=='abc'){VIEW='abc';updateSeg();}renderLists();renderList();});
+  lb.querySelectorAll('.cap[data-l]').forEach(b=>b.onclick=()=>{const id=b.dataset.l;if(id!=='__all'){const L=(cfg.lists||[]).find(x=>x.id===id);if(L&&L.kit){openKeepInTouch();return;}}pushViewHist();const spec=id!=='__all';activeList=spec?id:null;if(spec&&VIEW!=='abc'){VIEW='abc';updateSeg();}renderLists();renderList();});
   lb.querySelector('#capEdit').onclick=openListManage;
 }
 function listsOf(p){const k=fKey(p);return (cfg.lists||[]).filter(L=>(L.members||[]).indexOf(k)>=0);}
@@ -1539,7 +1542,7 @@ function wirePick(container,onTap){
 
 let tabAnim=false;
 function switchTab(dx){
-  if(tabAnim)return;if(activeList!==null){activeList=null;renderLists();}tabAnim=true;
+  if(tabAnim)return;pushViewHist();if(activeList!==null){activeList=null;renderLists();}tabAnim=true;
   const fingerLeft=dx<0;const step=fingerLeft?-1:1;
   const ids=VIEWS.map(v=>v.id);let i=ids.indexOf(VIEW);if(i<0)i=0;i=(i+step+ids.length)%ids.length;VIEW=ids[i];
   try{localStorage.setItem('contacts_view',VIEW);}catch(e){}
@@ -1590,7 +1593,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.07.03.0242';
+const APP_VERSION='2026.07.03.0312';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1864,6 +1867,7 @@ function appBack(){
   const sb=document.getElementById('selBar');if(sb&&sb.classList.contains('show')&&_selCancel){_selCancel();return true;}
   const scrs=[...document.querySelectorAll('.scr.show')];const top=scrs[scrs.length-1];
   if(top&&top._back){top._back();return true;}
+  if(viewHist.length){restoreViewState(viewHist.pop());return true;}
   return false;
 }
 function navBack(){if(!appBack()){if(MODE==='share')doExit();else openExitConfirm();}}
