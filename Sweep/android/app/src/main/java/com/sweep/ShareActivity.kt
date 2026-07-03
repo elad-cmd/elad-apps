@@ -56,6 +56,8 @@ class ShareActivity : Activity() {
         web = WebView(this)
         web.settings.javaScriptEnabled = true
         web.settings.domStorageEnabled = true
+        web.settings.allowContentAccess = true
+        web.settings.allowFileAccess = true
         web.addJavascriptInterface(Bridge(), "AndroidShare")
         // מאפשר ל-<input type=file> בתוך ה-WebView לפתוח בורר קבצים (לשחזור גיבוי)
         web.webChromeClient = object : WebChromeClient() {
@@ -210,7 +212,9 @@ class ShareActivity : Activity() {
             arrayOf(
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.Phone.NUMBER,
-                ContactsContract.CommonDataKinds.Phone.CONTACT_ID
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+                ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI,
+                ContactsContract.CommonDataKinds.Phone.PHOTO_URI
             ),
             null, null,
             ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC"
@@ -219,6 +223,8 @@ class ShareActivity : Activity() {
             val iName = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
             val iNum = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
             val iCid = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID)
+            val iThumb = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI)
+            val iPhoto = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI)
             while (it.moveToNext()) {
                 val name = if (iName >= 0) it.getString(iName) ?: "" else ""
                 val num = if (iNum >= 0) it.getString(iNum) ?: "" else ""
@@ -226,7 +232,9 @@ class ShareActivity : Activity() {
                 if (!seen.add(name)) continue
                 val cid = if (iCid >= 0) it.getLong(iCid) else -1L
                 val acct = acctMap[cid] ?: "מכשיר"
-                arr.put(JSONObject().put("name", name).put("phone", num).put("account", acct))
+                val photo = (if (iThumb >= 0) it.getString(iThumb) else null)
+                    ?: (if (iPhoto >= 0) it.getString(iPhoto) else null) ?: ""
+                arr.put(JSONObject().put("name", name).put("phone", num).put("account", acct).put("photo", photo))
             }
         }
         return arr.toString()
