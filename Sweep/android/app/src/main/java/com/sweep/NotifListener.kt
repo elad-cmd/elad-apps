@@ -44,6 +44,17 @@ class NotifListener : NotificationListenerService() {
             try {
                 val sp = ctx.getSharedPreferences(PREF, Context.MODE_PRIVATE)
                 val arr = JSONArray(sp.getString(KEY, "[]") ?: "[]")
+                // מניעת כפילות: אם ההודעה זהה להתראה האחרונה שנרשמה מאותו אדם — זהו פרסום-חוזר, לדלג.
+                run {
+                    val start = maxOf(0, arr.length() - 500)
+                    for (i in arr.length() - 1 downTo start) {
+                        val o = arr.optJSONObject(i) ?: continue
+                        if (o.optString("name", "") == name) {
+                            if (o.optString("text", "") == text) return
+                            break
+                        }
+                    }
+                }
                 arr.put(JSONObject().put("name", name).put("text", text).put("date", ts))
                 val trimmed = if (arr.length() > MAX) {
                     val t = JSONArray()
@@ -62,10 +73,16 @@ class NotifListener : NotificationListenerService() {
                 val sp = ctx.getSharedPreferences(PREF, Context.MODE_PRIVATE)
                 val arr = JSONArray(sp.getString(KEY, "[]") ?: "[]")
                 val out = JSONArray()
-                for (i in 0 until arr.length()) {
+                // ניקוי כפילויות: מקפל פרסומים חוזרים של אותה הודעה מאותו אדם (שומר את המאוחר ביותר בכל רצף).
+                var lastText: String? = null
+                for (i in arr.length() - 1 downTo 0) {
                     val o = arr.optJSONObject(i) ?: continue
                     val nm = o.optString("name", "").trim()
-                    if (nm.isNotEmpty() && (nm == want || nm.contains(want) || want.contains(nm))) out.put(o)
+                    if (nm.isEmpty() || !(nm == want || nm.contains(want) || want.contains(nm))) continue
+                    val txt = o.optString("text", "")
+                    if (txt == lastText) continue
+                    lastText = txt
+                    out.put(o)
                 }
                 out.toString()
             } catch (e: Exception) { "[]" }
