@@ -41,18 +41,35 @@ class ShareActivity : Activity() {
     private var nativeRecFile: java.io.File? = null
     private val recLock = Any()
 
+    /** קורא טקסט/תמונה משותפים מתוך אינטנט ACTION_SEND. */
+    private fun readShareIntent(i: Intent?) {
+        sharedText = ""
+        sharedImageUri = null
+        if (i?.action == Intent.ACTION_SEND) {
+            val t = i.type ?: ""
+            if (t == "text/plain") {
+                sharedText = i.getStringExtra(Intent.EXTRA_TEXT) ?: ""
+            } else if (t.startsWith("image/")) {
+                sharedImageUri = i.getParcelableExtra(Intent.EXTRA_STREAM) as? Uri
+                sharedText = i.getStringExtra(Intent.EXTRA_TEXT) ?: ""
+            }
+        }
+    }
+
+    /** שיתוף חדש כשהאפליקציה כבר פתוחה (singleTask): לקרוא את השיתוף ולטעון מחדש למצב שיתוף. */
+    override fun onNewIntent(newIntent: Intent?) {
+        super.onNewIntent(newIntent)
+        setIntent(newIntent)
+        readShareIntent(newIntent)
+        if (sharedText.isNotEmpty() || sharedImageUri != null) {
+            try { web.loadUrl("file:///android_asset/myshare.html") } catch (e: Exception) {}
+        }
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (intent?.action == Intent.ACTION_SEND) {
-            val _t = intent.type ?: ""
-            if (_t == "text/plain") {
-                sharedText = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
-            } else if (_t.startsWith("image/")) {
-                sharedImageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM) as? Uri
-                sharedText = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
-            }
-        }
+        readShareIntent(intent)
         web = WebView(this)
         web.settings.javaScriptEnabled = true
         web.settings.domStorageEnabled = true
