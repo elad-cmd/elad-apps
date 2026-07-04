@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Sweep — שמירה על קשר</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B1512; --bg-2:#0E1B18; --surface:#12211E; --surface-2:#16302B;
+    --line:rgba(255,255,255,.06); --line-strong:rgba(255,255,255,.10);
+    --accent:#19B597; --accent-deep:#0E8A72; --accent-ink:#04241C;
+    --avatar-bg:#1E3A35; --avatar-ink:#6FDCC4;
+    --text:#EAF3F1; --text-2:#8AA39D; --text-3:#5C716C;
+    --late:#E0A45C; --late-bg:rgba(224,164,92,.13);
+    --ok:#33C6A6; --ok-bg:rgba(51,198,166,.13);
+    --dock-h:86px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{font-family:'Heebo',sans-serif;background:#000;color:var(--text);display:flex;justify-content:center;min-height:100vh;padding:20px}
+  .phone{width:390px;max-width:100%;height:844px;max-height:92vh;background:var(--bg);border-radius:44px;overflow:hidden;position:relative;display:flex;flex-direction:column;box-shadow:0 40px 90px rgba(0,0,0,.6),0 0 0 10px #0a0f0e,0 0 0 11px #1c2a27}
+
+  .statusbar{height:44px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font-size:14px;font-weight:600}
+  .statusbar .batt{border:1.4px solid var(--text-2);border-radius:4px;width:24px;height:12px;display:inline-flex;align-items:center;padding:1.5px;position:relative}
+  .statusbar .batt i{display:block;height:100%;width:42%;background:var(--text);border-radius:1px}
+
+  /* top bar */
+  .topbar{flex:none;display:flex;align-items:center;justify-content:center;position:relative;height:52px;padding:0 18px}
+  .topbar .back{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;background:var(--surface);border:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .topbar .back svg{width:20px;height:20px;stroke:var(--text-2);fill:none;stroke-width:2}
+  .topbar h1{font-size:18px;font-weight:700}
+
+  .subhead{flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 22px 12px}
+  .subhead .lead{font-size:13px;color:var(--text-2)}
+  .subhead .lead b{color:var(--text);font-weight:600}
+  .sort{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:7px 12px;color:var(--text-2);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer}
+  .sort svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8}
+
+  /* list */
+  .list{flex:1;overflow-y:auto;padding:2px 8px calc(var(--dock-h) + 12px);scrollbar-width:none}
+  .list::-webkit-scrollbar{display:none}
+
+  .row{display:flex;align-items:center;gap:13px;padding:12px;border-radius:16px;cursor:pointer;position:relative;transition:background .15s}
+  .row + .row::before{content:"";position:absolute;top:0;right:69px;left:12px;height:1px;background:var(--line)}
+  .row:active{background:var(--surface)}
+
+  .avatar{width:46px;height:46px;border-radius:50%;flex:none;background:var(--avatar-bg);display:flex;align-items:center;justify-content:center;color:var(--avatar-ink);font-size:15px;font-weight:600;overflow:hidden}
+  .avatar img{width:100%;height:100%;object-fit:cover}
+
+  .info{flex:1;min-width:0}
+  .info .name{font-size:16px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .info .meta{font-size:12.5px;color:var(--text-2);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .info .meta .dot{color:var(--text-3);margin:0 5px}
+
+  .status{flex:none;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:9px;white-space:nowrap}
+  .status.late{color:var(--late);background:var(--late-bg)}
+  .status.ok{color:var(--ok);background:var(--ok-bg)}
+
+  /* bottom add */
+  .dock{position:absolute;left:0;right:0;bottom:0;height:var(--dock-h);background:linear-gradient(to top,var(--bg) 55%,transparent);display:flex;align-items:center;justify-content:center;padding:0 20px 20px;z-index:4}
+  .add{width:100%;height:52px;border-radius:15px;border:0;background:var(--accent-deep);color:#EAFFF9;font-family:inherit;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+  .add svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
+  .add:active{background:#0c7a64}
+</style>
+</head>
+<body>
+  <div class="phone">
+    <div class="statusbar"><span>04:17</span><span style="display:flex;gap:6px;align-items:center"><span class="batt"><i></i></span>42</span></div>
+
+    <div class="topbar">
+      <button class="back"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+      <h1>שמירה על קשר</h1>
+    </div>
+
+    <div class="subhead">
+      <div class="lead"><b>8</b> אנשים ברשימה</div>
+      <button class="sort"><svg viewBox="0 0 24 24"><path d="M7 5v14M7 19l-3-3M7 5l3 3M17 19V5M17 5l3 3M17 19l-3-3"/></svg>לפי תדירות</button>
+    </div>
+
+    <div class="list">
+
+      <div class="row">
+        <div class="avatar">א</div>
+        <div class="info"><div class="name">אבא</div><div class="meta">כל שבוע <span class="dot">·</span> אין מגע עדיין</div></div>
+        <span class="status late">באיחור</span>
+      </div>
+
+      <div class="row">
+        <div class="avatar">א</div>
+        <div class="info"><div class="name">אמא</div><div class="meta">כל שבוע <span class="dot">·</span> אין מגע עדיין</div></div>
+        <span class="status late">באיחור</span>
+      </div>
+
+      <div class="row">
+        <div class="avatar">דה</div>
+        <div class="info"><div class="name">ד הזאתי וואלה</div><div class="meta">כל שבוע <span class="dot">·</span> אין מגע עדיין</div></div>
+        <span class="status late">באיחור</span>
+      </div>
+
+      <div class="row">
+        <div class="avatar">מר</div>
+        <div class="info"><div class="name">מיקה — רומא</div><div class="meta">כל חודש <span class="dot">·</span> אין מגע עדיין</div></div>
+        <span class="status late">באיחור</span>
+      </div>
+
+      <div class="row">
+        <div class="avatar">בן</div>
+        <div class="info"><div class="name">בן</div><div class="meta">כל חודש <span class="dot">·</span> מגע לפני 4 שבועות</div></div>
+        <span class="status ok">עוד 5 ימ׳</span>
+      </div>
+
+      <div class="row">
+        <div class="avatar"><img src="https://i.pravatar.cc/120?img=15" alt=""></div>
+        <div class="info"><div class="name">שני בקליאר ראביט</div><div class="meta">כל חודש <span class="dot">·</span> מגע לפני שבוע</div></div>
+        <span class="status ok">עוד 24 ימ׳</span>
+      </div>
+
+      <div class="row">
+        <div class="avatar">צב</div>
+        <div class="info"><div class="name">צחי בינשטוק</div><div class="meta">כל חודש <span class="dot">·</span> מגע לפני יומיים</div></div>
+        <span class="status ok">עוד 28 ימ׳</span>
+      </div>
+
+      <div class="row">
+        <div class="avatar">אל</div>
+        <div class="info"><div class="name">אנדראה לאנג רז ידע פלוס</div><div class="meta">כל חצי שנה <span class="dot">·</span> אין מגע עדיין</div></div>
+        <span class="status late">באיחור</span>
+      </div>
+
+    </div>
+
+    <div class="dock">
+      <button class="add"><svg viewBox="0 0 24 24"><path d="M12 6v12M6 12h12"/></svg>הוסף אנשים</button>
+    </div>
+  </div>
+</body>
+</html>

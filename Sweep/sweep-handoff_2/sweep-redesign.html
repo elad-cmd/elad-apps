@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Sweep — Redesign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* ---- design tokens (single source of truth) ---- */
+    --bg:            #14231F;
+    --bg-2:          #101E1A;
+    --surface:       #1E332C;
+    --surface-2:     #274139;
+    --line:          rgba(255,255,255,.05);
+    --line-strong:   rgba(255,255,255,.10);
+
+    --accent:        #19B597;   /* calm turquoise — flat fills, used sparingly */
+    --accent-deep:   #0E8A72;
+    --accent-ink:    #04241C;   /* text over accent */
+
+    --avatar-bg:     #254541;
+    --avatar-ink:    #79D9C2;
+
+    --text:          #EAF3F1;
+    --text-2:        #93A8A2;
+    --text-3:        #647873;
+
+    --late:          #E0A45C;    /* was screaming red */
+    --late-bg:       rgba(224,164,92,.14);
+    --ok:            #33C6A6;
+    --ok-bg:         rgba(51,198,166,.14);
+
+    --r-lg: 22px;
+    --r-md: 16px;
+    --r-sm: 12px;
+
+    --dock-h: 78px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    font-family:'Heebo',system-ui,sans-serif;
+    background:#000;
+    color:var(--text);
+    display:flex;align-items:center;justify-content:center;
+    min-height:100vh;padding:20px;
+  }
+
+  /* ---------- phone frame ---------- */
+  .phone{
+    width:390px;max-width:100%;height:844px;max-height:92vh;
+    background:var(--bg);
+    border-radius:44px;
+    position:relative;overflow:hidden;
+    box-shadow:0 40px 90px rgba(0,0,0,.6), 0 0 0 10px #0a0f0e, 0 0 0 11px #1c2a27;
+    display:flex;flex-direction:column;
+  }
+  /* subtle top glow so the dark bg isn't flat */
+  .phone::before{content:none}
+
+  /* ---------- status bar ---------- */
+  .statusbar{
+    height:44px;flex:none;display:flex;align-items:center;justify-content:space-between;
+    padding:0 26px;font-size:14px;font-weight:600;color:var(--text);z-index:3;
+  }
+  .statusbar .right{display:flex;gap:6px;align-items:center;opacity:.9}
+  .statusbar .batt{
+    border:1.4px solid var(--text-2);border-radius:4px;width:24px;height:12px;position:relative;
+    display:flex;align-items:center;padding:1.5px;
+  }
+  .statusbar .batt i{display:block;height:100%;width:42%;background:var(--text);border-radius:1px}
+  .statusbar .batt::after{content:"";position:absolute;left:-3px;top:3px;width:2px;height:6px;background:var(--text-2);border-radius:2px}
+
+  /* ---------- header ---------- */
+  header{flex:none;padding:6px 18px 0;z-index:3}
+  .logo{display:flex;align-items:center;justify-content:center;gap:11px;height:40px;direction:ltr}
+  .logo .word{font-size:27px;font-weight:300;letter-spacing:.5px;color:var(--text)}
+  .logo .dots{position:relative;width:24px;height:24px}
+  .logo .dots span{position:absolute;border-radius:50%;background:var(--accent)}
+  /* diagonal 45°: small/soft bottom-left → large/solid top-right (flat, no glow) */
+  .logo .dots span:nth-child(1){left:0;bottom:0;width:4px;height:4px;opacity:.40}
+  .logo .dots span:nth-child(2){left:9px;bottom:9px;width:5.5px;height:5.5px;opacity:.70}
+  .logo .dots span:nth-child(3){left:17px;bottom:17px;width:7.5px;height:7.5px;opacity:1}
+
+  /* segmented tabs */
+  .tabs{
+    margin-top:12px;display:flex;gap:4px;background:var(--surface);
+    border-radius:16px;padding:5px;
+  }
+  .tab{
+    flex:1;height:42px;border:0;background:transparent;border-radius:12px;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+    color:var(--text-2);transition:.18s;
+  }
+  .tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+  .tab.active{background:var(--accent);color:var(--accent-ink)}
+  .tab.active svg{stroke:var(--accent-ink)}
+
+  /* filter chips */
+  .chips{display:flex;gap:8px;margin-top:12px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{
+    flex:none;height:36px;padding:0 16px;border-radius:11px;border:1px solid var(--line-strong);
+    background:transparent;color:var(--text-2);font-family:inherit;font-size:14px;font-weight:500;
+    display:flex;align-items:center;gap:7px;cursor:pointer;white-space:nowrap;transition:.15s;
+  }
+  .chip .count{color:var(--text-3);font-size:12.5px}
+  .chip.active{background:var(--accent);color:var(--accent-ink);border-color:transparent;font-weight:600}
+  .chip.active .count{color:rgba(6,35,29,.6)}
+
+  /* ---------- list ---------- */
+  .list{
+    flex:1;overflow-y:auto;margin-top:8px;padding:4px 8px calc(var(--dock-h) + 16px);
+    scrollbar-width:none;z-index:2;
+  }
+  .list::-webkit-scrollbar{display:none}
+
+  .row{
+    display:flex;align-items:center;gap:13px;padding:11px 12px;border-radius:var(--r-md);
+    cursor:pointer;transition:background .15s;position:relative;
+  }
+  .row + .row::before{
+    content:"";position:absolute;top:0;right:69px;left:12px;height:1px;background:var(--line);
+  }
+  .row:active{background:var(--surface)}
+
+  .avatar{
+    width:46px;height:46px;border-radius:50%;flex:none;position:relative;
+    background:var(--avatar-bg);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--avatar-ink);font-size:15px;font-weight:600;overflow:hidden;
+  }
+  .avatar img{width:100%;height:100%;object-fit:cover}
+  .avatar .fav{
+    position:absolute;bottom:-1px;left:-1px;width:17px;height:17px;border-radius:50%;
+    background:var(--bg);display:flex;align-items:center;justify-content:center;
+  }
+  .avatar .fav svg{width:11px;height:11px;fill:var(--accent)}
+
+  .info{flex:1;min-width:0}
+  .info .name{font-size:16px;font-weight:500;color:var(--text);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .info .meta{font-size:13px;font-weight:400;color:var(--text-2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:right}
+
+  .slot{flex:none;display:flex;align-items:center}
+  .status{font-size:12.5px;font-weight:600;padding:5px 11px;border-radius:9px}
+  .status.late{color:var(--late);background:var(--late-bg)}
+  .status.ok{color:var(--ok);background:var(--ok-bg)}
+  .chev{width:22px;height:22px;stroke:var(--text-3);fill:none;stroke-width:2}
+
+  .group-label{
+    font-size:13px;font-weight:600;color:var(--text-3);padding:14px 14px 6px;letter-spacing:.3px;
+  }
+
+  /* ---------- bottom dock ---------- */
+  .dock{
+    position:absolute;left:0;right:0;bottom:0;height:var(--dock-h);
+    background:linear-gradient(to top, var(--bg) 62%, rgba(11,21,18,0));
+    display:flex;align-items:center;justify-content:space-around;padding:0 22px 14px;z-index:4;
+  }
+  .fab{
+    width:52px;height:52px;border-radius:50%;border:1px solid var(--line-strong);
+    background:var(--surface);color:var(--text-2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;
+  }
+  .fab svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.8}
+  .fab:active{background:var(--surface-2)}
+  .fab.primary{background:var(--accent);border-color:transparent;color:var(--accent-ink);width:58px;height:58px}
+  .fab.primary svg{stroke:var(--accent-ink);width:26px;height:26px}
+
+  /* ---------- overlay sheet (kept pattern, now dark) ---------- */
+  .scrim{
+    position:absolute;inset:0;background:rgba(0,0,0,.62);backdrop-filter:blur(2px);
+    opacity:0;pointer-events:none;transition:.25s;z-index:5;
+  }
+  .scrim.open{opacity:1;pointer-events:auto}
+  .sheet{
+    position:absolute;left:0;right:0;bottom:0;background:var(--bg-2);
+    border-top-left-radius:26px;border-top-right-radius:26px;
+    padding:10px 20px calc(20px + env(safe-area-inset-bottom));
+    transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);
+    box-shadow:0 -20px 60px rgba(0,0,0,.5);border-top:1px solid var(--line-strong);
+  }
+  .scrim.open .sheet{transform:translateY(0)}
+  .sheet .grab{width:38px;height:4px;border-radius:2px;background:var(--line-strong);margin:6px auto 16px}
+  .sheet .sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .sheet .sheet-head h3{font-size:20px;font-weight:700;color:var(--text)}
+  .sheet .close{width:34px;height:34px;border-radius:50%;background:var(--surface);border:0;color:var(--text-2);font-size:18px;cursor:pointer}
+  .share-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px 8px}
+  .share-item{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer}
+  .share-item .ic{
+    width:58px;height:58px;border-radius:50%;background:var(--surface-2);
+    display:flex;align-items:center;justify-content:center;transition:.15s;
+  }
+  .share-item:active .ic{background:#1c3a34}
+  .share-item .ic svg{width:26px;height:26px;stroke:var(--accent);fill:none;stroke-width:1.7}
+  .share-item span{font-size:12.5px;color:var(--text-2);text-align:center;line-height:1.2}
+
+  .hint{text-align:center;color:var(--text-3);font-size:12.5px;margin-top:18px}
+</style>
+</head>
+<body>
+  <div class="phone">
+
+    <!-- status bar -->
+    <div class="statusbar">
+      <span>04:16</span>
+      <span class="right">
+        <span class="batt"><i></i></span>
+        <span>43</span>
+      </span>
+    </div>
+
+    <header>
+      <div class="logo">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div class="word">Sweep</div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab" aria-label="אחרונים">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        </button>
+        <button class="tab active" aria-label="אנשי קשר">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>
+        </button>
+        <button class="tab" aria-label="מועדפים">
+          <svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>
+        </button>
+      </div>
+
+      <div class="chips">
+        <button class="chip active">הכל</button>
+        <button class="chip">שמירה על קשר</button>
+        <button class="chip">משפחה <span class="count">2</span></button>
+        <button class="chip">מדריכים <span class="count">3</span></button>
+      </div>
+    </header>
+
+    <!-- unified contact list -->
+    <div class="list">
+
+      <div class="row">
+        <div class="avatar">לכ<span class="fav"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg></span></div>
+        <div class="info"><div class="name">ליאור כהן</div><div class="meta">052-338-4120</div></div>
+        <div class="slot"><svg class="chev" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+      </div>
+
+      <div class="row">
+        <div class="avatar">א<span class="fav"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg></span></div>
+        <div class="info"><div class="name">אבא</div><div class="meta">052-338-4985</div></div>
+        <div class="slot"><svg class="chev" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+      </div>
+
+      <div class="row">
+        <div class="avatar"><img src="https://i.pravatar.cc/120?img=32" alt=""></div>
+        <div class="info"><div class="name">נטע הלרמן</div><div class="meta">054-771-0293</div></div>
+        <div class="slot"><svg class="chev" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+      </div>
+
+      <div class="row">
+        <div class="avatar">מק</div>
+        <div class="info"><div class="name">מיכל קושרובסקי</div><div class="meta">053-419-6650</div></div>
+        <div class="slot"><svg class="chev" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+      </div>
+
+      <div class="row">
+        <div class="avatar"><img src="https://i.pravatar.cc/120?img=45" alt=""></div>
+        <div class="info"><div class="name">אתי דימנט מדיקמפ</div><div class="meta">050-882-3317</div></div>
+        <div class="slot"><svg class="chev" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+      </div>
+
+      <div class="row">
+        <div class="avatar">יב</div>
+        <div class="info"><div class="name">יעל בייביסיטרית (נטע)</div><div class="meta">052-660-1108</div></div>
+        <div class="slot"><svg class="chev" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+      </div>
+
+      <div class="row">
+        <div class="avatar">לה</div>
+        <div class="info"><div class="name">לילך הירשפלד</div><div class="meta">054-303-6138</div></div>
+        <div class="slot"><svg class="chev" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+      </div>
+
+      <div class="row">
+        <div class="avatar"><img src="https://i.pravatar.cc/120?img=12" alt=""></div>
+        <div class="info"><div class="name">אביב זיו מדריך קמפוס</div><div class="meta">052-279-2207</div></div>
+        <div class="slot"><svg class="chev" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+      </div>
+
+    </div>
+
+    <!-- dock — core: back(right) · mic(center) · menu(left); contacts area adds dialer + search -->
+    <div class="dock">
+      <button class="fab" aria-label="חזור">
+        <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+      <button class="fab" aria-label="חייגן">
+        <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="1.6"/><circle cx="12" cy="6" r="1.6"/><circle cx="18" cy="6" r="1.6"/><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/><circle cx="6" cy="18" r="1.6"/><circle cx="12" cy="18" r="1.6"/><circle cx="18" cy="18" r="1.6"/></svg>
+      </button>
+      <button class="fab primary" aria-label="סייען קולי">
+        <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v3"/></svg>
+      </button>
+      <button class="fab" aria-label="חיפוש">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></svg>
+      </button>
+      <button class="fab" onclick="openSheet()" aria-label="תפריט">
+        <svg viewBox="0 0 24 24"><circle cx="6.5" cy="17.5" r="1.7" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="2.1" fill="currentColor" stroke="none"/><circle cx="17.5" cy="6.5" r="2.5" fill="currentColor" stroke="none"/></svg>
+      </button>
+    </div>
+
+    <!-- overlay sheet (kept pattern, now dark instead of bright mint) -->
+    <div class="scrim" id="scrim" onclick="closeSheet(event)">
+      <div class="sheet" onclick="event.stopPropagation()">
+        <div class="grab"></div>
+        <div class="sheet-head">
+          <h3>שיתוף לאפליקציה</h3>
+          <button class="close" onclick="closeSheet()">✕</button>
+        </div>
+        <div class="share-grid">
+          <div class="share-item"><div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M4 7l8 6 8-6"/></svg></div><span>מייל</span></div>
+          <div class="share-item"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg></div><span>SMS</span></div>
+          <div class="share-item"><div class="ic"><svg viewBox="0 0 24 24"><path d="M5 4c-1 6 9 16 15 15l-1-4-4-1-2 2c-2-1-4-3-5-5l2-2-1-4z"/></svg></div><span>חייג</span></div>
+          <div class="share-item"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-8 13l-1 5 5-1a9 9 0 1 0 4-17z"/></svg></div><span>וואטסאפ</span></div>
+          <div class="share-item"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="10" cy="8" r="4"/><path d="M3 20c0-3.5 3-6 7-6M17 11v6M14 14h6"/></svg></div><span>שמור לאיש קשר</span></div>
+          <div class="share-item"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-8 13l-1 5 5-1a9 9 0 1 0 4-17z"/></svg></div><span>מסנג׳ר</span></div>
+          <div class="share-item"><div class="ic"><svg viewBox="0 0 24 24"><path d="M21 4L3 11l6 2 2 6 3-4 4 3z"/></svg></div><span>טלגרם</span></div>
+          <div class="share-item"><div class="ic"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg></div><span>העתק קישור</span></div>
+        </div>
+        <div class="hint">לחיצה ארוכה על אפליקציה לעריכה וסידור</div>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+  function openSheet(){document.getElementById('scrim').classList.add('open')}
+  function closeSheet(e){if(!e||e.target.id==='scrim'||e.type==='click')document.getElementById('scrim').classList.remove('open')}
+</script>
+</body>
+</html>

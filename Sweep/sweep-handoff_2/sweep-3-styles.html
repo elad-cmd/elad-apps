@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sweep — 3 סגנונות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Assistant:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{font-family:'Heebo',sans-serif;background:#17191b;color:#e9edec;padding:34px 14px 80px;display:flex;flex-direction:column;align-items:center;gap:14px}
+  .page-title{font-size:24px;font-weight:800;text-align:center}
+  .page-sub{font-size:14px;color:#9aa5a2;text-align:center;margin-bottom:20px;max-width:520px;line-height:1.6}
+
+  .style-label{display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:26px}
+  .style-label .n{font-size:19px;font-weight:700}
+  .style-label .n b{color:#2fd6b4}
+  .style-label .k{font-size:13px;color:#9aa5a2;text-align:center;max-width:460px;line-height:1.5}
+
+  .phone{width:390px;max-width:96vw;height:820px;border-radius:44px;overflow:hidden;position:relative;display:flex;flex-direction:column;box-shadow:0 30px 70px rgba(0,0,0,.55),0 0 0 9px #0a0f0e,0 0 0 10px #242a28}
+
+  .sbar{height:42px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font-size:14px;font-weight:600}
+  .batt{border:1.4px solid currentColor;border-radius:4px;width:23px;height:11px;display:inline-flex;align-items:center;padding:1.5px;opacity:.7}
+  .batt i{display:block;height:100%;width:45%;background:currentColor;border-radius:1px}
+
+  /* dots logo (shared, flat) */
+  .logo{display:flex;align-items:center;justify-content:center;gap:11px;height:38px;direction:ltr}
+  .logo .word{font-size:26px;font-weight:300;letter-spacing:.5px}
+  .logo .dots{position:relative;width:24px;height:24px}
+  .logo .dots span{position:absolute;border-radius:50%}
+  .logo .dots span:nth-child(1){left:0;bottom:0;width:4px;height:4px;opacity:.4}
+  .logo .dots span:nth-child(2){left:9px;bottom:9px;width:5.5px;height:5.5px;opacity:.7}
+  .logo .dots span:nth-child(3){left:17px;bottom:17px;width:7.5px;height:7.5px;opacity:1}
+
+  .list{flex:1;overflow-y:auto;scrollbar-width:none}
+  .list::-webkit-scrollbar{display:none}
+  .avatar{flex:none;display:flex;align-items:center;justify-content:center;overflow:hidden;font-weight:600}
+  .avatar img{width:100%;height:100%;object-fit:cover}
+  .info{flex:1;min-width:0}
+  .name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .meta{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex:none;white-space:nowrap;cursor:pointer;font-family:inherit}
+
+/* =================================================================
+   STYLE A — כהה רגוע  (deep dark, flat, Spotify-like)
+   ================================================================= */
+  .A{background:#0B1512;color:#EAF3F1}
+  .A .sbar{color:#EAF3F1}
+  .A header{padding:4px 18px 0}
+  .A .logo{color:#EAF3F1}
+  .A .logo .dots span{background:#19B597}
+  .A .tabs{margin-top:12px;display:flex;gap:4px;background:#12211E;border-radius:16px;padding:5px}
+  .A .tab{flex:1;height:40px;border:0;background:transparent;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#8AA39D;cursor:pointer}
+  .A .tab svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8}
+  .A .tab.on{background:#19B597;color:#04241C}
+  .A .chips{margin-top:12px}
+  .A .chip{height:35px;padding:0 15px;border-radius:11px;border:1px solid rgba(255,255,255,.1);background:transparent;color:#8AA39D;font-size:14px;font-weight:500;display:flex;align-items:center;gap:6px}
+  .A .chip.on{background:#19B597;color:#04241C;border-color:transparent;font-weight:600}
+  .A .list{padding:8px 8px 20px}
+  .A .row{display:flex;align-items:center;gap:13px;padding:11px 12px;border-radius:14px;position:relative}
+  .A .row+.row::before{content:"";position:absolute;top:0;right:69px;left:12px;height:1px;background:rgba(255,255,255,.06)}
+  .A .avatar{width:46px;height:46px;border-radius:50%;background:#1E3A35;color:#6FDCC4;font-size:15px}
+  .A .name{font-size:16px;font-weight:500}
+  .A .meta{font-size:13px;color:#8AA39D;margin-top:2px;direction:ltr;text-align:right}
+  .A .st{flex:none;font-size:12.5px;font-weight:600;padding:5px 11px;border-radius:9px}
+  .A .st.late{color:#E0A45C;background:rgba(224,164,92,.13)}
+  .A .st.ok{color:#33C6A6;background:rgba(51,198,166,.13)}
+  .A .chev{width:20px;height:20px;stroke:#5C716C;fill:none;stroke-width:2}
+  .A .dock{height:74px;display:flex;align-items:center;justify-content:space-around;padding:0 22px 14px;background:linear-gradient(to top,#0B1512 60%,transparent)}
+  .A .fab{width:50px;height:50px;border-radius:50%;border:1px solid rgba(255,255,255,.1);background:#12211E;color:#8AA39D;display:flex;align-items:center;justify-content:center}
+  .A .fab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+  .A .fab.pri{background:#0E8A72;border-color:transparent;color:#EAFFF9;width:56px;height:56px}
+
+/* =================================================================
+   STYLE B — בהיר ואוורירי  (light, airy, minimal)
+   ================================================================= */
+  .B{background:#F6F7F4;color:#16211E;font-family:'Assistant',sans-serif}
+  .B .sbar{color:#16211E}
+  .B header{padding:6px 22px 0}
+  .B .logo{color:#16211E}
+  .B .logo .word{font-weight:400}
+  .B .logo .dots span{background:#0E8A72}
+  .B .tabs{margin-top:14px;display:flex;gap:26px;justify-content:center;border-bottom:1px solid #E7EAE6}
+  .B .tab{border:0;background:transparent;padding:0 2px 12px;color:#9DAAA4;cursor:pointer;position:relative}
+  .B .tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7}
+  .B .tab.on{color:#0E8A72}
+  .B .tab.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:#0E8A72;border-radius:2px}
+  .B .chips{margin:16px 22px 4px}
+  .B .chip{height:34px;padding:0 15px;border-radius:18px;border:0;background:#ECEFEA;color:#5F6E69;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:6px}
+  .B .chip.on{background:#0E8A72;color:#fff;font-weight:600}
+  .B .list{padding:6px 0 20px}
+  .B .row{display:flex;align-items:center;gap:14px;padding:13px 22px;position:relative}
+  .B .row+.row::before{content:"";position:absolute;top:0;right:80px;left:22px;height:1px;background:#EBEEEA}
+  .B .avatar{width:44px;height:44px;border-radius:50%;background:#E6ECE8;color:#0E8A72;font-size:15px}
+  .B .name{font-size:16px;font-weight:600;color:#1B2A26}
+  .B .meta{font-size:13px;color:#8B9791;margin-top:1px;direction:ltr;text-align:right}
+  .B .st{flex:none;font-size:12px;font-weight:600;padding:4px 10px;border-radius:8px}
+  .B .st.late{color:#C67A3E;background:#F6E7D6}
+  .B .st.ok{color:#1B9E82;background:#DCF0EA}
+  .B .chev{width:19px;height:19px;stroke:#C2CBC7;fill:none;stroke-width:2}
+  .B .dock{height:74px;display:flex;align-items:center;justify-content:space-around;padding:0 22px 14px;background:linear-gradient(to top,#F6F7F4 60%,transparent)}
+  .B .fab{width:50px;height:50px;border-radius:50%;border:1px solid #E4E8E3;background:#fff;color:#7C8984;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+  .B .fab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+  .B .fab.pri{background:#0E8A72;border-color:transparent;color:#fff;width:56px;height:56px;box-shadow:0 6px 16px rgba(14,138,114,.3)}
+
+/* =================================================================
+   STYLE C — מובנה מקצועי  (dark, carded, indexed, structured)
+   ================================================================= */
+  .C{background:#0C1613;color:#E8F1EE}
+  .C .sbar{color:#E8F1EE}
+  .C header{padding:4px 18px 0}
+  .C .logo{color:#E8F1EE}
+  .C .logo .dots span{background:#2BC7A6}
+  .C .tabs{margin-top:12px;display:flex;gap:4px;background:#132420;border-radius:12px;padding:4px}
+  .C .tab{flex:1;height:38px;border:0;background:transparent;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#7E938D;cursor:pointer}
+  .C .tab svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8}
+  .C .tab.on{background:#1D3B34;color:#2BC7A6}
+  .C .chips{margin-top:12px}
+  .C .chip{height:34px;padding:0 14px;border-radius:8px;border:1px solid rgba(255,255,255,.09);background:#132420;color:#8DA29C;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:6px}
+  .C .chip.on{background:#2BC7A6;color:#062821;border-color:transparent;font-weight:700}
+  .C .body{flex:1;display:flex;overflow:hidden}
+  .C .rail{flex:none;width:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:8px 0;font-size:10px;color:#5D716B;font-weight:600}
+  .C .list{padding:8px 10px 20px 4px}
+  .C .sec{font-size:12px;font-weight:700;color:#2BC7A6;padding:12px 6px 6px;letter-spacing:.5px}
+  .C .row{display:flex;align-items:center;gap:12px;padding:11px 12px;background:#132724;border:1px solid rgba(255,255,255,.05);border-radius:12px;margin-bottom:7px}
+  .C .avatar{width:44px;height:44px;border-radius:12px;background:#20433B;color:#5FD3BB;font-size:14px}
+  .C .name{font-size:15.5px;font-weight:600}
+  .C .meta{font-size:12.5px;color:#8DA29C;margin-top:2px;direction:ltr;text-align:right}
+  .C .st{flex:none;font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:7px}
+  .C .st.late{color:#E0A45C;background:rgba(224,164,92,.14)}
+  .C .st.ok{color:#33C6A6;background:rgba(51,198,166,.14)}
+  .C .tag{flex:none;font-size:11px;color:#7E938D;background:#1B322C;padding:4px 9px;border-radius:6px}
+  .C .dock{height:72px;display:flex;align-items:center;justify-content:space-around;padding:0 20px 14px;background:linear-gradient(to top,#0C1613 60%,transparent)}
+  .C .fab{width:48px;height:48px;border-radius:13px;border:1px solid rgba(255,255,255,.09);background:#132420;color:#8DA29C;display:flex;align-items:center;justify-content:center}
+  .C .fab svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8}
+  .C .fab.pri{background:#2BC7A6;border-color:transparent;color:#062821;width:54px;height:54px}
+</style>
+</head>
+<body>
+  <div class="page-title">Sweep — שלושה סגנונות למסך הראשי</div>
+  <div class="page-sub">אותם אנשי קשר בדיוק, שלוש גישות עיצוב נפרדות. גלול ותשווה איזה מדבר אליך.</div>
+
+  <!-- ============ A ============ -->
+  <div class="style-label"><div class="n">א · <b>כהה רגוע</b></div><div class="k">אפל-פרימיום בסגנון Spotify. שטוח, שקט, מינימום קווים. הכיוון הנוכחי.</div></div>
+  <div class="phone A">
+    <div class="sbar"><span>04:16</span><span style="display:flex;gap:6px;align-items:center"><span class="batt"><i></i></span>43</span></div>
+    <header>
+      <div class="logo"><div class="dots"><span></span><span></span><span></span></div><div class="word">Sweep</div></div>
+      <div class="tabs">
+        <button class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
+        <button class="tab on"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg></button>
+        <button class="tab"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 17.7 6.8 20.4l1-5.8-4.3-4.1 5.9-.9z"/></svg></button>
+      </div>
+      <div class="chips">
+        <button class="chip on">הכל</button><button class="chip">שמירה על קשר</button><button class="chip">משפחה 2</button><button class="chip">מדריכים 3</button>
+      </div>
+    </header>
+    <div class="list">
+      <div class="row"><div class="avatar">לכ</div><div class="info"><div class="name">ליאור כהן</div><div class="meta">052-338-4120</div></div><span class="st ok">עוד 5 ימ׳</span></div>
+      <div class="row"><div class="avatar">א</div><div class="info"><div class="name">אבא</div><div class="meta">052-338-4985</div></div><span class="st late">באיחור</span></div>
+      <div class="row"><div class="avatar"><img src="https://i.pravatar.cc/120?img=32"></div><div class="info"><div class="name">נטע הלרמן</div><div class="meta">054-771-0293</div></div><svg class="chev" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+      <div class="row"><div class="avatar">מק</div><div class="info"><div class="name">מיכל קושרובסקי</div><div class="meta">053-419-6650</div></div><svg class="chev" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+      <div class="row"><div class="avatar"><img src="https://i.pravatar.cc/120?img=45"></div><div class="info"><div class="name">אתי דימנט מדיקמפ</div><div class="meta">050-882-3317</div></div><span class="st ok">עוד 24 ימ׳</span></div>
+      <div class="row"><div class="avatar">יב</div><div class="info"><div class="name">יעל בייביסיטרית (נטע)</div><div class="meta">052-660-1108</div></div><svg class="chev" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+      <div class="row"><div class="avatar">לה</div><div class="info"><div class="name">לילך הירשפלד</div><div class="meta">054-303-6138</div></div><span class="st late">באיחור</span></div>
+    </div>
+    <div class="dock">
+      <button class="fab"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.4"/><circle cx="17" cy="6" r="2.4"/><circle cx="17" cy="18" r="2.4"/><path d="M8.1 11 15 6.9M8.1 13l6.9 4.1"/></svg></button>
+      <button class="fab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></svg></button>
+      <button class="fab pri"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="1.5"/><circle cx="12" cy="6" r="1.5"/><circle cx="18" cy="6" r="1.5"/><circle cx="6" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="18" cy="12" r="1.5"/><circle cx="6" cy="18" r="1.5"/><circle cx="12" cy="18" r="1.5"/><circle cx="18" cy="18" r="1.5"/></svg></button>
+      <button class="fab"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v3"/></svg></button>
+      <button class="fab"><svg viewBox="0 0 24 24"><path d="M12 6v12M6 12h12"/></svg></button>
+    </div>
+  </div>
+
+  <!-- ============ B ============ -->
+  <div class="style-label"><div class="n">ב · <b>בהיר ואוורירי</b></div><div class="k">רקע בהיר, הרבה אוויר, קווי-שיער דקים. רגוע ביום, קריא מאוד. טורקיז כנגיעה בלבד.</div></div>
+  <div class="phone B">
+    <div class="sbar"><span>04:16</span><span style="display:flex;gap:6px;align-items:center"><span class="batt"><i></i></span>43</span></div>
+    <header>
+      <div class="logo"><div class="dots"><span></span><span></span><span></span></div><div class="word">Sweep</div></div>
+      <div class="tabs">
+        <button class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
+        <button class="tab on"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg></button>
+        <button class="tab"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 17.7 6.8 20.4l1-5.8-4.3-4.1 5.9-.9z"/></svg></button>
+      </div>
+      <div class="chips">
+        <button class="chip on">הכל</button><button class="chip">שמירה על קשר</button><button class="chip">משפחה 2</button><button class="chip">מדריכים 3</button>
+      </div>
+    </header>
+    <div class="list">
+      <div class="row"><div class="avatar">לכ</div><div class="info"><div class="name">ליאור כהן</div><div class="meta">052-338-4120</div></div><span class="st ok">עוד 5 ימ׳</span></div>
+      <div class="row"><div class="avatar">א</div><div class="info"><div class="name">אבא</div><div class="meta">052-338-4985</div></div><span class="st late">באיחור</span></div>
+      <div class="row"><div class="avatar"><img src="https://i.pravatar.cc/120?img=32"></div><div class="info"><div class="name">נטע הלרמן</div><div class="meta">054-771-0293</div></div><svg class="chev" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+      <div class="row"><div class="avatar">מק</div><div class="info"><div class="name">מיכל קושרובסקי</div><div class="meta">053-419-6650</div></div><svg class="chev" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+      <div class="row"><div class="avatar"><img src="https://i.pravatar.cc/120?img=45"></div><div class="info"><div class="name">אתי דימנט מדיקמפ</div><div class="meta">050-882-3317</div></div><span class="st ok">עוד 24 ימ׳</span></div>
+      <div class="row"><div class="avatar">יב</div><div class="info"><div class="name">יעל בייביסיטרית (נטע)</div><div class="meta">052-660-1108</div></div><svg class="chev" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+      <div class="row"><div class="avatar">לה</div><div class="info"><div class="name">לילך הירשפלד</div><div class="meta">054-303-6138</div></div><span class="st late">באיחור</span></div>
+    </div>
+    <div class="dock">
+      <button class="fab"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.4"/><circle cx="17" cy="6" r="2.4"/><circle cx="17" cy="18" r="2.4"/><path d="M8.1 11 15 6.9M8.1 13l6.9 4.1"/></svg></button>
+      <button class="fab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></svg></button>
+      <button class="fab pri"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="1.5"/><circle cx="12" cy="6" r="1.5"/><circle cx="18" cy="6" r="1.5"/><circle cx="6" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="18" cy="12" r="1.5"/><circle cx="6" cy="18" r="1.5"/><circle cx="12" cy="18" r="1.5"/><circle cx="18" cy="18" r="1.5"/></svg></button>
+      <button class="fab"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v3"/></svg></button>
+      <button class="fab"><svg viewBox="0 0 24 24"><path d="M12 6v12M6 12h12"/></svg></button>
+    </div>
+  </div>
+
+  <!-- ============ C ============ -->
+  <div class="style-label"><div class="n">ג · <b>מובנה מקצועי</b></div><div class="k">כרטיסים מוגדרים, כותרות א"ב, פס אינדקס בצד. מאורגן ו"עסקי" — הרגשה של כלי ניהול.</div></div>
+  <div class="phone C">
+    <div class="sbar"><span>04:16</span><span style="display:flex;gap:6px;align-items:center"><span class="batt"><i></i></span>43</span></div>
+    <header>
+      <div class="logo"><div class="dots"><span></span><span></span><span></span></div><div class="word">Sweep</div></div>
+      <div class="tabs">
+        <button class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
+        <button class="tab on"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg></button>
+        <button class="tab"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 17.7 6.8 20.4l1-5.8-4.3-4.1 5.9-.9z"/></svg></button>
+      </div>
+      <div class="chips">
+        <button class="chip on">הכל</button><button class="chip">שמירה על קשר</button><button class="chip">משפחה 2</button><button class="chip">מדריכים 3</button>
+      </div>
+    </header>
+    <div class="body">
+      <div class="rail">א<br>ב<br>ג<br>ד<br>ה<br>ו<br>ז<br>ח<br>י<br>כ<br>ל<br>מ<br>נ<br>ס<br>ע<br>פ<br>צ<br>ק<br>ר<br>ש<br>ת</div>
+      <div class="list">
+        <div class="sec">א</div>
+        <div class="row"><div class="avatar">א</div><div class="info"><div class="name">אבא</div><div class="meta">052-338-4985</div></div><span class="st late">באיחור</span></div>
+        <div class="row"><div class="avatar">אד</div><div class="info"><div class="name">אתי דימנט מדיקמפ</div><div class="meta">050-882-3317</div></div><span class="st ok">עוד 24 ימ׳</span></div>
+        <div class="row"><div class="avatar">אז</div><div class="info"><div class="name">אביב זיו מדריך קמפוס</div><div class="meta">052-279-2207</div></div><span class="tag">מדריך</span></div>
+        <div class="sec">י</div>
+        <div class="row"><div class="avatar">יב</div><div class="info"><div class="name">יעל בייביסיטרית (נטע)</div><div class="meta">052-660-1108</div></div><span class="tag">משפחה</span></div>
+        <div class="sec">ל</div>
+        <div class="row"><div class="avatar">לכ</div><div class="info"><div class="name">ליאור כהן</div><div class="meta">052-338-4120</div></div><span class="st ok">עוד 5 ימ׳</span></div>
+        <div class="row"><div class="avatar">לה</div><div class="info"><div class="name">לילך הירשפלד</div><div class="meta">054-303-6138</div></div><span class="st late">באיחור</span></div>
+        <div class="sec">מ</div>
+        <div class="row"><div class="avatar">מק</div><div class="info"><div class="name">מיכל קושרובסקי</div><div class="meta">053-419-6650</div></div></div>
+        <div class="sec">נ</div>
+        <div class="row"><div class="avatar"><img src="https://i.pravatar.cc/120?img=32"></div><div class="info"><div class="name">נטע הלרמן</div><div class="meta">054-771-0293</div></div></div>
+      </div>
+    </div>
+    <div class="dock">
+      <button class="fab"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.4"/><circle cx="17" cy="6" r="2.4"/><circle cx="17" cy="18" r="2.4"/><path d="M8.1 11 15 6.9M8.1 13l6.9 4.1"/></svg></button>
+      <button class="fab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></svg></button>
+      <button class="fab pri"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="1.5"/><circle cx="12" cy="6" r="1.5"/><circle cx="18" cy="6" r="1.5"/><circle cx="6" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="18" cy="12" r="1.5"/><circle cx="6" cy="18" r="1.5"/><circle cx="12" cy="18" r="1.5"/><circle cx="18" cy="18" r="1.5"/></svg></button>
+      <button class="fab"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v3"/></svg></button>
+      <button class="fab"><svg viewBox="0 0 24 24"><path d="M12 6v12M6 12h12"/></svg></button>
+    </div>
+  </div>
+
+</body>
+</html>
