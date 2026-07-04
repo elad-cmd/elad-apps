@@ -1603,7 +1603,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
 }
-const APP_VERSION='2026.07.04.1702';
+const APP_VERSION='2026.07.04.1754';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2649,18 +2649,6 @@ function openCalendar(o){
   const bt=o.start?o.start.getTime():Date.now();
   const et=o.end?o.end.getTime():(bt+3600000);
   if(BRIDGE&&BRIDGE.addEvent){try{BRIDGE.addEvent(JSON.stringify({title:title,location:o.location||'',description:o.description||'',begin:bt,end:et,allDay:!!o.allDay,rrule:o.recurYearly?'FREQ=YEARLY':'',emails:o.emails||[]}));return true;}catch(e){}}
-  if(/android/i.test(navigator.userAgent)){
-    let u='intent:#Intent;action=android.intent.action.INSERT;type=vnd.android.cursor.item/event;';
-    u+='S.title='+encodeURIComponent(title)+';';
-    if(o.location)u+='S.eventLocation='+encodeURIComponent(o.location)+';';
-    if(o.description)u+='S.description='+encodeURIComponent(o.description)+';';
-    u+='l.beginTime='+bt+';l.endTime='+et+';';
-    if(o.allDay)u+='B.allDay=true;';
-    if(o.recurYearly)u+='S.rrule='+encodeURIComponent('FREQ=YEARLY')+';';
-    if(o.emails&&o.emails.length)u+='S.android.intent.extra.EMAIL='+encodeURIComponent(o.emails.join(','))+';';
-    u+='end';
-    try{location.href=u;return true;}catch(e){}
-  }
   const z=n=>String(n).padStart(2,'0');
   const fmt=dt=>''+dt.getUTCFullYear()+z(dt.getUTCMonth()+1)+z(dt.getUTCDate())+'T'+z(dt.getUTCHours())+z(dt.getUTCMinutes())+'00Z';
   let url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(title)+'&dates='+fmt(new Date(bt))+'/'+fmt(new Date(et));

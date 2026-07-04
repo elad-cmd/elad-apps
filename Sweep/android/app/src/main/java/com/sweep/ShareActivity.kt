@@ -647,6 +647,37 @@ class ShareActivity : Activity() {
         @JavascriptInterface fun getSharedImage(): String = if (sharedImageUri != null) "1" else ""
         @JavascriptInterface fun getContacts(): String = readContacts()
 
+        /** פותח את אפליקציית היומן עם אירוע חדש (ליום הולדת/זימון). */
+        @JavascriptInterface
+        fun addEvent(json: String) {
+            runOnUiThread {
+                try {
+                    val o = JSONObject(json)
+                    val begin = o.optLong("begin", System.currentTimeMillis())
+                    val end = o.optLong("end", begin + 3600000L)
+                    val i = Intent(Intent.ACTION_INSERT).apply {
+                        data = android.provider.CalendarContract.Events.CONTENT_URI
+                        putExtra(android.provider.CalendarContract.Events.TITLE, o.optString("title", ""))
+                        val loc = o.optString("location", ""); if (loc.isNotEmpty()) putExtra(android.provider.CalendarContract.Events.EVENT_LOCATION, loc)
+                        val desc = o.optString("description", ""); if (desc.isNotEmpty()) putExtra(android.provider.CalendarContract.Events.DESCRIPTION, desc)
+                        putExtra(android.provider.CalendarContract.EXTRA_EVENT_BEGIN_TIME, begin)
+                        putExtra(android.provider.CalendarContract.EXTRA_EVENT_END_TIME, end)
+                        if (o.optBoolean("allDay", false)) putExtra(android.provider.CalendarContract.EXTRA_EVENT_ALL_DAY, true)
+                        val rrule = o.optString("rrule", ""); if (rrule.isNotEmpty()) putExtra(android.provider.CalendarContract.Events.RRULE, rrule)
+                        val emails = o.optJSONArray("emails")
+                        if (emails != null && emails.length() > 0) {
+                            val sb = StringBuilder()
+                            for (k in 0 until emails.length()) { if (k > 0) sb.append(","); sb.append(emails.optString(k, "")) }
+                            putExtra(Intent.EXTRA_EMAIL, sb.toString())
+                        }
+                    }
+                    startActivity(i)
+                } catch (e: Exception) {
+                    Toast.makeText(this@ShareActivity, "לא נמצאה אפליקציית יומן", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
         /** מבקש הרשאת קריאת אנשי קשר; בעת אישור — טעינה מחדש (onRequestPermissionsResult). */
         @JavascriptInterface
         fun requestContacts() {
