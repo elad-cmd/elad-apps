@@ -1575,7 +1575,7 @@ function fireWeb(appId,person){
     case 'telegram':{openTab(text?('https://t.me/share/url?url='+enc(text)):'https://t.me');return;}
     case 'sms':{if(!phoneRaw){toast('אין מספר טלפון');return;}const sep=/android/i.test(navigator.userAgent)?'?':'&';go('sms:'+phoneRaw+(text?(sep+'body='+enc(text)):''));return;}
     case 'mail':{go('mailto:'+email+(text?('?body='+enc(text)):''));return;}
-    case 'call':{if(!phoneRaw){toast('אין מספר טלפון');return;}go('tel:'+phoneRaw);return;}
+    case 'call':{if(!phoneRaw){toast('אין מספר טלפון');return;}if(BRIDGE&&BRIDGE.callNumber){BRIDGE.callNumber(phoneRaw);}else{go('tel:'+phoneRaw);}return;}
     case 'copy':{const c=text||[person.name,phoneRaw,email].filter(Boolean).join(' · ');if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(c).then(()=>toast('הועתק')).catch(()=>toast('לא ניתן להעתיק'));}else{toast('לא ניתן להעתיק');}return;}
     default:{const data={text:text||[person.name,phoneRaw,email].filter(Boolean).join(' · '),title:'שיתוף'};if(navigator.share){navigator.share(data).catch(()=>{});}else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(data.text).then(()=>toast('הועתק (אין שיתוף ישיר בדפדפן)')).catch(()=>toast('שיתוף לא נתמך'));}else{toast('שיתוף לא נתמך בדפדפן');}return;}
   }
@@ -1650,7 +1650,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.05.1439';
+const APP_VERSION='2026.07.05.1524';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2038,7 +2038,7 @@ let _scrOpenTs=0;
 function openScreen(html){const _n=Date.now();if(_scrOpenTs&&_n-_scrOpenTs<380){const _ex=[...document.querySelectorAll('.scr')].pop();if(_ex)return _ex;}_scrOpenTs=_n;if(!document.querySelector('.scr'))HIST=[];closeSearch();searchFab.classList.add('hidden');const sc=document.createElement('div');sc.className='scr';sc.innerHTML=html;document.body.appendChild(sc);void sc.offsetHeight;requestAnimationFrame(()=>requestAnimationFrame(()=>sc.classList.add('show')));sc._back=()=>closeScreen(sc);const b=sc.querySelector('.scr-head .scr-back');if(b)b.remove();let bx=0,by=0,bw=false;sc.addEventListener('pointerdown',e=>{bx=e.clientX;by=e.clientY;bw=true;});sc.addEventListener('pointerup',e=>{if(!bw)return;bw=false;const dx=e.clientX-bx,dy=e.clientY-by;if(dx>70&&Math.abs(dx)>Math.abs(dy)*1.4)sc._back();});addScreenBar(sc);return sc;}
 function fireAction(act,person){
   const ph=(person.phone||(person.phones&&person.phones[0])||'').replace(/[^0-9+]/g,'');
-  if(act==='call'){if(ph){logInteraction(person,'call');location.href='tel:'+ph;}}
+  if(act==='call'){if(ph){logInteraction(person,'call');if(BRIDGE&&BRIDGE.callNumber){BRIDGE.callNumber(ph);}else{location.href='tel:'+ph;}}}
   else if(act==='wa'){if(ph){logInteraction(person,'whatsapp');let w=ph.replace(/^\+/,'').replace(/^0/,'972');location.href='https://wa.me/'+w;}}
   else if(act==='mail'){if(person.email){logInteraction(person,'mail');location.href='mailto:'+person.email;}}
   else if(act==='waze'){openWaze(getAddr(person));}

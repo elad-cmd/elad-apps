@@ -124,7 +124,8 @@ class ShareActivity : Activity() {
             android.Manifest.permission.WRITE_CONTACTS,
             android.Manifest.permission.RECORD_AUDIO,
             android.Manifest.permission.READ_CALL_LOG,
-            android.Manifest.permission.READ_SMS
+            android.Manifest.permission.READ_SMS,
+            android.Manifest.permission.CALL_PHONE
         ))
         // POST_NOTIFICATIONS לא מבוקש — ההתראות מבוטלות; בקשתו גרמה ללולאת בקשה+reload כשהמשתמש דוחה.
         for (perm in perms) {
@@ -442,6 +443,20 @@ class ShareActivity : Activity() {
     private fun openUri(uri: String) =
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(uri)))
 
+    /** חיוג ישיר ללא בורר: ACTION_CALL אם ניתנה הרשאת CALL_PHONE, אחרת נפילה ל-ACTION_DIAL. */
+    private fun placeCall(phone: String) {
+        val tel = Uri.parse("tel:$phone")
+        try {
+            if (checkSelfPermission(android.Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                startActivity(Intent(Intent.ACTION_CALL, tel))
+            } else {
+                startActivity(Intent(Intent.ACTION_DIAL, tel))
+            }
+        } catch (e: Exception) {
+            try { startActivity(Intent(Intent.ACTION_DIAL, tel)) } catch (e2: Exception) {}
+        }
+    }
+
     /** ACTION_SEND לחבילה ספציפית; אם לא מותקנת — בורר מערכת. */
     private fun sendToPackage(pkg: String, text: String) {
         val i = Intent(Intent.ACTION_SEND).apply {
@@ -643,6 +658,9 @@ class ShareActivity : Activity() {
     }
 
     inner class Bridge {
+        /** חיוג ישיר ללא בורר מתוך ה-HTML (כרטיס איש קשר / רשימה). */
+        @JavascriptInterface fun callNumber(phone: String) { runOnUiThread { placeCall(phone) } }
+
         @JavascriptInterface fun getSharedText(): String = sharedText
         @JavascriptInterface fun getSharedImage(): String = if (sharedImageUri != null) "1" else ""
         @JavascriptInterface fun getContacts(): String = readContacts()
@@ -715,7 +733,7 @@ class ShareActivity : Activity() {
                             val i = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$email"))
                             i.putExtra(Intent.EXTRA_TEXT, text); startActivity(i)
                         }
-                        "call" -> startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone")))
+                        "call" -> placeCall(phone)
                         "messenger" -> sendToPackage("com.facebook.orca", text)
                         "instagram" -> sendToPackage("com.instagram.android", text)
                         "signal" -> sendToPackage("org.thoughtcrime.securesms", text)
