@@ -385,6 +385,9 @@
   .ct-copy{flex:0 0 auto;width:30px;height:30px;border-radius:50%;border:none;background:none;color:var(--text-3);display:flex;align-items:center;justify-content:center;cursor:pointer;}
   .ct-copy:active{transform:scale(.9);}
   .ct-act svg{width:20px;height:20px;}
+  .ct-bdaysync{flex:0 0 auto;width:40px;height:40px;border-radius:50%;border:1px solid var(--line-strong);background:transparent;color:var(--accent);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .ct-bdaysync svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.9;}
+  .ct-bdaysync.synced{color:var(--text-2);opacity:.5;cursor:default;}
   .welcome{position:fixed;inset:0;z-index:120;background:linear-gradient(180deg,var(--tq-top),var(--tq-bot));display:flex;align-items:center;justify-content:center;padding:24px;}
   .welcome.hide{display:none;}
   .wel-card{max-width:340px;width:100%;text-align:center;color:#fff;}
@@ -1703,7 +1706,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.05.2233';
+const APP_VERSION='2026.07.05.2327';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2163,7 +2166,7 @@ function openContact(person,fromSearch,isNew){
     '<div class="ct-frow"><div class="ct-acts"><button class="ct-act" data-act="call" aria-label="חיוג">'+ICON.call+'</button><button class="ct-act" data-act="wa" aria-label="וואטסאפ">'+ICON.whatsapp+'</button></div><input class="ct-inp" data-key="phone" placeholder="טלפון" dir="ltr" readonly inputmode="none"></div>'+
     '<div class="ct-frow"><div class="ct-acts"><button class="ct-act" data-act="mail" aria-label="מייל">'+ICON.mail+'</button></div><input class="ct-inp" data-key="email" placeholder="מייל" dir="ltr"></div>'+
     '<div class="ct-frow"><div class="ct-acts"><button class="ct-act ct-waze" data-act="waze" aria-label="ניווט ב-Waze">'+ICON.waze+'</button></div><input class="ct-inp" id="ctAddr" placeholder="כתובת (לניווט ב-Waze)" dir="rtl"></div>'+
-    '<div class="ct-frow"><div class="ct-acts"><span class="ct-act" style="cursor:default;" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16M5 21v-7a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v7M12 8V5M9 5h6"/><path d="M4 14c1.4 1 2.8 1 4.2 0s2.8-1 4.2 0 2.8 1 4.2 0"/></svg></span></div><input class="ct-inp" id="ctBday" dir="rtl" readonly inputmode="none" placeholder="תאריך לידה" aria-label="תאריך לידה"></div>'+
+    '<div class="ct-frow"><div class="ct-acts"><span class="ct-act" style="cursor:default;" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16M5 21v-7a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v7M12 8V5M9 5h6"/><path d="M4 14c1.4 1 2.8 1 4.2 0s2.8-1 4.2 0 2.8 1 4.2 0"/></svg></span></div><input class="ct-inp" id="ctBday" dir="rtl" readonly inputmode="none" placeholder="תאריך לידה" aria-label="תאריך לידה"><button class="ct-bdaysync" id="ctBdaySync" style="display:none;" aria-label="סנכרן ליומן"></button></div>'+
     '<div class="ct-lists" id="ctLists"></div>'+
     '<div class="ct-fields" id="ctFields"></div>'+
     '<div class="ct-days" id="ctDays"></div>'+
@@ -2183,7 +2186,14 @@ function openContact(person,fromSearch,isNew){
   (function(){const db=sc.querySelector('#ctDel');if(!db)return;let st=0,tmr=0;db.onclick=()=>{if(st===0){st=1;db.classList.add('arm');db.textContent='בטוח? לחץ שוב למחיקה (גם מהטלפון)';if(navigator.vibrate)navigator.vibrate(8);tmr=setTimeout(()=>{st=0;db.classList.remove('arm');db.textContent='מחק איש קשר';},3000);return;}if(tmr)clearTimeout(tmr);nativeDeleteContact(person);savePeople();renderList();if(navigator.vibrate)navigator.vibrate(12);toast('איש הקשר נמחק');closeScreen(sc);};})();
   (function(){const dbox=card.querySelector('#ctDays');if(!dbox)return;function paintDays(){const v=getDays(person);dbox.innerHTML='<div class="days-lbl">ימים פנויים</div><div class="days-row">'+DAY_LET.map((L,i)=>'<button class="dayc'+(v[i]?' on':'')+'" data-d="'+i+'">'+L+'</button>').join('')+'</div>';dbox.querySelectorAll('.dayc').forEach(b=>b.onclick=()=>{toggleDayP(person,+b.dataset.d);if(navigator.vibrate)navigator.vibrate(4);paintDays();renderList();});}paintDays();})();
   (function(){const ai=card.querySelector('#ctAddr');if(!ai)return;ai.value=getAddr(person);const sv=()=>{setAddr(person,ai.value);renderList();};ai.addEventListener('input',sv);ai.addEventListener('blur',()=>{sv();nativeUpdateContact(person,_orig);});})();
-  (function(){const bi=card.querySelector('#ctBday');if(!bi)return;const MON=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];const fmt=v=>{if(!v)return '';const m=String(v).match(/(\d{4})?-?(\d{2})-(\d{2})/);if(!m)return v;return (+m[3])+' ב'+(MON[+m[2]-1]||m[2])+(m[1]?(' '+m[1]):'');};let cur=getBday(person);bi.value=fmt(cur);bi.addEventListener('click',()=>openBdayWheel(cur,function(val){cur=val;setBday(person,val);bi.value=fmt(val);renderList();nativeUpdateContact(person,_orig);}));})();
+  (function(){const bi=card.querySelector('#ctBday');if(!bi)return;const MON=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];const fmt=v=>{if(!v)return '';const m=String(v).match(/(\d{4})?-?(\d{2})-(\d{2})/);if(!m)return v;return (+m[3])+' ב'+(MON[+m[2]-1]||m[2])+(m[1]?(' '+m[1]):'');};let cur=getBday(person);bi.value=fmt(cur);
+    const sb=card.querySelector('#ctBdaySync');
+    const CALP='<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9h16M8 3v4M16 3v4M12 12.5v5M9.5 15h5"/></svg>';
+    const CHK='<svg viewBox="0 0 24 24"><path d="M5 12l4 4L19 7"/></svg>';
+    function updSync(){if(!sb)return;if(!cur){sb.style.display='none';return;}sb.style.display='';const inCal=bdayInCal(person.name,cur)||isBdSynced(person);if(inCal){sb.classList.add('synced');sb.disabled=true;sb.setAttribute('aria-label','יום ההולדת כבר ביומן');sb.innerHTML=CHK;}else{sb.classList.remove('synced');sb.disabled=false;sb.setAttribute('aria-label','סנכרן יום הולדת ליומן');sb.innerHTML=CALP;}}
+    if(sb)sb.onclick=()=>{if(sb.disabled||!cur)return;addBdayToCal(person.name||'',cur);markBdSynced(person);updSync();};
+    bi.addEventListener('click',()=>openBdayWheel(cur,function(val){cur=val;setBday(person,val);bi.value=fmt(val);renderList();nativeUpdateContact(person,_orig);updSync();}));
+    updSync();})();
   (function(){const hbox=card.querySelector('#ctHistory');if(!hbox)return;if(!BRIDGE){hbox.style.display='none';return;}
     const ph=(person.phone||((person.phones&&person.phones[0])||''))||'';
     const J=(fn,a)=>{try{return JSON.parse((BRIDGE[fn]?BRIDGE[fn](a):'[]')||'[]')||[];}catch(e){return [];}};
@@ -2881,6 +2891,9 @@ function openBdayWheel(initial,onSave){
 let BDSYNC=(function(){try{return JSON.parse(localStorage.getItem('myshare_bdsync')||'{}')||{};}catch(e){return{};}})();
 function isBdSynced(p){return !!BDSYNC[fKey(p)];}
 function markBdSynced(p){BDSYNC[fKey(p)]=1;try{localStorage.setItem('myshare_bdsync',JSON.stringify(BDSYNC));}catch(_){}}
+// בדיקה חכמה מול היומן: האם כבר קיים אירוע יום-הולדת לאותו אדם באותו יום/חודש (native; ללא הרשאה/דפדפן → false).
+function bdayMD(ds){const m=String(ds).match(/-?(\d{2})-(\d{2})$/);return m?{mo:+m[1],da:+m[2]}:null;}
+function bdayInCal(name,ds){try{const md=bdayMD(ds);if(!md)return false;if(BRIDGE&&typeof BRIDGE.birthdayExists==='function')return !!BRIDGE.birthdayExists(String(name||''),md.mo,md.da);}catch(e){}return false;}
 function openBirthdays(){
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>ימי הולדת קרובים</h2></div><div class="scr-body" id="bdBody"></div>');sc._reopen=openBirthdays;
   function render(){
@@ -2893,7 +2906,7 @@ function openBirthdays(){
       const p=o.p,today=o.n===0,soon=o.n>0&&o.n<=7;
       const tagCls=today?'today':(soon?'soon':'');
       const tagTxt=today?'היום!':(o.n===1?'מחר':('עוד '+o.n+" י'"));
-      const synced=isBdSynced(p);
+      const synced=bdayInCal(p.name,o.ds)||isBdSynced(p);
       const btn=synced?'<button class="bd-calbtn synced" disabled aria-label="מסונכרן ביומן">'+chkIc+'</button>':'<button class="bd-calbtn bd-cal" data-i="'+i+'" aria-label="הוסף ליומן">'+calIc+'</button>';
       return '<div class="bd-prow'+(today?' today':'')+'" data-i="'+i+'"><span class="bd-av">'+avInner(p)+'</span><div class="bd-info"><div class="bd-nm">'+escapeHtml(p.name||'(ללא שם)')+(today?' 🎂':'')+'</div><div class="bd-date">'+fmtBdayDate(o.ds)+'</div></div><span class="bd-tag '+tagCls+'">'+tagTxt+'</span>'+btn+'</div>';
     }).join('');

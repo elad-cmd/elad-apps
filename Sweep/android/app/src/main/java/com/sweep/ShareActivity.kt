@@ -131,7 +131,8 @@ class ShareActivity : Activity() {
             android.Manifest.permission.RECORD_AUDIO,
             android.Manifest.permission.READ_CALL_LOG,
             android.Manifest.permission.READ_SMS,
-            android.Manifest.permission.CALL_PHONE
+            android.Manifest.permission.CALL_PHONE,
+            android.Manifest.permission.READ_CALENDAR
         ))
         // POST_NOTIFICATIONS לא מבוקש — ההתראות מבוטלות; בקשתו גרמה ללולאת בקשה+reload כשהמשתמש דוחה.
         for (perm in perms) {
@@ -219,6 +220,10 @@ class ShareActivity : Activity() {
     }
 
     private fun enc(s: String): String = URLEncoder.encode(s, "UTF-8")
+
+    /** נרמול שם/כותרת להשוואה: אותיות קטנות, בלי פיסוק/מקפים, רווחים מנורמלים. */
+    private fun normNm(s: String): String =
+        s.lowercase().replace(Regex("[^\\p{L}\\p{N} ]"), " ").replace(Regex("\\s+"), " ").trim()
 
     /** תווית חשבון ידידותית. ל-Google מחזיר את כתובת המייל (כדי להבחין בין חשבונות). */
     private fun accountLabel(name: String?, type: String?): String {
@@ -693,6 +698,31 @@ class ShareActivity : Activity() {
     inner class Bridge {
         /** חיוג ישיר ללא בורר מתוך ה-HTML (כרטיס איש קשר / רשימה). */
         @JavascriptInterface fun callNumber(phone: String) { runOnUiThread { placeCall(phone) } }
+
+        /** בדיקה חכמה: האם כבר קיים ביומן אירוע יום-הולדת לאותו אדם באותו יום/חודש (התאמת שם מנורמלת, לא זהות תווים). */
+        @JavascriptInterface fun birthdayExists(name: String, month: Int, day: Int): Boolean {
+            return try {
+                if (checkSelfPermission(android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) return false
+                val words = normNm(name).split(" ").filter { it.length >= 2 }
+                if (words.isEmpty()) return false
+                val proj = arrayOf("title", "dtstart")
+                val cur = contentResolver.query(android.provider.CalendarContract.Events.CONTENT_URI, proj, null, null, null) ?: return false
+                var found = false
+                cur.use {
+                    val ti = it.getColumnIndex("title"); val di = it.getColumnIndex("dtstart")
+                    val utc = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
+                    while (it.moveToNext()) {
+                        val title = it.getString(ti) ?: continue
+                        val nt = normNm(title)
+                        if (!words.all { w -> nt.contains(w) }) continue      // כל מילות השם חייבות להופיע בכותרת
+                        val dt = it.getLong(di); if (dt <= 0L) continue
+                        utc.timeInMillis = dt
+                        if (utc.get(java.util.Calendar.MONTH) + 1 == month && utc.get(java.util.Calendar.DAY_OF_MONTH) == day) { found = true; break }
+                    }
+                }
+                found
+            } catch (e: Exception) { false }
+        }
 
         /** התנהגות ביציאה מפוקוס: close | home | last. נשמר גם ב-prefs כדי שיהיה זמין כבר ב-onStop. */
         @JavascriptInterface fun setResumeMode(mode: String) {
