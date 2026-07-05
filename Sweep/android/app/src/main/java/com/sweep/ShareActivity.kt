@@ -178,6 +178,12 @@ class ShareActivity : Activity() {
         else web.evaluateJavascript("window.__swExit && window.__swExit()", null)
     }
 
+    /** בכל חזרה מרקע (מסך בית, אפליקציה אחרת וכו') — איפוס למסך אנשי הקשר. לא נקרא בהפעלה ראשונה. */
+    override fun onRestart() {
+        super.onRestart()
+        web.evaluateJavascript("window.__swHome && window.__swHome()", null)
+    }
+
     /** ספרות בלבד; מספר ישראלי שמתחיל ב-0 מקבל קידומת 972 (ל-wa.me). */
     private fun digits(p: String): String {
         var d = p.filter { it.isDigit() }

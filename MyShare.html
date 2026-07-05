@@ -1650,7 +1650,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.05.1707';
+const APP_VERSION='2026.07.05.1812';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1950,6 +1950,8 @@ function armTrap(){try{history.pushState({swtrap:1},'');}catch(e){}}
 window.addEventListener('popstate',function(){if(allowExit)return;armTrap();if(exitDlgOpen)return;if(!appBack()){if(MODE==='share')doExit();else openExitConfirm();}});
 armTrap();
 window.__swExit=function(){try{if(!appBack()){if(MODE==='share')doExit();else openExitConfirm();}}catch(e){}};
+// חזרה לפוקוס מ-native: מאפס תמיד למסך אנשי הקשר, לא משנה איפה היה המשתמש קודם.
+window.__swHome=function(){try{if(MODE==='share')return;goHome();}catch(e){}};
 function isPhoneLike(t){t=String(t||'').trim();if(!t)return false;if(!/^[\d+\-\s().]+$/.test(t))return false;const d=t.replace(/\D/g,'');return d.length>=7&&d.length<=15;}
 function padInsert(inp,ch){const s=(inp.selectionStart==null?inp.value.length:inp.selectionStart),e=(inp.selectionEnd==null?inp.value.length:inp.selectionEnd);inp.value=inp.value.slice(0,s)+ch+inp.value.slice(e);const p=s+ch.length;try{inp.setSelectionRange(p,p);}catch(_){}}
 function padBksp(inp){let s=inp.selectionStart,e=inp.selectionEnd;if(s==null){inp.value=inp.value.slice(0,-1);return;}if(s!==e){inp.value=inp.value.slice(0,s)+inp.value.slice(e);try{inp.setSelectionRange(s,s);}catch(_){}}else if(s>0){inp.value=inp.value.slice(0,s-1)+inp.value.slice(s);try{inp.setSelectionRange(s-1,s-1);}catch(_){}}}
