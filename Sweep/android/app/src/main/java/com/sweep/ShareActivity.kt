@@ -39,6 +39,10 @@ class ShareActivity : Activity() {
     private var pendingAudioRequest: android.webkit.PermissionRequest? = null
     private var nativeRec: android.media.MediaRecorder? = null
     private var nativeRecFile: java.io.File? = null
+    // התנהגות ביציאה מפוקוס: close = נסגרת לחלוטין (ברירת מחדל) | home = חוזרת למסך אנשי הקשר | last = נשארת במסך האחרון.
+    private var resumeMode = "close"
+    private var userLeaving = false      // true רק כשהמשתמש עזב ביוזמתו (בית/החלפת אפליקציה), לא כשאנחנו פותחים מסך אחר.
+    private var expectingResult = false  // true בזמן בורר קבצים וכד' — מונע סגירה בטעות.
     private val recLock = Any()
 
     /** קורא טקסט/תמונה משותפים מתוך אינטנט ACTION_SEND. */
@@ -106,6 +110,7 @@ class ShareActivity : Activity() {
                         type = "application/json"; addCategory(Intent.CATEGORY_OPENABLE)
                     }
                 return try {
+                    expectingResult = true
                     startActivityForResult(Intent.createChooser(intent, "בחר קובץ גיבוי"), REQ_FILE)
                     true
                 } catch (e: Exception) {
@@ -116,6 +121,7 @@ class ShareActivity : Activity() {
         }
         setContentView(web)
         web.loadUrl("file:///android_asset/myshare.html")
+        resumeMode = getSharedPreferences("sweep_prefs", MODE_PRIVATE).getString("resume_mode", "close") ?: "close"
 
         // מבקש את כל ההרשאות יחד בהתקנה הראשונה: אנשי קשר (קריאה+כתיבה) ומיקרופון (לקלט קולי).
         val needed = ArrayList<String>()
@@ -159,6 +165,7 @@ class ShareActivity : Activity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        expectingResult = false
         if (requestCode == REQ_FILE) {
             val cb = filePathCallback
             filePathCallback = null
@@ -178,10 +185,30 @@ class ShareActivity : Activity() {
         else web.evaluateJavascript("window.__swExit && window.__swExit()", null)
     }
 
-    /** בכל חזרה מרקע (מסך בית, אפליקציה אחרת וכו') — איפוס למסך אנשי הקשר. לא נקרא בהפעלה ראשונה. */
+    /** נקרא רק כשהמשתמש עוזב ביוזמתו (בית/החלפת אפליקציה), לא כשאנחנו פותחים מחייגן/שיתוף/בורר. */
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        userLeaving = true
+    }
+
+    /** במצב close: אם המשתמש עזב ביוזמתו (ולא באמצע בורר קבצים) — סגירה מלאה + הסרה מרשימת האחרונות. */
+    override fun onStop() {
+        super.onStop()
+        if (resumeMode == "close" && userLeaving && !expectingResult) {
+            finishAndRemoveTask()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        userLeaving = false
+        expectingResult = false
+    }
+
+    /** חזרה מרקע: איפוס למסך אנשי הקשר, אלא אם המצב "נשארת במסך האחרון". לא נקרא בהפעלה ראשונה. */
     override fun onRestart() {
         super.onRestart()
-        web.evaluateJavascript("window.__swHome && window.__swHome()", null)
+        if (resumeMode != "last") web.evaluateJavascript("window.__swHome && window.__swHome()", null)
     }
 
     /** ספרות בלבד; מספר ישראלי שמתחיל ב-0 מקבל קידומת 972 (ל-wa.me). */
@@ -666,6 +693,13 @@ class ShareActivity : Activity() {
     inner class Bridge {
         /** חיוג ישיר ללא בורר מתוך ה-HTML (כרטיס איש קשר / רשימה). */
         @JavascriptInterface fun callNumber(phone: String) { runOnUiThread { placeCall(phone) } }
+
+        /** התנהגות ביציאה מפוקוס: close | home | last. נשמר גם ב-prefs כדי שיהיה זמין כבר ב-onStop. */
+        @JavascriptInterface fun setResumeMode(mode: String) {
+            val m = if (mode == "home" || mode == "last") mode else "close"
+            resumeMode = m
+            getSharedPreferences("sweep_prefs", MODE_PRIVATE).edit().putString("resume_mode", m).apply()
+        }
 
         @JavascriptInterface fun getSharedText(): String = sharedText
         @JavascriptInterface fun getSharedImage(): String = if (sharedImageUri != null) "1" else ""
