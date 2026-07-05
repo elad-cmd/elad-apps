@@ -681,16 +681,18 @@
   .scrbar-btn:active{transform:scale(.9);}
   .scrbar-btn svg{width:22px;height:22px;}
   .scrbar-voice{background:transparent;border:1.6px solid rgba(255,255,255,.72);box-shadow:none;}
+  body.hand-left .scrbar{flex-direction:row-reverse;}
+  body.hand-left .scrbar-back svg{transform:scaleX(-1);}
+  body.hf-hold .list-add,body.hf-hold .list-send,body.hf-hold .contact-add,body.hf-hold .fav-edit,body.hf-hold .fav-sort{transition-delay:.9s;}
   body.hand-left #botbar{flex-direction:row-reverse;}
   #botbar .bb-spacer{width:50px;height:50px;flex:0 0 auto;}
   #botbar .bb-btn{pointer-events:auto;flex:0 0 auto;width:50px;height:50px;border-radius:50%;border:1px solid var(--line-strong);cursor:pointer;background:var(--surface);color:var(--text-2);display:flex;align-items:center;justify-content:center;box-shadow:none;transition:transform .12s ease, opacity .2s ease;}
   #botbar .bb-btn svg{width:22px;height:22px;color:currentColor;}
   #botbar .bb-btn.bb-search{width:50px;height:50px;}
   #botbar .bb-btn.bb-search svg{width:22px;height:22px;}
-  #botbar .bb-btn.bb-voice{width:56px;height:56px;background:var(--accent-deep);color:var(--text);border-color:transparent;box-shadow:none;}
-  #botbar .bb-btn.bb-voice svg{width:24px;height:24px;color:var(--text);}
+  #botbar .bb-btn.bb-voice{width:50px;height:50px;background:var(--surface);color:var(--text-2);border-color:var(--line-strong);box-shadow:none;}
+  #botbar .bb-btn.bb-voice svg{width:22px;height:22px;color:currentColor;}
   #botbar .bb-btn:active{transform:scale(.9);}
-  #botbar .bb-btn.bb-voice:active{background:var(--accent);}
   #botbar.collapsed .bb-mid{display:none;}
   #botbar.on-screen .bb-voice{display:none;}
   #botbar.on-screen .bb-btn{background:var(--surface);border-color:var(--line-strong);box-shadow:0 8px 20px -6px rgba(0,0,0,.5);}
@@ -1654,7 +1656,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.05.1857';
+const APP_VERSION='2026.07.05.1937';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1859,6 +1861,38 @@ function flipFirstContacts(newHand,n){   // PHASE B: cascade the first N on-scre
   items.forEach(o=>{o.el.style.transition='transform .5s cubic-bezier(.34,1.45,.5,1) '+(o.vi*0.05).toFixed(2)+'s';o.el.style.transform=o.el.classList.contains('av')?'translate(0,-50%)':'translateX(0)';});
   setTimeout(()=>{items.forEach(o=>{o.el.style.transition='';o.el.style.transform='';});},1200);
 }
+function flipScrbar(scrbar,newHand,done){    // inner-screen flip: fold voice+back into the menu icon, hop side, reopen — mirrors the home bar
+  const menu=scrbar.querySelector('.scrbar-menu');
+  const others=[...scrbar.querySelectorAll('.scrbar-voice,.scrbar-back')];
+  const ctr=el=>{const r=el.getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height/2};};
+  const finish=()=>{if(typeof done==='function')done();};
+  if(!menu||!others.length){document.body.classList.toggle('hand-left',newHand==='left');document.body.classList.toggle('hand-right',newHand!=='left');finish();return;}
+  /* Phase 1 — collapse voice+back into the menu icon (converge, same feel as the home bar close) */
+  others.forEach(el=>{el.style.transition='none';el.style.transform='';el.style.opacity='1';});
+  void scrbar.offsetWidth;
+  const M0=ctr(menu);
+  others.forEach(el=>{const c=ctr(el);el.style.transition='transform .3s cubic-bezier(.5,.04,.7,.32), opacity .26s ease';el.style.transform='translate('+(M0.x-c.x)+'px,'+(M0.y-c.y)+'px) scale(.34)';el.style.opacity='0';});
+  setTimeout(()=>{
+    /* Phase 2 — commit the new side (scrbar reverses via hand class) and slide the lone menu icon across */
+    const before=ctr(menu);
+    document.body.classList.toggle('hand-left',newHand==='left');
+    document.body.classList.toggle('hand-right',newHand!=='left');
+    const after=ctr(menu);
+    menu.style.transition='none';menu.style.transform='translate('+(before.x-after.x)+'px,'+(before.y-after.y)+'px)';
+    void menu.offsetWidth;
+    menu.style.transition='transform .5s cubic-bezier(.34,1.35,.5,1)';menu.style.transform='';
+    setTimeout(()=>{
+      /* Phase 3 — spring voice+back back out of the menu on the new side */
+      others.forEach(el=>{el.style.transition='none';el.style.transform='';});   // clear to read the new base slots (still opacity 0)
+      void scrbar.offsetWidth;
+      const Mn=ctr(menu);const bases=others.map(el=>ctr(el));
+      others.forEach((el,i)=>{el.style.transform='translate('+(Mn.x-bases[i].x)+'px,'+(Mn.y-bases[i].y)+'px) scale(.34)';el.style.opacity='0';});
+      void scrbar.offsetWidth;
+      others.forEach((el,i)=>{el.style.transition='transform .5s cubic-bezier(.34,1.45,.5,1) '+(i*0.05).toFixed(2)+'s, opacity .3s ease '+(i*0.05).toFixed(2)+'s';el.style.transform='';el.style.opacity='1';});
+      setTimeout(()=>{others.forEach(el=>{el.style.transition='';el.style.transform='';el.style.opacity='';});menu.style.transition='';menu.style.transform='';finish();},600);
+    },520);
+  },330);
+}
 function doHandFlip(){
   if(flipping)return;
   const f=menuFab;
@@ -1873,6 +1907,26 @@ function doHandFlip(){
   /* --- stage 1: close the 45° menu with the SAME close used everywhere (single source of truth) --- */
   closeHbar();   // flipping=true, so closeHbar skips the bottom-bar reopen; stage 3 handles that
   /* bottom bar is already collapsed (it collapsed when the 45° menu opened) */
+  /* --- inner screens: animate the screen bar (.scrbar) instead of the home bar+FAB --- */
+  if(!onHome){
+    const _scrbar=document.querySelector('.scr.show .scrbar')||document.querySelector('.scrbar');
+    if(_scrbar){
+      document.body.classList.add('hf-hold');   // in-screen objects wait until the bar has finished, then slide
+      setTimeout(()=>flipScrbar(_scrbar,newHand,()=>{
+        menuFab.classList.toggle('left',newHand==='left');
+        fabRot+=(newHand==='left'?-90:90);const _dm=menuFab.querySelector('.dotmorph');if(_dm)_dm.style.transform='rotate('+fabRot+'deg)';
+        const sf=document.getElementById('searchFab');if(sf)sf.classList.toggle('left',newHand==='left');
+        setTimeout(()=>document.body.classList.remove('hf-hold'),1500);
+        flipping=false;updateBar();
+      }),HF.CLOSE+HF.CLOSE_GAP);
+    }else{
+      document.body.classList.toggle('hand-left',newHand==='left');document.body.classList.toggle('hand-right',newHand!=='left');
+      menuFab.classList.toggle('left',newHand==='left');
+      const sf=document.getElementById('searchFab');if(sf)sf.classList.toggle('left',newHand==='left');
+      setTimeout(()=>{flipping=false;updateBar();},400);
+    }
+    return;
+  }
   /* --- stage 2: after close + gap, hop the icon to the other side --- */
   setTimeout(()=>{
     f.style.setProperty('--dx',(tgt-cur)+'px');
@@ -2788,9 +2842,9 @@ function openBirthdays(){
     body.innerHTML=list.map((o,i)=>{
       const p=o.p,today=o.n===0,soon=o.n>0&&o.n<=7;
       const tagCls=today?'today':(soon?'soon':'');
-      const tagTxt=today?'היום!':(o.n===1?'מחר':('בעוד '+o.n+' ימים'));
+      const tagTxt=today?'היום!':(o.n===1?'מחר':('עוד '+o.n+" י'"));
       const synced=isBdSynced(p);
-      const btn=synced?'<button class="bd-calbtn synced" disabled>'+chkIc+'ביומן</button>':'<button class="bd-calbtn bd-cal" data-i="'+i+'">'+calIc+'ליומן</button>';
+      const btn=synced?'<button class="bd-calbtn synced" disabled aria-label="מסונכרן ביומן">'+chkIc+'</button>':'<button class="bd-calbtn bd-cal" data-i="'+i+'" aria-label="הוסף ליומן">'+calIc+'</button>';
       return '<div class="bd-prow'+(today?' today':'')+'" data-i="'+i+'"><span class="bd-av">'+avInner(p)+'</span><div class="bd-info"><div class="bd-nm">'+escapeHtml(p.name||'(ללא שם)')+(today?' 🎂':'')+'</div><div class="bd-date">'+fmtBdayDate(o.ds)+'</div></div><span class="bd-tag '+tagCls+'">'+tagTxt+'</span>'+btn+'</div>';
     }).join('');
     body.querySelectorAll('.bd-cal').forEach(b=>b.onclick=(e)=>{e.stopPropagation();if(navigator.vibrate)navigator.vibrate(10);const o=list[+b.dataset.i];addBdayToCal(o.p.name||'',o.ds);markBdSynced(o.p);render();});
