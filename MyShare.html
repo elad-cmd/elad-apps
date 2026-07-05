@@ -272,6 +272,9 @@
   .dg-bg svg{width:30px;height:30px;transform:scaleX(-1);}
   .dg-fg{position:relative;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:44px 14px 14px;will-change:transform;}
   .dg-del{position:absolute;top:10px;left:10px;display:flex;align-items:center;gap:1px;background:rgba(255,255,255,.12);border:none;border-radius:11px;padding:5px 8px;color:#fff;cursor:pointer;z-index:2;}
+  body.hand-left .dg-del{left:auto;right:10px;}
+  body.hand-left .dg-del svg{transform:none;}
+  body.hand-left .dg-del .dg-arrow{display:inline-block;transform:scaleX(-1);}
   .dg-del svg{width:21px;height:21px;transform:scaleX(-1);}
   .dg-del .dg-arrow{font-size:17px;line-height:1;font-weight:800;margin-top:-1px;}
   .dup-member{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.1);border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer;}
@@ -1656,7 +1659,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.05.1937';
+const APP_VERSION='2026.07.05.2012';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1909,7 +1912,8 @@ function doHandFlip(){
   /* bottom bar is already collapsed (it collapsed when the 45° menu opened) */
   /* --- inner screens: animate the screen bar (.scrbar) instead of the home bar+FAB --- */
   if(!onHome){
-    const _scrbar=document.querySelector('.scr.show .scrbar')||document.querySelector('.scrbar');
+    const _scrs=[...document.querySelectorAll('.scr.show')];const _top=_scrs[_scrs.length-1];
+    const _scrbar=(_top&&_top.querySelector('.scrbar'))||document.querySelector('.scr.show .scrbar')||document.querySelector('.scrbar');
     if(_scrbar){
       document.body.classList.add('hf-hold');   // in-screen objects wait until the bar has finished, then slide
       setTimeout(()=>flipScrbar(_scrbar,newHand,()=>{
@@ -2261,7 +2265,7 @@ function openMerge(){
     card.innerHTML='<div class="dg-bg">'+ICON.broom+'<span class="dg-arrow">\u2039</span></div><div class="dg-fg"><button class="dg-del" aria-label="הסר">'+ICON.broom+'<span class="dg-arrow">\u2039</span></button>'+(g.fuzzy?'<div class="dup-fuzzy">דמיון בשם — ייתכן אותו אדם</div>':'')+members+'<div class="dup-acts"><button class="mbtn merge">מזג</button><button class="mbtn cancel">בטל</button></div></div>';
     const fg=card.querySelector('.dg-fg');
     [...card.querySelectorAll('.dup-member')].forEach((el,idx)=>el._person=g[idx]);
-    const dismiss=()=>{try{MGDONE[mgSig(g)]=1;saveMgDone();}catch(e){}fg.style.transition='transform .25s ease-out';fg.style.transform='translateX(-115%)';const h0=card.offsetHeight;card.style.maxHeight=h0+'px';void card.offsetWidth;card.style.transition='opacity .25s, max-height .3s ease, margin .3s';card.style.maxHeight='0';card.style.opacity='0';card.style.marginBottom='0';if(navigator.vibrate)navigator.vibrate(12);setTimeout(()=>{card.remove();mgRefresh(sc);toast('הוסר');},300);};
+    const dismiss=()=>{try{MGDONE[mgSig(g)]=1;saveMgDone();}catch(e){}fg.style.transition='transform .25s ease-out';fg.style.transform='translateX('+(cfg.hand==='left'?'115%':'-115%')+')';const h0=card.offsetHeight;card.style.maxHeight=h0+'px';void card.offsetWidth;card.style.transition='opacity .25s, max-height .3s ease, margin .3s';card.style.maxHeight='0';card.style.opacity='0';card.style.marginBottom='0';if(navigator.vibrate)navigator.vibrate(12);setTimeout(()=>{card.remove();mgRefresh(sc);toast('הוסר');},300);};
     card.querySelector('.mbtn.merge').onclick=()=>{openMergePicker(g,sel.get(gi),()=>{card.style.transition='opacity .25s, transform .25s';card.style.opacity='0';card.style.transform='translateY(-8px)';setTimeout(()=>{card.remove();mgRefresh(sc);},260);});};
     card.querySelector('.mbtn.cancel').onclick=dismiss;
     card.querySelector('.dg-del').onclick=(e)=>{e.stopPropagation();dismiss();};
