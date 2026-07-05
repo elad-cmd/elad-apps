@@ -1477,6 +1477,33 @@ function openMemberPicker(listId){
   const origBack=sc._back;
   sc._back=()=>{L.members=[...sel];saveCfg();renderLists();renderList();origBack();};
 }
+function openFavPicker(){    // add existing contacts to Favorites via a search picker (same UI as the list member picker)
+  const sel=new Set(PEOPLE.filter(p=>FDEC[fKey(p)]!=='delete'&&p.fav).map(fKey));
+  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>הוספה למועדפים</h2></div><div class="pk-search"><div class="srch-inwrap" id="pkInwrap"><input id="pkSearch" class="ct-inp pk-inp" placeholder="חיפוש שם…" autocomplete="off"><button class="srch-clear pk-clear" id="pkClear" type="button" aria-label="נקה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div><div class="scr-body" id="mpkBody"><div class="pk-list" id="pkList"></div></div><div class="pk-az" id="pkAz"></div><div class="pk-bub" id="pkBub"></div>');sc.classList.add('mpk-scr');
+  sc._reopen=()=>openFavPicker();
+  const body=sc.querySelector('#mpkBody');const listBox=sc.querySelector('#pkList');
+  const all=PEOPLE.slice().filter(p=>FDEC[fKey(p)]!=='delete').sort(byName);
+  let shown=all;
+  function paint(q){
+    q=(q||'').trim();
+    shown=q?all.filter(p=>String(p.name).indexOf(q)>=0):all;
+    if(!shown.length){listBox.innerHTML='<div class="flt-done" style="font-size:14px;padding:34px 16px;">'+(q?'לא נמצאו תוצאות':'אין אנשי קשר')+'</div>';buildPkAz();return;}
+    listBox.innerHTML=shown.map((p,i)=>{const on=sel.has(fKey(p));return '<div class="pk-row" data-i="'+i+'"><span class="pk-chk'+(on?' on':'')+'">'+(on?ICON.check:'')+'</span><span class="li-av">'+escapeHtml(initials(p.name))+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div></div></div>';}).join('');
+    listBox.querySelectorAll('.pk-row').forEach(rw=>{const p=shown[+rw.dataset.i];const k=fKey(p);rw.onclick=()=>{const on=!sel.has(k);if(on)sel.add(k);else sel.delete(k);if(navigator.vibrate)navigator.vibrate(4);const chk=rw.querySelector('.pk-chk');if(chk){chk.classList.toggle('on',on);chk.innerHTML=on?ICON.check:'';}};});
+    buildPkAz();
+  }
+  const az=sc.querySelector('#pkAz'),bub=sc.querySelector('#pkBub');let azL=[],azM={},azAct=false;
+  function buildPkAz(){azL=[];azM={};shown.forEach((p,i)=>{const ch=azFirst(p.name);if(!(ch in azM)){azM[ch]=i;azL.push(ch);}});if(azL.length<2){az.classList.remove('show');bub.classList.remove('show');return;}az.innerHTML=azL.map(c=>'<span class="azl">'+escapeHtml(c)+'</span>').join('');az.classList.add('show');}
+  function azScrubP(cy){if(!azL.length)return;const r=az.getBoundingClientRect();let fr=(cy-r.top)/r.height;fr=Math.max(0,Math.min(0.9999,fr));const idx=Math.floor(fr*azL.length);const c=azL[idx];az.querySelectorAll('.azl').forEach((s,k)=>s.classList.toggle('on',k===idx));const ci=azM[c];const row=listBox.querySelector('.pk-row[data-i="'+ci+'"]');if(row){const rb=row.getBoundingClientRect(),bb=body.getBoundingClientRect();body.scrollTop+=rb.top-bb.top-8;}const br=sc.getBoundingClientRect();bub.textContent=c;let by=cy-br.top-31;by=Math.max(6,Math.min(br.height-68,by));bub.style.top=by+'px';bub.classList.add('show');}
+  az.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();azAct=true;try{az.setPointerCapture(e.pointerId);}catch(_){}azScrubP(e.clientY);});
+  az.addEventListener('pointermove',e=>{if(!azAct)return;e.preventDefault();e.stopPropagation();azScrubP(e.clientY);});
+  az.addEventListener('pointerup',()=>{azAct=false;bub.classList.remove('show');az.querySelectorAll('.azl.on').forEach(s=>s.classList.remove('on'));});
+  az.addEventListener('pointercancel',()=>{azAct=false;bub.classList.remove('show');});
+  const si=sc.querySelector('#pkSearch');si.addEventListener('input',()=>paint(si.value));const pkClear=sc.querySelector('#pkClear');const pkInwrap=sc.querySelector('#pkInwrap');function updPk(){if(pkInwrap)pkInwrap.classList.toggle('has-text',!!si.value);}si.addEventListener('input',updPk);if(pkClear)pkClear.onclick=()=>{si.value='';paint('');updPk();si.focus();};const psEl=sc.querySelector('.pk-search');const vvk=window.visualViewport;const liftPk=()=>{const kb=vvk?Math.max(0,window.innerHeight-vvk.height-(vvk.offsetTop||0)):0;if(psEl)psEl.style.bottom=kb>0?(kb+10)+'px':'';if(body)body.style.paddingBottom=kb>0?(kb+(psEl?psEl.offsetHeight:64)+26)+'px':'';};si.addEventListener('focus',()=>{if(vvk)vvk.addEventListener('resize',liftPk);setTimeout(liftPk,60);setTimeout(liftPk,380);setTimeout(()=>{try{if(si.value)si.select();}catch(e){}},10);});si.addEventListener('blur',()=>{if(vvk)vvk.removeEventListener('resize',liftPk);if(psEl)psEl.style.bottom='';if(body)body.style.paddingBottom='';});
+  paint('');
+  const origBack=sc._back;
+  sc._back=()=>{all.forEach(p=>{const want=sel.has(fKey(p));if(!!p.fav!==want)setFav(p,want);});savePeople();renderList();origBack();};
+}
 if(BRIDGE){try{var _fk=JSON.parse(localStorage.getItem('myshare_favkeys')||'null');if(_fk){PEOPLE.forEach(p=>{if(_fk[fKey(p)])p.fav=true;});Object.keys(_fk).forEach(k=>{FAVSET[k]=1;});saveFavSet();localStorage.removeItem('myshare_favkeys');}}catch(e){}}
 applyFavSet();
 healKeys();recomputeAllRules();renderSeg();renderList();renderLists();layoutList();
@@ -1659,7 +1686,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.05.2012';
+const APP_VERSION='2026.07.05.2135';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2081,11 +2108,13 @@ const favEditBtn=document.createElement('button');favEditBtn.className='fav-edit
 const favSortBtn=document.createElement('button');favSortBtn.className='fav-sort';favSortBtn.id='favSort';favSortBtn.setAttribute('aria-label','מיון לפי א״ב');favSortBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5v13M7 18l-3-3M7 18l3-3"/><text x="12" y="10" font-size="7.5" fill="currentColor" stroke="none">A</text><text x="12" y="20" font-size="7.5" fill="currentColor" stroke="none">Z</text></svg>';favSortBtn.onclick=()=>{favABC=!favABC;saveFavABC();if(navigator.vibrate)navigator.vibrate(8);renderList();updateFavSort();};document.body.appendChild(favSortBtn);
 function updateFavSort(){const b=document.getElementById('favSort');if(!b)return;const show=(VIEW==='fav'&&!activeList);b.classList.toggle('show',show);b.classList.toggle('on',!!favABC);}
 const listAddBtn=document.createElement('button');listAddBtn.className='list-add';listAddBtn.id='listAdd';listAddBtn.setAttribute('aria-label','הוסף אנשי קשר לרשימה');listAddBtn.innerHTML=ICON.plus;listAddBtn.onclick=()=>{if(activeList)openMemberPicker(activeList);};document.body.appendChild(listAddBtn);
-const contactAddBtn=document.createElement('button');contactAddBtn.className='contact-add';contactAddBtn.id='contactAdd';contactAddBtn.setAttribute('aria-label','הוסף איש קשר חדש');contactAddBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M19 8v6M16 11h6"/></svg>';contactAddBtn.onclick=()=>openAddContact({});document.body.appendChild(contactAddBtn);
+const ICON_CONTACTADD='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M19 8v6M16 11h6"/></svg>';
+const ICON_FAVADD='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3.4l2.2 4.5 5 .7-3.6 3.5.85 5L10 14.9l-4.45 2.35.85-5L2.8 8.6l5-.7z" fill="currentColor" stroke="none"/><path d="M18.5 14.5v5M16 17h5"/></svg>';
+const contactAddBtn=document.createElement('button');contactAddBtn.className='contact-add';contactAddBtn.id='contactAdd';contactAddBtn.setAttribute('aria-label','הוסף איש קשר חדש');contactAddBtn.innerHTML=ICON_CONTACTADD;contactAddBtn.onclick=()=>{if(VIEW==='fav'&&!activeList)openFavPicker();else openAddContact({});};document.body.appendChild(contactAddBtn);
 const listSendBtn=document.createElement('button');listSendBtn.className='list-send';listSendBtn.id='listSend';listSendBtn.setAttribute('aria-label','שלח לרשימה');listSendBtn.innerHTML=ICON.multisend;listSendBtn.onclick=()=>{if(activeList)openSendList(activeList);};document.body.appendChild(listSendBtn);
 updateFavEdit();updateListAdd();
 function updateListAdd(){const b=document.getElementById('listAdd');if(b)b.classList.toggle('show',!!activeList);const s=document.getElementById('listSend');if(s)s.classList.toggle('show',!!activeList);}
-function updateContactAdd(){const b=document.getElementById('contactAdd');if(b)b.classList.toggle('show',!activeList);}
+function updateContactAdd(){const b=document.getElementById('contactAdd');if(!b)return;const fav=(VIEW==='fav'&&!activeList);b.classList.toggle('show',!activeList);b.innerHTML=fav?ICON_FAVADD:ICON_CONTACTADD;b.setAttribute('aria-label',fav?'הוסף למועדפים':'הוסף איש קשר חדש');}
 function updateFavEdit(){const b=document.getElementById('favEdit');if(!b)return;const show=(VIEW==='fav'&&!activeList);b.classList.toggle('show',show);if(!show&&editMode){editMode=false;document.body.classList.remove('editing');}b.classList.toggle('on',editMode);}
 function setEdit(on){editMode=on&&(VIEW==='fav');document.body.classList.toggle('editing',editMode);favEditBtn.classList.toggle('on',editMode);renderList();}
 let dragRow=null,dragIdx=0,dragStartY=0,RSTEP=72;
