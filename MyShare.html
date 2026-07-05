@@ -355,6 +355,20 @@
   .ct-lbl{display:block;font-size:12px;font-weight:700;color:var(--text-2);text-align:right;margin:0 2px 4px;}
   .acf-row{display:flex;align-items:center;gap:8px;}
   .bd-cal-hit{background:var(--accent)!important;color:var(--accent-ink)!important;border-color:transparent!important;transform:scale(.94);transition:transform .12s ease;}
+  .bd-prow{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:var(--r-md);cursor:pointer;position:relative;transition:background .15s;}
+  .bd-prow:active{background:var(--surface);}
+  .bd-prow.today{background:var(--today-bg);}
+  .bd-prow .bd-av{width:46px;height:46px;border-radius:50%;flex:0 0 auto;background:var(--avatar-bg);color:var(--avatar-ink);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;overflow:hidden;}
+  .bd-prow .bd-info{flex:1;min-width:0;}
+  .bd-prow .bd-nm{font-size:16px;font-weight:400;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .bd-prow .bd-date{font-size:13px;color:var(--text-2);margin-top:2px;direction:ltr;text-align:right;}
+  .bd-prow.today .bd-nm,.bd-prow.today .bd-date{color:var(--today);}
+  .bd-tag{flex:0 0 auto;font-size:12px;font-weight:400;padding:5px 9px;border-radius:9px;white-space:nowrap;background:var(--ok-bg);color:var(--ok);}
+  .bd-tag.soon{background:var(--late-bg);color:var(--late);}
+  .bd-tag.today{background:var(--today-bg);color:var(--today);}
+  .bd-calbtn{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--line-strong);color:var(--text-2);border-radius:11px;padding:8px 10px;font-family:inherit;font-size:12.5px;font-weight:400;cursor:pointer;transition:background .12s,color .12s,border-color .12s;}
+  .bd-calbtn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;}
+  .bd-calbtn.synced{opacity:.45;pointer-events:none;background:transparent;}
   .mg-mrow{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.06);border-radius:12px;padding:9px 11px;margin-bottom:6px;cursor:grab;touch-action:pan-y;}
   .mg-mrow.mg-target{box-shadow:inset 0 0 0 2px var(--tq);background:rgba(0,194,168,.20);}
   .mg-drag-clone{position:fixed;left:0;top:0;z-index:200;pointer-events:none;display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:12px;background:var(--tq-deep);box-shadow:0 14px 34px rgba(0,0,0,.5);opacity:.95;}
@@ -1594,7 +1608,7 @@ function switchTab(dx){
 let swX=0,swY=0,swOn=false,swRow=null;
 let _recLP=0;function _clearRecLP(){if(_recLP){clearTimeout(_recLP);_recLP=0;}}
 listEl.addEventListener('pointerdown',e=>{if(editMode){swOn=false;return;}if(e.target.closest('.av')){swOn=false;swRow=null;return;}swOn=true;swX=e.clientX;swY=e.clientY;swRow=e.target.closest('.row');_clearRecLP();if(VIEW==='recent'&&!activeList&&swRow){const _r=swRow;_recLP=setTimeout(()=>{_recLP=0;const p=CURRENT[+_r.dataset.i]||null;if(p){swOn=false;if(navigator.vibrate)navigator.vibrate(15);miniConfirm('להסיר את «'+(p.name||'איש הקשר')+'» מהאחרונים?','הסר',()=>{hideRecent(statKey(p));renderList();if(navigator.vibrate)navigator.vibrate(8);});}},500);}});
-listEl.addEventListener('pointerup',e=>{_clearRecLP();if(!swOn||picking){swOn=false;return;}swOn=false;const dx=e.clientX-swX,dy=e.clientY-swY;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.4){switchTab(dx);}else if(Math.abs(dx)<8&&Math.abs(dy)<8&&swRow){const p=CURRENT[+swRow.dataset.i]||null;if(p)tapContact(p);}});
+listEl.addEventListener('pointerup',e=>{_clearRecLP();if(!swOn||picking){swOn=false;return;}swOn=false;const dx=e.clientX-swX,dy=e.clientY-swY;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.4){switchTab(dx);}else if(Math.abs(dx)<8&&Math.abs(dy)<8&&swRow){const p=CURRENT[+swRow.dataset.i]||null;if(p)openContact(p);}});
 let plY=0,plBase=0,plOn=false,pullOffset=0,plArmed=false,plVel=0,plLastY=0,plLastT=0,plRAF=0,MAXPULL=600;
 function computeMax(){MAXPULL=Math.max(150,Math.min(340,Math.round(window.innerHeight*0.42)));}
 computeMax();window.addEventListener('resize',computeMax);
@@ -1633,10 +1647,10 @@ let _tapK=null,_tapT=0,_tapTimer=0;
 function tapContact(p){
   if(!cfg.dblCall){openContact(p);return;}
   const k=statKey(p),now=Date.now();
-  if(_tapK===k&&now-_tapT<320){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
-  _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;openContact(p);},320);
+  if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
+  _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.05.1208';
+const APP_VERSION='2026.07.05.1329';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2644,6 +2658,25 @@ function buildMyVcard(c){
   if(c.site)v+='URL:'+esc(c.site)+'\n';
   v+='END:VCARD';return v;
 }
+function _qpEnc(s){const b=new TextEncoder().encode(String(s||''));let o='';for(let i=0;i<b.length;i++){const x=b[i];if(x>=33&&x<=126&&x!==61)o+=String.fromCharCode(x);else o+='='+x.toString(16).toUpperCase().padStart(2,'0');}return o;}
+function _qpLine(prefix,val){const qp=_qpEnc(val);const toks=qp.match(/=..|[\s\S]/g)||[];let line=prefix,out='';for(const t of toks){if(line.length+t.length>74){out+=line+'=\r\n';line='';}line+=t;}out+=line;return out+'\r\n';}
+// vCard for SHARING: 2.1 + QUOTED-PRINTABLE UTF-8 for non-ASCII, so Hebrew survives any text channel intact.
+function buildMyVcardShare(c){
+  const A=s=>/[^\x00-\x7F]/.test(String(s||''));
+  const esc=s=>String(s||'').replace(/([\\;,])/g,'\\$1');
+  let v='BEGIN:VCARD\r\nVERSION:2.1\r\n';
+  if(c.name){
+    if(A(c.name)){v+=_qpLine('N;CHARSET=UTF-8;ENCODING=QUOTED-PRINTABLE:',c.name+';;;');v+=_qpLine('FN;CHARSET=UTF-8;ENCODING=QUOTED-PRINTABLE:',c.name);}
+    else{v+='N:'+esc(c.name)+';;;\r\nFN:'+esc(c.name)+'\r\n';}
+  }
+  const fld=(nm,val)=>{if(!val)return '';return A(val)?_qpLine(nm+';CHARSET=UTF-8;ENCODING=QUOTED-PRINTABLE:',val):(nm+':'+esc(val)+'\r\n');};
+  if(c.org)v+=fld('ORG',c.org);
+  if(c.title)v+=fld('TITLE',c.title);
+  if(c.phone)v+='TEL;CELL:'+String(c.phone).replace(/[^0-9+]/g,'')+'\r\n';
+  if(c.email)v+='EMAIL;INTERNET:'+String(c.email)+'\r\n';
+  if(c.site)v+='URL:'+esc(c.site)+'\r\n';
+  v+='END:VCARD\r\n';return v;
+}
 function openMyCardEdit(after){
   const c=loadMyCard();
   const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
@@ -2672,7 +2705,7 @@ function openMyCard(){
       '<button class="mp-confirm" id="mcEdit" style="background:#fff;color:var(--tq-ink);margin-top:8px;">ערוך פרטים</button>';
     body.querySelector('#mcEdit').onclick=()=>openMyCardEdit(render);
     body.querySelector('#mcShare').onclick=async ()=>{
-      const v2=buildMyVcard(loadMyCard());
+      const v2=buildMyVcardShare(loadMyCard());
       try{const file=new File([v2],'my-card.vcf',{type:'text/vcard'});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});return;}}catch(e){if(e&&e.name==='AbortError')return;}
       try{if(navigator.share){await navigator.share({text:v2});return;}}catch(e){if(e&&e.name==='AbortError')return;}
       try{await navigator.clipboard.writeText(v2);toast('הכרטיס הועתק');}catch(e){toast('שיתוף לא נתמך');}
@@ -2734,15 +2767,27 @@ function openBdayWheel(initial,onSave){
   ov.addEventListener('click',e=>{if(e.target===ov)close();});
   ov.querySelector('#bwOk').onclick=()=>{const d=days[Math.min(idxOf(elD),days.length-1)],mo=Math.min(idxOf(elM),11)+1,y=years[Math.min(idxOf(elY),years.length-1)];const z=n=>String(n).padStart(2,'0');const val=''+y+'-'+z(mo)+'-'+z(d);close();if(typeof onSave==='function')onSave(val);};
 }
+let BDSYNC=(function(){try{return JSON.parse(localStorage.getItem('myshare_bdsync')||'{}')||{};}catch(e){return{};}})();
+function isBdSynced(p){return !!BDSYNC[fKey(p)];}
+function markBdSynced(p){BDSYNC[fKey(p)]=1;try{localStorage.setItem('myshare_bdsync',JSON.stringify(BDSYNC));}catch(_){}}
 function openBirthdays(){
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>ימי הולדת קרובים</h2></div><div class="scr-body" id="bdBody"></div>');sc._reopen=openBirthdays;
   function render(){
     const body=sc.querySelector('#bdBody');if(!body)return;
     const list=upcomingBdays();
     if(!list.length){body.innerHTML='<p class="cr-hint" style="text-align:center;margin:18px 0;">עדיין לא הוגדרו ימי הולדת. הוסף תאריך לידה בכרטיס איש קשר.</p>';return;}
-    body.innerHTML='<div class="flt-list">'+list.map((o,i)=>{const p=o.p;const soon=o.n<=7;return '<div class="arc-row bd-row" data-i="'+i+'"><span class="li-av">'+escapeHtml(initials(p.name)||'?')+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div><div class="s"'+(soon?' style="color:#ffd27a;"':'')+'>'+fmtBdayDate(o.ds)+' · '+bdayLabel(o.n)+'</div></div><button class="arc-restore bd-cal" data-i="'+i+'">ליומן</button></div>';}).join('')+'</div>';
-    body.querySelectorAll('.bd-cal').forEach(b=>b.onclick=(e)=>{e.stopPropagation();if(navigator.vibrate)navigator.vibrate(10);b.classList.add('bd-cal-hit');setTimeout(()=>b.classList.remove('bd-cal-hit'),320);const o=list[+b.dataset.i];addBdayToCal(o.p.name||'',o.ds);});
-    body.querySelectorAll('.bd-row').forEach(rw=>rw.onclick=()=>openContact(list[+rw.dataset.i].p));
+    const calIc='<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9h16M8 3v4M16 3v4"/></svg>';
+    const chkIc='<svg viewBox="0 0 24 24"><path d="M5 12l4 4L19 7"/></svg>';
+    body.innerHTML=list.map((o,i)=>{
+      const p=o.p,today=o.n===0,soon=o.n>0&&o.n<=7;
+      const tagCls=today?'today':(soon?'soon':'');
+      const tagTxt=today?'היום!':(o.n===1?'מחר':('בעוד '+o.n+' ימים'));
+      const synced=isBdSynced(p);
+      const btn=synced?'<button class="bd-calbtn synced" disabled>'+chkIc+'ביומן</button>':'<button class="bd-calbtn bd-cal" data-i="'+i+'">'+calIc+'ליומן</button>';
+      return '<div class="bd-prow'+(today?' today':'')+'" data-i="'+i+'"><span class="bd-av">'+avInner(p)+'</span><div class="bd-info"><div class="bd-nm">'+escapeHtml(p.name||'(ללא שם)')+(today?' 🎂':'')+'</div><div class="bd-date">'+fmtBdayDate(o.ds)+'</div></div><span class="bd-tag '+tagCls+'">'+tagTxt+'</span>'+btn+'</div>';
+    }).join('');
+    body.querySelectorAll('.bd-cal').forEach(b=>b.onclick=(e)=>{e.stopPropagation();if(navigator.vibrate)navigator.vibrate(10);const o=list[+b.dataset.i];addBdayToCal(o.p.name||'',o.ds);markBdSynced(o.p);render();});
+    body.querySelectorAll('.bd-prow').forEach(rw=>rw.onclick=()=>openContact(list[+rw.dataset.i].p));
   }
   render();
   attachElasticPull(sc.querySelector('#bdBody'));
