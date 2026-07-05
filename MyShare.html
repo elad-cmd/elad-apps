@@ -1650,7 +1650,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.05.1405';
+const APP_VERSION='2026.07.05.1439';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2641,7 +2641,7 @@ function closeHbar(cb){
   bd.style.transition='background .45s ease .28s';
   bd.classList.remove('show');
   menuFab.classList.remove('open');setFab(false);
-  if(!flipping&&hfOnHome()){botbarReopen();}else{updateSearchFab();}
+  if(!flipping&&hfOnHome()){setTimeout(()=>{if(!flipping&&!menuFab.classList.contains('open')&&hfOnHome())botbarReopen();},300);}else{updateSearchFab();}
   setTimeout(()=>{if(bd.parentNode)bd.remove();if(typeof cb==='function')cb();},780);
 }
 /* ===== הכרטיס שלי (QR אישי) ===== */
