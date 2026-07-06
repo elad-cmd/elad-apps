@@ -413,7 +413,7 @@
   .nz-row .nz-chk{width:20px;height:20px;accent-color:var(--tq);flex:0 0 auto;}
   .ct-del{width:100%;margin-top:20px;padding:11px;border:1px solid rgba(224,90,80,.5);border-radius:12px;background:rgba(210,59,48,.12);color:#ff9b90;font:inherit;font-weight:700;font-size:14px;cursor:pointer;transition:background .15s,color .15s;}
   .ct-del.arm{background:#d23b30;color:#fff;border-color:#d23b30;}
-  .home{position:fixed;inset:0;}
+  .home{position:fixed;inset:0;background:var(--bg);}
   #azbar{position:absolute;z-index:30;top:96px;bottom:120px;width:34px;display:none;align-items:center;justify-content:center;touch-action:none;cursor:grab;}
   #azbar.show{display:flex;}
   #azbar::before{content:"";position:absolute;top:10px;bottom:10px;left:50%;transform:translateX(-50%);width:4px;border-radius:3px;background:var(--line-strong);transition:background .15s,opacity .15s;}
@@ -1712,7 +1712,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.06.2214';
+const APP_VERSION='2026.07.06.2243';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2156,10 +2156,9 @@ const ICN_BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 let _scrOpenTs=0;
 // כניסת מסך בסגנון אקורדיון: המסך מופיע במקום, והאובייקטים שבו נכנסים אחד-אחרי-השני מהצד (כמו תנועת אנשי הקשר). היציאה (בק) נשארת החלקה של כל המסך.
 // מעבר בין מסכים באקורדיון דו-כיווני: המסך המתגלה — רקע אטום, האובייקטים נכנסים באקורדיון; המסך המוסתר — רקע שקוף, האובייקטים יוצאים באקורדיון.
-function scrObjs(sc){if(!sc)return [];const body=sc.querySelector('.scr-body'),head=sc.querySelector('.scr-head');let els=[];if(head)els.push(head);if(body)els=els.concat([...body.children].slice(0,14));return els.filter(el=>el&&el.offsetHeight>0);}
+function scrObjs(sc){if(!sc)return [];if(sc.id==='home'){let els=[];const sg=sc.querySelector('#seg');if(sg)els.push(sg);els=els.concat([...sc.querySelectorAll('.list .row')].slice(0,10));return els.filter(el=>el&&el.offsetHeight>0);}const body=sc.querySelector('.scr-body'),head=sc.querySelector('.scr-head');let els=[];if(head)els.push(head);if(body)els=els.concat([...body.children].slice(0,14));return els.filter(el=>el&&el.offsetHeight>0);}
 function accIn(sc,fromX){    // מתגלה: רקע אטום (מכסה), אובייקטים נכנסים מהצד fromX אחד-אחרי-השני
   if(!sc)return;
-  if(sc.id==='home'){sc.style.background='var(--bg)';sc.style.zIndex='';sc.style.transition='transform .52s cubic-bezier(.34,1.4,.5,1)';sc.style.transform='';setTimeout(()=>{try{sc.style.transition='';sc.style.background='';}catch(e){}},560);return;}
   const els=scrObjs(sc);
   sc.style.background='';sc.style.zIndex='';sc.classList.remove('parked');
   if(!els.length)return;
@@ -2170,7 +2169,6 @@ function accIn(sc,fromX){    // מתגלה: רקע אטום (מכסה), אובי
 }
 function accOut(sc,toX){    // מוסתר: רקע שקוף (רואים את שמאחוריו), אובייקטים יוצאים לכיוון toX אחד-אחרי-השני
   if(!sc)return;
-  if(sc.id==='home'){sc.style.background='var(--bg)';sc.style.zIndex='72';sc.style.transition='transform .52s cubic-bezier(.34,1.4,.5,1)';sc.style.transform='translateX('+toX+'px)';setTimeout(()=>{try{sc.style.zIndex='';}catch(e){}},560);return;}
   const els=scrObjs(sc);
   sc.style.background='transparent';sc.style.zIndex='72';sc.classList.add('parked');
   els.forEach((el,i)=>{const d=(i*0.05).toFixed(2);el.style.transition='transform .52s cubic-bezier(.34,1.4,.5,1) '+d+'s';el.style.transform='translateX('+toX+'px)';});

@@ -1043,20 +1043,14 @@ class ShareActivity : Activity() {
         @JavascriptInterface fun exitApp() { doExitApp() }
     }
 
-    /** סוגר את ה-Activity וכל ה-task (יציאה אמיתית), עם נפילה ל-moveTaskToBack. */
+    /** יציאה אמיתית: סוגר את כל ה-Activities ומסיר את ה-task מהאחרונות. בלי moveTaskToBack (זה רק הקטין לרקע). */
     private fun doExitApp() {
         runOnUiThread {
             try {
-                finishAffinity()
+                finishAndRemoveTask()
             } catch (e: Exception) {
-                try { finish() } catch (_: Exception) {}
+                try { finishAffinity() } catch (_: Exception) { try { finish() } catch (_: Exception) {} }
             }
-            try {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    finishAndRemoveTask()
-                }
-            } catch (_: Exception) {}
-            try { moveTaskToBack(true) } catch (_: Exception) {}
         }
     }
 
