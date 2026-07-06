@@ -1712,7 +1712,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.06.1629';
+const APP_VERSION='2026.07.06.2016';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2160,19 +2160,28 @@ positionFab();
 const ICN_BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
 let _scrOpenTs=0;
 // כניסת מסך בסגנון אקורדיון: המסך מופיע במקום, והאובייקטים שבו נכנסים אחד-אחרי-השני מהצד (כמו תנועת אנשי הקשר). היציאה (בק) נשארת החלקה של כל המסך.
-function accordionIn(sc){
+// מעבר בין מסכים באקורדיון דו-כיווני: המסך המתגלה — רקע אטום, האובייקטים נכנסים באקורדיון; המסך המוסתר — רקע שקוף, האובייקטים יוצאים באקורדיון.
+function scrObjs(sc){if(!sc)return [];const body=sc.querySelector('.scr-body'),head=sc.querySelector('.scr-head');let els=[];if(head)els.push(head);if(body)els=els.concat([...body.children].slice(0,14));return els.filter(el=>el&&el.offsetHeight>0);}
+function accIn(sc,fromX){    // מתגלה: רקע אטום (מכסה), אובייקטים נכנסים מהצד fromX אחד-אחרי-השני
   if(!sc)return;
-  const body=sc.querySelector('.scr-body'),head=sc.querySelector('.scr-head');
-  let els=[];if(head)els.push(head);if(body)els=els.concat([...body.children].slice(0,12));
-  els=els.filter(el=>el&&el.offsetHeight>0);
-  const W=window.innerWidth;
-  els.forEach(el=>{el.style.transition='none';el.style.transform='translateX('+W+'px)';});
-  sc.style.transition='none';sc.classList.add('show');void sc.offsetHeight;sc.style.transition='';   // המסך אטום ומכסה מיד (בלי מסך הבית שמציץ מאחור)
+  if(sc.id==='home'){sc.style.zIndex='';sc.style.transition='transform .5s cubic-bezier(.34,1.3,.5,1)';sc.style.transform='';setTimeout(()=>{try{sc.style.transition='';}catch(e){}},560);return;}
+  const els=scrObjs(sc);
+  sc.style.background='';sc.style.zIndex='';sc.classList.remove('parked');
   if(!els.length)return;
-  els.forEach((el,i)=>{const d=(i*0.05).toFixed(2);el.style.transition='transform .52s cubic-bezier(.34,1.4,.5,1) '+d+'s';el.style.transform='';});   // רוחב מלא, אותה האזה/מהירות כמו החלפת יד באנשי הקשר
-  setTimeout(()=>{els.forEach(el=>{el.style.transition='';el.style.transform='';});},640+els.length*50);
+  els.forEach(el=>{el.style.transition='none';el.style.transform='translateX('+fromX+'px)';});
+  void sc.offsetHeight;
+  els.forEach((el,i)=>{const d=(i*0.05).toFixed(2);el.style.transition='transform .52s cubic-bezier(.34,1.4,.5,1) '+d+'s';el.style.transform='';});
+  setTimeout(()=>{els.forEach(el=>{el.style.transition='';el.style.transform='';});},680+els.length*50);
 }
-function openScreen(html){const _n=Date.now();if(_scrOpenTs&&_n-_scrOpenTs<380){const _ex=[...document.querySelectorAll('.scr')].pop();if(_ex)return _ex;}_scrOpenTs=_n;if(!document.querySelector('.scr'))HIST=[];closeSearch();searchFab.classList.add('hidden');const sc=document.createElement('div');sc.className='scr';sc.innerHTML=html;document.body.appendChild(sc);void sc.offsetHeight;requestAnimationFrame(()=>requestAnimationFrame(()=>accordionIn(sc)));sc._back=()=>closeScreen(sc);const b=sc.querySelector('.scr-head .scr-back');if(b)b.remove();let bx=0,by=0,bw=false;sc.addEventListener('pointerdown',e=>{bx=e.clientX;by=e.clientY;bw=true;});sc.addEventListener('pointerup',e=>{if(!bw)return;bw=false;const dx=e.clientX-bx,dy=e.clientY-by;if(dx>70&&Math.abs(dx)>Math.abs(dy)*1.4)sc._back();});addScreenBar(sc);return sc;}
+function accOut(sc,toX){    // מוסתר: רקע שקוף (רואים את שמאחוריו), אובייקטים יוצאים לכיוון toX אחד-אחרי-השני
+  if(!sc)return;
+  if(sc.id==='home'){sc.style.zIndex='72';sc.style.transition='transform .5s cubic-bezier(.42,0,.6,1)';sc.style.transform='translateX('+toX+'px)';setTimeout(()=>{try{sc.style.zIndex='';}catch(e){}},560);return;}
+  const els=scrObjs(sc);
+  sc.style.background='transparent';sc.style.zIndex='72';sc.classList.add('parked');
+  els.forEach((el,i)=>{const d=(i*0.05).toFixed(2);el.style.transition='transform .5s cubic-bezier(.42,0,.6,1) '+d+'s';el.style.transform='translateX('+toX+'px)';});
+  setTimeout(()=>{try{sc.style.zIndex='';}catch(e){}},560);
+}
+function openScreen(html){const _n=Date.now();if(_scrOpenTs&&_n-_scrOpenTs<380){const _ex=[...document.querySelectorAll('.scr')].pop();if(_ex)return _ex;}_scrOpenTs=_n;if(!document.querySelector('.scr'))HIST=[];closeSearch();searchFab.classList.add('hidden');const _cur=[...document.querySelectorAll('.scr.show')].pop()||document.getElementById('home');const sc=document.createElement('div');sc.className='scr';sc.innerHTML=html;document.body.appendChild(sc);void sc.offsetHeight;requestAnimationFrame(()=>requestAnimationFrame(()=>{const _W=window.innerWidth;sc.style.transition='none';sc.classList.add('show');void sc.offsetHeight;sc.style.transition='';accIn(sc,_W);accOut(_cur,-_W);}));sc._back=()=>closeScreen(sc);const b=sc.querySelector('.scr-head .scr-back');if(b)b.remove();let bx=0,by=0,bw=false;sc.addEventListener('pointerdown',e=>{bx=e.clientX;by=e.clientY;bw=true;});sc.addEventListener('pointerup',e=>{if(!bw)return;bw=false;const dx=e.clientX-bx,dy=e.clientY-by;if(dx>70&&Math.abs(dx)>Math.abs(dy)*1.4)sc._back();});addScreenBar(sc);return sc;}
 function fireAction(act,person){
   const ph=(person.phone||(person.phones&&person.phones[0])||'').replace(/[^0-9+]/g,'');
   if(act==='call'){if(ph){logInteraction(person,'call');if(BRIDGE&&BRIDGE.callNumber){BRIDGE.callNumber(ph);}else{location.href='tel:'+ph;}}}
@@ -2752,10 +2761,10 @@ function openResetConfirm(){
   ov.querySelector('#rsBtn').onclick=()=>{if(stage===1){stage=2;ov.querySelector('#rsHint').textContent='בטוח לחלוטין? הפעולה בלתי הפיכה.';ov.querySelector('#rsBtn').textContent='כן, אפס סופית';}else{doReset();}};
 }
 function homeEnter(){const h=document.getElementById('home');if(!h)return;h.style.zIndex='75';h.classList.remove('enter');void h.offsetWidth;h.classList.add('enter');setTimeout(()=>{h.classList.remove('enter');h.style.zIndex='';},560);}
-function closeScreen(sc){if(!sc)return;try{hideSelBar();}catch(e){}sc.classList.remove('show');setTimeout(()=>sc.remove(),560);const others=[...document.querySelectorAll('.scr.show')].filter(x=>x!==sc);if(!others.length)homeEnter();updateSearchFab();}
+function closeScreen(sc){if(!sc)return;try{hideSelBar();}catch(e){}const _prev=[...document.querySelectorAll('.scr.show')].filter(x=>x!==sc).pop()||document.getElementById('home');const _W=window.innerWidth;accOut(sc,_W);accIn(_prev,-_W);setTimeout(()=>{try{sc.remove();}catch(e){}},560);updateSearchFab();}
 function goHome(){
-  const scr=document.querySelectorAll('.scr');
-  if(scr.length){const _t=scr[scr.length-1];if(_t&&_t._reopen)HIST.push(_t._reopen);scr.forEach(s=>{s.classList.remove('show');setTimeout(()=>s.remove(),560);});homeEnter();}
+  const scrs=[...document.querySelectorAll('.scr')];
+  if(scrs.length){const _top=scrs[scrs.length-1];const _W=window.innerWidth;if(_top&&_top._reopen)HIST.push(_top._reopen);accOut(_top,_W);setTimeout(()=>{try{_top.remove();}catch(e){}},560);scrs.forEach(s=>{if(s!==_top){try{s.remove();}catch(e){}}});accIn(document.getElementById('home'),-_W);}
   closeSheet();closeSearch();try{hideSelBar();}catch(e){}
 }
 function foldPaletteRow(pb){const sw=[...pb.querySelectorAll('.pal-sw')];const n=sw.length;sw.forEach((s,i)=>{s.style.transitionDelay=((n-1-i)*0.04).toFixed(2)+'s';s.style.transform='scale(0)';});setTimeout(()=>{if(pb&&pb.parentNode)pb.remove();},60+n*40+300);}
@@ -3005,7 +3014,7 @@ function openHbar(){
   const close=cb=>closeHbar(cb);
   let dragMoved=false;
   bd.addEventListener('click',e=>{if(dragMoved){dragMoved=false;return;}if(e.target===bd||e.target===bar)close();});
-  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(dragMoved)return;if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.pal){if(navigator.vibrate)navigator.vibrate(8);b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);openPaletteRow(b);return;}if(it.hand){if(navigator.vibrate)navigator.vibrate(10);b.classList.add('tapped');setTimeout(doHandFlip,150);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);snapFabClosed();closeHbar(()=>{closeSearch();if(it.fn===goHome){it.fn();}else{const _olds=[...document.querySelectorAll('.scr.show')];it.fn();const _W=window.innerWidth;_olds.forEach(o=>{o.style.zIndex='72';o.style.transition='transform .34s cubic-bezier(.4,0,.55,1)';o.style.transform='translateX('+(-_W)+'px)';setTimeout(()=>{try{o.remove();}catch(e){}},380);});}setTimeout(()=>{const _bd=document.querySelector('.hbar-backdrop');if(_bd&&_bd.parentNode)_bd.remove();if(barBase())botbarReopen();else updateBar();},540);},{nav:true});};});
+  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(dragMoved)return;if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.pal){if(navigator.vibrate)navigator.vibrate(8);b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);openPaletteRow(b);return;}if(it.hand){if(navigator.vibrate)navigator.vibrate(10);b.classList.add('tapped');setTimeout(doHandFlip,150);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);snapFabClosed();closeHbar(()=>{closeSearch();it.fn();setTimeout(()=>{const _bd=document.querySelector('.hbar-backdrop');if(_bd&&_bd.parentNode)_bd.remove();if(barBase())botbarReopen();else updateBar();},540);},{nav:true});};});
   try{
     const far=_meas[_meas.length-1];
     let ox=far.icx-fcx, oy=far.icy-fcy; const olen=Math.hypot(ox,oy)||1; ox/=olen; oy/=olen;
