@@ -1712,7 +1712,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.06.1514';
+const APP_VERSION='2026.07.06.1520';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2159,7 +2159,19 @@ positionFab();
 
 const ICN_BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
 let _scrOpenTs=0;
-function openScreen(html){const _n=Date.now();if(_scrOpenTs&&_n-_scrOpenTs<380){const _ex=[...document.querySelectorAll('.scr')].pop();if(_ex)return _ex;}_scrOpenTs=_n;if(!document.querySelector('.scr'))HIST=[];closeSearch();searchFab.classList.add('hidden');const sc=document.createElement('div');sc.className='scr';sc.innerHTML=html;document.body.appendChild(sc);void sc.offsetHeight;requestAnimationFrame(()=>requestAnimationFrame(()=>sc.classList.add('show')));sc._back=()=>closeScreen(sc);const b=sc.querySelector('.scr-head .scr-back');if(b)b.remove();let bx=0,by=0,bw=false;sc.addEventListener('pointerdown',e=>{bx=e.clientX;by=e.clientY;bw=true;});sc.addEventListener('pointerup',e=>{if(!bw)return;bw=false;const dx=e.clientX-bx,dy=e.clientY-by;if(dx>70&&Math.abs(dx)>Math.abs(dy)*1.4)sc._back();});addScreenBar(sc);return sc;}
+// כניסת מסך בסגנון אקורדיון: המסך מופיע במקום, והאובייקטים שבו נכנסים אחד-אחרי-השני מהצד (כמו תנועת אנשי הקשר). היציאה (בק) נשארת החלקה של כל המסך.
+function accordionIn(sc){
+  if(!sc)return;
+  const body=sc.querySelector('.scr-body'),head=sc.querySelector('.scr-head');
+  let els=[];if(head)els.push(head);if(body)els=els.concat([...body.children].slice(0,10));
+  els=els.filter(el=>el&&el.offsetHeight>0);
+  els.forEach(el=>{el.style.transition='none';el.style.transform='translateX(46px)';el.style.opacity='0';});
+  sc.style.transition='none';sc.classList.add('show');void sc.offsetHeight;sc.style.transition='';
+  if(!els.length)return;
+  els.forEach((el,i)=>{const d=(i*0.045).toFixed(3);el.style.transition='transform .5s cubic-bezier(.34,1.28,.5,1) '+d+'s, opacity .42s ease '+d+'s';el.style.transform='';el.style.opacity='';});
+  setTimeout(()=>{els.forEach(el=>{el.style.transition='';el.style.transform='';el.style.opacity='';});},760+els.length*45);
+}
+function openScreen(html){const _n=Date.now();if(_scrOpenTs&&_n-_scrOpenTs<380){const _ex=[...document.querySelectorAll('.scr')].pop();if(_ex)return _ex;}_scrOpenTs=_n;if(!document.querySelector('.scr'))HIST=[];closeSearch();searchFab.classList.add('hidden');const sc=document.createElement('div');sc.className='scr';sc.innerHTML=html;document.body.appendChild(sc);void sc.offsetHeight;requestAnimationFrame(()=>requestAnimationFrame(()=>accordionIn(sc)));sc._back=()=>closeScreen(sc);const b=sc.querySelector('.scr-head .scr-back');if(b)b.remove();let bx=0,by=0,bw=false;sc.addEventListener('pointerdown',e=>{bx=e.clientX;by=e.clientY;bw=true;});sc.addEventListener('pointerup',e=>{if(!bw)return;bw=false;const dx=e.clientX-bx,dy=e.clientY-by;if(dx>70&&Math.abs(dx)>Math.abs(dy)*1.4)sc._back();});addScreenBar(sc);return sc;}
 function fireAction(act,person){
   const ph=(person.phone||(person.phones&&person.phones[0])||'').replace(/[^0-9+]/g,'');
   if(act==='call'){if(ph){logInteraction(person,'call');if(BRIDGE&&BRIDGE.callNumber){BRIDGE.callNumber(ph);}else{location.href='tel:'+ph;}}}
