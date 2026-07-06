@@ -1712,7 +1712,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.06.1423';
+const APP_VERSION='2026.07.06.1500';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1867,7 +1867,7 @@ function hfOnHome(){
 // הסרגל הטוב פעיל (בית או מסך פנימי) — הכל חוץ מחיפוש/גיליון/מסך פתיחה.
 function barBase(){const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;return !searchOn&&!sheetOpen&&!welcomeOn;}
 function botbarCollapse(){            // collapse the bar into the menu icon — mirrors the 45° menu close (hmOut)
-  if(botbar.classList.contains('bar-hidden'))return;
+  if(!barBase())return;
   barCollapsing=true;
   botbar.classList.remove('bar-hidden','collapsed');
   const btns=[...botbar.querySelectorAll('.bb-btn')];
@@ -1899,8 +1899,8 @@ function botbarReopen(){              // spring the bar buttons back out of the 
   const meas=btns.map(b=>{const r=b.getBoundingClientRect();return{b,dx:Math.round(fcx-(r.left+r.width/2)),dy:Math.round(fcy-(r.top+r.height/2))};});
   meas.forEach(m=>{m.b.style.transform='translate('+m.dx+'px,'+m.dy+'px) scale(.4)';m.b.style.opacity='0';});
   void botbar.offsetWidth;
-  meas.forEach((m,i)=>{m.b.style.transition='transform .55s cubic-bezier(.34,1.45,.5,1) '+(i*0.05).toFixed(2)+'s, opacity .3s ease '+(i*0.05).toFixed(2)+'s';m.b.style.transform='';m.b.style.opacity='1';});
-  setTimeout(()=>{barReopening=false;btns.forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});},950);
+  meas.forEach((m,i)=>{m.b.style.transition='transform .46s cubic-bezier(.22,1,.36,1) '+(i*0.035).toFixed(3)+'s, opacity .26s ease '+(i*0.035).toFixed(3)+'s';m.b.style.transform='';m.b.style.opacity='1';});
+  setTimeout(()=>{barReopening=false;btns.forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});},700);
 }
 function flipFirstContacts(newHand,n){   // PHASE B: cascade the first N on-screen contacts across (accordion)
   const rows=[...document.querySelectorAll('#home .row')].slice(0,n);
@@ -2765,12 +2765,19 @@ function openPaletteRow(itemEl){
   requestAnimationFrame(()=>pb.classList.add('show'));
   pb.querySelectorAll('.pal-sw').forEach(b=>b.onclick=(e)=>{e.stopPropagation();cfg.palette=+b.dataset.i;applyPalette(cfg.palette);saveCfg();if(navigator.vibrate)navigator.vibrate(6);foldPaletteRow(pb);setTimeout(()=>closeHbar(),200);});
 }
-function closeHbar(cb){
+function closeHbar(cb,opts){
+  opts=opts||{};
   const bd=document.querySelector('.hbar-backdrop');if(!bd)return;
   const bar=bd.querySelector('.hbar');if(bar&&bar.classList.contains('closing'))return;
   if(bar){bar.classList.remove('run');bar.classList.add('closing');}   // המניפה מתקפלת — ראשונה
   const _n=bar?bar.querySelectorAll('.hm-item').length:7;
   const _foldMs=Math.round((0.42+Math.max(0,_n-1)*0.05)*1000)+40;
+  if(opts.nav){
+    // ניווט למסך: המניפה נסגרת + הרקע מתבהר. הבר לא נפתח והרקע לא מוסר כאן — הקורא פותח את המסך ואז את הבר (רצף: מניפה→מסך→בר).
+    bd.style.transition='background .5s ease';bd.classList.remove('show');
+    if(typeof cb==='function')setTimeout(cb,_foldMs);
+    return;
+  }
   if(!flipping&&barBase()){
     // סדר הפוך לפתיחה: שלב 1 — מניפה נסגרת + רקע כהה נעלם. שלב 2 (אחרי הקיפול) — אייקון X→נקודות + בר תחתון נפתח, ביחד.
     bd.style.transition='background .5s ease';bd.classList.remove('show');
@@ -2969,7 +2976,7 @@ function openHbar(){
     const dur='0.62', cdur=(0.42+i*0.05).toFixed(2);
     return `<button class="hm-item" style="${posProp}:${off}px;bottom:${bottom}px;--dur:${dur}s;--cdur:${cdur}s;--i:${i};--r:${n-1-i}" data-i="${i}"><span class="hm-ic${it.big?' big':''}">${it.ic}</span><span class="hm-label">${escapeHtml(it.label)}</span></button>`;
   }).join('');
-  bd.appendChild(bar);document.body.appendChild(bd);updateSearchFab();
+  bd.appendChild(bar);document.body.appendChild(bd);
   const _barVis=!botbar.classList.contains('bar-hidden');
   const _bn=botbar.querySelectorAll('.bb-btn').length;
   botbarCollapse();
@@ -2985,7 +2992,7 @@ function openHbar(){
   const close=cb=>closeHbar(cb);
   let dragMoved=false;
   bd.addEventListener('click',e=>{if(dragMoved){dragMoved=false;return;}if(e.target===bd||e.target===bar)close();});
-  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(dragMoved)return;if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.pal){if(navigator.vibrate)navigator.vibrate(8);b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);openPaletteRow(b);return;}if(it.hand){if(navigator.vibrate)navigator.vibrate(10);b.classList.add('tapped');setTimeout(doHandFlip,150);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);closeHbar();snapFabClosed();setTimeout(()=>{closeSearch();document.querySelectorAll('.scr').forEach(x=>x.remove());it.fn();},210);};});
+  bar.querySelectorAll('.hm-item').forEach(b=>{b.onclick=()=>{if(dragMoved)return;if(bar.classList.contains('closing'))return;const it=items[+b.dataset.i];if(it.pal){if(navigator.vibrate)navigator.vibrate(8);b.classList.remove('tapped');void b.offsetWidth;b.classList.add('tapped');setTimeout(()=>b.classList.remove('tapped'),200);openPaletteRow(b);return;}if(it.hand){if(navigator.vibrate)navigator.vibrate(10);b.classList.add('tapped');setTimeout(doHandFlip,150);return;}b.classList.add('tapped');if(navigator.vibrate)navigator.vibrate(10);snapFabClosed();closeHbar(()=>{closeSearch();document.querySelectorAll('.scr').forEach(x=>x.remove());it.fn();setTimeout(()=>{const _bd=document.querySelector('.hbar-backdrop');if(_bd&&_bd.parentNode)_bd.remove();if(barBase())botbarReopen();else updateBar();},540);},{nav:true});};});
   try{
     const far=_meas[_meas.length-1];
     let ox=far.icx-fcx, oy=far.icy-fcy; const olen=Math.hypot(ox,oy)||1; ox/=olen; oy/=olen;
