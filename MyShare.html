@@ -1707,7 +1707,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.06.1303';
+const APP_VERSION='2026.07.06.1351';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2019,7 +2019,7 @@ searchFab.onclick=()=>openSearch();
 document.body.appendChild(searchFab);
 let HIST=[];var tabLock=false;
 const DIAL_ICON='<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="4.5" r="1.95"/><circle cx="12" cy="4.5" r="1.95"/><circle cx="18" cy="4.5" r="1.95"/><circle cx="6" cy="10" r="1.95"/><circle cx="12" cy="10" r="1.95"/><circle cx="18" cy="10" r="1.95"/><circle cx="6" cy="15.5" r="1.95"/><circle cx="12" cy="15.5" r="1.95"/><circle cx="18" cy="15.5" r="1.95"/><circle cx="12" cy="21" r="1.95"/></svg>';
-const botbar=document.createElement('div');botbar.id='botbar';botbar.className='collapsed';
+const botbar=document.createElement('div');botbar.id='botbar';botbar.className='';
 botbar.innerHTML='<div class="bb-spacer"></div><button class="bb-btn bb-mid bb-search" id="bbSearch" aria-label="חיפוש">'+ICON.search+'</button><button class="bb-btn bb-voice" id="bbVoice" aria-label="עוזר קולי"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button class="bb-btn bb-mid" id="bbDial" aria-label="חייגן">'+DIAL_ICON+'</button><button class="bb-btn" id="bbBack" aria-label="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>';
 document.body.appendChild(botbar);
 botbar.querySelector('#bbVoice').onclick=()=>startVoice();
@@ -2028,7 +2028,7 @@ botbar.querySelector('#bbDial').onclick=()=>openDialer();
 botbar.querySelector('#bbBack').onclick=()=>navBack();
 // אוחד לסרגל אחד: המסכים הפנימיים משתמשים בסרגל הטוב של הבית (‎#botbar‎ + כפתור התפריט הצף). כאן רק מסירים את כפתור החזרה הכפול שבראש המסך.
 function addScreenBar(sc){if(!sc)return;const hb=sc.querySelector('.scr-head .scr-back');if(hb)hb.remove();}
-function updateBar(){if(flipping||barCollapsing||barReopening)return;const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const bareSheet=!!document.querySelector('.ovl.bare.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||(sheetOpen&&!bareSheet)||flipping||searchOn);botbar.classList.toggle('on-screen',screenOpen);botbar.classList.toggle('collapsed',!(onHome&&!menuOpen&&!welcomeOn));if(!botbar.classList.contains('bar-hidden')){botbar.querySelectorAll('.bb-btn').forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});}var _sh=document.querySelector('.bot-shade');if(_sh)_sh.style.opacity=(welcomeOn||searchOn||sheetOpen)?'0':'1';var _fm=document.getElementById('menuFab');if(_fm)_fm.classList.toggle('fab-off',searchOn||sheetOpen);}
+function updateBar(){if(flipping||barCollapsing||barReopening)return;const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const bareSheet=!!document.querySelector('.ovl.bare.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||(sheetOpen&&!bareSheet)||flipping||searchOn);botbar.classList.toggle('on-screen',screenOpen);botbar.classList.remove('collapsed');if(!botbar.classList.contains('bar-hidden')){botbar.querySelectorAll('.bb-btn').forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});}var _sh=document.querySelector('.bot-shade');if(_sh)_sh.style.opacity=(welcomeOn||searchOn||sheetOpen)?'0':'1';var _fm=document.getElementById('menuFab');if(_fm)_fm.classList.toggle('fab-off',searchOn||sheetOpen);}
 function appBack(){
   const np=document.querySelector('.numpad-ov.show');if(np){np.classList.remove('show');setTimeout(()=>np.remove(),200);return true;}
   const mp=[...document.querySelectorAll('.mpovl.show:not(.exit-dlg)')].pop();if(mp){mp.classList.remove('show');setTimeout(()=>mp.remove(),260);return true;}
