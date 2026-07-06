@@ -687,6 +687,7 @@
   .scrbar-btn:active{transform:scale(.9);}
   .scrbar-btn svg{width:22px;height:22px;}
   .scrbar-voice{background:transparent;border:1.6px solid rgba(255,255,255,.72);box-shadow:none;}
+  .mpk-scr .scrbar{z-index:93;}
   body.hand-left .scrbar{flex-direction:row-reverse;}
   body.hand-left .scrbar-back svg{transform:scaleX(-1);}
   body.hf-hold .list-add,body.hf-hold .list-send,body.hf-hold .contact-add,body.hf-hold .fav-edit,body.hf-hold .fav-sort{transition-delay:.9s;}
@@ -700,7 +701,7 @@
   #botbar .bb-btn.bb-voice svg{width:22px;height:22px;color:currentColor;}
   #botbar .bb-btn:active{transform:scale(.9);}
   #botbar.collapsed .bb-mid{display:none;}
-  #botbar.on-screen .bb-voice{display:none;}
+  #botbar.on-screen .bb-voice{display:flex;}
   #botbar.on-screen .bb-btn{background:var(--surface);border-color:var(--line-strong);box-shadow:0 8px 20px -6px rgba(0,0,0,.5);}
   #botbar.bar-hidden{opacity:0;pointer-events:none;}
   body.picking #botbar{opacity:0!important;pointer-events:none!important;}
@@ -1473,7 +1474,7 @@ function openMemberPicker(listId){
   const L=(cfg.lists||[]).find(x=>x.id===listId);if(!L)return;ensureListModel(L);
   const sel=new Set(L.manual||[]);
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>חברי «'+escapeHtml(L.name)+'»</h2></div><div class="pk-search"><div class="srch-inwrap" id="pkInwrap"><input id="pkSearch" class="ct-inp pk-inp" placeholder="חיפוש שם…" autocomplete="off"><button class="srch-clear pk-clear" id="pkClear" type="button" aria-label="נקה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div><div class="scr-body" id="mpkBody"><div class="pk-list" id="pkList"></div></div><div class="pk-az" id="pkAz"></div><div class="pk-bub" id="pkBub"></div>');sc.classList.add('mpk-scr');
-  sc._reopen=()=>openMemberPicker(listId);
+  addScreenBar(sc);sc._reopen=()=>openMemberPicker(listId);
   const body=sc.querySelector('#mpkBody');const listBox=sc.querySelector('#pkList');
   const all=PEOPLE.slice().filter(p=>FDEC[fKey(p)]!=='delete').sort(byName);
   let shown=all;
@@ -1500,7 +1501,7 @@ function openMemberPicker(listId){
 function openFavPicker(){    // add existing contacts to Favorites via a search picker (same UI as the list member picker)
   const sel=new Set(PEOPLE.filter(p=>FDEC[fKey(p)]!=='delete'&&p.fav).map(fKey));
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>הוספה למועדפים</h2></div><div class="pk-search"><div class="srch-inwrap" id="pkInwrap"><input id="pkSearch" class="ct-inp pk-inp" placeholder="חיפוש שם…" autocomplete="off"><button class="srch-clear pk-clear" id="pkClear" type="button" aria-label="נקה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div><div class="scr-body" id="mpkBody"><div class="pk-list" id="pkList"></div></div><div class="pk-az" id="pkAz"></div><div class="pk-bub" id="pkBub"></div>');sc.classList.add('mpk-scr');
-  sc._reopen=()=>openFavPicker();
+  addScreenBar(sc);sc._reopen=()=>openFavPicker();
   const body=sc.querySelector('#mpkBody');const listBox=sc.querySelector('#pkList');
   const all=PEOPLE.slice().filter(p=>FDEC[fKey(p)]!=='delete').sort(byName);
   let shown=all;
@@ -1706,7 +1707,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.06.0939';
+const APP_VERSION='2026.07.06.1303';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1857,8 +1858,10 @@ function hfOnHome(){
   const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');
   return !screenOpen&&!searchOn&&!sheetOpen;
 }
+// הסרגל הטוב פעיל (בית או מסך פנימי) — הכל חוץ מחיפוש/גיליון/מסך פתיחה.
+function barBase(){const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;return !searchOn&&!sheetOpen&&!welcomeOn;}
 function botbarCollapse(){            // collapse the bar into the menu icon — mirrors the 45° menu close (hmOut)
-  if(!hfOnHome())return;
+  if(botbar.classList.contains('bar-hidden'))return;
   barCollapsing=true;
   botbar.classList.remove('bar-hidden','collapsed');
   const btns=[...botbar.querySelectorAll('.bb-btn')];
@@ -2023,8 +2026,9 @@ botbar.querySelector('#bbVoice').onclick=()=>startVoice();
 botbar.querySelector('#bbSearch').onclick=()=>openSearch();
 botbar.querySelector('#bbDial').onclick=()=>openDialer();
 botbar.querySelector('#bbBack').onclick=()=>navBack();
-function addScreenBar(sc){if(!sc||sc.querySelector('.scrbar'))return;const shade=document.createElement('div');shade.className='scrbar-shade';const bar=document.createElement('div');bar.className='scrbar';bar.innerHTML='<button class="scrbar-btn scrbar-menu" aria-label="תפריט"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button><button class="scrbar-btn scrbar-voice" aria-label="עוזר קולי"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button class="scrbar-btn scrbar-back" aria-label="חזרה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>';sc.appendChild(shade);sc.appendChild(bar);const hb=sc.querySelector('.scr-head .scr-back');if(hb)hb.remove();const mb=bar.querySelector('.scrbar-menu');if(mb)mb.onclick=()=>openHbar();const vb=bar.querySelector('.scrbar-voice');if(vb)vb.onclick=()=>startVoice();const bb=bar.querySelector('.scrbar-back');if(bb)bb.onclick=()=>{if(sc._back)sc._back();};}
-function updateBar(){if(flipping||barCollapsing||barReopening)return;const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const bareSheet=!!document.querySelector('.ovl.bare.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;const scrbarOpen=!!document.querySelector('.scr .scrbar');botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||(sheetOpen&&!bareSheet)||flipping||scrbarOpen||searchOn);botbar.classList.toggle('on-screen',screenOpen);botbar.classList.toggle('collapsed',!(onHome&&!menuOpen&&!welcomeOn));if(!botbar.classList.contains('bar-hidden')){botbar.querySelectorAll('.bb-btn').forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});}var _sh=document.querySelector('.bot-shade');if(_sh)_sh.style.opacity=(welcomeOn||screenOpen||searchOn||sheetOpen)?'0':'1';var _fm=document.getElementById('menuFab');if(_fm)_fm.classList.toggle('fab-off',screenOpen||searchOn||sheetOpen);}
+// אוחד לסרגל אחד: המסכים הפנימיים משתמשים בסרגל הטוב של הבית (‎#botbar‎ + כפתור התפריט הצף). כאן רק מסירים את כפתור החזרה הכפול שבראש המסך.
+function addScreenBar(sc){if(!sc)return;const hb=sc.querySelector('.scr-head .scr-back');if(hb)hb.remove();}
+function updateBar(){if(flipping||barCollapsing||barReopening)return;const menuOpen=!!document.querySelector('.hbar-backdrop');const wel=document.getElementById('welcome');const welcomeOn=wel?!wel.classList.contains('hide'):false;const screenOpen=!!document.querySelector('.scr');const searchOn=srch.classList.contains('show');const sheetOpen=!!document.querySelector('.ovl.show, .mpovl.show');const bareSheet=!!document.querySelector('.ovl.bare.show');const onHome=!screenOpen&&!searchOn&&!sheetOpen;botbar.classList.toggle('bar-hidden',menuOpen||welcomeOn||(sheetOpen&&!bareSheet)||flipping||searchOn);botbar.classList.toggle('on-screen',screenOpen);botbar.classList.toggle('collapsed',!(onHome&&!menuOpen&&!welcomeOn));if(!botbar.classList.contains('bar-hidden')){botbar.querySelectorAll('.bb-btn').forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});}var _sh=document.querySelector('.bot-shade');if(_sh)_sh.style.opacity=(welcomeOn||searchOn||sheetOpen)?'0':'1';var _fm=document.getElementById('menuFab');if(_fm)_fm.classList.toggle('fab-off',searchOn||sheetOpen);}
 function appBack(){
   const np=document.querySelector('.numpad-ov.show');if(np){np.classList.remove('show');setTimeout(()=>np.remove(),200);return true;}
   const mp=[...document.querySelectorAll('.mpovl.show:not(.exit-dlg)')].pop();if(mp){mp.classList.remove('show');setTimeout(()=>mp.remove(),260);return true;}
@@ -2761,10 +2765,10 @@ function closeHbar(cb){
   if(bar){bar.classList.remove('run');bar.classList.add('closing');}   // המניפה מתקפלת — ראשונה
   const _n=bar?bar.querySelectorAll('.hm-item').length:7;
   const _foldMs=Math.round((0.42+Math.max(0,_n-1)*0.05)*1000)+40;
-  if(!flipping&&hfOnHome()){
+  if(!flipping&&barBase()){
     // סדר הפוך לפתיחה: שלב 1 — מניפה נסגרת + רקע כהה נעלם. שלב 2 (אחרי הקיפול) — אייקון X→נקודות + בר תחתון נפתח, ביחד.
     bd.style.transition='background .5s ease';bd.classList.remove('show');
-    setTimeout(()=>{if(!flipping&&hfOnHome()&&document.querySelector('.hbar-backdrop')){menuFab.classList.remove('open');setFab(false);botbarReopen();}},_foldMs);
+    setTimeout(()=>{if(!flipping&&barBase()&&document.querySelector('.hbar-backdrop')){menuFab.classList.remove('open');setFab(false);botbarReopen();}},_foldMs);
     setTimeout(()=>{if(bd.parentNode)bd.remove();if(typeof cb==='function')cb();},_foldMs+40);
   }else{
     // החלפת-יד / ניווט / מסך פנימי: סגירה מיידית (ההחלפה צריכה את האייקון בחזרה לנקודות לפני קפיצת הצד).
@@ -2960,7 +2964,7 @@ function openHbar(){
     return `<button class="hm-item" style="${posProp}:${off}px;bottom:${bottom}px;--dur:${dur}s;--cdur:${cdur}s;--i:${i};--r:${n-1-i}" data-i="${i}"><span class="hm-ic${it.big?' big':''}">${it.ic}</span><span class="hm-label">${escapeHtml(it.label)}</span></button>`;
   }).join('');
   bd.appendChild(bar);document.body.appendChild(bd);updateSearchFab();
-  const _onHome=hfOnHome();
+  const _barVis=!botbar.classList.contains('bar-hidden');
   const _bn=botbar.querySelectorAll('.bb-btn').length;
   botbarCollapse();
   const fab=document.getElementById('menuFab');
@@ -2970,7 +2974,7 @@ function openHbar(){
   const _meas=_hm.map(el=>{const ic=el.querySelector('.hm-ic');const ir=ic.getBoundingClientRect(),er=el.getBoundingClientRect();return{el,icx:ir.left+ir.width/2,icy:ir.top+ir.height/2,er};});
   _meas.forEach(m=>{m.el.style.setProperty('--sx',Math.round(fcx-m.icx)+'px');m.el.style.setProperty('--sy',Math.round(fcy-m.icy)+'px');m.el.style.transformOrigin=Math.round(m.icx-m.er.left)+'px '+Math.round(m.icy-m.er.top)+'px';});
   bd.style.transition='background .5s ease';
-  const _openDelay=_onHome?(290+Math.max(0,_bn-1)*35+40):300;   // שלב 1: קודם הבר התחתון מתקפל לאייקון. שלב 2: האייקון→X + המניפה נפרשת + הרקע הכהה מופיע — ביחד.
+  const _openDelay=_barVis?(290+Math.max(0,_bn-1)*35+40):300;   // שלב 1: קודם הבר התחתון מתקפל לאייקון. שלב 2: האייקון→X + המניפה נפרשת + הרקע הכהה מופיע — ביחד.
   setTimeout(()=>{menuFab.classList.add('open');setFab(true);bar.classList.add('run');bd.classList.add('show');},_openDelay);
   const close=cb=>closeHbar(cb);
   let dragMoved=false;
