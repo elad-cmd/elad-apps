@@ -299,6 +299,16 @@
   .mpovl.exit-dlg.show .mp-sheet{transform:none;opacity:1;}
   .exit-dlg h2,.exit-dlg .sheet-x{color:#fff;}
   .exit-dlg .mp-hint{color:rgba(255,255,255,.72);}
+  .nz-prog-ov{position:fixed;inset:0;z-index:150;background:rgba(4,20,20,.94);display:flex;align-items:center;justify-content:center;}
+  .nz-prog-card{width:min(340px,86%);text-align:center;color:#fff;padding:24px;}
+  .nz-broom{width:46px;height:46px;margin:0 auto 16px;color:var(--tq-deep);animation:nzSweep 1s ease-in-out infinite;}
+  .nz-broom svg{width:100%;height:100%;}
+  @keyframes nzSweep{0%,100%{transform:translateX(-13px) rotate(-13deg);}50%{transform:translateX(13px) rotate(13deg);}}
+  .nz-prog-title{font-size:16px;font-weight:700;margin-bottom:14px;}
+  .nz-prog-bar{height:8px;border-radius:5px;background:rgba(255,255,255,.15);overflow:hidden;}
+  .nz-prog-fill{height:100%;width:0;background:var(--tq-deep);border-radius:5px;transition:width .18s ease;}
+  .nz-prog-count{margin-top:11px;font-size:14px;font-weight:700;}
+  .nz-prog-eta{margin-top:4px;font-size:12.5px;opacity:.7;}
   .mp-hint{font-size:12.5px;color:#7a9a9b;margin:2px 0 12px;text-align:center;line-height:1.5;}
   .mp-section{margin-bottom:12px;}
   .mp-section h3{font-size:13.5px;font-weight:700;color:var(--tq-ink);margin-bottom:7px;}
@@ -1265,6 +1275,24 @@ function normalizePreviewList(){
   });
   return out;
 }
+// ניקוי מספרים אסינכרוני במנות — הממשק נשאר חי, עם בר התקדמות + הערכת זמן + מטאטא מנקה.
+function runNormalize(items,sc){
+  const total=items.length;if(!total)return;
+  const ov=document.createElement('div');ov.className='nz-prog-ov';
+  ov.innerHTML='<div class="nz-prog-card"><div class="nz-broom">'+ICON.broom+'</div><div class="nz-prog-title">מנקה מספרים…</div><div class="nz-prog-bar"><div class="nz-prog-fill" id="nzFill"></div></div><div class="nz-prog-count" id="nzCnt">0 / '+total+'</div><div class="nz-prog-eta" id="nzEta">מעריך זמן…</div></div>';
+  document.body.appendChild(ov);
+  const fill=ov.querySelector('#nzFill'),cnt=ov.querySelector('#nzCnt'),eta=ov.querySelector('#nzEta');
+  let i=0;const t0=Date.now();const BATCH=12;
+  function step(){
+    const end=Math.min(i+BATCH,total);
+    for(;i<end;i++){const c=items[i];if(!c)continue;const _orig={name:c.p.name||'',phone:c.from};c.p.phone=c.to;c.p.phones=(c.p.phones&&c.p.phones.length)?c.p.phones.map(formatPhone):[c.to];try{nativeUpdateContact(c.p,_orig);}catch(e){}}
+    fill.style.width=Math.round(i/total*100)+'%';cnt.textContent=i+' / '+total;
+    if(i>BATCH){const per=(Date.now()-t0)/i;const rem=Math.max(1,Math.round(per*(total-i)/1000));eta.textContent=rem>60?('נותרו כ-'+Math.ceil(rem/60)+' דק׳'):('נותרו כ-'+rem+' שנ׳');}
+    if(i>=total){savePeople();healKeys();renderLists();renderList();eta.textContent='הושלם ✓';setTimeout(()=>{try{ov.remove();}catch(e){}toast('נוקו '+total+' מספרים');if(sc)closeScreen(sc);},450);return;}
+    setTimeout(step,0);   // שחרור ל-UI בין מנות
+  }
+  setTimeout(step,50);
+}
 function openNormalizePreview(){
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>ניקוי מספרי טלפון</h2></div><div class="scr-body" id="nzBody"></div>');sc._reopen=openNormalizePreview;addScreenBar(sc);
   const body=sc.querySelector('#nzBody');
@@ -1280,8 +1308,10 @@ function openNormalizePreview(){
   const allBtn=body.querySelector('#nzAll');if(allBtn)allBtn.onclick=()=>{const on=sel.size>0;if(on){sel.clear();allBtn.textContent='סמן הכל';}else{changes.forEach((c,i)=>sel.add(i));allBtn.textContent='בטל סימון הכל';}body.querySelectorAll('.nz-chk').forEach(c=>{c.checked=sel.has(+c.dataset.i);});paintCount();};
   const go=body.querySelector('#nzGo');if(go)go.onclick=()=>{
     if(!sel.size){toast('לא נבחרו מספרים');return;}
-    let n=0;sel.forEach(i=>{const c=changes[i];if(!c)return;const _orig={name:c.p.name||'',phone:c.from};c.p.phone=c.to;c.p.phones=(c.p.phones&&c.p.phones.length)?c.p.phones.map(formatPhone):[c.to];nativeUpdateContact(c.p,_orig);n++;});
-    savePeople();healKeys();renderLists();renderList();toast('נוקו '+n+' מספרים');closeScreen(sc);
+    const items=[...sel].map(i=>changes[i]).filter(Boolean);
+    const est=Math.ceil(items.length*0.045);const estTxt=est>60?('כ-'+Math.ceil(est/60)+' דקות'):('כ-'+est+' שניות');
+    if(items.length>150){uiConfirm('לנקות '+items.length+' מספרים? זמן משוער: '+estTxt+'. אפשר להשאיר את המסך פתוח — יוצג בר התקדמות.',()=>runNormalize(items,sc));}
+    else{runNormalize(items,sc);}
   };
 }
 function openSpecialLists(){
@@ -1712,7 +1742,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.06.2243';
+const APP_VERSION='2026.07.06.2313';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2156,7 +2186,7 @@ const ICN_BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 let _scrOpenTs=0;
 // כניסת מסך בסגנון אקורדיון: המסך מופיע במקום, והאובייקטים שבו נכנסים אחד-אחרי-השני מהצד (כמו תנועת אנשי הקשר). היציאה (בק) נשארת החלקה של כל המסך.
 // מעבר בין מסכים באקורדיון דו-כיווני: המסך המתגלה — רקע אטום, האובייקטים נכנסים באקורדיון; המסך המוסתר — רקע שקוף, האובייקטים יוצאים באקורדיון.
-function scrObjs(sc){if(!sc)return [];if(sc.id==='home'){let els=[];const sg=sc.querySelector('#seg');if(sg)els.push(sg);els=els.concat([...sc.querySelectorAll('.list .row')].slice(0,10));return els.filter(el=>el&&el.offsetHeight>0);}const body=sc.querySelector('.scr-body'),head=sc.querySelector('.scr-head');let els=[];if(head)els.push(head);if(body)els=els.concat([...body.children].slice(0,14));return els.filter(el=>el&&el.offsetHeight>0);}
+function scrObjs(sc){if(!sc)return [];let els=[];if(sc.id==='home'){const sg=sc.querySelector('#seg');if(sg)els.push(sg);els=els.concat([...sc.querySelectorAll('.list .row')]);}else{const body=sc.querySelector('.scr-body'),head=sc.querySelector('.scr-head');if(head)els.push(head);if(body)els=els.concat([...body.children]);}const H=window.innerHeight;return els.filter(el=>{if(!el||el.offsetHeight<=0)return false;const r=el.getBoundingClientRect();return r.bottom>-4&&r.top<H+4;}).slice(0,16);}
 function accIn(sc,fromX){    // מתגלה: רקע אטום (מכסה), אובייקטים נכנסים מהצד fromX אחד-אחרי-השני
   if(!sc)return;
   const els=scrObjs(sc);
