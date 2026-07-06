@@ -1712,7 +1712,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.06.2132';
+const APP_VERSION='2026.07.06.2147';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1952,6 +1952,23 @@ function flipScrbar(scrbar,newHand,done){    // inner-screen flip: fold voice+ba
     },520);
   },330);
 }
+// החלפת צד לאלמנטים במסך הנוכחי (כפתורים/אזורי פעולה) — קסקדת אקורדיון כמו בבית, בשמירת הטרנספורם הקיים של כל אלמנט.
+function flipHandCascade(newHand){
+  const scr=[...document.querySelectorAll('.scr.show')].pop();
+  if(!scr){document.body.classList.toggle('hand-left',newHand==='left');document.body.classList.toggle('hand-right',newHand!=='left');return;}
+  const cands=[...scr.querySelectorAll('button, .av, .li-av, .dm-av, .dg-del')].filter(el=>el.offsetHeight>0);
+  cands.forEach(el=>{el.style.transition='none';el.style.transform='';});
+  const firstLeft=cands.map(el=>el.getBoundingClientRect().left);
+  document.body.classList.toggle('hand-left',newHand==='left');document.body.classList.toggle('hand-right',newHand!=='left');
+  const moved=[];
+  cands.forEach((el,i)=>{const r=el.getBoundingClientRect();const dx=firstLeft[i]-r.left;if(Math.abs(dx)>2){const t=getComputedStyle(el).transform;const base=(t&&t!=='none')?t:'';moved.push({el,dx,base,y:r.top});}});
+  if(!moved.length){cands.forEach(el=>{el.style.transition='';});return;}
+  moved.sort((a,b)=>a.y-b.y);
+  moved.forEach(o=>{o.el.style.transform='translateX('+o.dx+'px) '+o.base;});
+  void scr.offsetWidth;
+  moved.forEach((o,i)=>{o.el.style.transition='transform .5s cubic-bezier(.34,1.45,.5,1) '+(i*0.05).toFixed(2)+'s';o.el.style.transform=o.base||'';});
+  setTimeout(()=>{cands.forEach(el=>{el.style.transition='';el.style.transform='';});},1300);
+}
 function doHandFlip(){
   if(flipping)return;
   const f=menuFab;
@@ -1968,28 +1985,7 @@ function doHandFlip(){
   /* --- stage 1: close the 45° menu with the SAME close used everywhere (single source of truth) --- */
   closeHbar();   // flipping=true, so closeHbar skips the bottom-bar reopen; stage 3 handles that
   /* bottom bar is already collapsed (it collapsed when the 45° menu opened) */
-  /* --- inner screens: animate the screen bar (.scrbar) instead of the home bar+FAB --- */
-  if(!onHome){
-    const _scrs=[...document.querySelectorAll('.scr.show')];const _top=_scrs[_scrs.length-1];
-    const _scrbar=(_top&&_top.querySelector('.scrbar'))||document.querySelector('.scr.show .scrbar')||document.querySelector('.scrbar');
-    if(_scrbar){
-      document.body.classList.add('hf-hold');   // in-screen objects wait until the bar has finished, then slide
-      setTimeout(()=>flipScrbar(_scrbar,newHand,()=>{
-        menuFab.classList.toggle('left',newHand==='left');
-        fabRot+=(newHand==='left'?-90:90);const _dm=menuFab.querySelector('.dotmorph');if(_dm)_dm.style.transform='rotate('+fabRot+'deg)';
-        const sf=document.getElementById('searchFab');if(sf)sf.classList.toggle('left',newHand==='left');
-        setTimeout(()=>document.body.classList.remove('hf-hold'),1500);
-        flipping=false;updateBar();
-      }),HF.CLOSE+HF.CLOSE_GAP);
-    }else{
-      document.body.classList.toggle('hand-left',newHand==='left');document.body.classList.toggle('hand-right',newHand!=='left');
-      menuFab.classList.toggle('left',newHand==='left');
-      const sf=document.getElementById('searchFab');if(sf)sf.classList.toggle('left',newHand==='left');
-      setTimeout(()=>{flipping=false;updateBar();},400);
-    }
-    return;
-  }
-  /* --- stage 2: after close + gap, hop the icon to the other side --- */
+  /* הסרגל מאוחד — אותה אנימציית בר (סגירת מניפה, קפיצת FAB, היפוך נקודות) חלה על כל מסך. --- stage 2: after close + gap, hop the icon to the other side --- */
   setTimeout(()=>{
     f.style.setProperty('--dx',(tgt-cur)+'px');
     f.style.animation='none';void f.offsetWidth;
@@ -2007,11 +2003,10 @@ function doHandFlip(){
     if(onHome){
       flipFirstContacts(newHand,10);          // first 10 rows cascade one after another
     }else{
-      document.body.classList.toggle('hand-left',newHand==='left');
-      document.body.classList.toggle('hand-right',newHand!=='left');
+      flipHandCascade(newHand);               // כפתורים/אלמנטים שמחליפים צד במסך — קסקדה כמו בבית
     }
     const sf=document.getElementById('searchFab');if(sf)sf.classList.toggle('left',newHand==='left');
-    if(onHome)setTimeout(botbarReopen,HF.BAR_DELAY);   // bar opens only after the on-screen contacts finish crossing
+    setTimeout(()=>{if(barBase())botbarReopen();},HF.BAR_DELAY);   // bar opens after the on-screen elements finish crossing (every screen)
   },t3);
   setTimeout(()=>{flipping=false;updateBar();},t3+HF.BAR_DELAY+HF.REOPEN);
 }
