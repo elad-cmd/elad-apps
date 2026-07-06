@@ -1706,7 +1706,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.06.0045';
+const APP_VERSION='2026.07.06.0939';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2758,14 +2758,20 @@ function openPaletteRow(itemEl){
 function closeHbar(cb){
   const bd=document.querySelector('.hbar-backdrop');if(!bd)return;
   const bar=bd.querySelector('.hbar');if(bar&&bar.classList.contains('closing'))return;
-  if(bar){bar.classList.remove('run');bar.classList.add('closing');}
-  bd.style.transition='background .45s ease .28s';
-  bd.classList.remove('show');
-  menuFab.classList.remove('open');setFab(false);
+  if(bar){bar.classList.remove('run');bar.classList.add('closing');}   // המניפה מתקפלת — ראשונה
   const _n=bar?bar.querySelectorAll('.hm-item').length:7;
-  const _foldMs=Math.round((0.42+Math.max(0,_n-1)*0.05)*1000)+40;   // wait for the 45° fan to fully fold, THEN open the bottom bar (sequential, not parallel)
-  if(!flipping&&hfOnHome()){setTimeout(()=>{if(!flipping&&!menuFab.classList.contains('open')&&hfOnHome())botbarReopen();},_foldMs);}else{updateSearchFab();}
-  setTimeout(()=>{if(bd.parentNode)bd.remove();if(typeof cb==='function')cb();},780);
+  const _foldMs=Math.round((0.42+Math.max(0,_n-1)*0.05)*1000)+40;
+  if(!flipping&&hfOnHome()){
+    // סדר הפוך לפתיחה: שלב 1 — מניפה נסגרת + רקע כהה נעלם. שלב 2 (אחרי הקיפול) — אייקון X→נקודות + בר תחתון נפתח, ביחד.
+    bd.style.transition='background .5s ease';bd.classList.remove('show');
+    setTimeout(()=>{if(!flipping&&hfOnHome()&&document.querySelector('.hbar-backdrop')){menuFab.classList.remove('open');setFab(false);botbarReopen();}},_foldMs);
+    setTimeout(()=>{if(bd.parentNode)bd.remove();if(typeof cb==='function')cb();},_foldMs+40);
+  }else{
+    // החלפת-יד / ניווט / מסך פנימי: סגירה מיידית (ההחלפה צריכה את האייקון בחזרה לנקודות לפני קפיצת הצד).
+    bd.style.transition='background .45s ease .28s';bd.classList.remove('show');
+    menuFab.classList.remove('open');setFab(false);updateSearchFab();
+    setTimeout(()=>{if(bd.parentNode)bd.remove();if(typeof cb==='function')cb();},780);
+  }
 }
 /* ===== הכרטיס שלי (QR אישי) ===== */
 function loadMyCard(){try{return JSON.parse(localStorage.getItem('myshare_mycard')||'{}')||{};}catch(e){return {};}}
@@ -2963,9 +2969,9 @@ function openHbar(){
   const _hm=[...bar.querySelectorAll('.hm-item')];
   const _meas=_hm.map(el=>{const ic=el.querySelector('.hm-ic');const ir=ic.getBoundingClientRect(),er=el.getBoundingClientRect();return{el,icx:ir.left+ir.width/2,icy:ir.top+ir.height/2,er};});
   _meas.forEach(m=>{m.el.style.setProperty('--sx',Math.round(fcx-m.icx)+'px');m.el.style.setProperty('--sy',Math.round(fcy-m.icy)+'px');m.el.style.transformOrigin=Math.round(m.icx-m.er.left)+'px '+Math.round(m.icy-m.er.top)+'px';});
-  requestAnimationFrame(()=>{bd.classList.add('show');});
-  const _openDelay=_onHome?(290+Math.max(0,_bn-1)*35+40):300;   // open the 45° fan only AFTER the bottom bar has collapsed into the icon (sequential, not parallel)
-  setTimeout(()=>{menuFab.classList.add('open');setFab(true);bar.classList.add('run');},_openDelay);
+  bd.style.transition='background .5s ease';
+  const _openDelay=_onHome?(290+Math.max(0,_bn-1)*35+40):300;   // שלב 1: קודם הבר התחתון מתקפל לאייקון. שלב 2: האייקון→X + המניפה נפרשת + הרקע הכהה מופיע — ביחד.
+  setTimeout(()=>{menuFab.classList.add('open');setFab(true);bar.classList.add('run');bd.classList.add('show');},_openDelay);
   const close=cb=>closeHbar(cb);
   let dragMoved=false;
   bd.addEventListener('click',e=>{if(dragMoved){dragMoved=false;return;}if(e.target===bd||e.target===bar)close();});

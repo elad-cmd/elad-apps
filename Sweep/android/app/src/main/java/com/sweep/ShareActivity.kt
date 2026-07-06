@@ -43,6 +43,7 @@ class ShareActivity : Activity() {
     private var resumeMode = "close"
     private var userLeaving = false      // true רק כשהמשתמש עזב ביוזמתו (בית/החלפת אפליקציה), לא כשאנחנו פותחים מסך אחר.
     private var expectingResult = false  // true בזמן בורר קבצים וכד' — מונע סגירה בטעות.
+    private var childLaunching = false    // true כשאנחנו פותחים אפליקציה אחרת (יומן/מחייגן/שיתוף) — מונע סגירת ה-task שתהרוג אותה.
     private val recLock = Any()
 
     /** קורא טקסט/תמונה משותפים מתוך אינטנט ACTION_SEND. */
@@ -192,10 +193,10 @@ class ShareActivity : Activity() {
         userLeaving = true
     }
 
-    /** במצב close: אם המשתמש עזב ביוזמתו (ולא באמצע בורר קבצים) — סגירה מלאה + הסרה מרשימת האחרונות. */
+    /** במצב close: סוגר רק כשהמשתמש עזב ביוזמתו — ולא כשאנחנו בעצמנו פתחנו אפליקציה אחרת (יומן/מחייגן/שיתוף/בורר), כי finishAndRemoveTask היה סוגר גם אותה. */
     override fun onStop() {
         super.onStop()
-        if (resumeMode == "close" && userLeaving && !expectingResult) {
+        if (resumeMode == "close" && userLeaving && !expectingResult && !childLaunching) {
             finishAndRemoveTask()
         }
     }
@@ -204,7 +205,12 @@ class ShareActivity : Activity() {
         super.onResume()
         userLeaving = false
         expectingResult = false
+        childLaunching = false
     }
+
+    // כל פתיחת אפליקציה/מסך אחר דרכנו מסומנת, כדי ש-onStop לא יסגור את ה-task ויהרוג את מה שפתחנו.
+    override fun startActivity(intent: Intent) { childLaunching = true; super.startActivity(intent) }
+    override fun startActivity(intent: Intent, options: android.os.Bundle?) { childLaunching = true; super.startActivity(intent, options) }
 
     /** חזרה מרקע: איפוס למסך אנשי הקשר, אלא אם המצב "נשארת במסך האחרון". לא נקרא בהפעלה ראשונה. */
     override fun onRestart() {
