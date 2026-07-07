@@ -220,6 +220,10 @@
   .fav3-0{left:80%;top:20%;}
   .fav3-1{left:50%;top:50%;}
   .fav3-2{left:20%;top:80%;}
+  .set-app-floor{display:flex;align-items:center;gap:14px;width:100%;max-width:300px;margin:0 auto 9px;padding:8px 16px;background:rgba(255,255,255,.06);border:none;border-radius:16px;cursor:pointer;font-family:inherit;}
+  .set-app-floor .fav-c{width:44px;height:44px;flex:0 0 auto;}
+  .set-app-floor .fav-lbl{color:#fff;font-size:15px;font-weight:700;text-align:right;flex:1;max-width:none;white-space:normal;}
+  .set-app-floor:active{transform:scale(.98);}
   .fav-list{display:flex;flex-direction:column;gap:12px;max-width:260px;margin:6px auto 6px;}
   .fav-row{display:flex;align-items:center;gap:14px;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;width:100%;}
   .fav-cc{position:relative;width:46px;height:46px;border-radius:50%;background:#fff;color:var(--tq-ink);display:flex;align-items:center;justify-content:center;flex:0 0 auto;box-shadow:0 8px 20px -8px rgba(8,50,50,.45);}
@@ -1742,7 +1746,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.07.0902';
+const APP_VERSION='2026.07.07.0908';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1788,7 +1792,7 @@ function openSettings(){
   const sheet=sc.querySelector('#setBody');
   const coins=cfg.share.map((id,i)=>{
     const app=byId(id);
-    return `<button class="fav-coin fav3-${i}" data-i="${i}"><span class="fav-c${app?'':' add'}"${app&&app.c?` style="--coin-bg:${app.c};color:#fff"`:''}>${app?app.ic:ICON.plus}<span class="fav-edit">${ICON.edit}</span></span><span class="fav-lbl">${app?escapeHtml(app.label):'ריק'}</span></button>`;
+    return `<button class="set-app-floor" data-i="${i}"><span class="fav-c${app?'':' add'}"${app&&app.c?` style="--coin-bg:${app.c};color:#fff"`:''}>${app?app.ic:ICON.plus}<span class="fav-edit">${ICON.edit}</span></span><span class="fav-lbl">${app?escapeHtml(app.label):'ריק'}</span></button>`;
   }).join('');
   const SECH='text-align:center;color:#fff;font-size:12px;font-weight:700;letter-spacing:.6px;opacity:.6;margin:6px 0 13px;';
   const DIV='<div style="height:1px;background:rgba(255,255,255,.12);margin:34px 10px;"></div>';
@@ -1797,7 +1801,7 @@ function openSettings(){
     DIV+
     `<div style="${SECH}">ערכת צבעים</div><div class="swatches" id="setSwatches">${PALETTES.map((p,i)=>'<button class="sw'+(i===(cfg.palette||0)?' on':'')+'" data-i="'+i+'" style="background:linear-gradient(180deg,'+p.top+','+p.bot+')" aria-label="'+escapeHtml(p.name)+'"></button>').join('')}</div>`+
     DIV+
-    `<div style="${SECH}">אפליקציות שיתוף</div><div class="favdiag">${coins}</div><div class="set-toggle" id="dblTog"><span>דאבל קליק לחיוג</span><span class="sw-tog${cfg.dblCall?' on':''}"><span class="sw-knob"></span></span></div>`+
+    `<div style="${SECH}">אפליקציות שיתוף</div>${coins}<div class="set-toggle" id="dblTog"><span>דאבל קליק לחיוג</span><span class="sw-tog${cfg.dblCall?' on':''}"><span class="sw-knob"></span></span></div>`+
     DIV+
     `<div style="${SECH}">ביציאה מהאפליקציה</div><div class="resume-opts" id="resumeOpts">`+[['close','נסגרת לחלוטין'],['home','נשארת פתוחה — חוזרת לאנשי הקשר'],['last','נשארת פתוחה — במסך האחרון']].map(o=>'<button class="resume-opt'+((cfg.resume||'close')===o[0]?' on':'')+'" data-v="'+o[0]+'">'+o[1]+'</button>').join('')+`</div><p class="cr-hint" style="margin:8px 10px 0;opacity:.6;font-size:11.5px;text-align:center;">כשעוברים למסך הבית או לאפליקציה אחרת.</p>`+
     DIV+
@@ -1808,7 +1812,7 @@ function openSettings(){
     `<div style="${SECH};opacity:.42;">גיבוי ושחזור</div><div class="bk-row" style="display:flex;gap:12px;justify-content:center;margin:4px 0 4px;"><button id="bkSave" style="padding:6px 16px;border:1px solid rgba(255,255,255,.28);border-radius:18px;background:rgba(255,255,255,.05);color:#fff;font:inherit;font-weight:600;font-size:12.5px;opacity:.62;cursor:pointer;">גיבוי</button><button id="bkLoad" style="padding:6px 16px;border:1px solid rgba(255,255,255,.28);border-radius:18px;background:rgba(255,255,255,.05);color:#fff;font:inherit;font-weight:600;font-size:12.5px;opacity:.62;cursor:pointer;">שחזור</button></div><p class="cr-hint" style="margin:6px 0 0;opacity:.55;font-size:11.5px;">גיבוי/שחזור של רשימות, מועדפים, ארכיון והגדרות. אנשי הקשר עצמם נקראים מהטלפון.</p><div style="height:40px;"></div>`);
   const dt=sheet.querySelector('#dblTog');if(dt)dt.onclick=()=>{cfg.dblCall=!cfg.dblCall;saveCfg();openSettings();};
   sheet.querySelectorAll('#resumeOpts .resume-opt').forEach(b=>b.onclick=()=>{cfg.resume=b.dataset.v;saveCfg();try{if(BRIDGE&&BRIDGE.setResumeMode)BRIDGE.setResumeMode(cfg.resume);}catch(e){}sheet.querySelectorAll('#resumeOpts .resume-opt').forEach(x=>x.classList.toggle('on',x.dataset.v===cfg.resume));});
-  sheet.querySelectorAll('.fav-coin').forEach(b=>b.onclick=()=>openPicker(+b.dataset.i));
+  sheet.querySelectorAll('.set-app-floor').forEach(b=>b.onclick=()=>openPicker(+b.dataset.i));
   const bs=sheet.querySelector('#bkSave');if(bs)bs.onclick=doBackup;
   const bl=sheet.querySelector('#bkLoad');if(bl)bl.onclick=doRestore;
   const ub=sheet.querySelector('#appUpdate');if(ub)ub.onclick=doUpdate;
