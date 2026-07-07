@@ -1762,7 +1762,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.07.1225';
+const APP_VERSION='2026.07.07.1243';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1852,10 +1852,17 @@ function sweepBackupBuild(){
   const stamp=''+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate());
   return {json:JSON.stringify({app:'sweep',kind:'backup',version:1,date:d.toISOString(),data:data},null,2),filename:'sweep-backup-'+stamp+'.json'};
 }
+function bkSavedInfo(filename){
+  const ov=document.createElement('div');ov.className='mpovl';ov.style.zIndex='122';
+  ov.innerHTML='<div class="mp-sheet"><div style="text-align:center;font-size:15px;font-weight:700;margin:6px 0 8px;">הגיבוי נשמר ✓</div><p class="mp-hint" style="text-align:center;">הקובץ נשמר בתיקיית ההורדות (Downloads) של הטלפון, בשם:<br><b dir="ltr" style="display:inline-block;margin-top:5px;">'+escapeHtml(filename)+'</b><br><span style="opacity:.7;display:inline-block;margin-top:5px;">אפשר לפתוח אותו דרך אפליקציית «קבצים» ← הורדות.</span></p><button class="mp-confirm" id="bkOk" style="margin-top:8px;">הבנתי</button></div>';
+  document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
+  const close=()=>{ov.classList.remove('show');setTimeout(()=>{if(ov.parentNode)ov.remove();},250);};
+  ov.addEventListener('click',e=>{if(e.target===ov)close();});ov.querySelector('#bkOk').onclick=close;
+}
 async function doBackup(){
   const b=sweepBackupBuild();const blob=new Blob([b.json],{type:'application/json'});
   try{const file=new File([blob],b.filename,{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:b.filename});return;}}catch(e){if(e&&e.name==='AbortError')return;}
-  try{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=b.filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);toast('הגיבוי נשמר');return;}catch(e){}
+  try{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=b.filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);bkSavedInfo(b.filename);return;}catch(e){}
   try{window.open('data:application/json;charset=utf-8,'+encodeURIComponent(b.json),'_blank');toast('נפתח לשמירה');}catch(e){toast('שמירה נכשלה');}
 }
 function sweepRestoreApply(payload){
@@ -2209,7 +2216,7 @@ const ICN_BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 let _scrOpenTs=0;
 // כניסת מסך בסגנון אקורדיון: המסך מופיע במקום, והאובייקטים שבו נכנסים אחד-אחרי-השני מהצד (כמו תנועת אנשי הקשר). היציאה (בק) נשארת החלקה של כל המסך.
 // מעבר בין מסכים באקורדיון דו-כיווני: המסך המתגלה — רקע אטום, האובייקטים נכנסים באקורדיון; המסך המוסתר — רקע שקוף, האובייקטים יוצאים באקורדיון.
-function scrObjs(sc){if(!sc)return [];let els=[];if(sc.id==='home'){const sg=sc.querySelector('#seg');if(sg)els.push(sg);els=els.concat([...sc.querySelectorAll('.list .row')]);}else{const body=sc.querySelector('.scr-body'),head=sc.querySelector('.scr-head');if(head)els.push(head);if(body)els=els.concat([...body.children]);}const H=window.innerHeight;return els.filter(el=>{if(!el||el.offsetHeight<=0)return false;const r=el.getBoundingClientRect();return r.bottom>-4&&r.top<H+4;}).slice(0,16);}
+function scrObjs(sc){if(!sc)return [];let els=[];if(sc.id==='home'){const sg=sc.querySelector('#seg');if(sg)els.push(sg);const lb=sc.querySelector('#listbar');if(lb)els.push(lb);els=els.concat([...sc.querySelectorAll('.list .row')]);}else{const body=sc.querySelector('.scr-body'),head=sc.querySelector('.scr-head');if(head)els.push(head);if(body)els=els.concat([...body.children]);}const H=window.innerHeight;return els.filter(el=>{if(!el||el.offsetHeight<=0)return false;const r=el.getBoundingClientRect();return r.bottom>-4&&r.top<H+4;}).slice(0,16);}
 function accIn(sc,fromX,lead){    // מתגלה: רקע אטום (מכסה), אובייקטים נכנסים מהצד fromX אחד-אחרי-השני. lead=השהיה בתחילה (בחזרה אחורה — נותן ליוצא להוביל ולהידחף החוצה קודם)
   if(!sc)return;lead=lead||0;
   const els=scrObjs(sc);
