@@ -146,6 +146,10 @@
   .fab-search svg{width:22px;height:22px;color:#fff;}
   .fab-search:active{transform:scale(.9);}
   .fab-search.hidden{opacity:0;pointer-events:none;transform:scale(.5);}
+  /* פקדים צפים (חיפוש/תפריט/סרגל תחתון) ננעלים למגע כשגיליון/מסך פתוח מעליהם */
+  body:has(.mpovl.show) .fab-search,body:has(.mpovl.show) .fab-menu,body:has(.mpovl.show) #botbar,
+  body:has(.ovl.show) .fab-search,body:has(.ovl.show) .fab-menu,body:has(.ovl.show) #botbar,
+  body:has(.scr) .fab-search,body:has(.scr) .fab-menu{pointer-events:none!important;}
   @keyframes fabHop{
     0%{transform:translate(0,0) scale(1,1);}
     8%{transform:translate(calc(var(--dx)*0.04),5px) scale(1.18,0.84);}
@@ -1462,7 +1466,7 @@ function openSendList(listId){
 function openListManage(){
   const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   const ov=document.createElement('div');ov.className='mpovl';ov.style.zIndex='100';
-  ov.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xsvg+'</button><h2 style="flex:1;margin:0;text-align:center;">רשימות</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="lm-list" id="lmList"></div><div style="display:flex;gap:10px;margin-top:14px;direction:rtl;"><button class="mp-confirm" id="lmClose" style="flex:1;margin-top:0;background:rgba(8,50,50,.10);color:var(--tq-ink);border:1px solid rgba(8,50,50,.16);">סגור</button><button class="mp-confirm" id="lmNew" style="flex:1;margin-top:0;">+ רשימה חדשה</button></div></div>';
+  ov.innerHTML='<div class="mp-sheet" style="padding-bottom:48px;"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xsvg+'</button><h2 style="flex:1;margin:0;text-align:center;">רשימות</h2><span style="width:32px;flex:0 0 auto;"></span></div><div class="lm-list" id="lmList"></div><div style="display:flex;gap:10px;margin-top:14px;direction:rtl;"><button class="mp-confirm" id="lmClose" style="flex:1;margin-top:0;background:rgba(8,50,50,.10);color:var(--tq-ink);border:1px solid rgba(8,50,50,.16);">סגור</button><button class="mp-confirm" id="lmNew" style="flex:1;margin-top:0;">+ רשימה חדשה</button></div></div>';
   document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
   const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),260);};
   ov.querySelector('.sheet-x').onclick=close;ov.addEventListener('click',e=>{if(e.target===ov)close();});
@@ -1770,7 +1774,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.07.2016';
+const APP_VERSION='2026.07.07.2123';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
