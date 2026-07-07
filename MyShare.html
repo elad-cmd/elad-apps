@@ -86,6 +86,12 @@
   .row .rec-cb{position:absolute;top:50%;transform:translateY(-50%);z-index:6;pointer-events:none;}
   body.hand-right .row .rec-cb{left:12px;}
   body.hand-left .row .rec-cb{right:12px;}
+  body.hand-right .row.rec-selrow .rec-cb{left:auto;right:16px;}
+  body.hand-left .row.rec-selrow .rec-cb{right:auto;left:16px;}
+  body.hand-right .row.rec-selrow .av{right:54px;}
+  body.hand-left .row.rec-selrow .av{left:54px;}
+  body.hand-right .row.rec-selrow .meta{right:113px;}
+  body.hand-left .row.rec-selrow .meta{left:113px;}
   body.selecting .row .rec-pin{display:none;}
   .row .late-dot{position:absolute;top:50%;transform:translateY(-50%);width:9px;height:9px;border-radius:50%;background:var(--late);box-shadow:0 0 8px 1px rgba(224,164,92,.85),0 0 2px 0 rgba(224,164,92,.9);pointer-events:none;z-index:4;animation:lateGlow 2.4s ease-in-out infinite;}
   body.hand-right .row .late-dot{left:72px;}
@@ -391,7 +397,7 @@
   .ct-fav:not(.on) svg path{fill:none;stroke:currentColor;stroke-width:1.7px;}
   .ct-fav.on{color:var(--accent);background:var(--surface-2);}
   .ct-fav.on svg path{fill:var(--accent);}
-  .ct-av{width:100px;height:100px;border-radius:50%;background:var(--avatar-bg);color:var(--avatar-ink);display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:600;margin:0 auto 12px;}
+  .ct-av{position:relative;overflow:hidden;width:100px;height:100px;border-radius:50%;background:var(--avatar-bg);color:var(--avatar-ink);display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:600;margin:0 auto 12px;}
   .ct-frow{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--line);}
   .ct-namerow{border-top:none;}
   .ct-inp{flex:1;min-width:0;background:var(--surface);border:1px solid transparent;border-radius:14px;padding:12px 14px;color:var(--text);font-family:inherit;font-size:16px;font-weight:400;outline:none;text-align:right;}
@@ -501,6 +507,7 @@
   .pk-chk svg{width:14px;height:14px;}
   .pk-chk.on{background:var(--tq-deep);border-color:var(--tq-deep);color:#04342C;}
   .pk-chk.add{border-color:var(--tq-deep);color:var(--tq-deep);}
+  .hist-row.sel{background:rgba(255,255,255,.06);border-radius:8px;}
   .list-cta{flex:0 0 auto;align-self:center;display:inline-flex;align-items:center;gap:8px;margin:2px auto 4px;background:var(--tq-deep);color:#04342C;border:none;border-radius:999px;padding:11px 20px;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 10px 24px -10px rgba(0,0,0,.6);}
   .list-cta svg{width:18px;height:18px;}
   .list-empty{text-align:center;color:rgba(255,255,255,.6);font-size:13.5px;padding:30px 24px;}
@@ -1817,7 +1824,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.07.2351';
+const APP_VERSION='2026.07.08.0026';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2317,7 +2324,7 @@ const ICN_BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 let _scrOpenTs=0;
 // כניסת מסך בסגנון אקורדיון: המסך מופיע במקום, והאובייקטים שבו נכנסים אחד-אחרי-השני מהצד (כמו תנועת אנשי הקשר). היציאה (בק) נשארת החלקה של כל המסך.
 // מעבר בין מסכים באקורדיון דו-כיווני: המסך המתגלה — רקע אטום, האובייקטים נכנסים באקורדיון; המסך המוסתר — רקע שקוף, האובייקטים יוצאים באקורדיון.
-function scrObjs(sc){if(!sc)return [];let els=[];if(sc.id==='home'){const sg=sc.querySelector('#seg');if(sg)els.push(sg);const lb=sc.querySelector('#listbar');if(lb)els.push(lb);els=els.concat([...sc.querySelectorAll('.list .row')]);}else{const body=sc.querySelector('.scr-body'),head=sc.querySelector('.scr-head');if(head)els.push(head);if(body)els=els.concat([...body.children]);}const H=window.innerHeight;return els.filter(el=>{if(!el||el.offsetHeight<=0)return false;const r=el.getBoundingClientRect();return r.bottom>-4&&r.top<H+4;}).slice(0,16);}
+function scrObjs(sc){if(!sc)return [];let els=[];if(sc.id==='home'){const sg=sc.querySelector('#seg');if(sg)els.push(sg);const lb=sc.querySelector('#listbar');if(lb)els.push(lb);els=els.concat([...sc.querySelectorAll('.list .row')]);}else{const body=sc.querySelector('.scr-body'),head=sc.querySelector('.scr-head');if(head)els.push(head);if(body){const card=body.querySelector(':scope > .ct-card');if(card){[...card.children].forEach(ch=>{if(!ch.classList.contains('ct-fav'))els.push(ch);});[...body.children].forEach(ch=>{if(ch!==card)els.push(ch);});}else{els=els.concat([...body.children]);}}}const H=window.innerHeight;return els.filter(el=>{if(!el||el.offsetHeight<=0)return false;const r=el.getBoundingClientRect();return r.bottom>-4&&r.top<H+4;}).slice(0,16);}
 function accIn(sc,fromX,lead){    // מתגלה: רקע אטום (מכסה), אובייקטים נכנסים מהצד fromX אחד-אחרי-השני. lead=השהיה בתחילה (בחזרה אחורה — נותן ליוצא להוביל ולהידחף החוצה קודם)
   if(!sc)return;lead=lead||0;
   const els=scrObjs(sc);
@@ -2350,7 +2357,7 @@ function openContact(person,fromSearch,isNew){
   listEl.style.transition='none';setPull(0);
   const html='<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>פרטי איש קשר</h2></div>'+
     '<div class="scr-body"><div class="ct-card">'+
-    '<button class="ct-fav" id="ctFav" aria-label="מועדף">'+STAR+'</button>'+'<div class="ct-av">'+escapeHtml(initials(person.name))+'</div>'+
+    '<button class="ct-fav" id="ctFav" aria-label="מועדף">'+STAR+'</button>'+'<div class="ct-av">'+escapeHtml(initials(person.name))+((person.photo)?'<img class="av-img" src="'+escapeHtml(person.photo)+'" alt="" onerror="this.remove()">':'')+'</div>'+
     '<div class="ct-frow ct-namerow"><input class="ct-inp ct-nameinp" data-key="name" placeholder="שם"></div>'+
     '<div id="ctAccount" style="text-align:center;font-size:12px;color:rgba(255,255,255,.55);margin:-2px 0 6px;"></div>'+
     '<div class="ct-frow"><div class="ct-acts"><button class="ct-act" data-act="call" aria-label="חיוג">'+ICON.call+'</button><button class="ct-act" data-act="wa" aria-label="וואטסאפ">'+ICON.whatsapp+'</button></div><input class="ct-inp" data-key="phone" placeholder="טלפון" dir="ltr" readonly inputmode="none"></div>'+
@@ -2387,6 +2394,12 @@ function openContact(person,fromSearch,isNew){
   (function(){const hbox=card.querySelector('#ctHistory');if(!hbox)return;if(!BRIDGE){hbox.style.display='none';return;}
     const ph=(person.phone||((person.phones&&person.phones[0])||''))||'';
     const J=(fn,a)=>{try{return JSON.parse((BRIDGE[fn]?BRIDGE[fn](a):'[]')||'[]')||[];}catch(e){return [];}};
+    const HCHK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>';
+    let histSel=false;const histSelSet=new Set();let histShown=[];
+    function evKey(e){return (+e.date||0)+'|'+(e.icon||'')+'|'+(e.dir||'');}
+    function exitHistSel(){histSel=false;histSelSet.clear();try{hideSelBar();}catch(_){}paintHist();}
+    function histRemoveSel(){const kk=statKey(person);histShown.forEach(e=>{if(!histSelSet.has(evKey(e)))return;hideEvent(e);if(ILOG[kk]){const j=ILOG[kk].findIndex(o=>(+o.date||0)===(+e.date||0));if(j>=0)ILOG[kk].splice(j,1);}});try{localStorage.setItem('myshare_ilog',JSON.stringify(ILOG));}catch(_){}RECENTTS=null;if(navigator.vibrate)navigator.vibrate(10);histSel=false;histSelSet.clear();try{hideSelBar();}catch(_){}paintHist();}
+    function updHistBar(){if(!histSel)return;if(!histSelSet.size){exitHistSel();return;}const CHK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';const allSel=histShown.length&&histShown.every(e=>histSelSet.has(evKey(e)));showSelBar(histSelSet.size,[{icon:CHK,label:(allSel?'נקה הכל':'בחר הכל'),fn:function(){if(allSel){histSelSet.clear();}else{histShown.forEach(e=>histSelSet.add(evKey(e)));}paintHist();updHistBar();}},{icon:ICON.trash,label:'הסר',cls:'danger',fn:histRemoveSel}],exitHistSel);}
     function paintHist(){
     let ev=[];
     if(ph){J('getCallLog',ph).forEach(c=>{const t=+c.type;let dir='out',lbl='שיחה יוצאת';if(t===1){dir='in';lbl='שיחה נכנסת';}else if(t===3){dir='miss';lbl='שיחה שלא נענתה';}else if(t===5){dir='miss';lbl='שיחה שנדחתה';}const dur=+c.dur||0;ev.push({date:+c.date||0,icon:'call',dir:dir,lbl:lbl,detail:dur?('משך '+_fmtDur(dur)):''});});}
@@ -2397,12 +2410,12 @@ function openContact(person,fromSearch,isNew){
     ev.sort((a,b)=>b.date-a.date);
     let head='<div class="cf-hd">היסטוריית מגעים</div>';
     if(BRIDGE.isNotifAccess&&!BRIDGE.isNotifAccess())head+='<button class="cm-btn" id="hNotif" style="margin:0 0 8px;font-size:12px;opacity:.85;">הפעל מעקב וואטסאפ נכנס ›</button>';
-    if(!ev.length){hbox.innerHTML=head+'<div style="opacity:.55;font-size:13px;padding:4px 0;">אין מגעים מתועדים עדיין</div>';}
-    else{const shown=ev.slice(0,200);const rows=shown.map((e,i)=>{const col=e.dir==='in'?'#7fe9d8':(e.dir==='miss'?'#ff9b90':'rgba(255,255,255,.9)');const ic=(ICON[e.icon]||'');return '<div class="hist-row" data-i="'+i+'" style="display:flex;align-items:flex-start;gap:9px;padding:7px 2px;border-top:1px solid rgba(255,255,255,.08);"><span style="flex:0 0 auto;color:'+col+';width:17px;height:17px;display:inline-flex;margin-top:1px;">'+ic+'</span><div style="flex:1;min-width:0;text-align:right;"><div style="font-size:13px;color:'+col+';font-weight:600;">'+e.lbl+'</div>'+(e.detail?'<div style="font-size:12px;opacity:.7;word-break:break-word;">'+escapeHtml(e.detail)+'</div>':'')+'</div><div style="flex:0 0 auto;font-size:11px;opacity:.55;direction:ltr;white-space:nowrap;">'+_fmtHistDate(e.date)+'</div></div>';}).join('');hbox.innerHTML=head+'<div class="hist-list">'+rows+'</div>';
-      hbox.querySelectorAll('.hist-row').forEach(r=>{let lp=0,sx=0,sy=0;r.addEventListener('pointerdown',pe=>{sx=pe.clientX;sy=pe.clientY;lp=setTimeout(()=>{lp=0;if(navigator.vibrate)navigator.vibrate(15);const e=shown[+r.dataset.i];if(!e)return;miniConfirm('להסיר את הרשומה מההיסטוריה?','הסר',()=>{hideEvent(e);const kk=statKey(person);if(ILOG[kk]){const j=ILOG[kk].findIndex(o=>(+o.date||0)===(+e.date||0));if(j>=0){ILOG[kk].splice(j,1);try{localStorage.setItem('myshare_ilog',JSON.stringify(ILOG));}catch(_){}RECENTTS=null;}}paintHist();if(navigator.vibrate)navigator.vibrate(8);});},500);});const cl=()=>{if(lp){clearTimeout(lp);lp=0;}};r.addEventListener('pointerup',cl);r.addEventListener('pointercancel',cl);r.addEventListener('pointermove',pe=>{if(lp&&Math.hypot(pe.clientX-sx,pe.clientY-sy)>12)cl();});});}
+    if(!ev.length){histShown=[];hbox.innerHTML=head+'<div style="opacity:.55;font-size:13px;padding:4px 0;">אין מגעים מתועדים עדיין</div>';}
+    else{const shown=ev.slice(0,200);histShown=shown;const rows=shown.map((e,i)=>{const col=e.dir==='in'?'#7fe9d8':(e.dir==='miss'?'#ff9b90':'rgba(255,255,255,.9)');const ic=(ICON[e.icon]||'');const _sel=histSel&&histSelSet.has(evKey(e));const _cb=histSel?('<span class="pk-chk hist-cb'+(_sel?' on':'')+'">'+HCHK+'</span>'):'';return '<div class="hist-row'+(_sel?' sel':'')+'" data-i="'+i+'" style="display:flex;align-items:center;gap:9px;padding:7px 2px;border-top:1px solid rgba(255,255,255,.08);">'+_cb+'<span style="flex:0 0 auto;color:'+col+';width:17px;height:17px;display:inline-flex;">'+ic+'</span><div style="flex:1;min-width:0;text-align:right;"><div style="font-size:13px;color:'+col+';font-weight:600;">'+e.lbl+'</div>'+(e.detail?'<div style="font-size:12px;opacity:.7;word-break:break-word;">'+escapeHtml(e.detail)+'</div>':'')+'</div><div style="flex:0 0 auto;font-size:11px;opacity:.55;direction:ltr;white-space:nowrap;">'+_fmtHistDate(e.date)+'</div></div>';}).join('');hbox.innerHTML=head+'<div class="hist-list">'+rows+'</div>';
+      hbox.querySelectorAll('.hist-row').forEach(r=>{if(histSel){r.onclick=()=>{const e=histShown[+r.dataset.i];if(!e)return;const k=evKey(e);if(histSelSet.has(k))histSelSet.delete(k);else histSelSet.add(k);if(navigator.vibrate)navigator.vibrate(4);const on=histSelSet.has(k);const chk=r.querySelector('.hist-cb');if(chk)chk.classList.toggle('on',on);r.classList.toggle('sel',on);if(!histSelSet.size)exitHistSel();else updHistBar();};return;}let lp=0,sx=0,sy=0;r.addEventListener('pointerdown',pe=>{sx=pe.clientX;sy=pe.clientY;lp=setTimeout(()=>{lp=0;if(navigator.vibrate)navigator.vibrate(15);const e=histShown[+r.dataset.i];if(!e)return;histSel=true;histSelSet.clear();histSelSet.add(evKey(e));paintHist();updHistBar();},500);});const cl=()=>{if(lp){clearTimeout(lp);lp=0;}};r.addEventListener('pointerup',cl);r.addEventListener('pointercancel',cl);r.addEventListener('pointermove',pe=>{if(lp&&Math.hypot(pe.clientX-sx,pe.clientY-sy)>12)cl();});});}
     const nb=hbox.querySelector('#hNotif');if(nb)nb.onclick=()=>{try{if(BRIDGE.openNotifAccess)BRIDGE.openNotifAccess();}catch(e){}};
     }
-    paintHist();
+    setTimeout(paintHist,80);
   })();
   (function(){const fbox=card.querySelector('#ctFields');if(!fbox)return;let arr=getFields(person).map(f=>({l:String(f.l||''),v:String(f.v||'')}));const XS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';function persist(){setFields(person,arr);}function paint(){fbox.innerHTML='<div class="cf-hd">שדות מותאמים</div><div class="cf-list">'+arr.map((f,i)=>'<div class="cf-row" data-i="'+i+'"><input class="ct-inp cf-l" placeholder="תווית" value="'+escapeHtml(f.l)+'"><input class="ct-inp cf-v" placeholder="ערך" value="'+escapeHtml(f.v)+'"><button class="cf-del" data-i="'+i+'" aria-label="הסר">'+XS+'</button></div>').join('')+'</div><button class="cf-add" id="cfAdd">+ הוסף שדה</button>';fbox.querySelectorAll('.cf-row').forEach(r=>{const i=+r.dataset.i;const li=r.querySelector('.cf-l'),vi=r.querySelector('.cf-v');const upd=()=>{arr[i]={l:li.value,v:vi.value};persist();};li.addEventListener('input',upd);vi.addEventListener('input',upd);});fbox.querySelectorAll('.cf-del').forEach(b=>b.onclick=()=>{arr.splice(+b.dataset.i,1);persist();paint();});fbox.querySelector('#cfAdd').onclick=()=>{arr.push({l:'',v:''});paint();const ls=fbox.querySelectorAll('.cf-l');if(ls.length)ls[ls.length-1].focus();};}paint();})();
   function paintCtLists(){const box=sc.querySelector('#ctLists');if(!box)return;const mine=listsOf(person);const _X='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';box.innerHTML='<div class="ct-lists-row">'+mine.map(L=>'<span class="ct-lchip on" data-id="'+L.id+'">'+escapeHtml(L.name)+'<button class="ct-lchip-x" data-id="'+L.id+'" aria-label="הסר מהרשימה">'+_X+'</button></span>').join('')+'<button class="ct-addlist" id="ctAddList" aria-label="הוסף לרשימה">'+ICON.plus+'</button></div>';const ab=box.querySelector('#ctAddList');if(ab)ab.onclick=()=>openListAssign(person,paintCtLists);box.querySelectorAll('.ct-lchip-x[data-id]').forEach(b=>b.onclick=(e)=>{e.stopPropagation();const L=(cfg.lists||[]).find(x=>x.id===b.dataset.id);if(!L)return;const i=L.members.indexOf(fKey(person));if(i>=0)L.members.splice(i,1);saveCfg();renderLists();renderList();paintCtLists();if(navigator.vibrate)navigator.vibrate(8);});}
