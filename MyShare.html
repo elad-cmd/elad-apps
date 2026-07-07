@@ -1826,7 +1826,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.08.0147';
+const APP_VERSION='2026.07.08.0154';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2049,6 +2049,7 @@ function botbarCollapse(){            // collapse the bar into the menu icon —
   meas.forEach((m,i)=>{m.b.style.setProperty('--sx',m.dx+'px');m.b.style.setProperty('--sy',m.dy+'px');m.b.style.animation='hmOut .29s cubic-bezier(.5,.04,.7,.32) '+(((N-1-i)*0.035).toFixed(3))+'s both';});
   setTimeout(()=>{                    // settle into the hidden resting state once collapsed
     barCollapsing=false;
+    if(barReopening)return;           // הבר כבר באנימציית פתיחה-מחדש (סגירה מקבילית מהירה) — לא לדרוס אותה
     if(!document.querySelector('.hbar-backdrop')){updateBar();return;}   // menu already closed -> restore elsewhere
     botbar.classList.add('bar-hidden');
     btns.forEach(b=>{b.style.animation='';b.style.transition='';b.style.transform='';b.style.opacity='';b.style.removeProperty('--sx');b.style.removeProperty('--sy');});
@@ -2066,7 +2067,7 @@ function botbarReopen(){              // spring the bar buttons back out of the 
   meas.forEach(m=>{m.b.style.transform='translate('+m.dx+'px,'+m.dy+'px) scale(.4)';m.b.style.opacity='0';});
   void botbar.offsetWidth;
   meas.forEach((m,i)=>{m.b.style.transition='transform .46s cubic-bezier(.22,1,.36,1) '+(i*0.035).toFixed(3)+'s, opacity .26s ease '+(i*0.035).toFixed(3)+'s';m.b.style.transform='';m.b.style.opacity='1';});
-  setTimeout(()=>{barReopening=false;btns.forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});},700);
+  setTimeout(()=>{barReopening=false;if(barCollapsing)return;btns.forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});},700);
 }
 function flipFirstContacts(newHand,n){   // PHASE B: cascade the first N on-screen contacts across (accordion)
   const rows=[...document.querySelectorAll('#home .row')].slice(0,n);
@@ -2964,6 +2965,7 @@ function openPaletteRow(itemEl){
   requestAnimationFrame(()=>pb.classList.add('show'));
   pb.querySelectorAll('.pal-sw').forEach(b=>b.onclick=(e)=>{e.stopPropagation();cfg.palette=+b.dataset.i;applyPalette(cfg.palette);saveCfg();if(navigator.vibrate)navigator.vibrate(6);foldPaletteRow(pb);setTimeout(()=>closeHbar(),200);});
 }
+var HBAR_PARALLEL=true;   // ניסוי: המניפה נפתחת/נסגרת במקביל לקיפול/פתיחת הסרגל התחתון. false = התזמון המקורי (רצף: בר→מניפה).
 function closeHbar(cb,opts){
   opts=opts||{};
   const bd=document.querySelector('.hbar-backdrop');if(!bd)return;
@@ -2978,9 +2980,10 @@ function closeHbar(cb,opts){
     return;
   }
   if(!flipping&&barBase()){
-    // סדר הפוך לפתיחה: שלב 1 — מניפה נסגרת + רקע כהה נעלם. שלב 2 (אחרי הקיפול) — אייקון X→נקודות + בר תחתון נפתח, ביחד.
+    // מקביל: המניפה נסגרת + הרקע נעלם + X→נקודות + הבר התחתון נפתח — הכל ביחד. מקורי: קודם המניפה, אחרי הקיפול הבר.
     bd.style.transition='background .5s ease';bd.classList.remove('show');
-    setTimeout(()=>{if(!flipping&&barBase()&&document.querySelector('.hbar-backdrop')){menuFab.classList.remove('open');setFab(false);botbarReopen();}},_foldMs);
+    const _reopenDelay=HBAR_PARALLEL?0:_foldMs;
+    setTimeout(()=>{if(!flipping&&barBase()&&document.querySelector('.hbar-backdrop')){menuFab.classList.remove('open');setFab(false);botbarReopen();}},_reopenDelay);
     setTimeout(()=>{if(bd.parentNode)bd.remove();if(typeof cb==='function')cb();},_foldMs+40);
   }else{
     // החלפת-יד / ניווט / מסך פנימי: סגירה מיידית (ההחלפה צריכה את האייקון בחזרה לנקודות לפני קפיצת הצד).
@@ -3186,7 +3189,7 @@ function openHbar(){
   const _meas=_hm.map(el=>{const ic=el.querySelector('.hm-ic');const ir=ic.getBoundingClientRect(),er=el.getBoundingClientRect();return{el,icx:ir.left+ir.width/2,icy:ir.top+ir.height/2,er};});
   _meas.forEach(m=>{m.el.style.setProperty('--sx',Math.round(fcx-m.icx)+'px');m.el.style.setProperty('--sy',Math.round(fcy-m.icy)+'px');m.el.style.transformOrigin=Math.round(m.icx-m.er.left)+'px '+Math.round(m.icy-m.er.top)+'px';});
   bd.style.transition='background .5s ease';
-  const _openDelay=_barVis?(290+Math.max(0,_bn-1)*35+40):300;   // שלב 1: קודם הבר התחתון מתקפל לאייקון. שלב 2: האייקון→X + המניפה נפרשת + הרקע הכהה מופיע — ביחד.
+  const _openDelay=HBAR_PARALLEL?0:(_barVis?(290+Math.max(0,_bn-1)*35+40):300);   // מקביל: האייקון→X + המניפה + הרקע יוצאים ביחד עם קיפול הבר. מקורי: קודם הבר מתקפל, ואז המניפה.
   setTimeout(()=>{menuFab.classList.add('open');setFab(true);bar.classList.add('run');bd.classList.add('show');},_openDelay);
   const close=cb=>closeHbar(cb);
   let dragMoved=false;
