@@ -1044,15 +1044,12 @@ function updRecSelBar(){
   if(!recSel)return;
   const keys=CURRENT.map(statKey).filter(Boolean);
   const allSel=keys.length&&keys.every(k=>recSelSet.has(k));
-  const ALL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';
   const PIN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 10.8V4h6v6.8l2 3.2H7l2-3.2z"/></svg>';
-  const COPY='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
-  const DEL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 6"/></svg>';
   showSelBar(recSelSet.size,[
-    {html:ALL,cls:(allSel?'on':''),fn:function(){if(allSel){recSelSet.clear();}else{keys.forEach(k=>recSelSet.add(k));}renderList();updRecSelBar();}},
-    {html:PIN,fn:recSelPin},
-    {html:COPY,fn:recSelCopy},
-    {html:DEL,cls:'sel-del',fn:recSelRemove}
+    {html:(allSel?'נקה הכל':'בחר הכל'),cls:'ghost',fn:function(){if(allSel){recSelSet.clear();}else{keys.forEach(k=>recSelSet.add(k));}renderList();updRecSelBar();}},
+    {html:PIN,cls:'ghost',fn:recSelPin},
+    {html:ICON.copy,cls:'ghost',fn:recSelCopy},
+    {html:ICON.trash,cls:'danger',fn:recSelRemove}
   ],exitRecSel);
 }
 function recentActions(p){if(!p)return;const k=statKey(p);const pinned=isRecPinned(k);const ov=document.createElement('div');ov.className='mpovl';ov.innerHTML='<div class="mp-sheet"><div style="text-align:center;font-size:15px;font-weight:600;margin:8px 0 14px;">'+escapeHtml(p.name||'איש הקשר')+'</div><div style="display:flex;flex-direction:column;gap:8px;"><button class="lact" id="raPin"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 10.8V4h6v6.8l2 3.2H7l2-3.2z"/></svg>'+(pinned?'בטל נעיצה':'נעץ למעלה')+'</button><button class="lact" id="raDel" style="color:#cf4a3e;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>הסר מהאחרונים</button></div></div>';document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));const close=()=>{ov.classList.remove('show');setTimeout(()=>{if(ov.parentNode)ov.remove();},250);};ov.addEventListener('click',e=>{if(e.target===ov)close();});ov.querySelector('#raPin').onclick=()=>{toggleRecPin(k);close();renderList();if(navigator.vibrate)navigator.vibrate(8);};ov.querySelector('#raDel').onclick=()=>{close();hideRecent(k);renderList();if(navigator.vibrate)navigator.vibrate(8);};}
@@ -1160,7 +1157,25 @@ function rowHTML(c,sub){sub=(sub!==undefined?sub:c.msg)||'';const subLtr=sub&&!/
 function renderList(){if(recSel&&(VIEW!=='recent'||activeList)){recSel=false;recSelSet.clear();try{hideSelBar();}catch(e){}}CURRENT=peopleFor(VIEW);if(activeList){const _L=(cfg.lists||[]).find(x=>x.id===activeList);CURRENT=_L?CURRENT.filter(p=>_L.members.indexOf(fKey(p))>=0):CURRENT;}listEl.innerHTML='';if(editMode&&VIEW==='fav'&&!activeList){const _eh=document.createElement('div');_eh.className='edit-hint';_eh.textContent='לחצו וגררו אנשי קשר כדי לשנות את הסדר';listEl.appendChild(_eh);}const _kitL=(!activeList&&VIEW!=='recent')?(cfg.lists||[]).find(x=>x.kit):null;let _overSet=null;if(_kitL){try{if(!RECENTTS)buildRecentTs();}catch(e){}_overSet=new Set((_kitL.members||[]).filter(k=>{const _pp=PEOPLE.find(x=>fKey(x)===k);return _pp&&kitInfo(_pp).over;}));}CURRENT.forEach((c,i)=>{const row=document.createElement('div');row.className='row';row.dataset.i=i;row._person=c;row.innerHTML=rowHTML(c,(VIEW==='recent'&&!activeList)?recentSub(c):undefined);if(VIEW==='recent'&&!activeList){row.classList.add('rec');const _kind=RECENTKIND&&RECENTKIND[statKey(c)];const _sub=row.querySelector('.sub');if(_kind&&_sub)_sub.insertAdjacentHTML('afterbegin',recentIconSvg(_kind));if(_kind==='call_miss'){const _av=row.querySelector('.av');if(_av)_av.classList.add('av-miss');}if(isRecPinned(statKey(c))){row.classList.add('rec-pinned');const _pn=document.createElement('span');_pn.className='rec-pin';_pn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 10.8V4h6v6.8l2 3.2H7l2-3.2z"/></svg>';row.appendChild(_pn);}if(recSel){const _cb=document.createElement('span');_cb.className='pk-chk rec-cb'+(recSelSet.has(statKey(c))?' on':'');_cb.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>';row.appendChild(_cb);row.classList.add('rec-selrow');}}if(_overSet&&_overSet.has(fKey(c))){row.classList.add('row-late');const _ld=document.createElement('span');_ld.className='late-dot';row.appendChild(_ld);}listEl.appendChild(row);});if(VIEW==='recent'&&!activeList&&CURRENT.length<RECENT_TOTAL){const _lm=document.createElement('button');_lm.className='rec-loadmore';_lm.textContent='טען עוד ('+Math.min(RECENT_LIMIT,RECENT_TOTAL-CURRENT.length)+')';_lm.onclick=function(){RECENT_SHOWN+=RECENT_LIMIT;renderList();};listEl.appendChild(_lm);}if(activeList){if(!CURRENT.length){const em=document.createElement('div');em.className='list-empty';em.textContent='אין עדיין אנשי קשר ברשימה הזו — הוסף מהכפתור הירוק שבצד';listEl.appendChild(em);}}buildAZ();updateFavEdit();updateFavSort();updateListAdd();updateContactAdd();}
 function renderSeg(){const seg=document.getElementById('seg');seg.innerHTML='<div class="seg-ind" id="segInd"></div>'+VIEWS.map(v=>`<button class="seg-btn${v.id===VIEW?' on':''}" data-v="${v.id}" aria-label="${escapeHtml(v.label)}" title="${escapeHtml(v.label)}">${v.ic}</button>`).join('');seg.querySelectorAll('.seg-btn').forEach(b=>b.onclick=()=>goToView(b.dataset.v));const ind=seg.querySelector('#segInd');if(ind)ind.style.transition='none';requestAnimationFrame(()=>{updateSeg();requestAnimationFrame(()=>{if(ind)ind.style.transition='';});});}
 function updateSeg(){const seg=document.getElementById('seg');const ind=seg&&seg.querySelector('#segInd');if(!ind)return;seg.querySelectorAll('.seg-btn').forEach(b=>b.classList.toggle('on',b.dataset.v===VIEW));const a=seg.querySelector('.seg-btn.on');if(a){ind.style.left=a.offsetLeft+'px';ind.style.width=a.offsetWidth+'px';}}
-function animTabSlide(outSign){navLock(360);RECENT_SHOWN=RECENT_LIMIT;setPull(0);const W=listEl.offsetWidth||window.innerWidth;const outX=outSign*W;listEl.style.transition='transform .2s ease, opacity .2s ease';listEl.style.transform='translateX('+outX+'px)';listEl.style.opacity='0';setTimeout(()=>{renderList();layoutList();listEl.scrollTop=0;tabLock=true;listEl.style.overflowY='hidden';setTimeout(()=>{tabLock=false;listEl.style.overflowY='';},300);listEl.style.transition='none';listEl.style.transform='translateX('+(-outX)+'px)';listEl.style.opacity='0';requestAnimationFrame(()=>requestAnimationFrame(()=>{updateSeg();listEl.style.transition='transform .28s cubic-bezier(.22,1,.36,1), opacity .22s ease';listEl.style.transform='translateX(0)';listEl.style.opacity='1';setTimeout(()=>{tabAnim=false;},300);}));},200);}
+function animTabSlide(outSign){
+  navLock(360);RECENT_SHOWN=RECENT_LIMIT;setPull(0);
+  const W=listEl.offsetWidth||window.innerWidth;const outX=outSign*W;
+  const oldRows=[...listEl.querySelectorAll('.row')].slice(0,14);
+  const stO=(0.30/Math.max(1,oldRows.length-1));
+  oldRows.forEach((r,i)=>{const d=(i*stO).toFixed(3);r.style.transition='transform .3s cubic-bezier(.4,0,.7,1) '+d+'s, opacity .26s ease '+d+'s';r.style.transform='translateX('+outX+'px)';r.style.opacity='0';});
+  setTimeout(()=>{
+    renderList();layoutList();listEl.scrollTop=0;updateSeg();
+    tabLock=true;listEl.style.overflowY='hidden';setTimeout(()=>{tabLock=false;listEl.style.overflowY='';},460);
+    const nr=[...listEl.querySelectorAll('.row')].slice(0,14);
+    nr.forEach(r=>{r.style.transition='none';r.style.transform='translateX('+(-outX)+'px)';r.style.opacity='0';});
+    void listEl.offsetHeight;
+    const stI=(0.32/Math.max(1,nr.length-1));
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      nr.forEach((r,i)=>{const d=(i*stI).toFixed(3);r.style.transition='transform .46s cubic-bezier(.34,1.4,.5,1) '+d+'s, opacity .3s ease '+d+'s';r.style.transform='';r.style.opacity='';});
+      setTimeout(()=>{nr.forEach(r=>{r.style.transition='';r.style.transform='';r.style.opacity='';});tabAnim=false;},900);
+    }));
+  },250);
+}
 let viewHist=[];
 function pushViewHist(){const last=viewHist[viewHist.length-1];if(last&&last.view===VIEW&&last.list===activeList)return;viewHist.push({view:VIEW,list:activeList});if(viewHist.length>60)viewHist.shift();}
 function restoreViewState(s){activeList=s.list;VIEW=s.view;try{localStorage.setItem('contacts_view',VIEW);}catch(e){}if(typeof updateSeg==='function')updateSeg();renderLists();renderList();}
@@ -1803,7 +1818,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.07.2307';
+const APP_VERSION='2026.07.07.2337';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
