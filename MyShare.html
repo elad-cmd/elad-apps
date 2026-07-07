@@ -1826,7 +1826,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.08.0222';
+const APP_VERSION='2026.07.08.0241';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2023,7 +2023,7 @@ function snapFabClosed(){menuFab.classList.remove('open');const ds=menuFab.query
    2) +CLOSE_GAP  -> icon hops to the other side
    3) +HOP_GAP    -> settle new side, bouncy re-open of bottom bar, fade backdrop
    (Phase B will animate the on-screen contacts inside stage 3.)                 */
-const HF={CLOSE:700, CLOSE_GAP:100, HOP:550, HOP_GAP:100, BAR_DELAY:800, REOPEN:1000};
+const HF={CLOSE:550, CLOSE_GAP:0, HOP:550, HOP_GAP:0, BAR_DELAY:800, REOPEN:770};   // בלי מרווחים בין שלבים: CLOSE=משך קיפול המניפה (HBAR_T), REOPEN=סיבוב נקודות (220)+פתיחת בר (550)
 function hfOnHome(){
   const screenOpen=!!document.querySelector('.scr');
   const searchOn=srch.classList.contains('show');
@@ -2066,7 +2066,7 @@ function botbarReopen(){              // spring the bar buttons back out of the 
   const meas=btns.map(b=>{const r=b.getBoundingClientRect();return{b,dx:Math.round(fcx-(r.left+r.width/2)),dy:Math.round(fcy-(r.top+r.height/2))};});
   meas.forEach(m=>{m.b.style.transform='translate('+m.dx+'px,'+m.dy+'px) scale(.4)';m.b.style.opacity='0';});
   void botbar.offsetWidth;
-  meas.forEach((m,i)=>{const _d=(i*0.035);m.b.style.transition='transform '+Math.max(0.2,HBAR_T-_d).toFixed(3)+'s cubic-bezier(.22,1,.36,1) '+_d.toFixed(3)+'s, opacity .26s ease '+_d.toFixed(3)+'s';m.b.style.transform='';m.b.style.opacity='1';});
+  meas.forEach((m,i)=>{const _d=(i*0.035);m.b.style.transition='transform '+Math.max(0.2,HBAR_T-_d).toFixed(3)+'s cubic-bezier(.34,1.56,.64,1) '+_d.toFixed(3)+'s, opacity .26s ease '+_d.toFixed(3)+'s';m.b.style.transform='';m.b.style.opacity='1';});   // פתיחה קפיצית (כמו המניפה); הסגירה נשארת התקפלות hmOut
   setTimeout(()=>{barReopening=false;if(barCollapsing)return;btns.forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});},Math.round(HBAR_T*1000)+150);
 }
 function flipFirstContacts(newHand,n){   // PHASE B: cascade the first N on-screen contacts across (accordion)
@@ -2986,8 +2986,8 @@ function closeHbar(cb,opts){
     setTimeout(()=>{if(!flipping&&barBase()&&document.querySelector('.hbar-backdrop')){menuFab.classList.remove('open');setFab(false);botbarReopen();}},_reopenDelay);
     setTimeout(()=>{if(bd.parentNode)bd.remove();if(typeof cb==='function')cb();},_foldMs+40);
   }else{
-    // החלפת-יד / ניווט / מסך פנימי: סגירה מיידית (ההחלפה צריכה את האייקון בחזרה לנקודות לפני קפיצת הצד).
-    bd.style.transition='background .45s ease .28s';bd.classList.remove('show');
+    // החלפת-יד / ניווט / מסך פנימי: סגירה מיידית (ההחלפה צריכה את האייקון בחזרה לנקודות לפני קפיצת הצד). הרקע דוהה מיד — בלי השהיה.
+    bd.style.transition='background .45s ease';bd.classList.remove('show');
     menuFab.classList.remove('open');setFab(false);updateSearchFab();
     setTimeout(()=>{if(bd.parentNode)bd.remove();if(typeof cb==='function')cb();},780);
   }
@@ -3191,10 +3191,10 @@ function openHbar(){
   bd.style.transition='background .5s ease';
   const _openDelay=HBAR_PARALLEL?0:(_barVis?(Math.round(HBAR_T*1000)+40):300);   // מקביל: האייקון→X + המניפה + הרקע יוצאים ביחד עם קיפול הבר. מקורי: קודם הבר מתקפל, ואז המניפה.
   setTimeout(()=>{menuFab.classList.add('open');setFab(true);bd.classList.add('show');
-    if(HBAR_PARALLEL){   // פתיחה באותה עקומה כמו הסרגל: ספרינג שמגיע למקום בסוף המשך (hmIn מגיע כבר ב~20% מהמשך ולכן נראה לא מסונכרן)
-      _hm.forEach(el=>{el.style.animation='none';el.style.transition='none';el.style.transform='translate(var(--sx),var(--sy)) scale(.4)';el.style.opacity='0';});
+    if(HBAR_PARALLEL){   // תזמון מסונכרן עם הבר, אבל עקומה קפיצית (אוברשוט) — הקפיציות של המניפה נשמרת; הבר התחתון נשאר בלי קפיציות
+      _hm.forEach(el=>{el.style.animation='none';el.style.transition='none';el.style.transform='translate(var(--sx),var(--sy)) scale(.6)';el.style.opacity='0';});
       void bar.offsetHeight;
-      _hm.forEach((el,i)=>{const _d=i*0.035;el.style.transition='transform '+Math.max(0.2,HBAR_T-_d).toFixed(3)+'s cubic-bezier(.22,1,.36,1) '+_d.toFixed(3)+'s, opacity .26s ease '+_d.toFixed(3)+'s';el.style.transform='';el.style.opacity='1';});
+      _hm.forEach((el,i)=>{const _d=i*0.035;el.style.transition='transform '+Math.max(0.2,HBAR_T-_d).toFixed(3)+'s cubic-bezier(.34,1.56,.64,1) '+_d.toFixed(3)+'s, opacity .26s ease '+_d.toFixed(3)+'s';el.style.transform='';el.style.opacity='1';});
       setTimeout(()=>{_hm.forEach(el=>{el.style.transition='';});},Math.round(HBAR_T*1000)+150);
     }else{bar.classList.add('run');}
   },_openDelay);
