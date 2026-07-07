@@ -1762,7 +1762,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.07.1212';
+const APP_VERSION='2026.07.07.1225';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2302,9 +2302,9 @@ function openContact(person,fromSearch,isNew){
   (function(){const body=sc.querySelector('.scr-body');const vv=window.visualViewport;if(!body||!vv)return;function adjust(){if(!document.body.contains(sc)){vv.removeEventListener('resize',adjust);return;}const kb=Math.max(0,window.innerHeight-vv.height-(vv.offsetTop||0));body.style.paddingBottom=(kb+120)+'px';const ae=document.activeElement;if(ae&&sc.contains(ae)&&/^(INPUT|TEXTAREA)$/.test(ae.tagName)){const r=ae.getBoundingClientRect();const barSpace=100;const visBottom=(vv.offsetTop||0)+vv.height-barSpace;const delta=r.bottom-visBottom;if(delta>0)body.scrollTop+=delta+16;}}vv.addEventListener('resize',adjust);sc.addEventListener('focusin',e=>{if(/^(INPUT|TEXTAREA)$/.test(e.target.tagName))setTimeout(adjust,80);});})();
 }
 function openSeder(){
-  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>סדר פסח — ניקוי הרשימה</h2></div>'+
-    '<div class="scr-body"><div class="seder-intro">ננקה את אנשי הקשר בשני שלבים: קודם מאחדים כפילויות, ואז עוברים אחד-אחד ומסננים. אפשר לעשות רק את מה שצריך.</div>'+
-    '<button class="opt" id="optNorm"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 7h11M5 12h14M5 17h8\"/></svg></span><span><span class="otitle">ניקוי מספרי טלפון</span><span class="odesc">המרת +972 ל-0 בלבד, בלי מקפים (קידומות מדינה אחרות נשמרות)</span></span></button>'+
+  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>סדר פסח</h2></div>'+
+    '<div class="scr-body"><div class="seder-intro">מומלץ לעבוד לפי הסדר: קודם ניקוי מספרים, אחר כך מיזוג כפילויות, ולבסוף סינון הרשימה. אפשר לעשות רק את מה שצריך.</div>'+
+    '<button class="opt" id="optNorm"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 7h11M5 12h14M5 17h8\"/></svg></span><span><span class="otitle">ניקוי מספרי טלפון</span><span class="odesc">התאמה לפורמט אחיד (המרת +972 ל-0, קידומות מדינה אחרות נשמרות)</span></span></button>'+
     '<button class="opt" id="optMerge"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 7h3a4 4 0 0 1 0 8H8M16 17h-3a4 4 0 0 1 0-8h3\"/></svg></span><span><span class="otitle">מיזוג כפילויות</span><span class="odesc">איחוד אנשי קשר שמופיעים פעמיים</span></span></button>'+
     '<button class="opt" id="optFilter"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 5h16l-6 8v5l-4 2v-7z\"/></svg></span><span><span class="otitle">סינון רשימה</span><span class="odesc">החלקה: שומר / ארכיון / לבדיקה</span></span></button>'+
     '<button class="opt" id="optArchive"><span class="oic"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"4\" rx=\"1\"/><path d=\"M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8\"/><path d=\"M10 12h4\"/></svg></span><span><span class="otitle">ארכיון</span><span class="odesc">אנשי קשר שהוסרו מהתצוגה</span></span></button>'+
