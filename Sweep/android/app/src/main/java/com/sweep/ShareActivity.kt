@@ -364,6 +364,18 @@ class ShareActivity : Activity() {
         return null
     }
 
+    /** כל ה-raw contacts (עותקים מכל החשבונות) של איש קשר מאוחד. */
+    private fun allRawIds(contactId: Long): List<Long> {
+        val out = ArrayList<Long>()
+        try {
+            contentResolver.query(
+                ContactsContract.RawContacts.CONTENT_URI, arrayOf(ContactsContract.RawContacts._ID),
+                ContactsContract.RawContacts.CONTACT_ID + "=?", arrayOf(contactId.toString()), null
+            )?.use { while (it.moveToNext()) out.add(it.getLong(0)) }
+        } catch (e: Exception) {}
+        return out
+    }
+
     /**
      * כותב עריכת איש קשר חזרה למאגר הטלפון. מאתר לפי השם/טלפון המקוריים.
      * מעדכן שם, טלפון, מייל, כתובת ותאריך לידה; יוצר שורה אם חסרה. מחזיר true בהצלחה.
@@ -408,20 +420,43 @@ class ShareActivity : Activity() {
         }
 
         if (phone.isNotBlank()) {
-            val mime = ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE
-            val rowId = phoneRowId(rawId, origPhone)
-            if (rowId != null) {
-                ops.add(android.content.ContentProviderOperation.newUpdate(DATA)
-                    .withSelection(ContactsContract.Data._ID + "=?", arrayOf(rowId.toString()))
-                    .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phone)
-                    .build())
-            } else {
-                ops.add(android.content.ContentProviderOperation.newInsert(DATA)
-                    .withValue(ContactsContract.Data.RAW_CONTACT_ID, rawId)
-                    .withValue(ContactsContract.Data.MIMETYPE, mime)
-                    .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phone)
-                    .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
-                    .build())
+            // מעדכן את המספר בכל עותקי איש הקשר (כל החשבונות, כולל גוגל) כדי שהסנכרון לא ידרוס את התיקון.
+            val target = origPhone.filter { it.isDigit() }
+            var matched = 0
+            for (rid in allRawIds(contactId)) {
+                try {
+                    contentResolver.query(
+                        ContactsContract.Data.CONTENT_URI,
+                        arrayOf(ContactsContract.Data._ID, ContactsContract.CommonDataKinds.Phone.NUMBER),
+                        ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?",
+                        arrayOf(rid.toString(), ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE), null
+                    )?.use {
+                        while (it.moveToNext()) {
+                            val id = it.getLong(0)
+                            val num = (it.getString(1) ?: "").filter { c -> c.isDigit() }
+                            val match = target.isNotEmpty() && num.isNotEmpty() &&
+                                (num == target || (num.length >= 7 && target.length >= 7 && num.takeLast(9) == target.takeLast(9)))
+                            if (match) {
+                                try {
+                                    val cv = android.content.ContentValues()
+                                    cv.put(ContactsContract.CommonDataKinds.Phone.NUMBER, phone)
+                                    contentResolver.update(ContactsContract.Data.CONTENT_URI, cv, ContactsContract.Data._ID + "=?", arrayOf(id.toString()))
+                                    matched++
+                                } catch (e: Exception) {}
+                            }
+                        }
+                    }
+                } catch (e: Exception) {}
+            }
+            if (matched == 0) {
+                try {
+                    val cv = android.content.ContentValues()
+                    cv.put(ContactsContract.Data.RAW_CONTACT_ID, rawId)
+                    cv.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                    cv.put(ContactsContract.CommonDataKinds.Phone.NUMBER, phone)
+                    cv.put(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
+                    contentResolver.insert(ContactsContract.Data.CONTENT_URI, cv)
+                } catch (e: Exception) {}
             }
         }
 
