@@ -1762,7 +1762,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.07.1243';
+const APP_VERSION='2026.07.07.1336';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1852,17 +1852,28 @@ function sweepBackupBuild(){
   const stamp=''+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate());
   return {json:JSON.stringify({app:'sweep',kind:'backup',version:1,date:d.toISOString(),data:data},null,2),filename:'sweep-backup-'+stamp+'.json'};
 }
-function bkSavedInfo(filename){
+function bkSavedInfo(bodyHtml){
   const ov=document.createElement('div');ov.className='mpovl';ov.style.zIndex='122';
-  ov.innerHTML='<div class="mp-sheet"><div style="text-align:center;font-size:15px;font-weight:700;margin:6px 0 8px;">הגיבוי נשמר ✓</div><p class="mp-hint" style="text-align:center;">הקובץ נשמר בתיקיית ההורדות (Downloads) של הטלפון, בשם:<br><b dir="ltr" style="display:inline-block;margin-top:5px;">'+escapeHtml(filename)+'</b><br><span style="opacity:.7;display:inline-block;margin-top:5px;">אפשר לפתוח אותו דרך אפליקציית «קבצים» ← הורדות.</span></p><button class="mp-confirm" id="bkOk" style="margin-top:8px;">הבנתי</button></div>';
+  ov.innerHTML='<div class="mp-sheet">'+bodyHtml+'<button class="mp-confirm" id="bkOk" style="margin-top:8px;">הבנתי</button></div>';
   document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
   const close=()=>{ov.classList.remove('show');setTimeout(()=>{if(ov.parentNode)ov.remove();},250);};
   ov.addEventListener('click',e=>{if(e.target===ov)close();});ov.querySelector('#bkOk').onclick=close;
 }
 async function doBackup(){
+  try{
+    if(BRIDGE&&typeof BRIDGE.runBackup==='function'){
+      const r=BRIDGE.runBackup(JSON.stringify(gatherBackupData()))||'';
+      if(r.indexOf('OK')===0){
+        localStorage.setItem('myshare_lastbackup',String(Date.now()));
+        const parts=r.split('|');
+        bkSavedInfo('<div style="text-align:center;font-size:15px;font-weight:700;margin:6px 0 8px;">הגיבוי נשמר ✓</div><p class="mp-hint" style="text-align:center;">נשמר גיבוי מלא של ההגדרות ושל כל אנשי הקשר'+(parts[2]?(' — '+escapeHtml(parts[2])+' אנשי קשר'):'')+' בתיקיית הגיבויים של האפליקציה:<br><b dir="ltr" style="display:inline-block;margin-top:5px;word-break:break-all;font-size:12px;">'+escapeHtml(parts[1]||'')+'</b><br><span style="opacity:.7;display:inline-block;margin-top:6px;">נשמרים 4 הגיבויים האחרונים. לשמירה חיצונית — שתף את הקובץ ממנהל הקבצים.</span></p>');
+        return;
+      }
+    }
+  }catch(e){}
   const b=sweepBackupBuild();const blob=new Blob([b.json],{type:'application/json'});
   try{const file=new File([blob],b.filename,{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:b.filename});return;}}catch(e){if(e&&e.name==='AbortError')return;}
-  try{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=b.filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);bkSavedInfo(b.filename);return;}catch(e){}
+  try{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=b.filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);bkSavedInfo('<div style="text-align:center;font-size:15px;font-weight:700;margin:6px 0 8px;">הגיבוי נשמר ✓</div><p class="mp-hint" style="text-align:center;">הקובץ ירד לתיקיית ההורדות (Downloads), בשם:<br><b dir="ltr" style="display:inline-block;margin-top:5px;">'+escapeHtml(b.filename)+'</b></p>');return;}catch(e){}
   try{window.open('data:application/json;charset=utf-8,'+encodeURIComponent(b.json),'_blank');toast('נפתח לשמירה');}catch(e){toast('שמירה נכשלה');}
 }
 function sweepRestoreApply(payload){
