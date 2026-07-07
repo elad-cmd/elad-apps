@@ -311,16 +311,19 @@
   .mpovl.exit-dlg.show .mp-sheet{transform:none;opacity:1;}
   .exit-dlg h2,.exit-dlg .sheet-x{color:#fff;}
   .exit-dlg .mp-hint{color:rgba(255,255,255,.72);}
-  .nz-prog-ov{position:fixed;inset:0;z-index:150;background:rgba(4,20,20,.94);display:flex;align-items:center;justify-content:center;}
-  .nz-prog-card{width:min(340px,86%);text-align:center;color:#fff;padding:24px;}
-  .nz-broom{width:46px;height:46px;margin:0 auto 16px;color:var(--tq-deep);animation:nzSweep 1s ease-in-out infinite;}
-  .nz-broom svg{width:100%;height:100%;}
-  @keyframes nzSweep{0%,100%{transform:translateX(-13px) rotate(-13deg);}50%{transform:translateX(13px) rotate(13deg);}}
-  .nz-prog-title{font-size:16px;font-weight:700;margin-bottom:14px;}
-  .nz-prog-bar{height:8px;border-radius:5px;background:rgba(255,255,255,.15);overflow:hidden;}
-  .nz-prog-fill{height:100%;width:0;background:var(--tq-deep);border-radius:5px;transition:width .18s ease;}
-  .nz-prog-count{margin-top:11px;font-size:14px;font-weight:700;}
-  .nz-prog-eta{margin-top:4px;font-size:12.5px;opacity:.7;}
+  .nz-prog-ov{position:fixed;inset:0;z-index:150;background:rgba(6,22,20,.55);-webkit-backdrop-filter:blur(1.5px);backdrop-filter:blur(1.5px);overflow:hidden;pointer-events:auto;touch-action:none;}
+  .nz-broom-fly{position:absolute;top:0;left:0;width:60px;height:60px;color:var(--accent);filter:drop-shadow(0 6px 12px rgba(0,0,0,.45));animation:nzFly 6s ease-in-out infinite;will-change:transform;}
+  .nz-broom-fly::after{content:"";position:absolute;inset:-8px -16px -8px -2px;border-radius:50%;background:radial-gradient(circle at 32% 50%,rgba(25,181,151,.5),rgba(25,181,151,0) 70%);z-index:-1;}
+  .nz-broom-fly svg{width:100%;height:100%;transform:scaleX(-1);}
+  @keyframes nzFly{0%{transform:translate(10vw,20vh) rotate(-20deg);}18%{transform:translate(66vw,15vh) rotate(16deg);}34%{transform:translate(28vw,40vh) rotate(-14deg);}52%{transform:translate(70vw,52vh) rotate(18deg);}70%{transform:translate(22vw,64vh) rotate(-16deg);}86%{transform:translate(62vw,72vh) rotate(12deg);}100%{transform:translate(10vw,20vh) rotate(-20deg);}}
+  .nz-spark{position:absolute;top:0;left:0;width:7px;height:7px;border-radius:50%;background:#bff5ea;box-shadow:0 0 8px 2px rgba(25,181,151,.7);opacity:0;animation:nzSpark 6s ease-in-out infinite;will-change:transform,opacity;}
+  @keyframes nzSpark{0%{opacity:0;transform:translate(12vw,24vh) scale(.4);}12%{opacity:1;}18%{transform:translate(64vw,18vh) scale(1);}52%{transform:translate(68vw,56vh) scale(1);opacity:.9;}86%{transform:translate(60vw,76vh) scale(.6);opacity:.4;}100%{opacity:0;transform:translate(12vw,24vh) scale(.4);}}
+  .nz-prog-bottom{position:absolute;left:0;right:0;bottom:0;padding:16px 22px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,var(--tq-bot) 74%,rgba(0,0,0,0));text-align:center;}
+  .nz-prog-title{color:#fff;font-size:15px;font-weight:700;margin-bottom:11px;}
+  .nz-prog-bar{height:10px;border-radius:6px;background:rgba(255,255,255,.16);overflow:hidden;}
+  .nz-prog-fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--tq-deep));border-radius:6px;transition:width .3s ease;box-shadow:0 0 10px rgba(25,181,151,.65);}
+  .nz-prog-count{color:#fff;margin-top:9px;font-size:14px;font-weight:700;}
+  .nz-prog-eta{color:rgba(255,255,255,.72);margin-top:3px;font-size:12.5px;}
   .mp-hint{font-size:12.5px;color:#7a9a9b;margin:2px 0 12px;text-align:center;line-height:1.5;}
   .mp-section{margin-bottom:12px;}
   .mp-section h3{font-size:13.5px;font-weight:700;color:var(--tq-ink);margin-bottom:7px;}
@@ -1297,10 +1300,10 @@ function normalizePreviewList(){
 function runNormalize(items,sc){
   const total=items.length;if(!total)return;
   const ov=document.createElement('div');ov.className='nz-prog-ov';
-  ov.innerHTML='<div class="nz-prog-card"><div class="nz-broom">'+ICON.broom+'</div><div class="nz-prog-title">מנקה מספרים…</div><div class="nz-prog-bar"><div class="nz-prog-fill" id="nzFill"></div></div><div class="nz-prog-count" id="nzCnt">0 / '+total+'</div><div class="nz-prog-eta" id="nzEta">מעריך זמן…</div></div>';
+  ov.innerHTML='<div class="nz-broom-fly">'+ICON.broom+'</div><div class="nz-spark"></div><div class="nz-prog-bottom"><div class="nz-prog-title">מנקה מספרים…</div><div class="nz-prog-bar"><div class="nz-prog-fill" id="nzFill"></div></div><div class="nz-prog-count" id="nzCnt">0 / '+total+'</div><div class="nz-prog-eta" id="nzEta">מעריך זמן…</div></div>';
   document.body.appendChild(ov);
   const fill=ov.querySelector('#nzFill'),cnt=ov.querySelector('#nzCnt'),eta=ov.querySelector('#nzEta');
-  let i=0;const t0=Date.now();const BATCH=12;
+  let i=0;const t0=Date.now();const BATCH=6;
   function step(){
     const end=Math.min(i+BATCH,total);
     for(;i<end;i++){const c=items[i];if(!c)continue;const _orig={name:c.p.name||'',phone:c.from};c.p.phone=c.to;c.p.phones=(c.p.phones&&c.p.phones.length)?c.p.phones.map(formatPhone):[c.to];try{nativeUpdateContact(c.p,_orig);}catch(e){}}
@@ -1327,9 +1330,8 @@ function openNormalizePreview(){
   const go=body.querySelector('#nzGo');if(go)go.onclick=()=>{
     if(!sel.size){toast('לא נבחרו מספרים');return;}
     const items=[...sel].map(i=>changes[i]).filter(Boolean);
-    const est=Math.ceil(items.length*0.045);const estTxt=est>60?('כ-'+Math.ceil(est/60)+' דקות'):('כ-'+est+' שניות');
-    if(items.length>150){uiConfirm('לנקות '+items.length+' מספרים? זמן משוער: '+estTxt+'. אפשר להשאיר את המסך פתוח — יוצג בר התקדמות.',()=>runNormalize(items,sc));}
-    else{runNormalize(items,sc);}
+    const est=Math.max(3,Math.ceil(items.length*0.09));const estTxt=est>=90?('כ-'+Math.round(est/60)+' דקות'):('כ-'+est+' שניות');
+    uiConfirm('יש לך '+items.length+' מספרים לניקוי. שים לב: התהליך יימשך '+estTxt+' ורץ גם ברקע — אפשר להשאיר את המסך פתוח ולעקוב אחר בר ההתקדמות. להתחיל בניקוי?',()=>runNormalize(items,sc));
   };
 }
 function openSpecialLists(){
@@ -1760,7 +1762,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.07.1141';
+const APP_VERSION='2026.07.07.1212';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
