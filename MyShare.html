@@ -310,7 +310,7 @@
   .mbtn.cancel{background:transparent;color:rgba(255,255,255,.75);font-weight:600;font-size:13px;padding:9px 16px;}
   .mpovl{position:fixed;inset:0;z-index:85;display:flex;align-items:flex-end;justify-content:center;background:rgba(8,40,42,0);transition:background .25s;pointer-events:none;}
   .mpovl.show{background:rgba(8,40,42,.5);pointer-events:auto;}
-  .mp-sheet{width:100%;max-width:520px;background:#d8efe4;color:var(--tq-ink);border-radius:22px 22px 0 0;padding:14px 16px 26px;transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);max-height:84%;overflow-y:auto;}
+  .mp-sheet{width:100%;max-width:520px;background:#bfe8db;color:var(--tq-ink);border-radius:22px 22px 0 0;padding:14px 16px 42px;transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);max-height:84%;overflow-y:auto;}
   .mpovl.show .mp-sheet{transform:none;}
   .mpovl.exit-dlg{align-items:center;justify-content:center;}
   .exit-dlg .mp-sheet{width:auto;max-width:320px;margin:0 24px;border-radius:20px;background:var(--tq-bot);color:#fff;padding:16px 18px 18px;transform:scale(.92);opacity:0;transition:transform .24s cubic-bezier(.22,1,.36,1),opacity .2s ease;max-height:none;}
@@ -1116,14 +1116,15 @@ function healKeys(){
   if(!PEOPLE||!PEOPLE.length)return;
   const valid={},byPhone={},byName={};
   PEOPLE.forEach(p=>{const k=fKey(p);if(!k)return;valid[k]=1;
-    const np=normIL(p.phone||(p.phones&&p.phones[0])||'');if(np&&!(np in byPhone))byPhone[np]=k;
-    if(p.name&&!(p.name in byName))byName[p.name]=k;});
-  function resolve(k){if(!k||valid[k])return k;const np=normIL(k);if(np&&byPhone[np])return byPhone[np];if(byName[k])return byName[k];return k;}
+    [p.phone].concat(p.phones||[]).forEach(ph=>{const np=normIL(ph||'');if(np&&!(np in byPhone))byPhone[np]=k;});
+    const nm=(p.name||'').trim();if(nm&&!(nm in byName))byName[nm]=k;});
+  function resolve(k){if(!k||valid[k])return k;const np=normIL(k);if(np&&byPhone[np])return byPhone[np];const nm=String(k||'').trim();if(nm&&byName[nm])return byName[nm];return k;}
   let cfgCh=false;
   (cfg.lists||[]).forEach(L=>{if(!L||!Array.isArray(L.members))return;const seen={},nm=[];L.members.forEach(k=>{const r=resolve(k);if(!seen[r]){seen[r]=1;nm.push(r);}});if(nm.join('')!==L.members.join('')){L.members=nm;cfgCh=true;}});
+  (cfg.lists||[]).forEach(L=>{if(!L||!Array.isArray(L.manual))return;const seen={},nm=[];L.manual.forEach(k=>{const r=resolve(k);if(r&&!seen[r]){seen[r]=1;nm.push(r);}});if(nm.join('|')!==L.manual.join('|')){L.manual=nm;cfgCh=true;}});
   if(cfgCh)saveCfg();
   function remap(obj,save){let ch=false;const out={};Object.keys(obj).forEach(k=>{const r=resolve(k);if(r!==k)ch=true;if(!(r in out))out[r]=obj[k];});if(ch){Object.keys(obj).forEach(k=>delete obj[k]);Object.assign(obj,out);save();}}
-  remap(BDAY,saveBday);remap(ADDR,saveAddr);remap(FIELDS,saveFields);remap(DAYS,saveDays);remap(STATS,saveStats);
+  remap(BDAY,saveBday);remap(ADDR,saveAddr);remap(FIELDS,saveFields);remap(DAYS,saveDays);remap(STATS,saveStats);remap(KIT,saveKit);
 }
 function dayMiniHTML(p){const v=getDays(p);if(!v.some(Boolean))return '';return '<div class="ml"><span class="daymini">'+v.map((on,i)=>'<i class="'+(on?'on':'')+'"></i>').join('')+'</span></div>';}
 function avInner(c){return escapeHtml(initials(c&&c.name))+((c&&c.fav&&typeof STAR!=='undefined')?'<span class="favstar">'+STAR+'</span>':'')+((c&&c.photo)?'<img class="av-img" src="'+escapeHtml(c.photo)+'" alt="" onerror="this.remove()">':'');}
@@ -1774,7 +1775,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.07.2142';
+const APP_VERSION='2026.07.07.2229';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;

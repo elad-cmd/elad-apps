@@ -15,6 +15,11 @@ on:
 permissions:
   contents: write
 
+# גיטהאב הפסיקו לתמוך ב-Node 20 ומכריחים Node 24, מה ששובר את android-actions/setup-android@v3.
+# המשתנה הזה מחזיר את הפעולות לרוץ על Node 20 (התיקון הרשמי של גיטהאב).
+env:
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'true'
+
 concurrency:
   group: build-sweep
   cancel-in-progress: true
