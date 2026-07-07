@@ -1009,6 +1009,64 @@ class ShareActivity : Activity() {
             } catch (e: Exception) { "ERR|" + (e.message ?: "") }
         }
 
+        /** גיבוי לתיקיית ההורדות הציבורית (Download/Sweep) — שורד הסרת אפליקציה. */
+        @JavascriptInterface
+        fun backupToDownloads(cfgJson: String): String {
+            return try {
+                val ts = java.text.SimpleDateFormat("yyyy-MM-dd_HHmm", java.util.Locale.US).format(java.util.Date())
+                val okJson = writeToDownloads("sweep-backup-$ts.json", "application/json", (cfgJson ?: "{}").toByteArray(Charsets.UTF_8))
+                var nv = 0
+                val sb = StringBuilder()
+                try {
+                    contentResolver.query(
+                        ContactsContract.Contacts.CONTENT_URI,
+                        arrayOf(ContactsContract.Contacts._ID, ContactsContract.Contacts.LOOKUP_KEY),
+                        null, null, null
+                    )?.use { c ->
+                        val iL = c.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY)
+                        while (c.moveToNext()) {
+                            val lk = if (iL >= 0) c.getString(iL) else null
+                            if (lk.isNullOrEmpty()) continue
+                            try {
+                                val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lk)
+                                contentResolver.openAssetFileDescriptor(uri, "r")?.use { afd ->
+                                    afd.createInputStream().use { ins ->
+                                        sb.append(String(ins.readBytes(), Charsets.UTF_8)); nv++
+                                    }
+                                }
+                            } catch (e: Exception) {}
+                        }
+                    }
+                } catch (e: Exception) {}
+                if (sb.isNotEmpty()) writeToDownloads("sweep-contacts-$ts.vcf", "text/vcard", sb.toString().toByteArray(Charsets.UTF_8))
+                if (okJson) "OK|Download/Sweep|$nv" else "ERR|write failed"
+            } catch (e: Exception) { "ERR|" + (e.message ?: "") }
+        }
+
+        /** כותב קובץ לתיקיית ההורדות הציבורית דרך MediaStore (ללא הרשאת אחסון ב-Android 10+). */
+        private fun writeToDownloads(name: String, mime: String, bytes: ByteArray): Boolean {
+            return try {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                    val cv = android.content.ContentValues().apply {
+                        put(android.provider.MediaStore.Downloads.DISPLAY_NAME, name)
+                        put(android.provider.MediaStore.Downloads.MIME_TYPE, mime)
+                        put(android.provider.MediaStore.Downloads.RELATIVE_PATH, android.os.Environment.DIRECTORY_DOWNLOADS + "/Sweep")
+                        put(android.provider.MediaStore.Downloads.IS_PENDING, 1)
+                    }
+                    val uri = contentResolver.insert(android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, cv) ?: return false
+                    contentResolver.openOutputStream(uri)?.use { it.write(bytes) }
+                    cv.clear(); cv.put(android.provider.MediaStore.Downloads.IS_PENDING, 0)
+                    contentResolver.update(uri, cv, null, null)
+                    true
+                } else {
+                    val dir = java.io.File(android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS), "Sweep")
+                    dir.mkdirs()
+                    java.io.File(dir, name).writeBytes(bytes)
+                    true
+                }
+            } catch (e: Exception) { false }
+        }
+
         /** שומר רק את [keep] הקבצים האחרונים עם הקידומת הנתונה. */
         private fun pruneBackups(dir: java.io.File, prefix: String, keep: Int) {
             try {

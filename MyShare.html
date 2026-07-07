@@ -443,14 +443,14 @@
   #azbar.show{display:flex;}
   #azbar::before{content:"";position:absolute;top:10px;bottom:10px;left:50%;transform:translateX(-50%);width:4px;border-radius:3px;background:var(--line-strong);transition:background .15s,opacity .15s;}
   #azbar.grab::before{background:var(--accent);opacity:.6;}
-  #azbar .az-cur{position:absolute;left:50%;transform:translate(-50%,-50%);width:15px;height:4px;border-radius:3px;background:var(--accent);box-shadow:0 0 9px 1px rgba(25,181,151,.85),0 0 3px 0 rgba(25,181,151,.9);opacity:0;transition:opacity .2s ease,top .1s linear;pointer-events:none;z-index:2;}
+  #azbar .az-cur{position:absolute;left:50%;transform:translate(-50%,-50%);width:4px;height:22px;border-radius:3px;background:var(--accent);box-shadow:0 0 9px 1px rgba(25,181,151,.85),0 0 3px 0 rgba(25,181,151,.9);opacity:0;transition:opacity .2s ease,top .1s linear;pointer-events:none;z-index:2;}
   #azbar .az-cur.show{opacity:1;}
   body.hand-right #azbar{left:0;}
   body.hand-left #azbar{right:0;}
   #azbub{position:absolute;z-index:31;width:64px;height:64px;border-radius:20px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:600;box-shadow:0 0 22px 2px rgba(25,181,151,.55),0 12px 30px -6px rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .12s ease;}
   #azbub.show{opacity:1;}
-  body.hand-right #azbub{left:30px;}
-  body.hand-left #azbub{right:30px;}
+  body.hand-right #azbub{left:40px;}
+  body.hand-left #azbub{right:40px;}
   .listbar{display:flex;gap:7px;margin-top:9px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:1px 0;direction:rtl;position:relative;z-index:6;}
   .listbar::-webkit-scrollbar{display:none;}
   .listbar .cap{flex:0 0 auto;background:transparent;color:var(--text-2);font-size:14px;font-weight:500;padding:7px 15px;border-radius:11px;border:1px solid var(--line-strong);cursor:pointer;white-space:nowrap;font-family:inherit;}
@@ -1139,7 +1139,7 @@ function buildAZ(){
   if(azLetters.length<2){azbar.classList.remove('show');azbub.classList.remove('show');return;}
   azbar.innerHTML='<i class="az-cur" id="azCur"></i>';
   azbar.classList.add('show');
-  requestAnimationFrame(()=>{try{updateAZActive();}catch(e){}});
+  requestAnimationFrame(()=>{try{const firstAv=listEl.querySelector('.row .av');if(firstAv){const op=(azbar.offsetParent||document.body).getBoundingClientRect();const restTop=firstAv.getBoundingClientRect().top+listEl.scrollTop-op.top;azbar.style.top=Math.max(0,restTop)+'px';}updateAZActive();}catch(e){}});
 }
 function azScrub(clientY){
   if(!azLetters.length)return;
@@ -1150,10 +1150,8 @@ function azScrub(clientY){
   azbar.querySelectorAll('.azl').forEach((s,k)=>{s.classList.toggle('on',k===idx);s.classList.toggle('cur',k===idx);});
   const ci=azMap[L];const row=listEl.querySelector('.row[data-i="'+ci+'"]');
   if(row)listEl.scrollTop=Math.max(0,row.offsetTop-18);
-  const hr=home.getBoundingClientRect();
   azbub.textContent=L;
-  let by=clientY-hr.top-80;by=Math.max(6,Math.min(hr.height-68,by));
-  azbub.style.top=by+'px';azbub.classList.add('show');
+  azbub.style.top=(azbar.offsetTop+2)+'px';azbub.classList.add('show');
   try{updateAZActive();}catch(e){}
 }
 azbar.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();azActive=true;azbar.classList.add('grab');try{azbar.setPointerCapture(e.pointerId);}catch(_){}if(navigator.vibrate)navigator.vibrate(4);azScrub(e.clientY);});
@@ -1762,7 +1760,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.07.1336';
+const APP_VERSION='2026.07.07.1452';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1861,6 +1859,15 @@ function bkSavedInfo(bodyHtml){
 }
 async function doBackup(){
   try{
+    if(BRIDGE&&typeof BRIDGE.backupToDownloads==='function'){
+      const r=BRIDGE.backupToDownloads(JSON.stringify(gatherBackupData()))||'';
+      if(r.indexOf('OK')===0){
+        localStorage.setItem('myshare_lastbackup',String(Date.now()));
+        const parts=r.split('|');
+        bkSavedInfo('<div style="text-align:center;font-size:15px;font-weight:700;margin:6px 0 8px;">הגיבוי נשמר ✓</div><p class="mp-hint" style="text-align:center;">נשמר בתיקיית ההורדות של הטלפון, בתיקייה <b dir="ltr">Download/Sweep</b>'+(parts[2]?(' — כולל קובץ של '+escapeHtml(parts[2])+' אנשי קשר'):'')+'.<br><span style="opacity:.75;display:inline-block;margin-top:6px;">קבצים: sweep-backup-…json (הגדרות) ו-sweep-contacts-…vcf (אנשי הקשר). הגיבוי <b>לא יימחק</b> בהסרת האפליקציה — אפשר לפתוח דרך אפליקציית «קבצים» ← הורדות ← Sweep.</span></p>');
+        return;
+      }
+    }
     if(BRIDGE&&typeof BRIDGE.runBackup==='function'){
       const r=BRIDGE.runBackup(JSON.stringify(gatherBackupData()))||'';
       if(r.indexOf('OK')===0){
