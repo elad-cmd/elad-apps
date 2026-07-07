@@ -87,7 +87,6 @@
   body.hand-right .row .rec-cb{left:12px;}
   body.hand-left .row .rec-cb{right:12px;}
   body.selecting .row .rec-pin{display:none;}
-  #selBar .selbar-btn svg{width:21px;height:21px;}
   .row .late-dot{position:absolute;top:50%;transform:translateY(-50%);width:9px;height:9px;border-radius:50%;background:var(--late);box-shadow:0 0 8px 1px rgba(224,164,92,.85),0 0 2px 0 rgba(224,164,92,.9);pointer-events:none;z-index:4;animation:lateGlow 2.4s ease-in-out infinite;}
   body.hand-right .row .late-dot{left:72px;}
   body.hand-left .row .late-dot{right:72px;}
@@ -680,16 +679,15 @@
   .sl-vt.on{background:var(--tq);border-color:var(--tq);color:#fff;font-weight:700;}
   .flt-row.sel .flt-row-fg{box-shadow:inset 0 0 0 2px var(--tq);background:rgba(0,194,168,.18);}
   .arc-row.sel{box-shadow:inset 0 0 0 2px var(--tq);background:rgba(0,194,168,.18);}
-  .selbar{position:fixed;left:12px;right:12px;bottom:18px;z-index:97;display:flex;align-items:center;gap:10px;background:var(--tq-deep,#0c3b38);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:8px 12px;box-shadow:0 12px 34px rgba(0,0,0,.45);transform:translateY(150%);opacity:0;transition:transform .26s cubic-bezier(.2,.9,.3,1),opacity .2s ease;}
+  .selbar{position:fixed;left:12px;right:12px;bottom:14px;z-index:97;display:flex;align-items:stretch;justify-content:space-around;gap:2px;background:var(--tq-bot,#12302e);border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:7px 6px;box-shadow:0 14px 34px rgba(0,0,0,.5);transform:translateY(170%);opacity:0;transition:transform .26s cubic-bezier(.2,.9,.3,1),opacity .2s ease;}
   .selbar.show{transform:translateY(0);opacity:1;}
-  .selbar-x{background:rgba(255,255,255,.12);border:none;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
-  .selbar-x svg{width:18px;height:18px;}
-  .selbar-cnt{color:#fff;font-weight:700;font-size:14px;flex:1;text-align:right;}
-  .selbar-acts{display:flex;gap:8px;flex:0 0 auto;}
-  .selbar-btn{border:none;border-radius:12px;padding:8px 14px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;background:var(--tq);display:flex;align-items:center;gap:6px;}
-  .selbar-btn svg{width:17px;height:17px;}
-  .selbar-btn.danger{background:#d23b30;}
-  .selbar-btn.ghost{background:rgba(255,255,255,.16);}
+  .selbar-btn{flex:1 1 0;min-width:0;background:transparent;border:none;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font:inherit;font-size:11px;font-weight:600;cursor:pointer;padding:5px 2px;border-radius:14px;transition:background .12s;}
+  .selbar-btn:active{background:rgba(255,255,255,.1);}
+  .selbar-btn svg{width:23px;height:23px;flex:0 0 auto;}
+  .selbar-lbl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+  .selbar-btn.danger{color:#ff8a7e;}
+  .selcnt{position:fixed;left:0;right:0;bottom:92px;z-index:97;text-align:center;color:rgba(255,255,255,.9);font-size:12.5px;font-weight:700;opacity:0;transition:opacity .2s;pointer-events:none;text-shadow:0 1px 6px rgba(0,0,0,.75);}
+  .selcnt.show{opacity:1;}
   body.selecting #botbar{opacity:0!important;pointer-events:none!important;}
   body.selecting .bot-shade{opacity:0!important;}
   .arc-row{display:flex;align-items:center;gap:11px;background:var(--surface);border-radius:16px;padding:10px 12px;margin-bottom:8px;}
@@ -1045,11 +1043,12 @@ function updRecSelBar(){
   const keys=CURRENT.map(statKey).filter(Boolean);
   const allSel=keys.length&&keys.every(k=>recSelSet.has(k));
   const PIN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 10.8V4h6v6.8l2 3.2H7l2-3.2z"/></svg>';
+  const CHK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';
   showSelBar(recSelSet.size,[
-    {html:(allSel?'נקה הכל':'בחר הכל'),cls:'ghost',fn:function(){if(allSel){recSelSet.clear();}else{keys.forEach(k=>recSelSet.add(k));}renderList();updRecSelBar();}},
-    {html:PIN,cls:'ghost',fn:recSelPin},
-    {html:ICON.copy,cls:'ghost',fn:recSelCopy},
-    {html:ICON.trash,cls:'danger',fn:recSelRemove}
+    {icon:CHK,label:(allSel?'נקה הכל':'בחר הכל'),fn:function(){if(allSel){recSelSet.clear();}else{keys.forEach(k=>recSelSet.add(k));}renderList();updRecSelBar();}},
+    {icon:PIN,label:'נעץ',fn:recSelPin},
+    {icon:ICON.copy,label:'העתק',fn:recSelCopy},
+    {icon:ICON.trash,label:'הסר',cls:'danger',fn:recSelRemove}
   ],exitRecSel);
 }
 function recentActions(p){if(!p)return;const k=statKey(p);const pinned=isRecPinned(k);const ov=document.createElement('div');ov.className='mpovl';ov.innerHTML='<div class="mp-sheet"><div style="text-align:center;font-size:15px;font-weight:600;margin:8px 0 14px;">'+escapeHtml(p.name||'איש הקשר')+'</div><div style="display:flex;flex-direction:column;gap:8px;"><button class="lact" id="raPin"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 10.8V4h6v6.8l2 3.2H7l2-3.2z"/></svg>'+(pinned?'בטל נעיצה':'נעץ למעלה')+'</button><button class="lact" id="raDel" style="color:#cf4a3e;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>הסר מהאחרונים</button></div></div>';document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));const close=()=>{ov.classList.remove('show');setTimeout(()=>{if(ov.parentNode)ov.remove();},250);};ov.addEventListener('click',e=>{if(e.target===ov)close();});ov.querySelector('#raPin').onclick=()=>{toggleRecPin(k);close();renderList();if(navigator.vibrate)navigator.vibrate(8);};ov.querySelector('#raDel').onclick=()=>{close();hideRecent(k);renderList();if(navigator.vibrate)navigator.vibrate(8);};}
@@ -1818,7 +1817,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.07.2337';
+const APP_VERSION='2026.07.07.2348';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2570,7 +2569,7 @@ function openFilter(){
   function fltSelPeople(){return fViewIds(vf).filter(fMatch).filter(catMatch).filter(p=>selSet.has(fKey(p)));}
   function fltExitSel(){selMode=false;selSet.clear();hideSelBar();render();}
   function fltGroupApply(d){const ppl=fltSelPeople();if(!ppl.length){fltExitSel();return;}ppl.forEach(p=>decide(p,d));selMode=false;selSet.clear();hideSelBar();if(navigator.vibrate)navigator.vibrate(12);toast(d==='keep'?('נשמרו '+ppl.length):('אורכבו '+ppl.length));render();}
-  function fltSelUpdate(){if(!selMode)return;if(!selSet.size){fltExitSel();return;}showSelBar(selSet.size,[{html:ICON.check+' שמור',fn:()=>fltGroupApply('keep')},{html:ICON.archive+' ארכב',cls:'danger',fn:()=>fltGroupApply('delete')}],fltExitSel);}
+  function fltSelUpdate(){if(!selMode)return;if(!selSet.size){fltExitSel();return;}showSelBar(selSet.size,[{icon:ICON.check,label:'שמור',fn:()=>fltGroupApply('keep')},{icon:ICON.archive,label:'ארכב',cls:'danger',fn:()=>fltGroupApply('delete')}],fltExitSel);}
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>סינון רשימה</h2></div><div class="scr-body flt-body" id="fltBody"></div>');sc._reopen=openFilter;addScreenBar(sc);
   const body=sc.querySelector('#fltBody');
   let _pOff=0;const _pMax=Math.max(120,Math.min(280,Math.round(window.innerHeight*0.33)));
@@ -2738,15 +2737,17 @@ function showSelBar(count,actions,onCancel){
   _selCancel=onCancel||null;
   let bar=document.getElementById('selBar');
   if(!bar){bar=document.createElement('div');bar.id='selBar';bar.className='selbar';document.body.appendChild(bar);}
-  const X='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
-  bar.innerHTML='<button class="selbar-x" aria-label="בטל">'+X+'</button><span class="selbar-cnt">'+count+' נבחרו</span><div class="selbar-acts"></div>';
-  const acts=bar.querySelector('.selbar-acts');
-  (actions||[]).forEach(a=>{const b=document.createElement('button');b.className='selbar-btn '+(a.cls||'');b.innerHTML=a.html||a.label;b.onclick=a.fn;acts.appendChild(b);});
-  bar.querySelector('.selbar-x').onclick=()=>{if(_selCancel)_selCancel();};
+  const X='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  const mk=function(icon,label,cls){const b=document.createElement('button');b.className='selbar-btn '+(cls||'');b.innerHTML=(icon||'')+'<span class="selbar-lbl">'+(label||'')+'</span>';return b;};
+  bar.innerHTML='';
+  const _cb=mk(X,'ביטול','');_cb.onclick=()=>{if(_selCancel)_selCancel();};bar.appendChild(_cb);
+  (actions||[]).forEach(a=>{const b=mk(a.icon||a.html||'',a.label||'',a.cls||'');b.onclick=a.fn;bar.appendChild(b);});
+  let cnt=document.getElementById('selCnt');if(!cnt){cnt=document.createElement('div');cnt.id='selCnt';cnt.className='selcnt';document.body.appendChild(cnt);}
+  cnt.textContent=count+' נבחרו';
   document.body.classList.add('selecting');
-  requestAnimationFrame(()=>bar.classList.add('show'));
+  requestAnimationFrame(()=>{bar.classList.add('show');cnt.classList.add('show');});
 }
-function hideSelBar(){const bar=document.getElementById('selBar');document.body.classList.remove('selecting');if(bar){bar.classList.remove('show');setTimeout(()=>{if(bar&&!bar.classList.contains('show'))bar.remove();},280);}_selCancel=null;}
+function hideSelBar(){const bar=document.getElementById('selBar');const cnt=document.getElementById('selCnt');document.body.classList.remove('selecting');if(cnt){cnt.classList.remove('show');setTimeout(()=>{if(cnt&&!cnt.classList.contains('show'))cnt.remove();},280);}if(bar){bar.classList.remove('show');setTimeout(()=>{if(bar&&!bar.classList.contains('show'))bar.remove();},280);}_selCancel=null;}
 function attachElasticPull(el){
   if(!el||el._pullWired)return;el._pullWired=true;
   let off=0;const max=Math.max(120,Math.min(280,Math.round(window.innerHeight*0.33)));
@@ -2783,7 +2784,7 @@ function openArchive(){
   function aExit(){aSelMode=false;aSel.clear();hideSelBar();render();}
   function aRestoreAll(){const ppl=aArch().filter(p=>aSel.has(fKey(p)));ppl.forEach(p=>{delete FDEC[fKey(p)];});saveDec();aSelMode=false;aSel.clear();hideSelBar();renderList();render();toast('שוחזרו '+ppl.length);}
   function aDeleteAll(){const ppl=aArch().filter(p=>aSel.has(fKey(p)));if(!ppl.length){aExit();return;}uiConfirm('למחוק סופית '+ppl.length+' אנשי קשר? יימחקו גם מהטלפון/Google.',()=>{ppl.forEach(p=>nativeDeleteContact(p));saveDec();savePeople();aSelMode=false;aSel.clear();hideSelBar();renderList();render();toast('נמחקו '+ppl.length);});}
-  function aSelUpdate(){if(!aSelMode)return;if(!aSel.size){aExit();return;}showSelBar(aSel.size,[{html:'שחזר הכל',cls:'ghost',fn:aRestoreAll},{html:'מחק הכל',cls:'danger',fn:aDeleteAll}],aExit);}
+  function aSelUpdate(){if(!aSelMode)return;if(!aSel.size){aExit();return;}showSelBar(aSel.size,[{icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>',label:'שחזר הכל',fn:aRestoreAll},{icon:ICON.trash,label:'מחק הכל',cls:'danger',fn:aDeleteAll}],aExit);}
   function render(){
     const arch=aArch();
     const body=sc.querySelector('#arcBody');if(!body)return;
