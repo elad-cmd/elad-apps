@@ -314,8 +314,7 @@
   .exit-dlg h2,.exit-dlg .sheet-x{color:#fff;}
   .exit-dlg .mp-hint{color:rgba(255,255,255,.72);}
   .nz-prog-ov{position:fixed;inset:0;z-index:150;background:rgba(6,22,20,.55);-webkit-backdrop-filter:blur(1.5px);backdrop-filter:blur(1.5px);overflow:hidden;pointer-events:auto;touch-action:none;}
-  .nz-broom-fly{position:absolute;top:0;left:0;width:60px;height:60px;color:var(--accent);filter:drop-shadow(0 6px 12px rgba(0,0,0,.45));animation:nzFly 6s ease-in-out infinite;will-change:transform;}
-  .nz-broom-fly::after{content:"";position:absolute;inset:-8px -16px -8px -2px;border-radius:50%;background:radial-gradient(circle at 32% 50%,rgba(25,181,151,.5),rgba(25,181,151,0) 70%);z-index:-1;}
+  .nz-broom-fly{position:absolute;top:0;left:0;width:58px;height:58px;color:var(--accent);filter:drop-shadow(0 6px 12px rgba(0,0,0,.45));animation:nzFly 6s ease-in-out infinite;will-change:transform;}
   .nz-broom-fly svg{width:100%;height:100%;transform:scaleX(-1);}
   @keyframes nzFly{0%{transform:translate(10vw,20vh) rotate(-20deg);}18%{transform:translate(66vw,15vh) rotate(16deg);}34%{transform:translate(28vw,40vh) rotate(-14deg);}52%{transform:translate(70vw,52vh) rotate(18deg);}70%{transform:translate(22vw,64vh) rotate(-16deg);}86%{transform:translate(62vw,72vh) rotate(12deg);}100%{transform:translate(10vw,20vh) rotate(-20deg);}}
   /* אנימציית שכפול-לערימה (גיבוי) — חולקת את מסגרת ה-.nz-prog-* עם מסך הניקוי */
@@ -1307,7 +1306,7 @@ function normalizePreviewList(){
 function runNormalize(items,sc){
   const total=items.length;if(!total)return;
   const ov=document.createElement('div');ov.className='nz-prog-ov';
-  ov.innerHTML=nzDupHTML()+'<div class="nz-prog-bottom"><div class="nz-prog-title">מנקה מספרים…</div><div class="nz-prog-bar"><div class="nz-prog-fill" id="nzFill"></div></div><div class="nz-prog-count" id="nzCnt">0 / '+total+'</div><div class="nz-prog-eta" id="nzEta">מעריך זמן…</div></div>';
+  ov.innerHTML='<div class="nz-broom-fly">'+ICON.broom+'</div><div class="nz-prog-bottom"><div class="nz-prog-title">מנקה מספרים…</div><div class="nz-prog-bar"><div class="nz-prog-fill" id="nzFill"></div></div><div class="nz-prog-count" id="nzCnt">0 / '+total+'</div><div class="nz-prog-eta" id="nzEta">מעריך זמן…</div></div>';
   document.body.appendChild(ov);
   const fill=ov.querySelector('#nzFill'),cnt=ov.querySelector('#nzCnt'),eta=ov.querySelector('#nzEta');
   let i=0;const t0=Date.now();const BATCH=6;
@@ -1769,7 +1768,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.07.1631';
+const APP_VERSION='2026.07.07.1648';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
