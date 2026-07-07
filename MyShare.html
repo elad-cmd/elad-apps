@@ -318,6 +318,13 @@
   .nz-broom-fly::after{content:"";position:absolute;inset:-8px -16px -8px -2px;border-radius:50%;background:radial-gradient(circle at 32% 50%,rgba(25,181,151,.5),rgba(25,181,151,0) 70%);z-index:-1;}
   .nz-broom-fly svg{width:100%;height:100%;transform:scaleX(-1);}
   @keyframes nzFly{0%{transform:translate(10vw,20vh) rotate(-20deg);}18%{transform:translate(66vw,15vh) rotate(16deg);}34%{transform:translate(28vw,40vh) rotate(-14deg);}52%{transform:translate(70vw,52vh) rotate(18deg);}70%{transform:translate(22vw,64vh) rotate(-16deg);}86%{transform:translate(62vw,72vh) rotate(12deg);}100%{transform:translate(10vw,20vh) rotate(-20deg);}}
+  /* אנימציית שכפול-לערימה (גיבוי) — חולקת את מסגרת ה-.nz-prog-* עם מסך הניקוי */
+  .nz-dup{position:absolute;top:36%;left:50%;transform:translate(-50%,-50%);width:210px;height:120px;filter:drop-shadow(0 6px 12px rgba(0,0,0,.45));}
+  .nz-dup svg{width:100%;height:100%;display:block;overflow:visible;}
+  .nz-dup .nzdup-card{transform-origin:66px 57px;animation:nzdupMove 2.6s ease-in-out infinite;}
+  .nz-dup .nzdup-land{transform-origin:115px 53px;animation:nzdupLand 2.6s ease-out infinite;}
+  @keyframes nzdupMove{0%{opacity:0;transform:translateX(0) scale(.9);}16%{opacity:1;transform:translateX(0) scale(1);}56%{opacity:1;transform:translateX(50px) scale(1);}76%,100%{opacity:0;transform:translateX(50px) scale(.85);}}
+  @keyframes nzdupLand{0%,54%{transform:scale(1);}62%{transform:scale(1.14);}74%,100%{transform:scale(1);}}
   .nz-spark{position:absolute;top:0;left:0;width:7px;height:7px;border-radius:50%;background:#bff5ea;box-shadow:0 0 8px 2px rgba(25,181,151,.7);opacity:0;animation:nzSpark 6s ease-in-out infinite;will-change:transform,opacity;}
   @keyframes nzSpark{0%{opacity:0;transform:translate(12vw,24vh) scale(.4);}12%{opacity:1;}18%{transform:translate(64vw,18vh) scale(1);}52%{transform:translate(68vw,56vh) scale(1);opacity:.9;}86%{transform:translate(60vw,76vh) scale(.6);opacity:.4;}100%{opacity:0;transform:translate(12vw,24vh) scale(.4);}}
   .nz-prog-bottom{position:absolute;left:0;right:0;bottom:0;padding:16px 22px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,var(--tq-bot) 74%,rgba(0,0,0,0));text-align:center;}
@@ -1300,7 +1307,7 @@ function normalizePreviewList(){
 function runNormalize(items,sc){
   const total=items.length;if(!total)return;
   const ov=document.createElement('div');ov.className='nz-prog-ov';
-  ov.innerHTML='<div class="nz-broom-fly">'+ICON.broom+'</div><div class="nz-spark"></div><div class="nz-prog-bottom"><div class="nz-prog-title">מנקה מספרים…</div><div class="nz-prog-bar"><div class="nz-prog-fill" id="nzFill"></div></div><div class="nz-prog-count" id="nzCnt">0 / '+total+'</div><div class="nz-prog-eta" id="nzEta">מעריך זמן…</div></div>';
+  ov.innerHTML=nzDupHTML()+'<div class="nz-prog-bottom"><div class="nz-prog-title">מנקה מספרים…</div><div class="nz-prog-bar"><div class="nz-prog-fill" id="nzFill"></div></div><div class="nz-prog-count" id="nzCnt">0 / '+total+'</div><div class="nz-prog-eta" id="nzEta">מעריך זמן…</div></div>';
   document.body.appendChild(ov);
   const fill=ov.querySelector('#nzFill'),cnt=ov.querySelector('#nzCnt'),eta=ov.querySelector('#nzEta');
   let i=0;const t0=Date.now();const BATCH=6;
@@ -1762,7 +1769,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.07.1540';
+const APP_VERSION='2026.07.07.1610';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1859,16 +1866,41 @@ function bkSavedInfo(bodyHtml){
   const close=()=>{ov.classList.remove('show');setTimeout(()=>{if(ov.parentNode)ov.remove();},250);};
   ov.addEventListener('click',e=>{if(e.target===ov)close();});ov.querySelector('#bkOk').onclick=close;
 }
+function nzDupHTML(){return '<div class="nz-dup"><svg viewBox="0 0 150 110" fill="none"><rect x="12" y="36" width="34" height="42" rx="5" stroke="#fff" stroke-width="2.5"/><circle cx="29" cy="49" r="5" fill="#fff"/><rect x="19" y="60" width="20" height="4" rx="2" fill="rgba(255,255,255,.55)"/><g class="nzdup-card"><rect x="49" y="36" width="34" height="42" rx="5" fill="#0c211e" stroke="var(--accent)" stroke-width="2.5"/><circle cx="66" cy="49" r="5" fill="var(--accent)"/><rect x="56" y="60" width="20" height="4" rx="2" fill="rgba(25,181,151,.6)"/></g><rect x="90" y="42" width="34" height="42" rx="5" fill="#0c211e" stroke="rgba(25,181,151,.5)" stroke-width="2.5"/><rect x="94" y="37" width="34" height="42" rx="5" fill="#0c211e" stroke="rgba(25,181,151,.75)" stroke-width="2.5"/><rect class="nzdup-land" x="98" y="32" width="34" height="42" rx="5" fill="#0c211e" stroke="var(--accent)" stroke-width="2.5"/></svg></div>';}
+let _bkOv=null;
+function showBackupProgress(){
+  if(_bkOv)return;
+  const ov=document.createElement('div');ov.className='nz-prog-ov';
+  ov.innerHTML=nzDupHTML()+'<div class="nz-prog-bottom"><div class="nz-prog-title">מכין גיבוי…</div><div class="nz-prog-bar"><div class="nz-prog-fill" id="bkFill"></div></div><div class="nz-prog-count" id="bkCnt">מגבה אנשי קשר…</div><div class="nz-prog-eta">כמה שניות — אפשר להשאיר את המסך פתוח</div></div>';
+  document.body.appendChild(ov);_bkOv=ov;
+}
+function updateBackupProgress(done,total){
+  if(!_bkOv)return;const f=_bkOv.querySelector('#bkFill'),c=_bkOv.querySelector('#bkCnt');
+  if(total>0){const pct=Math.min(100,Math.round(done/total*100));if(f)f.style.width=pct+'%';if(c)c.textContent=done+' / '+total+' אנשי קשר';}
+  else if(c){c.textContent=done+' אנשי קשר';}
+}
+function closeBackupProgress(){if(_bkOv){const ov=_bkOv;_bkOv=null;setTimeout(()=>{try{ov.remove();}catch(e){}},150);}}
 async function doBackup(){
   try{
     if(BRIDGE&&typeof BRIDGE.backupToDownloads==='function'){
-      const r=BRIDGE.backupToDownloads(JSON.stringify(gatherBackupData()))||'';
-      if(r.indexOf('OK')===0){
-        localStorage.setItem('myshare_lastbackup',String(Date.now()));
-        const parts=r.split('|');
-        bkSavedInfo('<div style="text-align:center;font-size:15px;font-weight:700;margin:6px 0 8px;">הגיבוי נשמר ✓</div><p class="mp-hint" style="text-align:center;">נשמר בתיקיית ההורדות של הטלפון, בתיקייה <b dir="ltr">Download/Sweep</b>'+(parts[2]?(' — כולל קובץ של '+escapeHtml(parts[2])+' אנשי קשר'):'')+'.<br><span style="opacity:.75;display:inline-block;margin-top:6px;">קבצים: sweep-backup-…json (הגדרות) ו-sweep-contacts-…vcf (אנשי הקשר). הגיבוי <b>לא יימחק</b> בהסרת האפליקציה — אפשר לפתוח דרך אפליקציית «קבצים» ← הורדות ← Sweep.</span></p>');
-        return;
-      }
+      if(window.__bkBusy)return;
+      window.__bkBusy=true;showBackupProgress();
+      const finish=(res)=>{
+        if(!window.__bkBusy)return;window.__bkBusy=false;window.__bkProg=null;window.__bkDone=null;closeBackupProgress();
+        const s=String(res||'');
+        if(s.indexOf('OK')===0){
+          localStorage.setItem('myshare_lastbackup',String(Date.now()));
+          const parts=s.split('|');
+          bkSavedInfo('<div style="text-align:center;font-size:15px;font-weight:700;margin:6px 0 8px;">הגיבוי נשמר ✓</div><p class="mp-hint" style="text-align:center;">נשמר בתיקיית ההורדות של הטלפון, בתיקייה <b dir="ltr">Download/Sweep</b>'+(parts[2]?(' — כולל קובץ של '+escapeHtml(parts[2])+' אנשי קשר'):'')+'.<br><span style="opacity:.75;display:inline-block;margin-top:6px;">קבצים: sweep-backup-…json (הגדרות) ו-sweep-contacts-…vcf (אנשי הקשר). הגיבוי <b>לא יימחק</b> בהסרת האפליקציה — אפשר לפתוח דרך אפליקציית «קבצים» ← הורדות ← Sweep.</span></p>');
+        } else { toast('הגיבוי נכשל, נסה שוב'); }
+      };
+      window.__bkProg=(d,t)=>updateBackupProgress(d,t);
+      window.__bkDone=(res)=>finish(res);
+      let r='';
+      try{ r=BRIDGE.backupToDownloads(JSON.stringify(gatherBackupData()))||''; }catch(e){ finish('ERR'); return; }
+      if(r.indexOf('OK')===0){ finish(r); }
+      else if(r.indexOf('ERR')===0){ finish(r); }
+      return;
     }
     if(BRIDGE&&typeof BRIDGE.runBackup==='function'){
       const r=BRIDGE.runBackup(JSON.stringify(gatherBackupData()))||'';

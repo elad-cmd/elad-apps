@@ -1009,38 +1009,57 @@ class ShareActivity : Activity() {
             } catch (e: Exception) { "ERR|" + (e.message ?: "") }
         }
 
-        /** גיבוי לתיקיית ההורדות הציבורית (Download/Sweep) — שורד הסרת אפליקציה. */
+        /** גיבוי לתיקיית ההורדות (Download/Sweep) — רץ ברקע, מדווח התקדמות ל-JS, ושורד הסרת אפליקציה. */
         @JavascriptInterface
         fun backupToDownloads(cfgJson: String): String {
-            return try {
-                val ts = java.text.SimpleDateFormat("yyyy-MM-dd_HHmm", java.util.Locale.US).format(java.util.Date())
-                val okJson = writeToDownloads("sweep-backup-$ts.json", "application/json", (cfgJson ?: "{}").toByteArray(Charsets.UTF_8))
-                var nv = 0
-                val sb = StringBuilder()
+            Thread {
                 try {
-                    contentResolver.query(
-                        ContactsContract.Contacts.CONTENT_URI,
-                        arrayOf(ContactsContract.Contacts._ID, ContactsContract.Contacts.LOOKUP_KEY),
-                        null, null, null
-                    )?.use { c ->
-                        val iL = c.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY)
-                        while (c.moveToNext()) {
-                            val lk = if (iL >= 0) c.getString(iL) else null
-                            if (lk.isNullOrEmpty()) continue
-                            try {
-                                val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lk)
-                                contentResolver.openAssetFileDescriptor(uri, "r")?.use { afd ->
-                                    afd.createInputStream().use { ins ->
-                                        sb.append(String(ins.readBytes(), Charsets.UTF_8)); nv++
+                    val ts = java.text.SimpleDateFormat("yyyy-MM-dd_HHmm", java.util.Locale.US).format(java.util.Date())
+                    val okJson = writeToDownloads("sweep-backup-$ts.json", "application/json", (cfgJson ?: "{}").toByteArray(Charsets.UTF_8))
+                    var total = 0
+                    try {
+                        contentResolver.query(ContactsContract.Contacts.CONTENT_URI, arrayOf(ContactsContract.Contacts._ID), null, null, null)?.use { total = it.count }
+                    } catch (e: Exception) {}
+                    bkProgress(0, total)
+                    var nv = 0
+                    val sb = StringBuilder()
+                    try {
+                        contentResolver.query(
+                            ContactsContract.Contacts.CONTENT_URI,
+                            arrayOf(ContactsContract.Contacts._ID, ContactsContract.Contacts.LOOKUP_KEY),
+                            null, null, null
+                        )?.use { c ->
+                            val iL = c.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY)
+                            while (c.moveToNext()) {
+                                val lk = if (iL >= 0) c.getString(iL) else null
+                                if (lk.isNullOrEmpty()) continue
+                                try {
+                                    val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lk)
+                                    contentResolver.openAssetFileDescriptor(uri, "r")?.use { afd ->
+                                        afd.createInputStream().use { ins ->
+                                            sb.append(String(ins.readBytes(), Charsets.UTF_8)); nv++
+                                        }
                                     }
-                                }
-                            } catch (e: Exception) {}
+                                } catch (e: Exception) {}
+                                if (nv % 25 == 0) bkProgress(nv, total)
+                            }
                         }
-                    }
-                } catch (e: Exception) {}
-                if (sb.isNotEmpty()) writeToDownloads("sweep-contacts-$ts.vcf", "text/vcard", sb.toString().toByteArray(Charsets.UTF_8))
-                if (okJson) "OK|Download/Sweep|$nv" else "ERR|write failed"
-            } catch (e: Exception) { "ERR|" + (e.message ?: "") }
+                    } catch (e: Exception) {}
+                    if (sb.isNotEmpty()) writeToDownloads("sweep-contacts-$ts.vcf", "text/vcard", sb.toString().toByteArray(Charsets.UTF_8))
+                    bkDone(if (okJson) "OK|Download/Sweep|$nv" else "ERR|write failed")
+                } catch (e: Exception) {
+                    bkDone("ERR|" + (e.message ?: ""))
+                }
+            }.start()
+            return "STARTED"
+        }
+
+        private fun bkProgress(done: Int, total: Int) {
+            runOnUiThread { try { web.evaluateJavascript("window.__bkProg&&window.__bkProg($done,$total)", null) } catch (e: Exception) {} }
+        }
+        private fun bkDone(res: String) {
+            val safe = res.replace("\\", "\\\\").replace("'", "\\'")
+            runOnUiThread { try { web.evaluateJavascript("window.__bkDone&&window.__bkDone('$safe')", null) } catch (e: Exception) {} }
         }
 
         /** כותב קובץ לתיקיית ההורדות הציבורית דרך MediaStore (ללא הרשאת אחסון ב-Android 10+). */
