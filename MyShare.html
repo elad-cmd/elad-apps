@@ -1826,7 +1826,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.08.0210';
+const APP_VERSION='2026.07.08.0222';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2971,7 +2971,7 @@ function closeHbar(cb,opts){
   opts=opts||{};
   const bd=document.querySelector('.hbar-backdrop');if(!bd)return;
   const bar=bd.querySelector('.hbar');if(bar&&bar.classList.contains('closing'))return;
-  if(bar){bar.classList.remove('run');bar.classList.add('closing');}   // המניפה מתקפלת — ראשונה
+  if(bar){bar.classList.remove('run');bar.querySelectorAll('.hm-item').forEach(el=>{el.style.animation='';el.style.transition='';el.style.transform='';el.style.opacity='';});bar.classList.add('closing');}   // ניקוי סגנונות הפתיחה הישירים כדי ש-hmOut יחול; המניפה מתקפלת
   const _foldMs=Math.round(HBAR_T*1000)+40;   // כל פריטי המניפה מסיימים ב-HBAR_T בדיוק
   if(opts.nav){
     // ניווט למסך: המניפה נסגרת + הרקע מתבהר. הבר לא נפתח והרקע לא מוסר כאן — הקורא פותח את המסך ואז את הבר (רצף: מניפה→מסך→בר).
@@ -3190,7 +3190,14 @@ function openHbar(){
   _meas.forEach(m=>{m.el.style.setProperty('--sx',Math.round(fcx-m.icx)+'px');m.el.style.setProperty('--sy',Math.round(fcy-m.icy)+'px');m.el.style.transformOrigin=Math.round(m.icx-m.er.left)+'px '+Math.round(m.icy-m.er.top)+'px';});
   bd.style.transition='background .5s ease';
   const _openDelay=HBAR_PARALLEL?0:(_barVis?(Math.round(HBAR_T*1000)+40):300);   // מקביל: האייקון→X + המניפה + הרקע יוצאים ביחד עם קיפול הבר. מקורי: קודם הבר מתקפל, ואז המניפה.
-  setTimeout(()=>{menuFab.classList.add('open');setFab(true);bar.classList.add('run');bd.classList.add('show');},_openDelay);
+  setTimeout(()=>{menuFab.classList.add('open');setFab(true);bd.classList.add('show');
+    if(HBAR_PARALLEL){   // פתיחה באותה עקומה כמו הסרגל: ספרינג שמגיע למקום בסוף המשך (hmIn מגיע כבר ב~20% מהמשך ולכן נראה לא מסונכרן)
+      _hm.forEach(el=>{el.style.animation='none';el.style.transition='none';el.style.transform='translate(var(--sx),var(--sy)) scale(.4)';el.style.opacity='0';});
+      void bar.offsetHeight;
+      _hm.forEach((el,i)=>{const _d=i*0.035;el.style.transition='transform '+Math.max(0.2,HBAR_T-_d).toFixed(3)+'s cubic-bezier(.22,1,.36,1) '+_d.toFixed(3)+'s, opacity .26s ease '+_d.toFixed(3)+'s';el.style.transform='';el.style.opacity='1';});
+      setTimeout(()=>{_hm.forEach(el=>{el.style.transition='';});},Math.round(HBAR_T*1000)+150);
+    }else{bar.classList.add('run');}
+  },_openDelay);
   const close=cb=>closeHbar(cb);
   let dragMoved=false;
   bd.addEventListener('click',e=>{if(dragMoved){dragMoved=false;return;}if(e.target===bd||e.target===bar)close();});
