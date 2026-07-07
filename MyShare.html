@@ -1826,7 +1826,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.08.0154';
+const APP_VERSION='2026.07.08.0210';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2046,14 +2046,14 @@ function botbarCollapse(){            // collapse the bar into the menu icon —
   const N=meas.length;
   // same converge-into-icon motion as the 45° fan close: reuse the hmOut keyframe + its easing.
   // outermost button leaves first (stagger by reverse index) so they pull into the icon like the fan.
-  meas.forEach((m,i)=>{m.b.style.setProperty('--sx',m.dx+'px');m.b.style.setProperty('--sy',m.dy+'px');m.b.style.animation='hmOut .29s cubic-bezier(.5,.04,.7,.32) '+(((N-1-i)*0.035).toFixed(3))+'s both';});
+  meas.forEach((m,i)=>{const _d=((N-1-i)*0.035);m.b.style.setProperty('--sx',m.dx+'px');m.b.style.setProperty('--sy',m.dy+'px');m.b.style.animation='hmOut '+Math.max(0.2,HBAR_T-_d).toFixed(3)+'s cubic-bezier(.5,.04,.7,.32) '+_d.toFixed(3)+'s both';});
   setTimeout(()=>{                    // settle into the hidden resting state once collapsed
     barCollapsing=false;
     if(barReopening)return;           // הבר כבר באנימציית פתיחה-מחדש (סגירה מקבילית מהירה) — לא לדרוס אותה
     if(!document.querySelector('.hbar-backdrop')){updateBar();return;}   // menu already closed -> restore elsewhere
     botbar.classList.add('bar-hidden');
     btns.forEach(b=>{b.style.animation='';b.style.transition='';b.style.transform='';b.style.opacity='';b.style.removeProperty('--sx');b.style.removeProperty('--sy');});
-  },290+(N-1)*35+120);
+  },Math.round(HBAR_T*1000)+120);
 }
 function botbarReopen(){              // spring the bar buttons back out of the icon
   barReopening=true;
@@ -2066,8 +2066,8 @@ function botbarReopen(){              // spring the bar buttons back out of the 
   const meas=btns.map(b=>{const r=b.getBoundingClientRect();return{b,dx:Math.round(fcx-(r.left+r.width/2)),dy:Math.round(fcy-(r.top+r.height/2))};});
   meas.forEach(m=>{m.b.style.transform='translate('+m.dx+'px,'+m.dy+'px) scale(.4)';m.b.style.opacity='0';});
   void botbar.offsetWidth;
-  meas.forEach((m,i)=>{m.b.style.transition='transform .46s cubic-bezier(.22,1,.36,1) '+(i*0.035).toFixed(3)+'s, opacity .26s ease '+(i*0.035).toFixed(3)+'s';m.b.style.transform='';m.b.style.opacity='1';});
-  setTimeout(()=>{barReopening=false;if(barCollapsing)return;btns.forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});},700);
+  meas.forEach((m,i)=>{const _d=(i*0.035);m.b.style.transition='transform '+Math.max(0.2,HBAR_T-_d).toFixed(3)+'s cubic-bezier(.22,1,.36,1) '+_d.toFixed(3)+'s, opacity .26s ease '+_d.toFixed(3)+'s';m.b.style.transform='';m.b.style.opacity='1';});
+  setTimeout(()=>{barReopening=false;if(barCollapsing)return;btns.forEach(b=>{b.style.transition='';b.style.transform='';b.style.opacity='';});},Math.round(HBAR_T*1000)+150);
 }
 function flipFirstContacts(newHand,n){   // PHASE B: cascade the first N on-screen contacts across (accordion)
   const rows=[...document.querySelectorAll('#home .row')].slice(0,n);
@@ -2966,13 +2966,13 @@ function openPaletteRow(itemEl){
   pb.querySelectorAll('.pal-sw').forEach(b=>b.onclick=(e)=>{e.stopPropagation();cfg.palette=+b.dataset.i;applyPalette(cfg.palette);saveCfg();if(navigator.vibrate)navigator.vibrate(6);foldPaletteRow(pb);setTimeout(()=>closeHbar(),200);});
 }
 var HBAR_PARALLEL=true;   // ניסוי: המניפה נפתחת/נסגרת במקביל לקיפול/פתיחת הסרגל התחתון. false = התזמון המקורי (רצף: בר→מניפה).
+var HBAR_T=0.55;          // משך כולל אחיד (שניות) לכל אנימציות המניפה והסרגל — פתיחה וסגירה מסתיימות בדיוק יחד.
 function closeHbar(cb,opts){
   opts=opts||{};
   const bd=document.querySelector('.hbar-backdrop');if(!bd)return;
   const bar=bd.querySelector('.hbar');if(bar&&bar.classList.contains('closing'))return;
   if(bar){bar.classList.remove('run');bar.classList.add('closing');}   // המניפה מתקפלת — ראשונה
-  const _n=bar?bar.querySelectorAll('.hm-item').length:7;
-  const _foldMs=Math.round((0.42+Math.max(0,_n-1)*0.05)*1000)+40;
+  const _foldMs=Math.round(HBAR_T*1000)+40;   // כל פריטי המניפה מסיימים ב-HBAR_T בדיוק
   if(opts.nav){
     // ניווט למסך: המניפה נסגרת + הרקע מתבהר. הבר לא נפתח והרקע לא מוסר כאן — הקורא פותח את המסך ואז את הבר (רצף: מניפה→מסך→בר).
     bd.style.transition='background .5s ease';bd.classList.remove('show');
@@ -3175,7 +3175,7 @@ function openHbar(){
     const cx=cxFab+dirX*k*hStep, cy=cyFab+k*vStep;
     const off=Math.round(lh ? (cx-25) : (window.innerWidth-cx-25));
     const bottom=Math.round(cy-25);
-    const dur='0.62', cdur=(0.42+i*0.05).toFixed(2);
+    const dur=HBAR_T.toFixed(2), cdur=Math.max(0.2,HBAR_T-(n-1-i)*0.04).toFixed(2);   // סגירה: delay=(n-1-i)*.04 (ב-CSS) + משך = תמיד HBAR_T
     return `<button class="hm-item" style="${posProp}:${off}px;bottom:${bottom}px;--dur:${dur}s;--cdur:${cdur}s;--i:${i};--r:${n-1-i}" data-i="${i}"><span class="hm-ic${it.big?' big':''}">${it.ic}</span><span class="hm-label">${escapeHtml(it.label)}</span></button>`;
   }).join('');
   bd.appendChild(bar);document.body.appendChild(bd);
@@ -3189,7 +3189,7 @@ function openHbar(){
   const _meas=_hm.map(el=>{const ic=el.querySelector('.hm-ic');const ir=ic.getBoundingClientRect(),er=el.getBoundingClientRect();return{el,icx:ir.left+ir.width/2,icy:ir.top+ir.height/2,er};});
   _meas.forEach(m=>{m.el.style.setProperty('--sx',Math.round(fcx-m.icx)+'px');m.el.style.setProperty('--sy',Math.round(fcy-m.icy)+'px');m.el.style.transformOrigin=Math.round(m.icx-m.er.left)+'px '+Math.round(m.icy-m.er.top)+'px';});
   bd.style.transition='background .5s ease';
-  const _openDelay=HBAR_PARALLEL?0:(_barVis?(290+Math.max(0,_bn-1)*35+40):300);   // מקביל: האייקון→X + המניפה + הרקע יוצאים ביחד עם קיפול הבר. מקורי: קודם הבר מתקפל, ואז המניפה.
+  const _openDelay=HBAR_PARALLEL?0:(_barVis?(Math.round(HBAR_T*1000)+40):300);   // מקביל: האייקון→X + המניפה + הרקע יוצאים ביחד עם קיפול הבר. מקורי: קודם הבר מתקפל, ואז המניפה.
   setTimeout(()=>{menuFab.classList.add('open');setFab(true);bar.classList.add('run');bd.classList.add('show');},_openDelay);
   const close=cb=>closeHbar(cb);
   let dragMoved=false;
