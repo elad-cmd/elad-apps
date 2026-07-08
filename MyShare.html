@@ -1019,7 +1019,7 @@ const SHARED_IMG = BRIDGE ? !!(bGet('getSharedImage','')||'') : false;
 const MODE = (_shared || SHARED_IMG || _params.get('share')==='1') ? 'share' : 'home';
 let SHARED = _shared || ((MODE==='share' && !SHARED_IMG) ? 'https://example.com/demo' : '');
 let PEOPLE = [];
-if(BRIDGE){try{const arr=JSON.parse(bGet('getContacts','[]')||'[]');if(arr&&arr.length)PEOPLE=arr;}catch(e){}}
+if(BRIDGE){try{const arr=JSON.parse(bGet('getContacts','[]')||'[]');if(arr&&arr.length){PEOPLE=arr;try{const _sp=JSON.parse(localStorage.getItem('myshare_people')||'[]');if(Array.isArray(_sp)&&_sp.length){const _have=new Set();PEOPLE.forEach(p=>{[p.phone].concat(p.phones||[]).forEach(ph=>{const k=normPhone(ph);if(k)_have.add(k);});const n=normName(p.name||'');if(n)_have.add('n:'+n);});_sp.forEach(p=>{if(!p||!p.local)return;const ks=[p.phone].concat(p.phones||[]).map(normPhone).filter(Boolean);const n='n:'+normName(p.name||'');if(ks.some(k=>_have.has(k)))return;if(!ks.length&&_have.has(n))return;PEOPLE.push(p);ks.forEach(k=>_have.add(k));_have.add(n);});}}catch(e){}}}catch(e){}}
 if(!PEOPLE.length){try{const _sp=JSON.parse(localStorage.getItem('myshare_people')||'[]');if(Array.isArray(_sp)&&_sp.length)PEOPLE=_sp;}catch(e){}}
 function savePeople(){try{localStorage.setItem('myshare_people',JSON.stringify(PEOPLE));}catch(e){}}
 function loadFavSet(){try{return JSON.parse(localStorage.getItem('myshare_favset')||'{}')||{};}catch(e){return {};}}
@@ -1836,7 +1836,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.08.1303';
+const APP_VERSION='2026.07.08.1329';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1876,6 +1876,129 @@ function exportContacts(){
     toast('יוצא קובץ אנשי קשר');
   }catch(e){toast('שגיאה בייצוא');}
 }
+/* ===== אשף ייבוא/ייצוא אנשי קשר ===== */
+const _IEW_SEC='text-align:center;color:#fff;font-size:12px;font-weight:700;letter-spacing:.6px;opacity:.6;margin:6px 0 13px;';
+function _iewTog(on){return '<span class="sw-tog'+(on?' on':'')+'"><span class="sw-knob"></span></span>';}
+function buildContactsExport(arr,fmt){
+  if(fmt==='csv'){
+    const esc=v=>{v=String(v||'');return (/[",\n]/.test(v))?('"'+v.replace(/"/g,'""')+'"'):v;};
+    let out='name,phone,email,organization\n';
+    arr.forEach(p=>{const ph=(p.phones&&p.phones[0])||p.phone||'';out+=[esc(p.name),esc(ph),esc(p.email||((p.emails||[])[0]||'')),esc(p.org)].join(',')+'\n';});
+    return '﻿'+out;
+  }
+  const esc=s=>String(s||'').replace(/([,;\\])/g,'\\$1').replace(/\r?\n/g,'\\n');
+  let v='';
+  arr.forEach(p=>{v+='BEGIN:VCARD\r\nVERSION:3.0\r\nFN:'+esc(p.name||'')+'\r\n';
+    const phs=(p.phones&&p.phones.length)?p.phones:(p.phone?[p.phone]:[]);phs.filter(Boolean).forEach(ph=>{v+='TEL:'+esc(ph)+'\r\n';});
+    const ems=(p.emails&&p.emails.length)?p.emails:(p.email?[p.email]:[]);ems.filter(Boolean).forEach(em=>{v+='EMAIL:'+esc(em)+'\r\n';});
+    if(p.org)v+='ORG:'+esc(p.org)+'\r\n';v+='END:VCARD\r\n';});
+  return v;
+}
+function shareContactsText(text,fname,mime){
+  try{const file=new File([text],fname,{type:mime});if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:'אנשי קשר'}).catch(()=>{});return;}}catch(e){}
+  const blob=new Blob([text],{type:mime});const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=fname;document.body.appendChild(a);a.click();
+  setTimeout(()=>{try{document.body.removeChild(a);}catch(e){}URL.revokeObjectURL(url);},1000);
+}
+function openExportWizard(){
+  const live=PEOPLE.filter(p=>FDEC[fKey(p)]!=='delete');
+  if(!live.length){toast('אין אנשי קשר לייצוא');return;}
+  const accs=[...new Set(live.map(p=>p.account||''))];
+  const hasAcc=accs.filter(Boolean).length>0;
+  const st={fmt:'vcf',sel:new Set(accs)};
+  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>ייצוא אנשי קשר</h2></div><div class="scr-body" id="ewBody"></div>');
+  sc._reopen=openExportWizard;
+  const body=sc.querySelector('#ewBody');
+  function count(){return live.filter(p=>st.sel.has(p.account||'')).length;}
+  function paint(){
+    body.innerHTML=
+      (hasAcc?('<div style="'+_IEW_SEC+'">אילו חשבונות לייצא</div><div class="resume-opts" id="ewAccs">'+
+        '<button class="resume-opt'+(st.sel.size===accs.length?' on':'')+'" data-v="__all__">כל החשבונות ('+live.length+')</button>'+
+        accs.map((a,i)=>{const n=live.filter(p=>(p.account||'')===a).length;return '<button class="resume-opt'+(st.sel.has(a)?' on':'')+'" data-i="'+i+'">'+(a?escapeHtml(a):'ללא חשבון')+' ('+n+')</button>';}).join('')+'</div>'):'')+
+      '<div style="'+_IEW_SEC+(hasAcc?'margin-top:26px;':'')+'">פורמט הקובץ</div><div class="resume-opts" id="ewFmt">'+
+        [['vcf','קובץ VCF — לייבוא לטלפון או לגוגל (מומלץ)'],['csv','קובץ CSV — לאקסל וגיליונות']].map(o=>'<button class="resume-opt'+(st.fmt===o[0]?' on':'')+'" data-v="'+o[0]+'">'+o[1]+'</button>').join('')+'</div>'+
+      '<button class="mp-confirm" id="ewGo" style="margin-top:28px;">ייצא '+count()+' אנשי קשר</button>';
+    const wrap=body.querySelector('#ewAccs');
+    if(wrap)wrap.querySelectorAll('.resume-opt').forEach(b=>b.onclick=()=>{
+      if(b.dataset.v==='__all__'){if(st.sel.size===accs.length)st.sel.clear();else st.sel=new Set(accs);}
+      else{const a=accs[+b.dataset.i];if(st.sel.has(a))st.sel.delete(a);else st.sel.add(a);}
+      paint();});
+    body.querySelectorAll('#ewFmt .resume-opt').forEach(b=>b.onclick=()=>{st.fmt=b.dataset.v;paint();});
+    body.querySelector('#ewGo').onclick=()=>{
+      const arr=live.filter(p=>st.sel.has(p.account||''));
+      if(!arr.length){toast('בחר לפחות חשבון אחד');return;}
+      const csv=st.fmt==='csv';
+      shareContactsText(buildContactsExport(arr,st.fmt),csv?'sweep-contacts.csv':'sweep-contacts.vcf',csv?'text/csv':'text/vcard');
+      toast('מייצא '+arr.length+' אנשי קשר');
+      if(navigator.vibrate)navigator.vibrate(8);
+    };
+  }
+  paint();
+}
+function openImportWizard(file){
+  const rd=new FileReader();
+  rd.onload=()=>{
+    const t=String(rd.result||'');
+    const arr=/BEGIN:VCARD/i.test(t)?parseVCards(t):parseCSVContacts(t);
+    if(!arr.length){toast('לא נמצאו אנשי קשר בקובץ');return;}
+    const _d=new Date();
+    const st={clean:true,dup:'merge',mklist:false,lname:'ייבוא '+_d.getDate()+'.'+(_d.getMonth()+1)};
+    const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>ייבוא אנשי קשר</h2></div><div class="scr-body" id="iwBody"></div>');
+    const body=sc.querySelector('#iwBody');
+    function paint(){
+      body.innerHTML=
+        '<div style="text-align:center;font-size:15px;font-weight:700;margin:2px 0 20px;">נמצאו '+arr.length+' אנשי קשר בקובץ</div>'+
+        '<div class="set-toggle" id="iwClean" style="margin-bottom:6px;"><span>ניקוי מספרים אוטומטי</span>'+_iewTog(st.clean)+'</div>'+
+        '<p class="cr-hint" style="margin:0 0 22px;opacity:.6;font-size:11.5px;text-align:center;">המרת ‎+972‎ ל-0 ופורמט אחיד, כמו בניקוי המספרים של סדר פסח</p>'+
+        '<div style="'+_IEW_SEC+'">אם איש הקשר כבר קיים אצלך</div>'+
+        '<div class="resume-opts" id="iwDup">'+[['merge','השלם פרטים חסרים אצל הקיים (מומלץ)'],['dup','צור עותק כפול — למיזוג בהמשך'],['skip','דלג עליו — אל תייבא']].map(o=>'<button class="resume-opt'+(st.dup===o[0]?' on':'')+'" data-v="'+o[0]+'">'+o[1]+'</button>').join('')+'</div>'+
+        '<div class="set-toggle" id="iwList" style="margin-top:28px;margin-bottom:6px;"><span>הוסף את כולם לרשימה חדשה</span>'+_iewTog(st.mklist)+'</div>'+
+        (st.mklist?'<input class="ct-inp" id="iwLname" placeholder="שם הרשימה" style="width:100%;margin:2px 0 6px;" value="'+escapeHtml(st.lname)+'">':'')+
+        '<button class="mp-confirm" id="iwGo" style="margin-top:26px;">ייבא '+arr.length+' אנשי קשר</button>';
+      body.querySelector('#iwClean').onclick=()=>{st.clean=!st.clean;paint();};
+      body.querySelectorAll('#iwDup .resume-opt').forEach(b=>b.onclick=()=>{st.dup=b.dataset.v;paint();});
+      body.querySelector('#iwList').onclick=()=>{st.mklist=!st.mklist;paint();if(st.mklist){const i=body.querySelector('#iwLname');if(i){try{i.focus();i.select();}catch(e){}}}};
+      const ln=body.querySelector('#iwLname');if(ln)ln.addEventListener('input',()=>{st.lname=ln.value;});
+      body.querySelector('#iwGo').onclick=()=>runImportContacts(arr,st,sc);
+    }
+    paint();
+  };
+  rd.readAsText(file,'utf-8');
+}
+function runImportContacts(arr,st,sc){
+  const byP={},byE={},byN={};
+  PEOPLE.forEach(p=>{
+    [p.phone].concat(p.phones||[]).forEach(ph=>{const k=normPhone(ph);if(k&&!byP[k])byP[k]=p;});
+    const e=normEmail(p.email||((p.emails||[])[0]||''));if(e&&!byE[e])byE[e]=p;
+    const n=normName(p.name||'');if(n&&!byN[n])byN[n]=p;});
+  let added=0,merged=0,skipped=0;const keys=[];
+  arr.forEach(c=>{
+    let phones=((c.phones&&c.phones.length)?c.phones:(c.phone?[c.phone]:[])).filter(Boolean);
+    if(st.clean)phones=phones.map(ph=>normIL(ph)||ph);
+    const c2={name:c.name||'',phone:phones[0]||'',phones:phones,email:c.email||'',emails:(c.emails||[]).filter(Boolean),org:c.org||'',msg:'',fav:false,last:0,local:1};
+    let ex=null;
+    phones.some(ph=>{const k=normPhone(ph);if(k&&byP[k]){ex=byP[k];return true;}return false;});
+    if(!ex){const e=normEmail(c2.email);if(e&&byE[e])ex=byE[e];}
+    if(!ex){const n=normName(c2.name);if(n&&byN[n])ex=byN[n];}
+    if(ex&&st.dup==='skip'){skipped++;return;}
+    if(ex&&st.dup==='merge'){
+      if(!ex.phone&&c2.phone){ex.phone=c2.phone;ex.phones=phones.slice();}
+      else if(c2.phone){const eks=new Set([ex.phone].concat(ex.phones||[]).map(normPhone).filter(Boolean));if(!(ex.phones&&ex.phones.length))ex.phones=ex.phone?[ex.phone]:[];phones.forEach(ph=>{const k=normPhone(ph);if(k&&!eks.has(k)){ex.phones.push(ph);eks.add(k);}});}
+      if(!ex.email&&c2.email)ex.email=c2.email;
+      if(!ex.org&&c2.org)ex.org=c2.org;
+      merged++;keys.push(fKey(ex));return;}
+    PEOPLE.push(c2);added++;keys.push(fKey(c2));
+    phones.forEach(ph=>{const k=normPhone(ph);if(k&&!byP[k])byP[k]=c2;});
+    const n=normName(c2.name);if(n&&!byN[n])byN[n]=c2;});
+  savePeople();
+  let lmsg='';
+  if(st.mklist&&keys.length){const nm=(st.lname||'').trim()||('ייבוא '+arr.length);const L={id:'L'+Date.now(),name:nm,members:[...new Set(keys)]};cfg.lists=cfg.lists||[];cfg.lists.push(L);saveCfg();try{renderLists();}catch(e){}lmsg=' · נוספו לרשימה «'+nm+'»';}
+  try{recomputeAllRules();}catch(e){}
+  try{renderList();}catch(e){}
+  if(navigator.vibrate)navigator.vibrate(10);
+  toast('יובאו '+added+' חדשים'+(merged?' · עודכנו '+merged+' קיימים':'')+(skipped?' · דולגו '+skipped:'')+lmsg);
+  if(sc){try{sc._back();}catch(e){try{closeScreen(sc);}catch(_){}}}
+}
 function openSettings(){
   let sc=document.querySelector('.scr.set-scr');
   if(!sc){sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>הגדרות</h2></div><div class="scr-body" id="setBody"></div>');sc.classList.add('set-scr');sc._reopen=openSettings;addScreenBar(sc);}
@@ -1906,8 +2029,8 @@ function openSettings(){
   const bs=sheet.querySelector('#bkSave');if(bs)bs.onclick=doBackup;
   const bl=sheet.querySelector('#bkLoad');if(bl)bl.onclick=doRestore;
   const ub=sheet.querySelector('#appUpdate');if(ub)ub.onclick=doUpdate;
-  const _imp=sheet.querySelector('#cmImport'),_cf=sheet.querySelector('#cmFile');if(_imp&&_cf){_imp.onclick=()=>_cf.click();_cf.onchange=e=>{const f=e.target.files&&e.target.files[0];if(f)loadContactsFile(f);};}
-  const _exp=sheet.querySelector('#cmExport');if(_exp)_exp.onclick=()=>exportContacts();
+  const _imp=sheet.querySelector('#cmImport'),_cf=sheet.querySelector('#cmFile');if(_imp&&_cf){_imp.onclick=()=>_cf.click();_cf.onchange=e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(f)openImportWizard(f);};}
+  const _exp=sheet.querySelector('#cmExport');if(_exp)_exp.onclick=()=>openExportWizard();
   const _onb=sheet.querySelector('#cmOnboard');if(_onb)_onb.onclick=()=>{if(sc._back)sc._back();try{welcomeEl.classList.remove('hide');}catch(e){}};
   const _ak=sheet.querySelector('#aiKeyInp'),_aks=sheet.querySelector('#aiKeySave');
   if(_ak){const _isKey=t=>/^sk-[\w-]{20,}$/.test(String(t||'').trim());const _autoPaste=()=>{const _use=c=>{c=String(c||'').trim();if(_isKey(c)){_ak.value=c;try{_ak.setSelectionRange(c.length,c.length);}catch(e){}return true;}return false;};const _hasVal=!!(_ak.value||'').trim();if(_hasVal){try{_ak.select();}catch(e){try{_ak.setSelectionRange(0,(_ak.value||'').length);}catch(_){}}}let t='';try{if(BRIDGE&&typeof BRIDGE.readClipboard==='function')t=BRIDGE.readClipboard()||'';}catch(e){}if(_use(t))return;try{if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(_use).catch(()=>{});}catch(e){}};_ak.addEventListener('focus',_autoPaste);_ak.addEventListener('click',_autoPaste);}
