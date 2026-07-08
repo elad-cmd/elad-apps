@@ -739,6 +739,10 @@
   .contact-add.show{display:flex;}
   body.hand-left .contact-add{left:auto;right:14px;}
   .contact-add svg{width:24px;height:24px;}
+  .list-cal{position:fixed;left:14px;top:50%;transform:translateY(calc(-50% - 112px));transition:transform .55s cubic-bezier(.34,1.45,.5,1);z-index:34;width:46px;height:46px;border-radius:50%;border:1.6px solid rgba(255,255,255,.72);background:transparent;color:#fff;display:none;align-items:center;justify-content:center;cursor:pointer;}
+  .list-cal.show{display:flex;}
+  .list-cal svg{width:21px;height:21px;}
+  body.hand-left .list-cal{left:auto;right:14px;}
   .list-send{position:fixed;left:14px;top:50%;transform:translateY(calc(-50% - 56px));transition:transform .55s cubic-bezier(.34,1.45,.5,1);z-index:34;width:46px;height:46px;border-radius:50%;border:none;background:var(--tq-deep);color:#04342C;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 12px 26px -8px rgba(0,0,0,.5);}
   .list-send.show{display:flex;}
   body.hand-left .list-send{transform:translate(calc(100vw - 74px),calc(-50% - 56px));}
@@ -1440,6 +1444,63 @@ function openSpecialLists(){
   render();
 }
 function listMembersPeople(L){return ((L&&L.members)||[]).map(k=>PEOPLE.find(p=>fKey(p)===k)).filter(Boolean);}
+function openCalInvite(listId){
+  const L=(cfg.lists||[]).find(x=>x.id===listId);if(!L)return;
+  const all=listMembersPeople(L);
+  if(!all.length){toast('אין אנשי קשר ברשימה');return;}
+  const sel=new Set(all.map(p=>fKey(p)));
+  const emailOf=p=>p.email||((p.emails&&p.emails[0])||'');
+  const _tm=new Date(Date.now()+86400000);
+  const _p2=n=>(n<10?'0':'')+n;
+  const st={title:L.name||'',date:_tm.getFullYear()+'-'+_p2(_tm.getMonth()+1)+'-'+_p2(_tm.getDate()),time:'20:00',dur:60,loc:''};
+  const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>זמן ליומן — «'+escapeHtml(L.name)+'»</h2></div><div class="scr-body" id="ciBody"></div>');
+  sc._reopen=()=>openCalInvite(listId);
+  const body=sc.querySelector('#ciBody');
+  const DURS=[[60,'שעה'],[120,'שעתיים'],[180,'3 שעות'],[0,'כל היום']];
+  function chosen(){return all.filter(p=>sel.has(fKey(p)));}
+  function paint(){
+    const withMail=chosen().filter(p=>emailOf(p)).length;
+    body.innerHTML='<div class="sl-hint">מי מוזמן? מי שיש לו מייל יצורף כמוזמן ביומן; השאר יופיעו בתיאור האירוע.</div>'+
+      '<div class="sl-list">'+all.map((p,i)=>'<label class="sl-row"><input type="checkbox" class="sl-chk" data-i="'+i+'"'+(sel.has(fKey(p))?' checked':'')+'><span class="li-av">'+escapeHtml(initials(p.name))+'</span><div class="li-txt"><div class="n">'+escapeHtml(p.name||'(ללא שם)')+'</div><div class="s">'+(emailOf(p)?escapeHtml(emailOf(p)):'בלי מייל — יופיע בתיאור')+'</div></div></label>').join('')+'</div>'+
+      '<input class="ct-inp" id="ciTitle" placeholder="כותרת האירוע" style="width:100%;margin:14px 0 8px;" value="'+escapeHtml(st.title)+'">'+
+      '<div style="display:flex;gap:8px;margin-bottom:8px;"><input class="ct-inp" id="ciDate" type="date" style="flex:1.3;min-width:0;" value="'+st.date+'">'+(st.dur!==0?'<input class="ct-inp" id="ciTime" type="time" style="flex:1;min-width:0;" value="'+st.time+'">':'')+'</div>'+
+      '<div class="fo-chips" style="margin:2px 0 8px;">'+DURS.map(d=>'<button class="fo-chip'+(st.dur===d[0]?' on':'')+'" data-d="'+d[0]+'">'+d[1]+'</button>').join('')+'</div>'+
+      '<input class="ct-inp" id="ciLoc" placeholder="מיקום (לא חובה)" style="width:100%;margin:0 0 6px;" value="'+escapeHtml(st.loc)+'">'+
+      '<button class="mp-confirm" id="ciGo" style="margin-top:16px;">פתח ביומן עם '+chosen().length+' מוזמנים'+(withMail<chosen().length?' ('+withMail+' עם מייל)':'')+'</button>';
+    body.querySelectorAll('.sl-chk').forEach(cb=>cb.addEventListener('change',()=>{const p=all[+cb.dataset.i];if(cb.checked)sel.add(fKey(p));else sel.delete(fKey(p));paint();}));
+    const ti=body.querySelector('#ciTitle');ti.addEventListener('input',()=>{st.title=ti.value;});
+    const di=body.querySelector('#ciDate');di.addEventListener('change',()=>{st.date=di.value;});
+    const tm=body.querySelector('#ciTime');if(tm)tm.addEventListener('change',()=>{st.time=tm.value;});
+    const lo=body.querySelector('#ciLoc');lo.addEventListener('input',()=>{st.loc=lo.value;});
+    body.querySelectorAll('.fo-chip[data-d]').forEach(b=>b.onclick=()=>{st.dur=+b.dataset.d;paint();});
+    body.querySelector('#ciGo').onclick=()=>{
+      const ppl=chosen();
+      if(!ppl.length){toast('בחר לפחות מוזמן אחד');return;}
+      if(!(st.title||'').trim()){toast('תן כותרת לאירוע');const t2=body.querySelector('#ciTitle');if(t2){try{t2.focus();}catch(e){}}return;}
+      const dm=String(st.date||'').match(/(\d{4})-(\d{2})-(\d{2})/);
+      if(!dm){toast('בחר תאריך');return;}
+      const hm=String(st.time||'20:00').match(/(\d{1,2}):(\d{2})/)||[0,20,0];
+      const allDay=st.dur===0;
+      const begin=allDay?new Date(+dm[1],+dm[2]-1,+dm[3],0,0,0).getTime():new Date(+dm[1],+dm[2]-1,+dm[3],+hm[1],+hm[2],0).getTime();
+      const end=allDay?begin+86400000:begin+st.dur*60000;
+      const emails=[...new Set(ppl.map(emailOf).filter(Boolean))];
+      const noMail=ppl.filter(p=>!emailOf(p)).map(p=>p.name||'').filter(Boolean);
+      let desc='רשימת «'+(L.name||'')+'» מ-Sweep';
+      if(noMail.length)desc+='\nמשתתפים בלי מייל: '+noMail.join(', ');
+      const ev={title:(st.title||'').trim(),begin:begin,end:end,allDay:allDay,location:(st.loc||'').trim(),description:desc,emails:emails};
+      let ok=false;
+      try{if(BRIDGE&&typeof BRIDGE.addEvent==='function'){BRIDGE.addEvent(JSON.stringify(ev));ok=true;}}catch(e){}
+      if(!ok){
+        const f=t=>{const d=new Date(t);return d.getFullYear()+_p2(d.getMonth()+1)+_p2(d.getDate())+(allDay?'':'T'+_p2(d.getHours())+_p2(d.getMinutes())+'00');};
+        const u='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(ev.title)+'&dates='+f(begin)+'/'+f(end)+(ev.location?'&location='+encodeURIComponent(ev.location):'')+'&details='+encodeURIComponent(desc)+emails.map(e=>'&add='+encodeURIComponent(e)).join('');
+        try{const w=window.open(u,'_blank','noopener');if(!w)location.href=u;}catch(e){location.href=u;}
+      }
+      if(navigator.vibrate)navigator.vibrate(8);
+      toast('האירוע נפתח ביומן — אשר אותו שם');
+    };
+  }
+  paint();
+}
 function openSendList(listId){
   const L=(cfg.lists||[]).find(x=>x.id===listId);if(!L)return;
   const all=listMembersPeople(L);
@@ -1836,7 +1897,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.08.1518';
+const APP_VERSION='2026.07.08.1531';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2438,9 +2499,10 @@ const listAddBtn=document.createElement('button');listAddBtn.className='list-add
 const ICON_CONTACTADD='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M19 8v6M16 11h6"/></svg>';
 const ICON_FAVADD='<svg viewBox="0 0 24 24" fill="none"><path transform="translate(1.9 2.4) scale(0.8)" d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.8 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z" fill="currentColor" stroke="none"/><path d="M19 4v4.4M16.8 6.2h4.4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>';
 const contactAddBtn=document.createElement('button');contactAddBtn.className='contact-add';contactAddBtn.id='contactAdd';contactAddBtn.setAttribute('aria-label','הוסף איש קשר חדש');contactAddBtn.innerHTML=ICON_CONTACTADD;contactAddBtn.onclick=()=>{if(VIEW==='fav'&&!activeList)openFavPicker();else openAddContact({});};document.body.appendChild(contactAddBtn);
+const ICON_LISTCAL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9h16M8 3v4M16 3v4"/><circle cx="9" cy="13.5" r="1" fill="currentColor" stroke="none"/><circle cx="13" cy="13.5" r="1" fill="currentColor" stroke="none"/><circle cx="17" cy="13.5" r="1" fill="currentColor" stroke="none"/><circle cx="9" cy="17" r="1" fill="currentColor" stroke="none"/></svg>';const listCalBtn=document.createElement('button');listCalBtn.className='list-cal';listCalBtn.id='listCal';listCalBtn.setAttribute('aria-label','זמן את הרשימה ליומן');listCalBtn.innerHTML=ICON_LISTCAL;listCalBtn.onclick=()=>{if(activeList)openCalInvite(activeList);};document.body.appendChild(listCalBtn);
 const listSendBtn=document.createElement('button');listSendBtn.className='list-send';listSendBtn.id='listSend';listSendBtn.setAttribute('aria-label','שלח לרשימה');listSendBtn.innerHTML=ICON.multisend;listSendBtn.onclick=()=>{if(activeList)openSendList(activeList);};document.body.appendChild(listSendBtn);
 updateFavEdit();updateListAdd();
-function updateListAdd(){const b=document.getElementById('listAdd');if(b)b.classList.toggle('show',!!activeList);const s=document.getElementById('listSend');if(s)s.classList.toggle('show',!!activeList);}
+function updateListAdd(){const b=document.getElementById('listAdd');if(b)b.classList.toggle('show',!!activeList);const s=document.getElementById('listSend');if(s)s.classList.toggle('show',!!activeList);const c=document.getElementById('listCal');if(c)c.classList.toggle('show',!!activeList);}
 function updateContactAdd(){const b=document.getElementById('contactAdd');if(!b)return;const fav=(VIEW==='fav'&&!activeList);b.classList.toggle('show',!activeList);b.innerHTML=fav?ICON_FAVADD:ICON_CONTACTADD;b.setAttribute('aria-label',fav?'הוסף למועדפים':'הוסף איש קשר חדש');}
 function updateFavEdit(){const b=document.getElementById('favEdit');if(!b)return;const show=(VIEW==='fav'&&!activeList);b.classList.toggle('show',show);if(!show&&editMode){editMode=false;document.body.classList.remove('editing');}b.classList.toggle('on',editMode);}
 function setEdit(on){editMode=on&&(VIEW==='fav');document.body.classList.toggle('editing',editMode);favEditBtn.classList.toggle('on',editMode);renderList();}
