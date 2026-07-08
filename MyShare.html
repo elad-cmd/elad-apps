@@ -204,17 +204,6 @@
     100%{opacity:1.00;transform:translate(calc(var(--sx,0px) * 0.0000),calc(var(--sy,0px) * 0.0000)) scale(1.000);}
   }
   @keyframes hmOut{0%{opacity:1;transform:translate(0,0) scale(1);}18%{transform:translate(0,0) scale(1.08);}100%{opacity:0;transform:translate(var(--sx,0),var(--sy,0)) scale(.4);}}
-  /* פתיחה קפיצית כמו קפיץ: הלוך → חזרה קטנה → הלוך קצר → חזרה קטנטנה → נחיתה. שתי תנודות דועכות, פרוסות על כל המשך כך שהסיום מסונכרן עם שאר האנימציות. */
-  @keyframes hmInSpring{
-    0%{opacity:0;transform:translate(calc(var(--sx,0px)*1),calc(var(--sy,0px)*1)) scale(.6);}
-    12%{opacity:.7;transform:translate(calc(var(--sx,0px)*.55),calc(var(--sy,0px)*.55)) scale(.78);}
-    26%{opacity:1;transform:translate(calc(var(--sx,0px)*.02),calc(var(--sy,0px)*.02)) scale(.99);}
-    40%{transform:translate(calc(var(--sx,0px)*-.13),calc(var(--sy,0px)*-.13)) scale(1.05);}
-    56%{transform:translate(calc(var(--sx,0px)*.05),calc(var(--sy,0px)*.05)) scale(.985);}
-    70%{transform:translate(calc(var(--sx,0px)*-.035),calc(var(--sy,0px)*-.035)) scale(1.014);}
-    84%{transform:translate(calc(var(--sx,0px)*.015),calc(var(--sy,0px)*.015)) scale(.995);}
-    100%{opacity:1;transform:translate(0,0) scale(1);}
-  }
   .hm-ic{width:50px;height:50px;border-radius:50%;background:var(--white);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px -8px rgba(8,50,50,.6);color:var(--tq-ink);transition:transform .16s cubic-bezier(.34,1.56,.64,1), background .16s ease, color .16s ease;}
   .hm-item.tapped .hm-ic{transform:scale(1.22);background:var(--tq-deep);color:#fff;box-shadow:0 16px 34px -8px rgba(8,50,50,.75);}
   .hm-ic svg{width:23px;height:23px;}
@@ -1837,7 +1826,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.08.0300';
+const APP_VERSION='2026.07.08.0310';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -2066,7 +2055,7 @@ function botbarCollapse(){            // collapse the bar into the menu icon —
     btns.forEach(b=>{b.style.animation='';b.style.transition='';b.style.transform='';b.style.opacity='';b.style.removeProperty('--sx');b.style.removeProperty('--sy');});
   },Math.round(HBAR_T*1000)+120);
 }
-function botbarReopen(){              // spring the bar buttons back out of the icon — אותו קפיץ hmInSpring כמו המניפה; הסגירה נשארת התקפלות hmOut
+function botbarReopen(){              // spring the bar buttons back out of the icon — אותו קפיץ hmIn המקורי של המניפה; הסגירה נשארת התקפלות hmOut
   barReopening=true;
   botbar.classList.remove('bar-hidden','collapsed');
   const btns=[...botbar.querySelectorAll('.bb-btn')];
@@ -2075,7 +2064,7 @@ function botbarReopen(){              // spring the bar buttons back out of the 
   const fr=menuFab.getBoundingClientRect();
   const fcx=fr.left+fr.width/2, fcy=fr.top+fr.height/2;
   const meas=btns.map(b=>{const r=b.getBoundingClientRect();return{b,dx:Math.round(fcx-(r.left+r.width/2)),dy:Math.round(fcy-(r.top+r.height/2))};});
-  meas.forEach((m,i)=>{const _d=(i*0.035);m.b.style.setProperty('--sx',m.dx+'px');m.b.style.setProperty('--sy',m.dy+'px');m.b.style.animation='hmInSpring '+Math.max(0.2,HBAR_T-_d).toFixed(3)+'s ease-in-out '+_d.toFixed(3)+'s both';});
+  meas.forEach(m=>{m.b.style.setProperty('--sx',m.dx+'px');m.b.style.setProperty('--sy',m.dy+'px');m.b.style.animation='hmIn '+HBAR_T.toFixed(2)+'s linear both';});   // בדיוק אותו קפיץ hmIn של המניפה, אותו משך, בלי סטגר — כמו המקור
   setTimeout(()=>{barReopening=false;if(barCollapsing)return;btns.forEach(b=>{b.style.animation='';b.style.transition='';b.style.transform='';b.style.opacity='';b.style.removeProperty('--sx');b.style.removeProperty('--sy');});},Math.round(HBAR_T*1000)+150);
 }
 function flipFirstContacts(newHand,n){   // PHASE B: cascade the first N on-screen contacts across (accordion)
@@ -2975,7 +2964,7 @@ function openPaletteRow(itemEl){
   pb.querySelectorAll('.pal-sw').forEach(b=>b.onclick=(e)=>{e.stopPropagation();cfg.palette=+b.dataset.i;applyPalette(cfg.palette);saveCfg();if(navigator.vibrate)navigator.vibrate(6);foldPaletteRow(pb);setTimeout(()=>closeHbar(),200);});
 }
 var HBAR_PARALLEL=true;   // ניסוי: המניפה נפתחת/נסגרת במקביל לקיפול/פתיחת הסרגל התחתון. false = התזמון המקורי (רצף: בר→מניפה).
-var HBAR_T=0.55;          // משך כולל אחיד (שניות) לכל אנימציות המניפה והסרגל — פתיחה וסגירה מסתיימות בדיוק יחד.
+var HBAR_T=0.62;          // משך כולל אחיד (שניות) לכל אנימציות המניפה והסרגל — כמו משך ה-hmIn המקורי; פתיחה וסגירה מסתיימות בדיוק יחד.
 function closeHbar(cb,opts){
   opts=opts||{};
   const bd=document.querySelector('.hbar-backdrop');if(!bd)return;
@@ -3199,11 +3188,7 @@ function openHbar(){
   _meas.forEach(m=>{m.el.style.setProperty('--sx',Math.round(fcx-m.icx)+'px');m.el.style.setProperty('--sy',Math.round(fcy-m.icy)+'px');m.el.style.transformOrigin=Math.round(m.icx-m.er.left)+'px '+Math.round(m.icy-m.er.top)+'px';});
   bd.style.transition='background .5s ease';
   const _openDelay=HBAR_PARALLEL?0:(_barVis?(Math.round(HBAR_T*1000)+40):300);   // מקביל: האייקון→X + המניפה + הרקע יוצאים ביחד עם קיפול הבר. מקורי: קודם הבר מתקפל, ואז המניפה.
-  setTimeout(()=>{menuFab.classList.add('open');setFab(true);bd.classList.add('show');
-    if(HBAR_PARALLEL){   // תזמון מסונכרן עם הבר + קפיציות קפיץ אמיתית (hmInSpring — שתי תנודות דועכות עד הסוף)
-      _hm.forEach((el,i)=>{const _d=i*0.035;el.style.transition='none';el.style.animation='hmInSpring '+Math.max(0.2,HBAR_T-_d).toFixed(3)+'s ease-in-out '+_d.toFixed(3)+'s both';});
-    }else{bar.classList.add('run');}
-  },_openDelay);
+  setTimeout(()=>{menuFab.classList.add('open');setFab(true);bar.classList.add('run');bd.classList.add('show');},_openDelay);   // הפתיחה = קפיץ hmIn המקורי (.run); הדגל שולט רק על התזמון (מקביל לבר)
   const close=cb=>closeHbar(cb);
   let dragMoved=false;
   bd.addEventListener('click',e=>{if(dragMoved){dragMoved=false;return;}if(e.target===bd||e.target===bar)close();});
