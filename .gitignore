@@ -9,3 +9,6 @@ med-knowledge-exam/_ארכיון-ומחקר/
 **/*.backup
 **/.fuse_hidden*
 _sizetest.txt
+
+# תיקיית קבצים שהועברו למחיקה — לא לפרסם
+_to_delete/
