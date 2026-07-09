@@ -660,32 +660,21 @@
   .resume-opt.on{background:var(--tq-deep);border-color:var(--tq-deep);}
   .av .favstar{position:absolute;bottom:-1px;left:-1px;width:17px;height:17px;border-radius:50%;background:var(--bg);border:none;display:flex;align-items:center;justify-content:center;z-index:2;}
   .av .favstar svg{width:11px;height:11px;color:var(--accent);fill:var(--accent);}
-  .fav-edit{position:fixed;left:14px;top:50%;transform:translateY(-50%);transition:transform .55s cubic-bezier(.34,1.45,.5,1);z-index:34;width:46px;height:46px;border-radius:50%;border:1.6px solid rgba(255,255,255,.72);background:transparent;color:#fff;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:none;}
-  .fav-edit.show{display:flex;}
-  body.hand-left .fav-edit{left:auto;right:14px;}
-  .fav-edit.on{background:var(--tq-deep);border-color:var(--tq-deep);color:#fff;}
-  .fav-sort{position:fixed;left:14px;top:50%;transform:translateY(calc(-50% - 64px));transition:transform .55s cubic-bezier(.34,1.45,.5,1);z-index:34;width:46px;height:46px;border-radius:50%;border:1.6px solid rgba(255,255,255,.72);background:transparent;color:#fff;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:none;}
-  .fav-sort.show{display:flex;}
-  body.hand-left .fav-sort{left:auto;right:14px;}
-  .fav-sort.on{background:var(--tq-deep);border-color:var(--tq-deep);color:#fff;}
+  /* side-fab: קומפוננטת הכפתור הצף הצדדי — סגנון אחיד לכולם, מיקום אנכי דרך --sfy */
+  .side-fab{position:fixed;left:14px;top:50%;--sfy:0px;transform:translateY(calc(-50% + var(--sfy)));transition:transform .55s cubic-bezier(.34,1.45,.5,1);z-index:34;width:46px;height:46px;border-radius:50%;border:1.6px solid rgba(255,255,255,.72);background:transparent;color:#fff;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:none;}
+  .side-fab.show{display:flex;}
+  body.hand-left .side-fab{left:auto;right:14px;}
+  .side-fab.on{background:var(--tq-deep);border-color:var(--tq-deep);color:#fff;}
+  .sf-edit svg{width:22px;height:22px;}
+  .fav-sort{--sfy:-64px;}
   .fav-sort svg{width:24px;height:24px;}
-  .fav-edit svg{width:22px;height:22px;}
-  .list-add{position:fixed;left:14px;top:50%;transform:translateY(-50%);transition:transform .55s cubic-bezier(.34,1.45,.5,1);z-index:34;width:46px;height:46px;border-radius:50%;border:none;background:var(--tq-deep);color:#04342C;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 12px 26px -8px rgba(0,0,0,.5);}
-  .list-add.show{display:flex;}
-  body.hand-left .list-add{transform:translate(calc(100vw - 74px),-50%);}
-  .list-add svg{width:26px;height:26px;}
-  .contact-add{position:fixed;left:14px;top:50%;transform:translateY(calc(-50% + 64px));transition:transform .55s cubic-bezier(.34,1.45,.5,1);z-index:34;width:46px;height:46px;border-radius:50%;border:1.6px solid rgba(255,255,255,.72);background:transparent;color:#fff;display:none;align-items:center;justify-content:center;cursor:pointer;}
-  .contact-add.show{display:flex;}
-  body.hand-left .contact-add{left:auto;right:14px;}
+  .contact-add{--sfy:64px;}
   .contact-add svg{width:24px;height:24px;}
-  .list-cal{position:fixed;left:14px;top:50%;transform:translateY(calc(-50% - 112px));transition:transform .55s cubic-bezier(.34,1.45,.5,1);z-index:34;width:46px;height:46px;border-radius:50%;border:1.6px solid rgba(255,255,255,.72);background:transparent;color:#fff;display:none;align-items:center;justify-content:center;cursor:pointer;}
-  .list-cal.show{display:flex;}
   .list-cal svg{width:21px;height:21px;}
-  body.hand-left .list-cal{left:auto;right:14px;}
-  .list-send{position:fixed;left:14px;top:50%;transform:translateY(calc(-50% - 56px));transition:transform .55s cubic-bezier(.34,1.45,.5,1);z-index:34;width:46px;height:46px;border-radius:50%;border:none;background:var(--tq-deep);color:#04342C;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 12px 26px -8px rgba(0,0,0,.5);}
-  .list-send.show{display:flex;}
-  body.hand-left .list-send{transform:translate(calc(100vw - 74px),calc(-50% - 56px));}
+  .list-send{--sfy:68px;}
   .list-send svg{width:25px;height:25px;}
+  .list-add{--sfy:136px;}
+  .list-add svg{width:26px;height:26px;}
   body.editing .row{cursor:grab;}
   .edit-hint{text-align:center;font-size:13px;font-weight:600;color:rgba(255,255,255,.9);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:10px 14px;margin:0 16px 10px;animation:hintIn .28s cubic-bezier(.22,1,.36,1);}
   @keyframes hintIn{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:none;}}
@@ -697,7 +686,7 @@
   .scrbar-voice{background:transparent;border:1.6px solid rgba(255,255,255,.72);box-shadow:none;}
   .mpk-scr .scrbar{z-index:93;}
   body.hand-left .scrbar{flex-direction:row-reverse;}
-  body.hf-hold .list-add,body.hf-hold .list-send,body.hf-hold .contact-add,body.hf-hold .fav-edit,body.hf-hold .fav-sort{transition-delay:.9s;}
+  body.hf-hold .side-fab{transition-delay:.9s;}
   body.hand-left #botbar{flex-direction:row-reverse;}
   #botbar .bb-spacer{width:50px;height:50px;flex:0 0 auto;}
   #botbar .bb-btn{pointer-events:auto;flex:0 0 auto;width:50px;height:50px;border-radius:50%;border:1px solid var(--line-strong);cursor:pointer;background:var(--surface);color:var(--text-2);display:flex;align-items:center;justify-content:center;box-shadow:none;transition:transform .12s ease, opacity .2s ease;}
@@ -1785,7 +1774,7 @@ function tapContact(p){
   if(_tapK===k&&now-_tapT<300){clearTimeout(_tapTimer);_tapTimer=0;_tapK=null;if(navigator.vibrate)navigator.vibrate(10);fireAction('call',p);return;}
   _tapK=k;_tapT=now;clearTimeout(_tapTimer);_tapTimer=setTimeout(()=>{_tapTimer=0;_tapK=null;if(!document.querySelector('.scr.ct-scr'))openContact(p);},300);
 }
-const APP_VERSION='2026.07.08.1709';
+const APP_VERSION='2026.07.09.1515';
 function fetchServerVersion(){return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>j?(j.version||j.myshare||null):null).catch(()=>null);}
 function refreshUpdStatus(){
   const el=document.getElementById('updStatus');if(!el)return;
@@ -1939,7 +1928,7 @@ function openSettings(){
   }).join('');
   const DIV='<div class="divider"></div>';
   sheet.innerHTML=(''+
-    `<div class="sec-hdr">גרסה ועדכון</div><div style="text-align:center;font-size:16px;font-weight:700;color:#fff;letter-spacing:.3px;">גרסה ${APP_VERSION}</div><div id="updStatus" style="text-align:center;font-size:13px;font-weight:700;margin:4px 0 2px;min-height:17px;"></div><div style="text-align:center;width:100%;margin-top:10px;"><button id="appUpdate" class="pill-btn">עדכן אפליקציה לגרסה האחרונה</button></div>`+
+    `<div class="sec-hdr">גרסה ועדכון</div><div style="text-align:center;font-size:16px;font-weight:700;color:#fff;letter-spacing:.3px;">גרסה ${APP_VERSION}</div><div id="updStatus" style="text-align:center;font-size:13px;font-weight:700;margin:4px 0 2px;min-height:17px;"></div><div style="text-align:center;width:100%;margin-top:10px;"><button id="appUpdate" class="pill-btn">עדכן אפליקציה לגרסה האחרונה</button></div><div style="text-align:center;width:100%;margin-top:8px;"><button id="appShare" class="pill-btn">שתף את האפליקציה (QR)</button></div>`+
     DIV+
     `<div class="sec-hdr">ערכת צבעים</div><div class="swatches" id="setSwatches">${PALETTES.map((p,i)=>'<button class="sw'+(i===(cfg.palette||0)?' on':'')+'" data-i="'+i+'" style="background:linear-gradient(180deg,'+p.top+','+p.bot+')" aria-label="'+escapeHtml(p.name)+'"></button>').join('')}</div>`+
     DIV+
@@ -1958,6 +1947,7 @@ function openSettings(){
   const bs=sheet.querySelector('#bkSave');if(bs)bs.onclick=doBackup;
   const bl=sheet.querySelector('#bkLoad');if(bl)bl.onclick=doRestore;
   const ub=sheet.querySelector('#appUpdate');if(ub)ub.onclick=doUpdate;
+  const us=sheet.querySelector('#appShare');if(us)us.onclick=openAppShare;
   const _imp=sheet.querySelector('#cmImport'),_cf=sheet.querySelector('#cmFile');if(_imp&&_cf){_imp.onclick=()=>_cf.click();_cf.onchange=e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(f)openImportWizard(f);};}
   const _exp=sheet.querySelector('#cmExport');if(_exp)_exp.onclick=()=>openExportWizard();
   const _onb=sheet.querySelector('#cmOnboard');if(_onb)_onb.onclick=()=>{if(sc._back)sc._back();try{welcomeEl.classList.remove('hide');}catch(e){}};
@@ -2310,15 +2300,15 @@ function openAddContact(pf){
 }
 let _barRAF=0;function _schedBar(){if(_barRAF)return;_barRAF=requestAnimationFrame(()=>{_barRAF=0;updateBar();});}try{new MutationObserver(_schedBar).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});}catch(e){}
 function updateSearchFab(){updateBar();}
-const favEditBtn=document.createElement('button');favEditBtn.className='fav-edit';favEditBtn.id='favEdit';favEditBtn.setAttribute('aria-label','עריכת סדר');favEditBtn.innerHTML=ICON.edit;favEditBtn.onclick=()=>setEdit(!editMode);document.body.appendChild(favEditBtn);
-const favSortBtn=document.createElement('button');favSortBtn.className='fav-sort';favSortBtn.id='favSort';favSortBtn.setAttribute('aria-label','מיון לפי א״ב');favSortBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M7 4L4 7M7 4l3 3"/><path d="M17 20V4M17 20l-3-3M17 20l3-3"/></svg>';favSortBtn.onclick=()=>{favABC=!favABC;saveFavABC();if(navigator.vibrate)navigator.vibrate(8);renderList();updateFavSort();};document.body.appendChild(favSortBtn);
+const favEditBtn=document.createElement('button');favEditBtn.className='side-fab sf-edit';favEditBtn.id='favEdit';favEditBtn.setAttribute('aria-label','עריכת סדר');favEditBtn.innerHTML=ICON.edit;favEditBtn.onclick=()=>setEdit(!editMode);document.body.appendChild(favEditBtn);
+const favSortBtn=document.createElement('button');favSortBtn.className='side-fab fav-sort';favSortBtn.id='favSort';favSortBtn.setAttribute('aria-label','מיון לפי א״ב');favSortBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M7 4L4 7M7 4l3 3"/><path d="M17 20V4M17 20l-3-3M17 20l3-3"/></svg>';favSortBtn.onclick=()=>{favABC=!favABC;saveFavABC();if(navigator.vibrate)navigator.vibrate(8);renderList();updateFavSort();};document.body.appendChild(favSortBtn);
 function updateFavSort(){const b=document.getElementById('favSort');if(!b)return;const show=(VIEW==='fav'&&!activeList);b.classList.toggle('show',show);b.classList.toggle('on',!!favABC);}
-const listAddBtn=document.createElement('button');listAddBtn.className='list-add';listAddBtn.id='listAdd';listAddBtn.setAttribute('aria-label','הוסף אנשי קשר לרשימה');listAddBtn.innerHTML=ICON.plus;listAddBtn.onclick=()=>{if(activeList)openMemberPicker(activeList);};document.body.appendChild(listAddBtn);
+const listAddBtn=document.createElement('button');listAddBtn.className='side-fab list-add';listAddBtn.id='listAdd';listAddBtn.setAttribute('aria-label','הוסף אנשי קשר לרשימה');listAddBtn.innerHTML=ICON.plus;listAddBtn.onclick=()=>{if(activeList)openMemberPicker(activeList);};document.body.appendChild(listAddBtn);
 const ICON_CONTACTADD='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M19 8v6M16 11h6"/></svg>';
-const ICON_FAVADD='<svg viewBox="0 0 24 24" fill="none"><path transform="translate(1.9 2.4) scale(0.8)" d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.8 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z" fill="currentColor" stroke="none"/><path d="M19 4v4.4M16.8 6.2h4.4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>';
-const contactAddBtn=document.createElement('button');contactAddBtn.className='contact-add';contactAddBtn.id='contactAdd';contactAddBtn.setAttribute('aria-label','הוסף איש קשר חדש');contactAddBtn.innerHTML=ICON_CONTACTADD;contactAddBtn.onclick=()=>{if(VIEW==='fav'&&!activeList)openFavPicker();else openAddContact({});};document.body.appendChild(contactAddBtn);
-const ICON_LISTCAL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9h16M8 3v4M16 3v4"/><circle cx="9" cy="13.5" r="1" fill="currentColor" stroke="none"/><circle cx="13" cy="13.5" r="1" fill="currentColor" stroke="none"/><circle cx="17" cy="13.5" r="1" fill="currentColor" stroke="none"/><circle cx="9" cy="17" r="1" fill="currentColor" stroke="none"/></svg>';const listCalBtn=document.createElement('button');listCalBtn.className='list-cal';listCalBtn.id='listCal';listCalBtn.setAttribute('aria-label','זמן את הרשימה ליומן');listCalBtn.innerHTML=ICON_LISTCAL;listCalBtn.onclick=()=>{if(activeList)openCalInvite(activeList);};document.body.appendChild(listCalBtn);
-const listSendBtn=document.createElement('button');listSendBtn.className='list-send';listSendBtn.id='listSend';listSendBtn.setAttribute('aria-label','שלח לרשימה');listSendBtn.innerHTML=ICON.multisend;listSendBtn.onclick=()=>{if(activeList)openSendList(activeList);};document.body.appendChild(listSendBtn);
+const ICON_FAVADD='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path transform="translate(1.8 3.2) scale(0.66)" stroke-width="3" d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.8 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z"/><path stroke-width="2" d="M19 8v6M16 11h6"/></svg>';
+const contactAddBtn=document.createElement('button');contactAddBtn.className='side-fab contact-add';contactAddBtn.id='contactAdd';contactAddBtn.setAttribute('aria-label','הוסף איש קשר חדש');contactAddBtn.innerHTML=ICON_CONTACTADD;contactAddBtn.onclick=()=>{if(VIEW==='fav'&&!activeList)openFavPicker();else openAddContact({});};document.body.appendChild(contactAddBtn);
+const ICON_LISTCAL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9h16M8 3v4M16 3v4"/><circle cx="9" cy="13.5" r="1" fill="currentColor" stroke="none"/><circle cx="13" cy="13.5" r="1" fill="currentColor" stroke="none"/><circle cx="17" cy="13.5" r="1" fill="currentColor" stroke="none"/><circle cx="9" cy="17" r="1" fill="currentColor" stroke="none"/></svg>';const listCalBtn=document.createElement('button');listCalBtn.className='side-fab list-cal';listCalBtn.id='listCal';listCalBtn.setAttribute('aria-label','זמן את הרשימה ליומן');listCalBtn.innerHTML=ICON_LISTCAL;listCalBtn.onclick=()=>{if(activeList)openCalInvite(activeList);};document.body.appendChild(listCalBtn);
+const listSendBtn=document.createElement('button');listSendBtn.className='side-fab list-send';listSendBtn.id='listSend';listSendBtn.setAttribute('aria-label','שלח לרשימה');listSendBtn.innerHTML=ICON.multisend;listSendBtn.onclick=()=>{if(activeList)openSendList(activeList);};document.body.appendChild(listSendBtn);
 updateFavEdit();updateListAdd();
 function updateListAdd(){const b=document.getElementById('listAdd');if(b)b.classList.toggle('show',!!activeList);const s=document.getElementById('listSend');if(s)s.classList.toggle('show',!!activeList);const c=document.getElementById('listCal');if(c)c.classList.toggle('show',!!activeList);}
 function updateContactAdd(){const b=document.getElementById('contactAdd');if(!b)return;const fav=(VIEW==='fav'&&!activeList);b.classList.toggle('show',!activeList);b.innerHTML=fav?ICON_FAVADD:ICON_CONTACTADD;b.setAttribute('aria-label',fav?'הוסף למועדפים':'הוסף איש קשר חדש');}
@@ -3038,6 +3028,23 @@ function openMyCardEdit(after){
     saveMyCard(nc);close();toast('הכרטיס נשמר');if(after)after();
   };
 }
+/* שיתוף האפליקציה: QR + קישור להורדת ה-APK, עם העתקה ושיתוף */
+const APP_DL='https://github.com/elad-cmd/elad-apps/releases/download/sweep-latest/Sweep.apk';
+function copyText(t,okMsg){const done=()=>toast(okMsg||'הועתק ✓');try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done).catch(()=>{legacyCopy(t)?done():toast('לא ניתן להעתיק');});return;}}catch(e){}legacyCopy(t)?done():toast('לא ניתן להעתיק');}
+function legacyCopy(t){try{const ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0;';document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();return ok;}catch(e){return false;}}
+function openAppShare(){
+  const ov=document.createElement('div');ov.className='mpovl';
+  const xsvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  let img='';
+  try{if(typeof qrcode!=='undefined'){const qr=qrcode(0,'M');qr.addData(APP_DL);qr.make();img='<img alt="QR" src="'+qr.createDataURL(6,10)+'" style="width:220px;height:220px;display:block;margin:0 auto;image-rendering:pixelated;">';}else{img='<div style="color:#4A4F5A;padding:40px 10px;">דרוש חיבור לאינטרנט ליצירת הקוד.</div>';}}catch(e){img='<div style="color:#4A4F5A;padding:40px 10px;">לא ניתן ליצור קוד.</div>';}
+  ov.innerHTML='<div class="mp-sheet"><div class="sheet-head"><button class="sheet-x" aria-label="סגור">'+xsvg+'</button><h2 class="sh-title">שתף את סוויפ</h2><span class="sh-sp"></span></div><div style="background:#fff;border-radius:18px;padding:16px;margin:4px auto 12px;max-width:280px;text-align:center;">'+img+'</div><p class="mp-hint" style="text-align:center;">סריקת הקוד מורידה את האפליקציה (אנדרואיד בלבד).</p><div style="display:flex;gap:10px;margin-top:10px;"><button class="mp-confirm" id="asShare" style="flex:1;margin-top:0;">שתף קישור</button><button class="mp-confirm" id="asCopy" style="flex:1;margin-top:0;background:rgba(8,50,50,.10);color:var(--tq-ink);border:1px solid rgba(8,50,50,.16);">העתק קישור</button></div></div>';
+  document.body.appendChild(ov);requestAnimationFrame(()=>ov.classList.add('show'));
+  const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),250);};
+  ov.querySelector('.sheet-x').onclick=close;ov.addEventListener('click',e=>{if(e.target===ov)close();});
+  ov.querySelector('#asShare').onclick=()=>{try{if(navigator.share){navigator.share({title:'Sweep — אפליקציית אנשי הקשר',text:'הורדת סוויפ לאנדרואיד:\n'+APP_DL}).catch(()=>{});return;}}catch(e){}copyText(APP_DL,'שיתוף לא נתמך — הקישור הועתק');};
+  ov.querySelector('#asCopy').onclick=()=>copyText(APP_DL,'הקישור הועתק ✓');
+}
+
 function openMyCard(){
   const sc=openScreen('<div class="scr-head"><button class="scr-back" aria-label="חזרה">'+ICN_BACK+'</button><h2>הכרטיס שלי</h2></div><div class="scr-body" id="mcBody"></div>');sc._reopen=openMyCard;
   function render(){
